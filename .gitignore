@@ -6,3 +6,9 @@ optical
 tmp
 rootalias.py
 fiber
+*.txt
+*.in
+*.out
+*.pdf
+G4beamlineExamples
+.tramp_history
