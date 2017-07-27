@@ -1,0 +1,8 @@
+optical
+*~
+*.root
+*.pyc
+.DS_Store
+tmp
+rootalias.py
+fiber
