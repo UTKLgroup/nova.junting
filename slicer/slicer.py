@@ -16,26 +16,6 @@ from rootalias import *
 figure_dir = '/Users/juntinghuang/google_drive/slides/beamer/20170726_tdslicer_space_clustering/figures/'
 
 
-def draw_statboxesss(h1, h2, h3, h4):
-    width = 0.18
-    height = 0.15
-    corner_x = 0.76
-    corner_y = 0.24
-    gap_y = 0.04
-    delta_y = height + gap_y    
-
-    hs = [h1, h2, h3, h4]
-    for i, h in enumerate(hs):
-        p = h.GetListOfFunctions().FindObject("stats")
-        p.SetTextColor(h.GetLineColor())
-        p.SetLineColor(h.GetLineColor())
-        p.SetX1NDC(corner_x)
-        p.SetY1NDC(corner_y + delta_y * i)
-        p.SetX2NDC(corner_x + width)
-        p.SetY2NDC(corner_y + height + delta_y * i)
-        p.Draw()
-
-
 def plot(**kwargs):
     hist_name = kwargs.get('hist_name', 'NumSlices')
     x_min = kwargs.get('x_min')
@@ -215,8 +195,7 @@ def plot_tuned(**kwargs):
     h_td_new.Draw('sames')
 
     c1.Update()
-    draw_statboxess(h_td_new, h_td, h_4d)
-    # draw_statboxesss(h_td_new, h_td, h_4d, h_true)
+    draw_statboxesss(h_td_new, h_td, h_4d, h_true)
 
     c1.Update()
     c1.SaveAs('{}/plot_tuned.{}.{}.pdf'.format(figure_dir, root_filename_new, hist_name))
@@ -331,9 +310,9 @@ def plot_ratio(**kwargs):
 #            root_filename_new='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_6.MinPrimDist_6.root',
 #            log_y=True)
 
-plot_tuned(hist_name='NumSlices',
-           root_filename='fd_cry.ZScale_27.TScale_57.Tolerance_6.MinPrimDist_4.root',
-           root_filename_new='fd_cry.ZScale_27.TScale_57.Tolerance_6.MinPrimDist_6.root')
+# plot_tuned(hist_name='NumSlices',
+#            root_filename='fd_cry.ZScale_27.TScale_57.Tolerance_6.MinPrimDist_4.root',
+#            root_filename_new='fd_cry.ZScale_27.TScale_57.Tolerance_6.MinPrimDist_6.root')
 # plot_ratio(hist_name='SliceCompleteness',
 #            root_filename='fd_cry.ZScale_27.TScale_57.Tolerance_6.MinPrimDist_4.root',
 #            root_filename_new='fd_cry.ZScale_27.TScale_57.Tolerance_6.MinPrimDist_6.root',
@@ -342,3 +321,11 @@ plot_tuned(hist_name='NumSlices',
 #            root_filename='fd_cry.ZScale_27.TScale_57.Tolerance_6.MinPrimDist_4.root',
 #            root_filename_new='fd_cry.ZScale_27.TScale_57.Tolerance_6.MinPrimDist_6.root',
 #            log_y=True)
+# plot(root_filename='fd_cry.ZScale_27.TScale_57.Tolerance_6.MinPrimDist_4.root',
+#      hist_name='SliceCompleteness', log_y=True, statbox_left=True, statbox_position='top')
+# plot(root_filename='fd_cry.ZScale_27.TScale_57.Tolerance_6.MinPrimDist_6.root',
+#      hist_name='SliceCompleteness', log_y=True, statbox_left=True, statbox_position='top')
+# plot(root_filename='fd_cry.ZScale_27.TScale_57.Tolerance_6.MinPrimDist_4.root',
+     # hist_name='SlicePurity', log_y=True, statbox_left=True, statbox_position='top')
+plot(root_filename='fd_cry.ZScale_27.TScale_57.Tolerance_6.MinPrimDist_6.root',
+     hist_name='SlicePurity', log_y=True, statbox_left=True, statbox_position='top')
