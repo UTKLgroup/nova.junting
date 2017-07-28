@@ -340,8 +340,8 @@ def plot_minprimdist_scan(**kwargs):
         lg1_y2ndc = 0.33
     lg1 = TLegend(0.4, 0.2, 0.6, lg1_y2ndc)
     set_legend_style(lg1)
-    lg1.AddEntry(gr_completeness, 'Completeness', 'lp')
     lg1.AddEntry(gr_slice_count, 'Slice Count', 'lp')
+    lg1.AddEntry(gr_completeness, 'Completeness', 'lp')
     if plot_purity:
         lg1.AddEntry(gr_purity, 'Purity', 'lp')
     lg1.Draw()
@@ -352,19 +352,20 @@ def plot_minprimdist_scan(**kwargs):
     raw_input('Press any key to continue.')
 
 
-def get_slice_count_completeness_purity(filename):
+def get_slice_count_completeness_purity(filename, slicer):
     tfile = TFile(filename)
-    h_slicepurity = tfile.Get('tdslicerana/SlicePurity')
-    h_slicecompleteness = tfile.Get('tdslicerana/SliceCompleteness')
-    h_numslices = tfile.Get('tdslicerana/NumSlices')
+    h_slicepurity = tfile.Get('{}/SlicePurity'.format(slicer))
+    h_slicecompleteness = tfile.Get('{}/SliceCompleteness'.format(slicer))
+    h_numslices = tfile.Get('{}/NumSlices'.format(slicer))
     if 'fd_genie_nonswap' in filename:
         h_slicecompleteness.GetXaxis().SetRangeUser(0.005, 1.005)
         h_slicepurity.GetXaxis().SetRangeUser(0.005, 1.005)
     return h_numslices.GetMean(), h_slicecompleteness.GetMean(), h_slicepurity.GetMean()
 
 
-def print_slice_count_completeness_purity():
-    data_sample = 'fd_genie_nonswap'
+def print_slice_count_completeness_purity(data_sample):
+    print data_sample
+
     filenames = [
         'ZScale_100.TScale_10.Tolerance_6.MinPrimDist_4.root',
         'ZScale_27.TScale_57.Tolerance_6.MinPrimDist_4.root',
@@ -374,21 +375,43 @@ def print_slice_count_completeness_purity():
         'ZScale_27.TScale_57.Tolerance_6.MinPrimDist_8.root'
     ]
     filenames = map(lambda x: data_sample + '.' + x, filenames)
-    for filename in filenames:
-        slice_count, completeness, purity = get_slice_count_completeness_purity(filename)
+
+
+    if data_sample == 'fd_genie_nonswap':
+        slice_count, completeness, purity = get_slice_count_completeness_purity(filenames[4], 'trueslicerana')
+        print 'TruthSlicer & {:.1f} & {:.3f} \\\\'.format(slice_count, completeness)
+        slice_count, completeness, purity = get_slice_count_completeness_purity(filenames[0], 'slicerana')
+        print 'Slicer4D & {:.1f} & {:.3f} \\\\'.format(slice_count, completeness)
+    elif data_sample == 'fd_cry':
+        slice_count, completeness, purity = get_slice_count_completeness_purity(filenames[4], 'trueslicerana')
+        print 'TruthSlicer & {:.1f} & {:.3f} & {:.3f} \\\\'.format(slice_count, completeness, purity)
+        slice_count, completeness, purity = get_slice_count_completeness_purity(filenames[0], 'slicerana')
+        print 'Slicer4D & {:.1f} & {:.3f} & {:.3f} \\\\'.format(slice_count, completeness, purity)
+
+    for i, filename in enumerate(filenames):
+        slice_count, completeness, purity = get_slice_count_completeness_purity(filename, 'tdslicerana')
         z_scale = (filename.split('.')[1]).split('_')[1]
         t_scale = (filename.split('.')[2]).split('_')[1]
         tolerance = (filename.split('.')[3]).split('_')[1]
         minprimdist = (filename.split('.')[4]).split('_')[1]
-        print z_scale, t_scale, tolerance, minprimdist
-        print slice_count, completeness, purity
+        first_column = '\\texttt{{MinPrimDist}} = {}'.format(minprimdist)
+        if i == 0:
+            first_column = 'untuned TDSlicer'
+        if data_sample == 'fd_genie_nonswap':
+            print '{} & {:.1f} & {:.3f} \\\\'.format(first_column, slice_count, completeness)
+        elif data_sample == 'fd_cry':
+            print '{} & {:.1f} & {:.3f} & {:.3f} \\\\'.format(first_column, slice_count, completeness, purity)
+        if i == 0:
+            print '\\hline'
+            print '\\hline'
 
-# print_slice_count_completeness_purity()
+print_slice_count_completeness_purity('fd_genie_nonswap')
+# print_slice_count_completeness_purity('fd_cry')
 
 # plot(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_6.MinPrimDist_4.root',
 #      hist_name='SliceCompleteness', log_y=True, statbox_left=True, statbox_position='top')
 
-plot_minprimdist_scan(data_sample='fd_cry')
+# plot_minprimdist_scan(data_sample='fd_cry')
 # plot_minprimdist_scan(data_sample='fd_genie_nonswap', plot_purity=False)
 
 # plot(hist_name='NumSlices', x_min=30, x_max=200)
