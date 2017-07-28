@@ -275,6 +275,122 @@ def plot_ratio(**kwargs):
     raw_input('Press any key to continue.')
 
 
+def plot_minprimdist_scan(**kwargs):
+    data_sample = kwargs.get('data_sample', 'fd_cry')
+    y_min = kwargs.get('y_min', 0.94)
+    y_max = kwargs.get('y_max', 1.0)
+    y_axis_title_offset = kwargs.get('y_axis_title_offset')
+    plot_purity = kwargs.get('plot_purity', True)
+
+    purities = []
+    completenesses = []
+    slice_counts = []
+    minprimdists = []
+    for i in range(4, 9):
+        tfile = TFile('{}.ZScale_27.TScale_57.Tolerance_6.MinPrimDist_{}.root'.format(data_sample, i))
+        h_slicepurity = tfile.Get('tdslicerana/SlicePurity')
+        h_slicecompleteness = tfile.Get('tdslicerana/SliceCompleteness')
+        h_numslices = tfile.Get('tdslicerana/NumSlices')
+        if data_sample == 'fd_genie_nonswap':
+            h_slicecompleteness.GetXaxis().SetRangeUser(0.005, 1.005)
+            h_slicepurity.GetXaxis().SetRangeUser(0.005, 1.005)
+
+        purities.append(h_slicepurity.GetMean())
+        completenesses.append(h_slicecompleteness.GetMean())
+        slice_counts.append(h_numslices.GetMean())
+        minprimdists.append(float(i))
+
+    gr_purity = TGraph(len(minprimdists), np.array(minprimdists), np.array(purities))
+    gr_completeness = TGraph(len(minprimdists), np.array(minprimdists), np.array(completenesses))
+    gr_slice_count = TGraph(len(minprimdists), np.array(minprimdists), np.array(slice_counts))
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    set_graph_style(gr_completeness)
+    gr_completeness.GetYaxis().SetRangeUser(y_min, y_max)
+    gr_completeness.GetYaxis().SetTitle('Efficiency{}'.format(' or Purity' if plot_purity else ''))
+    gr_completeness.GetXaxis().SetTitle('Threshold')
+    if y_axis_title_offset:
+        gr_completeness.GetYaxis().SetTitleOffset(y_axis_title_offset)
+    gr_completeness.SetLineColor(kRed)
+    gr_completeness.SetMarkerColor(gr_completeness.GetLineColor())
+    gr_completeness.Draw('ALP')
+
+    if plot_purity:
+        set_graph_style(gr_purity)
+        gr_purity.SetLineColor(kBlue)
+        gr_purity.SetMarkerColor(gr_purity.GetLineColor())
+        gr_purity.Draw('LP,sames')
+
+    c1.cd();
+    tpad = TPad('tpad', 'tpad', 0, 0, 1, 1)
+    tpad.SetFillStyle(4000);
+    tpad.SetFrameFillStyle(4000)
+    tpad.Draw()
+    tpad.cd()
+    set_margin()
+
+    set_graph_style(gr_slice_count)
+    gr_slice_count.GetYaxis().SetTitle('Slice Count per Event')
+    gr_slice_count.GetYaxis().SetTitleOffset(1.0)
+    gr_slice_count.Draw('ALP,Y+')
+
+    lg1_y2ndc = 0.4
+    if not plot_purity:
+        lg1_y2ndc = 0.33
+    lg1 = TLegend(0.4, 0.2, 0.6, lg1_y2ndc)
+    set_legend_style(lg1)
+    lg1.AddEntry(gr_completeness, 'Completeness', 'lp')
+    lg1.AddEntry(gr_slice_count, 'Slice Count', 'lp')
+    if plot_purity:
+        lg1.AddEntry(gr_purity, 'Purity', 'lp')
+    lg1.Draw()
+
+    c1.cd()
+    c1.Update()
+    c1.SaveAs('{}/plot_minprimdist_scan.{}.pdf'.format(figure_dir, data_sample))
+    raw_input('Press any key to continue.')
+
+
+def get_slice_count_completeness_purity(filename):
+    tfile = TFile(filename)
+    h_slicepurity = tfile.Get('tdslicerana/SlicePurity')
+    h_slicecompleteness = tfile.Get('tdslicerana/SliceCompleteness')
+    h_numslices = tfile.Get('tdslicerana/NumSlices')
+    if 'fd_genie_nonswap' in filename:
+        h_slicecompleteness.GetXaxis().SetRangeUser(0.005, 1.005)
+        h_slicepurity.GetXaxis().SetRangeUser(0.005, 1.005)
+    return h_numslices.GetMean(), h_slicecompleteness.GetMean(), h_slicepurity.GetMean()
+
+
+def print_slice_count_completeness_purity():
+    data_sample = 'fd_genie_nonswap'
+    filenames = [
+        'ZScale_100.TScale_10.Tolerance_6.MinPrimDist_4.root',
+        'ZScale_27.TScale_57.Tolerance_6.MinPrimDist_4.root',
+        'ZScale_27.TScale_57.Tolerance_6.MinPrimDist_5.root',
+        'ZScale_27.TScale_57.Tolerance_6.MinPrimDist_6.root',
+        'ZScale_27.TScale_57.Tolerance_6.MinPrimDist_7.root',
+        'ZScale_27.TScale_57.Tolerance_6.MinPrimDist_8.root'
+    ]
+    filenames = map(lambda x: data_sample + '.' + x, filenames)
+    for filename in filenames:
+        slice_count, completeness, purity = get_slice_count_completeness_purity(filename)
+        z_scale = (filename.split('.')[1]).split('_')[1]
+        t_scale = (filename.split('.')[2]).split('_')[1]
+        tolerance = (filename.split('.')[3]).split('_')[1]
+        minprimdist = (filename.split('.')[4]).split('_')[1]
+        print z_scale, t_scale, tolerance, minprimdist
+        print slice_count, completeness, purity
+
+# print_slice_count_completeness_purity()
+
+# plot(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_6.MinPrimDist_4.root',
+#      hist_name='SliceCompleteness', log_y=True, statbox_left=True, statbox_position='top')
+
+plot_minprimdist_scan(data_sample='fd_cry')
+# plot_minprimdist_scan(data_sample='fd_genie_nonswap', plot_purity=False)
+
 # plot(hist_name='NumSlices', x_min=30, x_max=200)
 # plot(hist_name='NumMCT', x_min=90, x_max=200, statbox_position='left')
 # plot(hist_name='NumSliceHits', x_min=-1, x_max=500)
@@ -326,6 +442,6 @@ def plot_ratio(**kwargs):
 # plot(root_filename='fd_cry.ZScale_27.TScale_57.Tolerance_6.MinPrimDist_6.root',
 #      hist_name='SliceCompleteness', log_y=True, statbox_left=True, statbox_position='top')
 # plot(root_filename='fd_cry.ZScale_27.TScale_57.Tolerance_6.MinPrimDist_4.root',
-     # hist_name='SlicePurity', log_y=True, statbox_left=True, statbox_position='top')
-plot(root_filename='fd_cry.ZScale_27.TScale_57.Tolerance_6.MinPrimDist_6.root',
-     hist_name='SlicePurity', log_y=True, statbox_left=True, statbox_position='top')
+#      hist_name='SlicePurity', log_y=True, statbox_left=True, statbox_position='top')
+# plot(root_filename='fd_cry.ZScale_27.TScale_57.Tolerance_6.MinPrimDist_6.root',
+#      hist_name='SlicePurity', log_y=True, statbox_left=True, statbox_position='top')
