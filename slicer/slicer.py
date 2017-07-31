@@ -1,3 +1,4 @@
+from subprocess import call
 from rootalias import *
 
 
@@ -308,8 +309,8 @@ def plot_minprimdist_scan(**kwargs):
     set_margin()
     set_graph_style(gr_completeness)
     gr_completeness.GetYaxis().SetRangeUser(y_min, y_max)
-    gr_completeness.GetYaxis().SetTitle('Efficiency{}'.format(' or Purity' if plot_purity else ''))
-    gr_completeness.GetXaxis().SetTitle('Threshold')
+    gr_completeness.GetYaxis().SetTitle('Completeness{}'.format(' or Purity' if plot_purity else ''))
+    gr_completeness.GetXaxis().SetTitle('MinPrimDist')
     if y_axis_title_offset:
         gr_completeness.GetYaxis().SetTitleOffset(y_axis_title_offset)
     gr_completeness.SetLineColor(kRed)
@@ -367,12 +368,12 @@ def print_slice_count_completeness_purity(data_sample):
     print data_sample
 
     filenames = [
-        'ZScale_100.TScale_10.Tolerance_6.MinPrimDist_4.root',
-        'ZScale_27.TScale_57.Tolerance_6.MinPrimDist_4.root',
-        'ZScale_27.TScale_57.Tolerance_6.MinPrimDist_5.root',
-        'ZScale_27.TScale_57.Tolerance_6.MinPrimDist_6.root',
-        'ZScale_27.TScale_57.Tolerance_6.MinPrimDist_7.root',
-        'ZScale_27.TScale_57.Tolerance_6.MinPrimDist_8.root'
+        'ZScale_100.TScale_10.Tolerance_10.MinPrimDist_4.root',
+        'ZScale_27.TScale_57.Tolerance_10.MinPrimDist_4.root',
+        'ZScale_27.TScale_57.Tolerance_10.MinPrimDist_5.root',
+        'ZScale_27.TScale_57.Tolerance_10.MinPrimDist_6.root',
+        'ZScale_27.TScale_57.Tolerance_10.MinPrimDist_7.root',
+        'ZScale_27.TScale_57.Tolerance_10.MinPrimDist_8.root'
     ]
     filenames = map(lambda x: data_sample + '.' + x, filenames)
 
@@ -405,7 +406,136 @@ def print_slice_count_completeness_purity(data_sample):
             print '\\hline'
             print '\\hline'
 
-print_slice_count_completeness_purity('fd_genie_nonswap')
+
+def hadd():
+    for i in range(4, 9):
+        # call('hadd fd_genie_nonswap_Tolerance_10_MinPrimDist_{}.root data/*fd_genie_nonswap_MinPrimDist_{}.root'.format(i, i), shell=True)
+        # call('hadd fd_cry_Tolerance_10_MinPrimDist_{}.root data/*fd_cry_MinPrimDist_{}.root'.format(i, i), shell=True)
+        call('mv fd_genie_nonswap_Tolerance_10_MinPrimDist_{}.root fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_10.MinPrimDist_{}.root'.format(i, i), shell=True)
+        call('mv fd_cry_Tolerance_10_MinPrimDist_{}.root fd_cry.ZScale_27.TScale_57.Tolerance_10.MinPrimDist_{}.root'.format(i, i), shell=True)
+
+
+def get_minprimdist_scan_graphs(data_sample, tolerance):
+    purities = []
+    completenesses = []
+    slice_counts = []
+    minprimdists = []
+    for i in range(4, 9):
+        tfile = TFile('{}.ZScale_27.TScale_57.Tolerance_{}.MinPrimDist_{}.root'.format(data_sample, tolerance, i))
+        h_slicepurity = tfile.Get('tdslicerana/SlicePurity')
+        h_slicecompleteness = tfile.Get('tdslicerana/SliceCompleteness')
+        h_numslices = tfile.Get('tdslicerana/NumSlices')
+        if data_sample == 'fd_genie_nonswap':
+            h_slicecompleteness.GetXaxis().SetRangeUser(0.005, 1.005)
+            h_slicepurity.GetXaxis().SetRangeUser(0.005, 1.005)
+
+        purities.append(h_slicepurity.GetMean())
+        completenesses.append(h_slicecompleteness.GetMean())
+        slice_counts.append(h_numslices.GetMean())
+        minprimdists.append(float(i))
+
+    gr_purity = TGraph(len(minprimdists), np.array(minprimdists), np.array(purities))
+    gr_completeness = TGraph(len(minprimdists), np.array(minprimdists), np.array(completenesses))
+    gr_slice_count = TGraph(len(minprimdists), np.array(minprimdists), np.array(slice_counts))
+
+    return gr_purity, gr_completeness, gr_slice_count
+
+
+def plot_minprimdist_tolerance_scan(**kwargs):
+    data_sample = kwargs.get('data_sample', 'fd_cry')
+    y_min = kwargs.get('y_min', 0.94)
+    y_max = kwargs.get('y_max', 1.0)
+    y_axis_title_offset = kwargs.get('y_axis_title_offset')
+    plot_purity = kwargs.get('plot_purity', True)
+
+    gr_purity, gr_completeness, gr_slice_count = get_minprimdist_scan_graphs(data_sample, 10)
+    gr_purity_6, gr_completeness_6, gr_slice_count_6 = get_minprimdist_scan_graphs(data_sample, 6)
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    set_graph_style(gr_completeness)
+    gr_completeness.GetYaxis().SetRangeUser(y_min, y_max)
+    gr_completeness.GetYaxis().SetTitle('Completeness{}'.format(' or Purity' if plot_purity else ''))
+    gr_completeness.GetXaxis().SetTitle('MinPrimDist')
+    if y_axis_title_offset:
+        gr_completeness.GetYaxis().SetTitleOffset(y_axis_title_offset)
+    gr_completeness.SetLineColor(kRed)
+    gr_completeness.SetMarkerColor(gr_completeness.GetLineColor())
+    gr_completeness.Draw('AL')
+
+    set_graph_style(gr_completeness_6)
+    gr_completeness_6.SetLineStyle(2)
+    gr_completeness_6.SetLineColor(gr_completeness.GetLineColor())
+    gr_completeness_6.SetLineWidth(gr_completeness.GetLineWidth())
+    gr_completeness_6.Draw('L,same')
+
+    if plot_purity:
+        set_graph_style(gr_purity)
+        gr_purity.SetLineColor(kBlue)
+        gr_purity.SetMarkerColor(gr_purity.GetLineColor())
+        gr_purity.Draw('L,sames')
+
+        set_graph_style(gr_purity_6)
+        gr_purity_6.SetLineStyle(2)
+        gr_purity_6.SetLineColor(gr_purity.GetLineColor())
+        gr_purity_6.SetLineWidth(gr_purity.GetLineWidth())
+        gr_purity_6.Draw('L,same')
+
+    c1.cd();
+    tpad = TPad('tpad', 'tpad', 0, 0, 1, 1)
+    tpad.SetFillStyle(4000);
+    tpad.SetFrameFillStyle(4000)
+    tpad.Draw()
+    tpad.cd()
+    set_margin()
+
+    set_graph_style(gr_slice_count)
+    gr_slice_count.GetYaxis().SetTitle('Slice Count per Event')
+    gr_slice_count.GetYaxis().SetTitleOffset(1.0)
+    if data_sample == 'fd_cry':
+        gr_slice_count.GetYaxis().SetRangeUser(42, 52)
+    if data_sample == 'fd_genie_nonswap':
+        gr_slice_count.GetYaxis().SetRangeUser(52, 68)
+    gr_slice_count.Draw('AL,Y+')
+
+    set_graph_style(gr_slice_count_6)
+    gr_slice_count_6.SetLineStyle(2)
+    gr_slice_count_6.Draw('L,same')
+
+    lg1_y2ndc = 0.4
+    if not plot_purity:
+        lg1_y2ndc = 0.33
+    # lg1 = TLegend(0.4, 0.2, 0.6, lg1_y2ndc)
+    lg1 = TLegend(0.34, 0.18, 0.8, lg1_y2ndc)
+    set_legend_style(lg1)
+    lg1.SetTextSize(20)
+    # lg1.SetNColumns(2);
+    lg1.SetMargin(0.2)
+    lg1.AddEntry(gr_slice_count, 'Slice Count, Tolerance = 10', 'l')
+    lg1.AddEntry(gr_slice_count_6, 'Slice Count, Tolerance = 6', 'l')
+
+    lg1.AddEntry(gr_completeness, 'Completeness, Tolerance = 10', 'l')
+    lg1.AddEntry(gr_completeness_6, 'Completeness, Tolerance = 6', 'l')
+    if plot_purity:
+        lg1.AddEntry(gr_purity, 'Purity, Tolerance = 10', 'l')
+        lg1.AddEntry(gr_purity_6, 'Purity, Tolerance = 6', 'l')
+
+    lg1.Draw()
+
+    c1.cd()
+    c1.Update()
+    c1.SaveAs('{}/plot_minprimdist_tolerance_scan.{}.pdf'.format(figure_dir, data_sample))
+    raw_input('Press any key to continue.')
+
+
+# print_slice_count_completeness_purity('fd_genie_nonswap')
+# print_slice_count_completeness_purity('fd_cry')
+# plot_minprimdist_scan(data_sample='fd_cry')
+plot_minprimdist_tolerance_scan(data_sample='fd_cry')
+# plot_minprimdist_tolerance_scan(data_sample='fd_genie_nonswap', plot_purity=False)
+# hadd()
+
+# print_slice_count_completeness_purity('fd_genie_nonswap')
 # print_slice_count_completeness_purity('fd_cry')
 
 # plot(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_6.MinPrimDist_4.root',
