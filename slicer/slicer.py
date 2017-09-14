@@ -1,21 +1,8 @@
 from subprocess import call
 from rootalias import *
 
-
-# root_filename = 'fd_cry.root'
-# root_filename = 'fd_cry.new.root'
-# root_filename = 'fd_genie.nonswap.root'
-# root_filename = 'fd_genie.nonswap.new.root'
-# root_filename = 'nd_cry.root'
-
-# root_filename = 'fd_genie.nonswap.ZScale_100.TScale_10.Tolerance_6.MinPrimDist_6.root'
-# root_filename = 'fd_genie.nonswap.ZScale_100.TScale_10.Tolerance_6.MinPrimDist_4.root'
-
-# f_slicer = TFile(root_filename)
-# figure_dir = '/Users/juntinghuang/google_drive/slides/beamer/20170718_tdslicer/figures'
-# figure_dir = '/Users/juntinghuang/google_drive/slides/beamer/20170724_tdslicer_nd_cry_noise_slice/figures'
 figure_dir = '/Users/juntinghuang/google_drive/slides/beamer/20170726_tdslicer_space_clustering/figures/'
-
+data_dir = 'data'
 
 def plot(**kwargs):
     hist_name = kwargs.get('hist_name', 'NumSlices')
@@ -26,7 +13,7 @@ def plot(**kwargs):
     statbox_position = kwargs.get('statbox_position', 'right')
     root_filename = kwargs.get('root_filename')
 
-    f_slicer = TFile(root_filename)
+    f_slicer = TFile('{}/{}'.format(data_dir, root_filename))
     h_4d = f_slicer.Get('slicerana/{}'.format(hist_name))
     h_td = f_slicer.Get('tdslicerana/{}'.format(hist_name))
 
@@ -57,7 +44,7 @@ def plot(**kwargs):
 
 
 def plot_slice_matching(tree_name, root_filename):
-    f_slicer = TFile(root_filename)
+    f_slicer = TFile('{}/{}'.format(data_dir, root_filename))
     tolerance = 6
 
     z_scale = 27.0
@@ -151,8 +138,8 @@ def plot_tuned(**kwargs):
     root_filename =  kwargs.get('root_filename', 'fd_genie.nonswap.root')
     root_filename_new =  kwargs.get('root_filename_new', 'fd_genie.nonswap.new.root')
 
-    f_slicer = TFile(root_filename)
-    f_slicer_new = TFile(root_filename_new)
+    f_slicer = TFile('{}/{}'.format(data_dir, root_filename))
+    f_slicer_new = TFile('{}/{}'.format(data_dir, root_filename_new))
 
     h_4d = f_slicer.Get('slicerana/{}'.format(hist_name))
     h_td = f_slicer.Get('tdslicerana/{}'.format(hist_name))
@@ -212,8 +199,8 @@ def plot_ratio(**kwargs):
     root_filename =  kwargs.get('root_filename', 'fd_genie.nonswap.root')
     root_filename_new =  kwargs.get('root_filename_new', 'fd_genie.nonswap.new.root')
 
-    f_slicer = TFile(root_filename)
-    f_slicer_new = TFile(root_filename_new)
+    f_slicer = TFile('{}/{}'.format(data_dir, root_filename))
+    f_slicer_new = TFile('{}/{}'.format(data_dir, root_filename_new))
 
     h_td = f_slicer.Get('tdslicerana/{}'.format(hist_name))
     h_td_new = f_slicer_new.Get('tdslicerana/{}'.format(hist_name))
@@ -288,7 +275,7 @@ def plot_minprimdist_scan(**kwargs):
     slice_counts = []
     minprimdists = []
     for i in range(4, 9):
-        tfile = TFile('{}.ZScale_27.TScale_57.Tolerance_6.MinPrimDist_{}.root'.format(data_sample, i))
+        tfile = TFile('{}/{}.ZScale_27.TScale_57.Tolerance_6.MinPrimDist_{}.root'.format(data_dir, data_sample, i))
         h_slicepurity = tfile.Get('tdslicerana/SlicePurity')
         h_slicecompleteness = tfile.Get('tdslicerana/SliceCompleteness')
         h_numslices = tfile.Get('tdslicerana/NumSlices')
@@ -354,7 +341,7 @@ def plot_minprimdist_scan(**kwargs):
 
 
 def get_slice_count_completeness_purity(filename, slicer):
-    tfile = TFile(filename)
+    tfile = TFile('{}/{}'.format(data_dir, filename))
     h_slicepurity = tfile.Get('{}/SlicePurity'.format(slicer))
     h_slicecompleteness = tfile.Get('{}/SliceCompleteness'.format(slicer))
     h_numslices = tfile.Get('{}/NumSlices'.format(slicer))
@@ -423,7 +410,7 @@ def get_minprimdist_scan_graphs(data_sample, tolerance):
     slice_counts = []
     minprimdists = []
     for i in range(4, 9):
-        tfile = TFile('{}.ZScale_27.TScale_57.Tolerance_{}.MinPrimDist_{}.root'.format(data_sample, tolerance, i))
+        tfile = TFile('{}/{}.ZScale_27.TScale_57.Tolerance_{}.MinPrimDist_{}.root'.format(data_dir, data_sample, tolerance, i))
         h_slicepurity = tfile.Get('tdslicerana/SlicePurity')
         h_slicecompleteness = tfile.Get('tdslicerana/SliceCompleteness')
         h_numslices = tfile.Get('tdslicerana/NumSlices')
