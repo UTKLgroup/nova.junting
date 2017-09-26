@@ -1,7 +1,7 @@
 from subprocess import call
 from rootalias import *
 
-figure_dir = '/Users/juntinghuang/google_drive/slides/beamer/20170726_tdslicer_space_clustering/figures/'
+figure_dir = '/Users/juntinghuang/beamer/20170914_tdslicer_genie_purity/figures/'
 data_dir = 'data'
 
 def plot(**kwargs):
@@ -352,7 +352,7 @@ def get_slice_count_completeness_purity(filename, slicer):
 
 
 def print_slice_count_completeness_purity(data_sample):
-    print data_sample
+    print(data_sample)
 
     filenames = [
         'ZScale_100.TScale_10.Tolerance_6.MinPrimDist_4.root',
@@ -367,14 +367,14 @@ def print_slice_count_completeness_purity(data_sample):
 
     if data_sample == 'fd_genie_nonswap':
         slice_count, completeness, purity = get_slice_count_completeness_purity(filenames[4], 'trueslicerana')
-        print 'TruthSlicer & {:.1f} & {:.3f} \\\\'.format(slice_count, completeness)
+        print('TruthSlicer & {:.1f} & {:.3f} \\\\'.format(slice_count, completeness))
         slice_count, completeness, purity = get_slice_count_completeness_purity(filenames[0], 'slicerana')
-        print 'Slicer4D & {:.1f} & {:.3f} \\\\'.format(slice_count, completeness)
+        print('Slicer4D & {:.1f} & {:.3f} \\\\'.format(slice_count, completeness))
     elif data_sample == 'fd_cry':
         slice_count, completeness, purity = get_slice_count_completeness_purity(filenames[4], 'trueslicerana')
-        print 'TruthSlicer & {:.1f} & {:.3f} & {:.3f} \\\\'.format(slice_count, completeness, purity)
+        print('TruthSlicer & {:.1f} & {:.3f} & {:.3f} \\\\'.format(slice_count, completeness, purity))
         slice_count, completeness, purity = get_slice_count_completeness_purity(filenames[0], 'slicerana')
-        print 'Slicer4D & {:.1f} & {:.3f} & {:.3f} \\\\'.format(slice_count, completeness, purity)
+        print('Slicer4D & {:.1f} & {:.3f} & {:.3f} \\\\'.format(slice_count, completeness, purity))
 
     for i, filename in enumerate(filenames):
         slice_count, completeness, purity = get_slice_count_completeness_purity(filename, 'tdslicerana')
@@ -386,12 +386,12 @@ def print_slice_count_completeness_purity(data_sample):
         if i == 0:
             first_column = 'untuned TDSlicer'
         if data_sample == 'fd_genie_nonswap':
-            print '{} & {:.1f} & {:.3f} \\\\'.format(first_column, slice_count, completeness)
+            print('{} & {:.1f} & {:.3f} \\\\'.format(first_column, slice_count, completeness))
         elif data_sample == 'fd_cry':
-            print '{} & {:.1f} & {:.3f} & {:.3f} \\\\'.format(first_column, slice_count, completeness, purity)
+            print('{} & {:.1f} & {:.3f} & {:.3f} \\\\'.format(first_column, slice_count, completeness, purity))
         if i == 0:
-            print '\\hline'
-            print '\\hline'
+            print('\\hline')
+            print('\\hline')
 
 
 def hadd():
@@ -545,8 +545,8 @@ def plot_minprimdist_tolerance_scan(**kwargs):
 
 # plot(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.root',
 #      hist_name='NumSlices', log_y=False, statbox_position='left', x_min=10, x_max=120)
-plot(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.root',
-     hist_name='SliceCompleteness', log_y=True, statbox_position='top')
+# plot(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.root',
+#      hist_name='SliceCompleteness', log_y=True, statbox_position='top')
 
 # plot(root_filename='fd_cry.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.root',
 #      hist_name='SlicePurity', log_y=True, statbox_position='top')
@@ -625,3 +625,6 @@ plot(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDis
 #      hist_name='SlicePurity', log_y=True, statbox_left=True, statbox_position='top')
 # plot(root_filename='fd_cry.ZScale_27.TScale_57.Tolerance_6.MinPrimDist_6.root',
 #      hist_name='SlicePurity', log_y=True, statbox_left=True, statbox_position='top')
+
+# plot(root_filename='SlicerAna_hist.root', hist_name='fNuPurityByRecoHitGeV', log_y=True, statbox_position='top')
+plot(root_filename='SlicerAna_hist.root', hist_name='fNuPurityByRecoHitCount', log_y=True, statbox_position='top')
