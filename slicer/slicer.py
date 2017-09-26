@@ -1,7 +1,7 @@
 from subprocess import call
 from rootalias import *
 
-figure_dir = '/Users/juntinghuang/beamer/20170914_tdslicer_genie_purity/figures/'
+figure_dir = '/Users/juntinghuang/beamer/20170914_tdslicer_purity_containment/figures/'
 data_dir = 'data'
 
 def plot(**kwargs):
@@ -10,6 +10,8 @@ def plot(**kwargs):
     x_max = kwargs.get('x_max')
     log_y = kwargs.get('log_y', False)
     log_x = kwargs.get('log_x', False)
+    x_title = kwargs.get('x_title')
+    y_title = kwargs.get('y_title')
     statbox_position = kwargs.get('statbox_position', 'right')
     root_filename = kwargs.get('root_filename')
 
@@ -28,6 +30,10 @@ def plot(**kwargs):
         h_4d.GetXaxis().SetRangeUser(x_min, x_max)
     if not log_y:
         h_4d.GetYaxis().SetRangeUser(0, get_max_y([h_4d, h_td]) * 1.1)
+    if x_title:
+        h_4d.GetXaxis().SetTitle(x_title)
+    if y_title:
+        h_4d.GetYaxis().SetTitle(y_title)
     h_4d.Draw()
 
     set_h1_style(h_td)
@@ -627,4 +633,13 @@ def plot_minprimdist_tolerance_scan(**kwargs):
 #      hist_name='SlicePurity', log_y=True, statbox_left=True, statbox_position='top')
 
 # plot(root_filename='SlicerAna_hist.root', hist_name='fNuPurityByRecoHitGeV', log_y=True, statbox_position='top')
-plot(root_filename='SlicerAna_hist.root', hist_name='fNuPurityByRecoHitCount', log_y=True, statbox_position='top')
+# plot(root_filename='SlicerAna_hist.root', hist_name='fNuPurityByRecoHitCount', log_y=True, statbox_position='top')
+
+# plot(root_filename='SlicerAna_hist.containment.root', hist_name='fSliceCountWithNu', statbox_position='right', x_min=-0.5, x_max=3, x_title='Number of Slices With Contributions from #nu', y_title='Event Count')
+# plot(root_filename='SlicerAna_hist.containment.root', hist_name='fSliceCountNoNu', statbox_position='left', x_min=9.5, x_max=100.5, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count')
+
+# plot(root_filename='SlicerAna_hist.containment.root', hist_name='fSliceCountWithNuNueContainment', statbox_position='right', x_min=-0.5, x_max=3, x_title='Number of Slices With Contributions from #nu', y_title='Event Count')
+# plot(root_filename='SlicerAna_hist.containment.root', hist_name='fSliceCountNoNuNueContainment', statbox_position='right', x_min=-0.5, x_max=15.5, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count')
+
+# plot(root_filename='SlicerAna_hist.containment.root', hist_name='fSliceCountWithNuNumuContainment', statbox_position='right', x_min=-0.5, x_max=3, x_title='Number of Slices With Contributions from #nu', y_title='Event Count')
+plot(root_filename='SlicerAna_hist.containment.root', hist_name='fSliceCountNoNuNumuContainment', statbox_position='right', x_min=-0.5, x_max=15.5, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count')
