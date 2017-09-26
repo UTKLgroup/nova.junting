@@ -1,0 +1,46 @@
+#include "services.fcl"
+#include "BackTracker.fcl"
+#include "SlicerAna.fcl"
+#include "SliceMergeViews.fcl"
+#include "TDSlicer.fcl"
+#include "CalHit.fcl"
+#include "Slicer4D.fcl"
+#include "TruthSlicer.fcl"
+
+process_name: SlicerAna
+
+services:
+{
+  TFileService: { fileName: "SlicerAna_hist.root" closeFileFast: false }
+  @table::standard_services
+}
+services.BackTracker: @local::standard_backtracker
+
+source:
+{
+  module_type: RootInput
+  maxEvents:  -1
+}
+
+physics:
+{
+  producers:
+  {
+   calhit:           @local::standard_calhit
+   truthslicer:      @local::standard_truthslicer
+   slicer:           @local::standard_slicer4d
+   slicer2d:         @local::standard_td
+   slicermergeviews: @local::standard_slicemergeviews
+  }
+
+  analyzers:
+  { 
+    slicerana: @local::standard_slicerana 
+    tdslicerana: @local::td_slicerana 
+    trueslicerana: @local::true_slicerana
+  }
+
+  reco: [calhit, truthslicer, slicer, slicer2d, slicermergeviews]
+  analyze: [slicerana, tdslicerana, trueslicerana]
+  end_paths: [analyze]
+}
