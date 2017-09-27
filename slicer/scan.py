@@ -16,7 +16,7 @@ njobs = 50
 files_per_job = 1
 nevts = 200
 
-for tolerance in [15]:
+for tolerance in [10]:
     for minprimdist in [4, 5, 6, 7, 8, 9, 10]:
         jobname = '{}_minprimdist_{}_tolerance_{}'.format(data_sample, minprimdist, tolerance)
         fcl_filename = '{}.fcl'.format(jobname)
@@ -41,7 +41,7 @@ for tolerance in [15]:
             f_job.write('-c {}\n'.format(fcl_filename))
             f_job.write('--testrel /nova/app/users/junting/slicer\n')
             f_job.write('--tag development\n')
-            f_job.write('--dest /pnfs/nova/scratch/users/junting\n')
+            f_job.write('--dest /nova/ana/users/junting/slice\n')
             f_job.write('--copyOut\n')
             f_job.write('--histTier {}\n'.format(hist_tier))
             f_job.write('-G nova\n')
