@@ -16,7 +16,7 @@ njobs = 50
 files_per_job = 1
 nevts = 200
 
-for tolerance in [10]:
+for tolerance in [6, 10, 15]:
     for minprimdist in [4, 5, 6, 7, 8, 9, 10]:
         jobname = '{}_minprimdist_{}_tolerance_{}'.format(data_sample, minprimdist, tolerance)
         fcl_filename = '{}.fcl'.format(jobname)
