@@ -2,7 +2,7 @@ from subprocess import call
 from rootalias import *
 
 figure_dir = '/Users/juntinghuang/beamer/20170914_tdslicer_purity_containment/figures/'
-data_dir = 'data'
+data_dir = 'data/20170927'
 
 def plot(**kwargs):
     hist_name = kwargs.get('hist_name', 'NumSlices')
@@ -401,13 +401,15 @@ def print_slice_count_completeness_purity(data_sample):
 
 
 def hadd():
-    for i in range(4, 9):
-        # call('hadd fd_genie_nonswap_Tolerance_10_MinPrimDist_{}.root data/*fd_genie_nonswap_MinPrimDist_{}.root'.format(i, i), shell=True)
-        # call('hadd fd_cry_Tolerance_10_MinPrimDist_{}.root data/*fd_cry_MinPrimDist_{}.root'.format(i, i), shell=True)
-        # call('mv fd_genie_nonswap_Tolerance_10_MinPrimDist_{}.root fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_10.MinPrimDist_{}.root'.format(i, i), shell=True)
-        # call('mv fd_cry_Tolerance_10_MinPrimDist_{}.root fd_cry.ZScale_27.TScale_57.Tolerance_10.MinPrimDist_{}.root'.format(i, i), shell=True)
-        call('hadd fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_{}.root scratch/*fd_genie_nonswap_MinPrimDist_{}.root'.format(i, i), shell=True)
-        call('hadd fd_cry.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_{}.root scratch/*fd_cry_MinPrimDist_{}.root'.format(i, i), shell=True)
+    for tolerance in [6, 10]:
+        for minprimdist in [4, 5, 6, 7, 8, 9, 10]:
+            # call('hadd fd_genie_nonswap_Tolerance_10_MinPrimDist_{}.root data/*fd_genie_nonswap_MinPrimDist_{}.root'.format(i, i), shell=True)
+            # call('hadd fd_cry_Tolerance_10_MinPrimDist_{}.root data/*fd_cry_MinPrimDist_{}.root'.format(i, i), shell=True)
+            # call('mv fd_genie_nonswap_Tolerance_10_MinPrimDist_{}.root fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_10.MinPrimDist_{}.root'.format(i, i), shell=True)
+            # call('mv fd_cry_Tolerance_10_MinPrimDist_{}.root fd_cry.ZScale_27.TScale_57.Tolerance_10.MinPrimDist_{}.root'.format(i, i), shell=True)
+            # call('hadd fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_{}.root scratch/*fd_genie_nonswap_MinPrimDist_{}.root'.format(i, i), shell=True)
+            # call('hadd fd_cry.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_{}.root scratch/*fd_cry_MinPrimDist_{}.root'.format(i, i), shell=True)
+            call('hadd data/20170927/fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_{}.MinPrimDist_{}.root data/20170927.tmp/*fd_genie_nonswap_minprimdist_{}_tolerance_{}.root'.format(tolerance, minprimdist, minprimdist, tolerance), shell=True)
 
 
 def get_minprimdist_scan_graphs(data_sample, tolerance):
@@ -542,6 +544,301 @@ def plot_minprimdist_tolerance_scan(**kwargs):
     raw_input('Press any key to continue.')
 
 
+def get_minprimdist_scan_graphs_genie(data_sample, tolerance):
+    purities = []
+    completenesses = []
+    slice_counts = []
+    minprimdists = map(lambda x: float(x), range(4, 11))
+    for minprimdist in minprimdists:
+        tfile = TFile('{}/{}.ZScale_27.TScale_57.Tolerance_{}.MinPrimDist_{:.0f}.root'.format(data_dir, data_sample, tolerance, minprimdist))
+        h_slicepurity = tfile.Get('tdslicerana/fNuPurityByRecoHitGeV')
+        h_slicecompleteness = tfile.Get('tdslicerana/fNuCompleteness')
+        h_numslices = tfile.Get('tdslicerana/fSliceCountWithNuNueContainment')
+
+        purities.append(h_slicepurity.GetMean())
+        completenesses.append(h_slicecompleteness.GetMean())
+        print '\\texttt{{MinPrimDist}} = {:.0f} & {:.4f} & {:.4f} & {:.4f} \\\\'.format(minprimdist,
+                                                                                        h_numslices.GetBinContent(1) / h_numslices.Integral(),
+                                                                                        h_numslices.GetBinContent(2) / h_numslices.Integral(),
+                                                                                        h_numslices.GetBinContent(3) / h_numslices.Integral())
+
+        slice_counts.append(h_numslices.GetBinContent(h_numslices.FindBin(1.0)) / h_numslices.Integral())
+
+    gr_purity = TGraph(len(minprimdists), np.array(minprimdists), np.array(purities))
+    gr_completeness = TGraph(len(minprimdists), np.array(minprimdists), np.array(completenesses))
+    gr_slice_count = TGraph(len(minprimdists), np.array(minprimdists), np.array(slice_counts))
+
+    return gr_purity, gr_completeness, gr_slice_count
+
+
+def plot_minprimdist_tolerance_scan_genie(**kwargs):
+    data_sample = kwargs.get('data_sample', 'fd_cry')
+    y_min = kwargs.get('y_min', 0.94)
+    y_max = kwargs.get('y_max', 1.0)
+    y_axis_title_offset = kwargs.get('y_axis_title_offset')
+
+    gr_purity, gr_completeness, gr_slice_count = get_minprimdist_scan_graphs_genie(data_sample, 10)
+    gr_purity_6, gr_completeness_6, gr_slice_count_6 = get_minprimdist_scan_graphs_genie(data_sample, 6)
+    gr_purity_15, gr_completeness_15, gr_slice_count_15 = get_minprimdist_scan_graphs_genie(data_sample, 15)
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetRightMargin(0.15)
+    set_graph_style(gr_completeness)
+    gr_completeness.GetYaxis().SetRangeUser(y_min, y_max)
+    gr_completeness.GetYaxis().SetTitle('Completeness or Purity')
+    gr_completeness.GetXaxis().SetTitle('MinPrimDist')
+    if y_axis_title_offset:
+        gr_completeness.GetYaxis().SetTitleOffset(y_axis_title_offset)
+    gr_completeness.SetLineColor(kRed)
+    gr_completeness.SetMarkerColor(gr_completeness.GetLineColor())
+    gr_completeness.SetLineStyle(2)
+    gr_completeness.Draw('AL')
+
+    set_graph_style(gr_completeness_6)
+    gr_completeness_6.SetLineStyle(10)
+    gr_completeness_6.SetLineColor(gr_completeness.GetLineColor())
+    gr_completeness_6.SetLineWidth(gr_completeness.GetLineWidth())
+    gr_completeness_6.Draw('L,same')
+
+    set_graph_style(gr_completeness_15)
+    gr_completeness_15.SetLineColor(gr_completeness.GetLineColor())
+    gr_completeness_15.SetLineWidth(gr_completeness.GetLineWidth())
+    gr_completeness_15.Draw('L,same')
+
+
+    set_graph_style(gr_purity)
+    gr_purity.SetLineColor(kBlue)
+    gr_purity.SetMarkerColor(gr_purity.GetLineColor())
+    gr_purity.SetLineStyle(2)
+    gr_purity.Draw('L,sames')
+
+    set_graph_style(gr_purity_6)
+    gr_purity_6.SetLineStyle(10)
+    gr_purity_6.SetLineColor(gr_purity.GetLineColor())
+    gr_purity_6.SetLineWidth(gr_purity.GetLineWidth())
+    gr_purity_6.Draw('L,same')
+
+    set_graph_style(gr_purity_15)
+    gr_purity_15.SetLineColor(gr_purity.GetLineColor())
+    gr_purity_15.SetLineWidth(gr_purity.GetLineWidth())
+    gr_purity_15.Draw('L,same')
+
+    c1.cd();
+    tpad = TPad('tpad', 'tpad', 0, 0, 1, 1)
+    tpad.SetFillStyle(4000);
+    tpad.SetFrameFillStyle(4000)
+    tpad.Draw()
+    tpad.cd()
+    set_margin()
+    gPad.SetRightMargin(0.15)
+
+    set_graph_style(gr_slice_count)
+    gr_slice_count.GetYaxis().SetTitle('Fraction of Events with One #nu-Slice ')
+    gr_slice_count.GetYaxis().SetTitleOffset(1.3)
+    gr_slice_count.GetYaxis().SetRangeUser(0.3, 0.6)
+    gr_slice_count.SetLineStyle(2)
+    gr_slice_count.Draw('AL,Y+')
+
+    set_graph_style(gr_slice_count_6)
+    gr_slice_count_6.SetLineStyle(10)
+    gr_slice_count_6.Draw('L,same')
+
+    set_graph_style(gr_slice_count_15)
+    gr_slice_count_15.Draw('L,same')
+
+    lg1 = TLegend(0.26, 0.3, 0.72, 0.41)
+    set_legend_style(lg1)
+    lg1.SetTextSize(20)
+    lg1.SetMargin(0.2)
+    lg1.AddEntry(gr_slice_count_15, 'Event fraction with one #nu-slice', 'l')
+    lg1.AddEntry(gr_completeness_15, 'Completeness', 'l')
+    lg1.AddEntry(gr_purity_15, 'Purity', 'l')
+
+    lg2 = TLegend(0.26, 0.18, 0.72, 0.29)
+    set_legend_style(lg2)
+    lg2.SetTextSize(20)
+    lg2.SetMargin(0.2)
+    lg2.AddEntry(gr_slice_count_6, 'Tolerance = 6', 'l')
+    lg2.AddEntry(gr_slice_count, 'Tolerance = 10', 'l')
+    lg2.AddEntry(gr_slice_count_15, 'Tolerance = 15', 'l')
+    lg2.Draw()
+    lg1.Draw()
+
+    c1.cd()
+    c1.Update()
+    c1.SaveAs('{}/plot_minprimdist_tolerance_scan_genie.{}.pdf'.format(figure_dir, data_sample))
+    raw_input('Press any key to continue.')
+
+
+def plot_true_nu_count(**kwargs):
+    # hist_name = kwargs.get('hist_name', 'NumSlices')
+    # x_min = kwargs.get('x_min')
+    # x_max = kwargs.get('x_max')
+    # log_y = kwargs.get('log_y', False)
+    # log_x = kwargs.get('log_x', False)
+    # x_title = kwargs.get('x_title')
+    # y_title = kwargs.get('y_title')
+    # statbox_position = kwargs.get('statbox_position', 'right')
+
+    hist_name = 'NumNu'
+    root_filename = kwargs.get('root_filename')
+
+    f_slicer = TFile('{}/{}'.format(data_dir, root_filename))
+    h_4d = f_slicer.Get('slicerana/{}'.format(hist_name))
+    # h_td = f_slicer.Get('tdslicerana/{}'.format(hist_name))
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    gStyle.SetOptStat('emr')
+    set_margin()
+    gPad.SetLogy()
+    # gPad.SetLogy(log_y)
+    # gPad.SetLogx(log_x)
+
+    set_h1_style(h_4d)
+    # h_4d.SetName('slicer4d')
+    h_4d.SetName('')
+    # if x_min and x_max:
+    h_4d.GetXaxis().SetRangeUser(0, 2)
+    # if not log_y:
+    #     h_4d.GetYaxis().SetRangeUser(0, get_max_y([h_4d, h_td]) * 1.1)
+    # if x_title:
+    #     h_4d.GetXaxis().SetTitle(x_title)
+    # if y_title:
+    #     h_4d.GetYaxis().SetTitle(y_title)
+    h_4d.Draw()
+
+    # set_h1_style(h_td)
+    # h_td.SetName('tdslicer')
+    # h_td.SetLineColor(kRed)
+    # h_td.Draw('sames')
+
+    c1.Update()
+    draw_statbox(h_4d)
+    # draw_statboxes(h_td, h_4d, position=statbox_position)
+
+    c1.Update()
+    c1.SaveAs('{}/plot_true_nu_count.{}.pdf'.format(figure_dir, root_filename))
+    raw_input('Press any key to continue.')
+
+
+def get_slice_count_nu_no_nu_genie(data_sample, tolerance):
+    slice_nu_counts = []
+    slice_nonu_counts = []
+    slice_ratios = []
+    minprimdists = map(lambda x: float(x), range(4, 11))
+    for minprimdist in minprimdists:
+        tfile = TFile('{}/{}.ZScale_27.TScale_57.Tolerance_{}.MinPrimDist_{:.0f}.root'.format(data_dir, data_sample, tolerance, minprimdist))
+        h_nu = tfile.Get('tdslicerana/fSliceCountWithNuNueContainment')
+        h_nonu = tfile.Get('tdslicerana/fSliceCountNoNuNueContainment')
+        slice_nu_count = h_nu.GetBinContent(h_nu.FindBin(1.0)) / h_nu.Integral()
+        slice_nonu_count = h_nonu.GetMean()
+        slice_ratio = slice_nu_count / slice_nonu_count
+        slice_nu_counts.append(slice_nu_count)
+        slice_nonu_counts.append(slice_nonu_count)
+        slice_ratios.append(slice_ratio)
+
+    gr_slice_nu_count = TGraph(len(minprimdists), np.array(minprimdists), np.array(slice_nu_counts))
+    gr_slice_nonu_count = TGraph(len(minprimdists), np.array(minprimdists), np.array(slice_nonu_counts))
+    gr_slice_ratio = TGraph(len(minprimdists), np.array(minprimdists), np.array(slice_ratios))
+
+    return gr_slice_nu_count, gr_slice_nonu_count, gr_slice_ratio
+
+
+def plot_slice_count_nu_no_nu_genie(**kwargs):
+    data_sample = kwargs.get('data_sample', 'fd_cry')
+    gr_slice_nu_count, gr_slice_nonu_count, gr_slice_ratio = get_slice_count_nu_no_nu_genie(data_sample, 15)
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetRightMargin(0.15)
+    set_graph_style(gr_slice_nu_count)
+    gr_slice_nu_count.GetYaxis().SetTitle('Fraction of Events with One #nu-slice')
+    gr_slice_nu_count.GetXaxis().SetTitle('MinPrimDist')
+    gr_slice_nu_count.GetYaxis().SetTitleOffset(1.3)
+    gr_slice_nu_count.SetLineColor(kRed)
+    gr_slice_nu_count.SetMarkerColor(gr_slice_nu_count.GetLineColor())
+    gr_slice_nu_count.Draw('AL')
+
+    c1.cd();
+    tpad = TPad('tpad', 'tpad', 0, 0, 1, 1)
+    tpad.SetFillStyle(4000);
+    tpad.SetFrameFillStyle(4000)
+    tpad.Draw()
+    tpad.cd()
+    set_margin()
+    gPad.SetRightMargin(0.15)
+    set_graph_style(gr_slice_nonu_count)
+    gr_slice_nonu_count.GetYaxis().SetTitle('Average Cosmic-slice Count')
+    gr_slice_nonu_count.GetYaxis().SetTitleOffset(1.3)
+    gr_slice_nonu_count.Draw('AL,Y+')
+    lg1 = TLegend(0.18, 0.18, 0.64, 0.28)
+    set_legend_style(lg1)
+    lg1.SetTextSize(20)
+    lg1.SetMargin(0.2)
+    lg1.AddEntry(gr_slice_nu_count, 'fraction of events with one #nu-slice', 'l')
+    lg1.AddEntry(gr_slice_nonu_count, 'average cosmic-slice count', 'l')
+    lg1.Draw()
+    c1.cd()
+    c1.Update()
+    c1.SaveAs('{}/plot_slice_count_nu_no_nu_genie.{}.pdf'.format(figure_dir, data_sample))
+
+    c2 = TCanvas('c2', 'c2', 800, 600)
+    set_margin()
+    gPad.SetRightMargin(0.15)
+    gPad.SetGrid()
+    set_graph_style(gr_slice_ratio)
+    gr_slice_ratio.GetYaxis().SetTitle('Ratio of signal to noise')
+    gr_slice_ratio.GetXaxis().SetTitle('MinPrimDist')
+    gr_slice_ratio.GetYaxis().SetTitleOffset(1.3)
+    gr_slice_ratio.SetMarkerColor(gr_slice_ratio.GetLineColor())
+    gr_slice_ratio.Draw('AL')
+    c2.cd()
+    c2.Update()
+    c2.SaveAs('{}/plot_slice_count_nu_no_nu_genie.ratio.{}.pdf'.format(figure_dir, data_sample))
+
+    raw_input('Press any key to continue.')
+
+def print_slicer4d_vs_tdslicer_genie():
+    data_sample = 'fd_genie_nonswap'
+
+    tfile_untuned = TFile('{}/{}.ZScale_100.TScale_10.Tolerance_6.MinPrimDist_4.root'.format(data_dir, data_sample))
+    h_slicepurity_td_untuned = tfile_untuned.Get('tdslicerana/fNuPurityByRecoHitGeV')
+    h_slicecompleteness_td_untuned = tfile_untuned.Get('tdslicerana/fNuCompleteness')
+    h_slicecount_withnu_td_untuned = tfile_untuned.Get('tdslicerana/fSliceCountWithNuNueContainment')
+    h_slicecount_nonu_td_untuned = tfile_untuned.Get('tdslicerana/fSliceCountNoNuNueContainment')
+
+    tfile = TFile('{}/{}.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.root'.format(data_dir, data_sample))
+    h_slicepurity_td = tfile.Get('tdslicerana/fNuPurityByRecoHitGeV')
+    h_slicecompleteness_td = tfile.Get('tdslicerana/fNuCompleteness')
+    h_slicecount_withnu_td = tfile.Get('tdslicerana/fSliceCountWithNuNueContainment')
+    h_slicecount_nonu_td = tfile.Get('tdslicerana/fSliceCountNoNuNueContainment')
+
+    h_slicepurity_4d = tfile.Get('slicerana/fNuPurityByRecoHitGeV')
+    h_slicecompleteness_4d = tfile.Get('slicerana/fNuCompleteness')
+    h_slicecount_withnu_4d = tfile.Get('slicerana/fSliceCountWithNuNueContainment')
+    h_slicecount_nonu_4d = tfile.Get('slicerana/fSliceCountNoNuNueContainment')
+
+    signal_4d = h_slicecount_withnu_4d.GetBinContent(h_slicecount_withnu_4d.FindBin(1.0)) / h_slicecount_withnu_4d.Integral()
+    signal_td = h_slicecount_withnu_td.GetBinContent(h_slicecount_withnu_td.FindBin(1.0)) / h_slicecount_withnu_td.Integral()
+    signal_td_untuned = h_slicecount_withnu_td_untuned.GetBinContent(h_slicecount_withnu_td_untuned.FindBin(1.0)) / h_slicecount_withnu_td_untuned.Integral()
+
+    noise_4d = h_slicecount_nonu_4d.GetMean()
+    noise_td = h_slicecount_nonu_td.GetMean()
+    noise_td_untuned = h_slicecount_nonu_td_untuned.GetMean()
+
+    print 'parameter & Slicer4D & untuned TDSlicer & tuned TDSlicer \\\\'
+    print '\\hline'
+    print '\\hline'
+    print 'purity & {:.3f} & {:.3f} & {:.3f} \\\\'.format(h_slicepurity_4d.GetMean(), h_slicepurity_td_untuned.GetMean(), h_slicepurity_td.GetMean())
+    print 'completeness & {:.3f} & {:.3f} & {:.3f} \\\\'.format(h_slicecompleteness_4d.GetMean(), h_slicecompleteness_td_untuned.GetMean(), h_slicecompleteness_td.GetMean())
+    print '\\hline'
+    print '\\hline'
+    print 'signal strength & {:.3f} & {:.3f} & {:.3f} \\\\'.format(signal_4d, signal_td_untuned, signal_td)
+    print 'noise strength & {:.3f} & {:.3f} & {:.3f} \\\\'.format(noise_4d, noise_td_untuned, noise_td)
+    print 'signal-to-noise ratio & {:.3f} & {:.3f} & {:.3f}'.format(signal_4d / noise_4d, signal_td_untuned / noise_td_untuned, signal_td / noise_td)
+
+
 # plot(root_filename='fd_cry.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.root',
 #      hist_name='SlicePurity', log_y=True, statbox_position='top')
 # plot(root_filename='fd_cry.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.root',
@@ -632,14 +929,26 @@ def plot_minprimdist_tolerance_scan(**kwargs):
 # plot(root_filename='fd_cry.ZScale_27.TScale_57.Tolerance_6.MinPrimDist_6.root',
 #      hist_name='SlicePurity', log_y=True, statbox_left=True, statbox_position='top')
 
-# plot(root_filename='SlicerAna_hist.root', hist_name='fNuPurityByRecoHitGeV', log_y=True, statbox_position='top')
-# plot(root_filename='SlicerAna_hist.root', hist_name='fNuPurityByRecoHitCount', log_y=True, statbox_position='top')
+# plot(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.root', hist_name='fNuPurityByRecoHitGeV', log_y=True, statbox_position='top')
+# plot(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.root', hist_name='fNuPurityByRecoHitCount', log_y=True, statbox_position='top')
 
-# plot(root_filename='SlicerAna_hist.containment.root', hist_name='fSliceCountWithNu', statbox_position='right', x_min=-0.5, x_max=3, x_title='Number of Slices With Contributions from #nu', y_title='Event Count')
-# plot(root_filename='SlicerAna_hist.containment.root', hist_name='fSliceCountNoNu', statbox_position='left', x_min=9.5, x_max=100.5, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count')
+# plot(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.root', hist_name='fSliceCountWithNu', statbox_position='right', x_min=-0.5, x_max=3, x_title='Number of Slices With Contributions from #nu', y_title='Event Count')
+# plot(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.root', hist_name='fSliceCountNoNu', statbox_position='left', x_min=9.5, x_max=100.5, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count')
 
-# plot(root_filename='SlicerAna_hist.containment.root', hist_name='fSliceCountWithNuNueContainment', statbox_position='right', x_min=-0.5, x_max=3, x_title='Number of Slices With Contributions from #nu', y_title='Event Count')
-# plot(root_filename='SlicerAna_hist.containment.root', hist_name='fSliceCountNoNuNueContainment', statbox_position='right', x_min=-0.5, x_max=15.5, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count')
+# plot(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.root', hist_name='fSliceCountWithNuNueContainment', statbox_position='right', x_min=-0.5, x_max=3, x_title='Number of Slices With Contributions from #nu', y_title='Event Count')
+# plot(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.root', hist_name='fSliceCountNoNuNueContainment', statbox_position='right', x_min=-0.5, x_max=15.5, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count')
 
-# plot(root_filename='SlicerAna_hist.containment.root', hist_name='fSliceCountWithNuNumuContainment', statbox_position='right', x_min=-0.5, x_max=3, x_title='Number of Slices With Contributions from #nu', y_title='Event Count')
-plot(root_filename='SlicerAna_hist.containment.root', hist_name='fSliceCountNoNuNumuContainment', statbox_position='right', x_min=-0.5, x_max=15.5, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count')
+# plot(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.root', hist_name='fSliceCountWithNuNumuContainment', statbox_position='right', x_min=-0.5, x_max=3, x_title='Number of Slices With Contributions from #nu', y_title='Event Count')
+# plot(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.root', hist_name='fSliceCountNoNuNumuContainment', statbox_position='right', x_min=-0.5, x_max=15.5, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count')
+
+# hadd()
+# plot_minprimdist_tolerance_scan_genie(data_sample='fd_genie_nonswap', y_axis_title_offset=1.3)
+# plot_true_nu_count(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.root')
+# plot_slice_count_nu_no_nu_genie(data_sample='fd_genie_nonswap')
+# print_slicer4d_vs_tdslicer_genie()
+
+# plot(root_filename='fd_genie_nonswap.ZScale_100.TScale_10.Tolerance_6.MinPrimDist_4.root', hist_name='fSliceCountNoNu', statbox_position='left', x_min=-0.5, x_max=100.5, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count')
+# plot(root_filename='fd_genie_nonswap.ZScale_100.TScale_10.Tolerance_6.MinPrimDist_4.root', hist_name='fSliceCountNoNuNueContainment', statbox_position='right', x_min=-0.5, x_max=20.5, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count')
+
+# plot(root_filename='fd_genie_nonswap.ZScale_100.TScale_10.Tolerance_6.MinPrimDist_4.root', hist_name='fSliceCountWithNu', statbox_position='right', x_min=-0.5, x_max=3.5, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count')
+plot(root_filename='fd_genie_nonswap.ZScale_100.TScale_10.Tolerance_6.MinPrimDist_4.root', hist_name='fSliceCountWithNuNueContainment', statbox_position='right', x_min=-0.5, x_max=3.5, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count')
