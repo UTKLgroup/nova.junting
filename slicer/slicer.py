@@ -12,12 +12,17 @@ def plot(**kwargs):
     log_x = kwargs.get('log_x', False)
     x_title = kwargs.get('x_title')
     y_title = kwargs.get('y_title')
+    rebin = kwargs.get('rebin')
     statbox_position = kwargs.get('statbox_position', 'right')
     root_filename = kwargs.get('root_filename')
 
     f_slicer = TFile('{}/{}'.format(data_dir, root_filename))
     h_4d = f_slicer.Get('slicerana/{}'.format(hist_name))
     h_td = f_slicer.Get('tdslicerana/{}'.format(hist_name))
+
+    if rebin:
+        h_4d.Rebin(rebin)
+        h_td.Rebin(rebin)
 
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
@@ -28,6 +33,7 @@ def plot(**kwargs):
     h_4d.SetName('slicer4d')
     if x_min and x_max:
         h_4d.GetXaxis().SetRangeUser(x_min, x_max)
+        h_td.GetXaxis().SetRangeUser(x_min, x_max)
     if not log_y:
         h_4d.GetYaxis().SetRangeUser(0, get_max_y([h_4d, h_td]) * 1.1)
     if x_title:
@@ -46,7 +52,7 @@ def plot(**kwargs):
 
     c1.Update()
     c1.SaveAs('{}/plot.{}.{}.pdf'.format(figure_dir, root_filename, hist_name))
-    raw_input('Press any key to continue.')
+    input('Press any key to continue.')
 
 
 def plot_slice_matching(tree_name, root_filename):
@@ -839,6 +845,94 @@ def print_slicer4d_vs_tdslicer_genie():
     print 'signal-to-noise ratio & {:.3f} & {:.3f} & {:.3f}'.format(signal_4d / noise_4d, signal_td_untuned / noise_td_untuned, signal_td / noise_td)
 
 
+def plot_fls_hit(filename):
+    f_slicer = TFile('{}/{}'.format(data_dir, filename))
+    h_fls_hit_count = f_slicer.Get('slicerana/fFlsHitCount')
+    h_fls_hit_gev = f_slicer.Get('slicerana/fFlsHitGeV')
+
+    gStyle.SetOptStat('emr')
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetRightMargin(0.15)
+    set_h1_style(h_fls_hit_count)
+    h_fls_hit_count.Rebin(5)
+    h_fls_hit_count.GetXaxis().SetTitle('FLS Hit Count')
+    h_fls_hit_count.GetYaxis().SetTitle('Event Count')
+    # h_fls_hit_count.GetXaxis().SetRangeUser(0, 500)
+    h_fls_hit_count.Draw()
+    c1.Update()
+    draw_statbox(h_fls_hit_count)
+    c1.Update()
+    c1.SaveAs('{}/plot_fls_hit.h_fls_hit_count.pdf'.format(figure_dir))
+
+    # c2 = TCanvas('c2', 'c2', 800, 600)
+    # set_margin()
+    # gPad.SetRightMargin(0.15)
+    # set_h1_style(h_fls_hit_gev)
+    # h_fls_hit_gev.Rebin(5)
+    # h_fls_hit_gev.GetXaxis().SetTitle('FLS Hit Energy Deposition (Gev)')
+    # h_fls_hit_gev.GetYaxis().SetTitle('Event Count')
+    # h_fls_hit_gev.GetXaxis().SetRangeUser(0, 500)
+    # h_fls_hit_gev.Draw('colz')
+    # c2.Update()
+    # draw_statbox(h_fls_hit_gev)
+    # c2.Update()
+    # c2.SaveAs('{}/plot_fls_hit.h_fls_hit_gev.pdf'.format(figure_dir))
+
+    input('Press any key to continue.')
+
+
+def plot_fls_hit_xy(filename):
+    f_slicer = TFile('{}/{}'.format(data_dir, filename))
+    h_fls_hit_count_xy = f_slicer.Get('slicerana/fFlsHitCountXY')
+    h_fls_hit_gev_xy = f_slicer.Get('slicerana/fFlsHitGeVXY')
+
+    print('h_fls_hit_count_xy.GetEntries() = ', h_fls_hit_count_xy.GetEntries())
+    print('h_fls_hit_count_xy.Integral(1, 4, 1, 4) = ', h_fls_hit_count_xy.Integral(1, 4, 1, 4))
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gStyle.SetOptStat(0)
+    gPad.SetRightMargin(0.15)
+    gPad.SetLogz()
+
+    set_h2_color_style()
+    set_h2_style(h_fls_hit_count_xy)
+    # h_fls_hit_count_xy.Rebin2D(2, 2)
+    h_fls_hit_count_xy.GetXaxis().SetTitle('FLS Hit Count in X View')
+    h_fls_hit_count_xy.GetYaxis().SetTitle('FLS Hit Count in Y View')
+    h_fls_hit_count_xy.GetXaxis().SetRangeUser(0, 20)
+    h_fls_hit_count_xy.GetYaxis().SetRangeUser(0, 20)
+    h_fls_hit_count_xy.Draw('colz')
+    c1.Update()
+    c1.SaveAs('{}/plot_fls_hit_xy.h_fls_hit_count_xy.pdf'.format(figure_dir))
+
+    # c2 = TCanvas('c2', 'c2', 800, 600)
+    # set_margin()
+    # gStyle.SetOptStat(0)
+    # gPad.SetRightMargin(0.15)
+    # set_h2_style(h_fls_hit_gev_xy)
+    # h_fls_hit_gev_xy.Rebin2D(5, 5)
+    # h_fls_hit_gev_xy.GetXaxis().SetTitle('FLS Hit Energy Deposition in X View (GeV)')
+    # h_fls_hit_gev_xy.GetYaxis().SetTitle('FLS Hit Energy Deposition in Y View (GeV)')
+    # h_fls_hit_gev_xy.GetXaxis().SetRangeUser(0, 3)
+    # h_fls_hit_gev_xy.GetYaxis().SetRangeUser(0, 3)
+    # h_fls_hit_gev_xy.Draw('colz')
+    # c2.Update()
+    # c2.SaveAs('{}/plot_fls_hit_xy.h_fls_hit_gev_xy.pdf'.format(figure_dir))
+
+    input('Press any key to continue.')
+
+
+# gStyle.SetOptStat('emr')
+# plot(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.FLS.root', hist_name='fSliceCountWithNuNueContainment0GeV', statbox_position='right', x_min=-0.1, x_max=5, x_title='Total FLS Hit Energy Deposition (GeV)', y_title='Event Count')
+# plot(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.FLS.root', hist_name='fSliceCountWithNuNueContainment1GeV', statbox_position='right', x_min=-0.1, x_max=5, x_title='Total FLS Hit Energy Deposition (GeV)', y_title='Event Count')
+# plot(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.FLS.root', hist_name='fSliceCountWithNuNueContainment', statbox_position='right', x_min=-0.5, x_max=3, x_title='Number of Slices With Contributions from #nu', y_title='Event Count')
+# plot(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.FLS.root', hist_name='fSliceCountWithNuNumuContainment', statbox_position='right', x_min=-0.5, x_max=3, x_title='Number of Slices With Contributions from #nu', y_title='Event Count')
+# plot_fls_hit('fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.FLS.root')
+# plot_fls_hit_xy('fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.FLS.root')
+
+
 # plot(root_filename='fd_cry.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.root',
 #      hist_name='SlicePurity', log_y=True, statbox_position='top')
 # plot(root_filename='fd_cry.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.root',
@@ -951,4 +1045,6 @@ def print_slicer4d_vs_tdslicer_genie():
 # plot(root_filename='fd_genie_nonswap.ZScale_100.TScale_10.Tolerance_6.MinPrimDist_4.root', hist_name='fSliceCountNoNuNueContainment', statbox_position='right', x_min=-0.5, x_max=20.5, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count')
 
 # plot(root_filename='fd_genie_nonswap.ZScale_100.TScale_10.Tolerance_6.MinPrimDist_4.root', hist_name='fSliceCountWithNu', statbox_position='right', x_min=-0.5, x_max=3.5, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count')
-plot(root_filename='fd_genie_nonswap.ZScale_100.TScale_10.Tolerance_6.MinPrimDist_4.root', hist_name='fSliceCountWithNuNueContainment', statbox_position='right', x_min=-0.5, x_max=3.5, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count')
+# plot(root_filename='fd_genie_nonswap.ZScale_100.TScale_10.Tolerance_6.MinPrimDist_4.root', hist_name='fSliceCountWithNuNueContainment', statbox_position='right', x_min=-0.5, x_max=3.5, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count')
+# plot(root_filename='SlicerAna_hist.containment.root', hist_name='fSliceCountWithNuNumuContainment', statbox_position='right', x_min=-0.5, x_max=3, x_title='Number of Slices With Contributions from #nu', y_title='Event Count')
+# plot(root_filename='SlicerAna_hist.containment.root', hist_name='fSliceCountNoNuNumuContainment', statbox_position='right', x_min=-0.5, x_max=15.5, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count')

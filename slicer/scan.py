@@ -12,13 +12,15 @@ def get_defname(data_sample):
 # data_sample = 'fd_cry'
 data_sample = 'fd_genie_nonswap'
 defname = get_defname(data_sample)
-njobs = 50
+njobs = 100
 files_per_job = 1
-nevts = 200
+nevts = 100
 
-for tolerance in [10]:
-    for minprimdist in [4, 5, 6, 7, 8, 9, 10]:
-        jobname = '{}_minprimdist_{}_tolerance_{}'.format(data_sample, minprimdist, tolerance)
+# for tolerance in [15]:
+for tolerance in [6]:
+    # for minprimdist in [8]:
+    for minprimdist in [4]:
+        jobname = '{}_zscale_100_tscale_10_minprimdist_{}_tolerance_{}'.format(data_sample, minprimdist, tolerance)
         fcl_filename = '{}.fcl'.format(jobname)
         job_config_filename = '{}.config'.format(jobname)
         hist_tier = jobname
@@ -28,7 +30,9 @@ for tolerance in [10]:
                 for row in f_template:
                     f_fcl.write(row)
             f_fcl.write('physics.producers.slicer2d.fd.MinPrimDist: {}\n'.format(minprimdist))
-            f_fcl.write('physics.producers.slicermergeviews.fd.Tolerance: {}'.format(tolerance))
+            f_fcl.write('physics.producers.slicermergeviews.fd.Tolerance: {}\n'.format(tolerance))
+            f_fcl.write('physics.producers.slicermergeviews.fd.ZScale: 100\n')
+            f_fcl.write('physics.producers.slicermergeviews.fd.TScale: 10')
 
         with open(job_config_filename, 'w') as f_job:
             f_job.write('--jobname {}\n'.format(jobname))
