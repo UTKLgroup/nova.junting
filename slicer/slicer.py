@@ -1,8 +1,8 @@
 from subprocess import call
 from rootalias import *
 
-figure_dir = '/Users/juntinghuang/beamer/20170914_tdslicer_purity_containment/figures/'
-data_dir = 'data/20170927'
+figure_dir = '/Users/juntinghuang/beamer/20171022_tdslicer_nd_genie/figures'
+data_dir = 'data/nd_genie'
 
 def plot(**kwargs):
     hist_name = kwargs.get('hist_name', 'NumSlices')
@@ -563,10 +563,10 @@ def get_minprimdist_scan_graphs_genie(data_sample, tolerance):
 
         purities.append(h_slicepurity.GetMean())
         completenesses.append(h_slicecompleteness.GetMean())
-        print '\\texttt{{MinPrimDist}} = {:.0f} & {:.4f} & {:.4f} & {:.4f} \\\\'.format(minprimdist,
+        print('\\texttt{{MinPrimDist}} = {:.0f} & {:.4f} & {:.4f} & {:.4f} \\\\'.format(minprimdist,
                                                                                         h_numslices.GetBinContent(1) / h_numslices.Integral(),
                                                                                         h_numslices.GetBinContent(2) / h_numslices.Integral(),
-                                                                                        h_numslices.GetBinContent(3) / h_numslices.Integral())
+                                                                                        h_numslices.GetBinContent(3) / h_numslices.Integral()))
 
         slice_counts.append(h_numslices.GetBinContent(h_numslices.FindBin(1.0)) / h_numslices.Integral())
 
@@ -833,16 +833,16 @@ def print_slicer4d_vs_tdslicer_genie():
     noise_td = h_slicecount_nonu_td.GetMean()
     noise_td_untuned = h_slicecount_nonu_td_untuned.GetMean()
 
-    print 'parameter & Slicer4D & untuned TDSlicer & tuned TDSlicer \\\\'
-    print '\\hline'
-    print '\\hline'
-    print 'purity & {:.3f} & {:.3f} & {:.3f} \\\\'.format(h_slicepurity_4d.GetMean(), h_slicepurity_td_untuned.GetMean(), h_slicepurity_td.GetMean())
-    print 'completeness & {:.3f} & {:.3f} & {:.3f} \\\\'.format(h_slicecompleteness_4d.GetMean(), h_slicecompleteness_td_untuned.GetMean(), h_slicecompleteness_td.GetMean())
-    print '\\hline'
-    print '\\hline'
-    print 'signal strength & {:.3f} & {:.3f} & {:.3f} \\\\'.format(signal_4d, signal_td_untuned, signal_td)
-    print 'noise strength & {:.3f} & {:.3f} & {:.3f} \\\\'.format(noise_4d, noise_td_untuned, noise_td)
-    print 'signal-to-noise ratio & {:.3f} & {:.3f} & {:.3f}'.format(signal_4d / noise_4d, signal_td_untuned / noise_td_untuned, signal_td / noise_td)
+    print('parameter & Slicer4D & untuned TDSlicer & tuned TDSlicer \\\\')
+    print('\\hline')
+    print('\\hline')
+    print('purity & {:.3f} & {:.3f} & {:.3f} \\\\'.format(h_slicepurity_4d.GetMean(), h_slicepurity_td_untuned.GetMean(), h_slicepurity_td.GetMean()))
+    print('completeness & {:.3f} & {:.3f} & {:.3f} \\\\'.format(h_slicecompleteness_4d.GetMean(), h_slicecompleteness_td_untuned.GetMean(), h_slicecompleteness_td.GetMean()))
+    print('\\hline')
+    print('\\hline')
+    print('signal strength & {:.3f} & {:.3f} & {:.3f} \\\\'.format(signal_4d, signal_td_untuned, signal_td))
+    print('noise strength & {:.3f} & {:.3f} & {:.3f} \\\\'.format(noise_4d, noise_td_untuned, noise_td))
+    print('signal-to-noise ratio & {:.3f} & {:.3f} & {:.3f}'.format(signal_4d / noise_4d, signal_td_untuned / noise_td_untuned, signal_td / noise_td))
 
 
 def plot_fls_hit(filename):
@@ -1048,3 +1048,6 @@ def plot_fls_hit_xy(filename):
 # plot(root_filename='fd_genie_nonswap.ZScale_100.TScale_10.Tolerance_6.MinPrimDist_4.root', hist_name='fSliceCountWithNuNueContainment', statbox_position='right', x_min=-0.5, x_max=3.5, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count')
 # plot(root_filename='SlicerAna_hist.containment.root', hist_name='fSliceCountWithNuNumuContainment', statbox_position='right', x_min=-0.5, x_max=3, x_title='Number of Slices With Contributions from #nu', y_title='Event Count')
 # plot(root_filename='SlicerAna_hist.containment.root', hist_name='fSliceCountNoNuNumuContainment', statbox_position='right', x_min=-0.5, x_max=15.5, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count')
+
+# 20171022_tdslicer_nd_genie
+plot(root_filename='nd_genie.root', hist_name='SlicePurity', statbox_position='right')
