@@ -54,4 +54,47 @@ def scan_fd():
             call('../submit_nova_art.py -f {}'.format(job_config_filename), shell=True)
 
 
-scan_fd()
+def scan_nd():
+    data_sample = 'fd_genie_nonswap'
+    defname = get_defname(data_sample)
+    njobs = 100
+    files_per_job = 1
+    nevts = 100
+
+    for tolerance in [6]:
+        for minprimdist in [4]:
+            jobname = '{}_zscale_100_tscale_10_minprimdist_{}_tolerance_{}'.format(data_sample, minprimdist, tolerance)
+            fcl_filename = '{}.fcl'.format(jobname)
+            job_config_filename = '{}.config'.format(jobname)
+            hist_tier = jobname
+
+            with open('../job/{}'.format(fcl_filename), 'w') as f_fcl:
+                with open('../RecoValidation/sliceranajob.template.fcl') as f_template:
+                    for row in f_template:
+                        f_fcl.write(row)
+                f_fcl.write('physics.producers.slicer2d.fd.MinPrimDist: {}\n'.format(minprimdist))
+                f_fcl.write('physics.producers.slicermergeviews.fd.Tolerance: {}\n'.format(tolerance))
+                f_fcl.write('physics.producers.slicermergeviews.fd.ZScale: 100\n')
+                f_fcl.write('physics.producers.slicermergeviews.fd.TScale: 10')
+
+            with open(job_config_filename, 'w') as f_job:
+                f_job.write('--jobname {}\n'.format(jobname))
+                f_job.write('--defname {}\n'.format(defname))
+                f_job.write('--njobs {}\n'.format(njobs))
+                f_job.write('--files_per_job {}\n'.format(files_per_job))
+                f_job.write('--nevts {}\n'.format(nevts))
+                f_job.write('--opportunistic\n')
+                f_job.write('--expected_lifetime short\n')
+                f_job.write('-c {}\n'.format(fcl_filename))
+                f_job.write('--testrel /nova/app/users/junting/slicer\n')
+                f_job.write('--tag development\n')
+                f_job.write('--dest /nova/ana/users/junting/slice\n')
+                f_job.write('--copyOut\n')
+                f_job.write('--histTier {}\n'.format(hist_tier))
+                f_job.write('-G nova\n')
+
+            call('../submit_nova_art.py -f {}'.format(job_config_filename), shell=True)
+
+
+# scan_fd()
+scan_nd()
