@@ -13,6 +13,7 @@ def plot(**kwargs):
     x_title = kwargs.get('x_title')
     y_title = kwargs.get('y_title')
     rebin = kwargs.get('rebin')
+    normalize = kwargs.get('normalize', False)
     statbox_position = kwargs.get('statbox_position', 'right')
     root_filename = kwargs.get('root_filename')
 
@@ -23,6 +24,10 @@ def plot(**kwargs):
     if rebin:
         h_4d.Rebin(rebin)
         h_td.Rebin(rebin)
+
+    if normalize:
+        h_4d.Scale(1. / h_4d.Integral())
+        h_td.Scale(1. / h_td.Integral())
 
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
@@ -40,12 +45,12 @@ def plot(**kwargs):
         h_4d.GetXaxis().SetTitle(x_title)
     if y_title:
         h_4d.GetYaxis().SetTitle(y_title)
-    h_4d.Draw()
+    h_4d.Draw('hist')
 
     set_h1_style(h_td)
     h_td.SetName('tdslicer')
     h_td.SetLineColor(kRed)
-    h_td.Draw('sames')
+    h_td.Draw('hist,sames')
 
     c1.Update()
     draw_statboxes(h_td, h_4d, position=statbox_position)
@@ -1050,4 +1055,8 @@ def plot_fls_hit_xy(filename):
 # plot(root_filename='SlicerAna_hist.containment.root', hist_name='fSliceCountNoNuNumuContainment', statbox_position='right', x_min=-0.5, x_max=15.5, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count')
 
 # 20171022_tdslicer_nd_genie
-plot(root_filename='nd_genie.root', hist_name='SlicePurity', statbox_position='right')
+# plot(root_filename='nd_genie.root', hist_name='SlicePurity', statbox_position='left', log_y=True, normalize=True, y_title='slice count (area normalized)')
+# plot(root_filename='nd_genie.root', hist_name='SliceCompleteness', statbox_position='top', log_y=True, normalize=True, y_title='slice count (area normalized)')
+# plot(root_filename='nd_genie.root', hist_name='NumSlices', statbox_position='right', x_min=-1, x_max=20)
+# plot(root_filename='nd_genie.root', hist_name='SlicePurity', statbox_position='left', log_y=True, y_title='slice count')
+plot(root_filename='nd_genie.root', hist_name='SliceCompleteness', statbox_position='top', log_y=True, y_title='slice count')

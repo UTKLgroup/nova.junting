@@ -6,8 +6,8 @@ x0 = 6
 y0 = 131
 width = 1247
 height = 747
-figure_dir = 'data/evd'
-prefix = 'nd_data'
+figure_dir = 'data/evd/fd_data_cosmic'
+prefix = 'fd_data_cosmic'
 
 for i in range(100):
     time = datetime.now().strftime('%Y_%m_%d.%H_%M_%S')
