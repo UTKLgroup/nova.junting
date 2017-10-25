@@ -929,6 +929,35 @@ def plot_fls_hit_xy(filename):
     input('Press any key to continue.')
 
 
+def get_hist(filename, slicer, hist_name):
+    tfile = TFile('{}/{}'.format(data_dir, filename))
+    h1 = tfile.Get('{}/{}'.format(slicer, hist_name))
+    h1.SetDirectory(0);
+    return h1
+
+
+def plot_good_slice_pot():
+    filename = 'SlicerAna_hist.period_5.root'
+    hist_name = 'hGoodSlicePot'
+    h_true = get_hist(filename, 'trueslicerana', hist_name)
+    h_4d = get_hist(filename, 'slicerana', hist_name)
+    h_td = get_hist(filename, 'tdslicerana', hist_name)
+
+    h_4d.Divide(h_true)
+    h_td.Divide(h_true)
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+
+    h_4d.Draw()
+
+    h_td.SetLineColor(kRed)
+    h_td.Draw('sames')
+
+    c1.Update()
+    c1.SaveAs('{}/plot_good_slice_pot.pdf'.format(figure_dir))
+    input('Press any key to continue.')
+
 # gStyle.SetOptStat('emr')
 # plot(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.FLS.root', hist_name='fSliceCountWithNuNueContainment0GeV', statbox_position='right', x_min=-0.1, x_max=5, x_title='Total FLS Hit Energy Deposition (GeV)', y_title='Event Count')
 # plot(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.FLS.root', hist_name='fSliceCountWithNuNueContainment1GeV', statbox_position='right', x_min=-0.1, x_max=5, x_title='Total FLS Hit Energy Deposition (GeV)', y_title='Event Count')
@@ -1059,4 +1088,5 @@ def plot_fls_hit_xy(filename):
 # plot(root_filename='nd_genie.root', hist_name='SliceCompleteness', statbox_position='top', log_y=True, normalize=True, y_title='slice count (area normalized)')
 # plot(root_filename='nd_genie.root', hist_name='NumSlices', statbox_position='right', x_min=-1, x_max=20)
 # plot(root_filename='nd_genie.root', hist_name='SlicePurity', statbox_position='left', log_y=True, y_title='slice count')
-plot(root_filename='nd_genie.root', hist_name='SliceCompleteness', statbox_position='top', log_y=True, y_title='slice count')
+# plot(root_filename='nd_genie.root', hist_name='SliceCompleteness', statbox_position='top', log_y=True, y_title='slice count')
+plot_good_slice_pot()
