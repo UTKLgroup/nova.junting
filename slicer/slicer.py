@@ -972,24 +972,25 @@ def plot_good_slice_pot():
     input('Press any key to continue.')
 
 
-def hadd_nd_genie():
+def hadd_nd_genie(source_dir, target_dir):
     data_sample = 'nd_genie'
     file_count = 0
     for timethreshold in [9, 10, 11]:
         for minprimdist in [3, 4, 5]:
-            if timethreshold == 10 and minprimdist == 4:
-                continue
             file_count += 1
             jobname = '{}_minprimdist_{}_timethreshold_{}'.format(data_sample, minprimdist, timethreshold)
-            cmd = 'hadd data/nd_genie/{}.root data/nd_genie/scan/*{}.root'.format(jobname, jobname)
+            target_path = '{}/{}.root'.format(target_dir, jobname)
+            source_path = '{}/*{}.root'.format(source_dir, jobname)
+            if timethreshold == 10 and minprimdist == 4:
+                source_path = '{}/*nd_genie.root'.format(source_dir)
 
+            cmd = 'hadd {} {}'.format(target_path, source_path)
+            cmd_gpvm = 'hadd -f -T -k {} `pnfs2xrootd {}`'.format(target_path, source_path)
+            print(cmd_gpvm)
             # if file_count < 8:
-            # continue
-            call(cmd, shell=True)
+            #     continue
+            # call(cmd, shell=True)
 
-
-
-# delete_empty_file('data/nd_genie/scan', 'data/nd_genie/tmp')
 
 # gStyle.SetOptStat('emr')
 # plot(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.FLS.root', hist_name='fSliceCountWithNuNueContainment0GeV', statbox_position='right', x_min=-0.1, x_max=5, x_title='Total FLS Hit Energy Deposition (GeV)', y_title='Event Count')
