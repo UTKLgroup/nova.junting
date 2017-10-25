@@ -934,13 +934,17 @@ def plot_fls_hit_xy(filename):
 def get_hist(filename, slicer, hist_name):
     tfile = TFile('{}/{}'.format(data_dir, filename))
     h1 = tfile.Get('{}/{}'.format(slicer, hist_name))
-    h1.SetDirectory(0);
+    h1.SetDirectory(0)
     return h1
 
 
-def plot_good_slice_pot():
+def plot_good_slice_pot(filename):
     # filename = 'SlicerAna_hist.period_5.root'
-    filename = 'nd_genie_minprimdist_4_timethreshold_10.root'
+    # filename = 'nd_genie_minprimdist_5_timethreshold_11.root'
+    filename_split = filename.split('_')
+    minprimdist = int(filename_split[3])
+    timethreshold = int(filename_split[5].split('.')[0])
+
     hist_name = 'hGoodSlicePot'
     h_true = get_hist(filename, 'trueslicerana', hist_name)
     h_4d = get_hist(filename, 'slicerana', hist_name)
@@ -949,26 +953,49 @@ def plot_good_slice_pot():
     h_4d.Sumw2()
     h_td.Sumw2()
 
-    # h_4d.Divide(h_true)
-    # h_td.Divide(h_true)
-
-
+    h_4d.Divide(h_true)
+    h_td.Divide(h_true)
 
     c1 = TCanvas('c1', 'c1', 800, 600)
+    gStyle.SetOptStat(0)
     set_margin()
+    set_h1_style(h_4d)
+    h_4d.GetYaxis().SetRangeUser(0.45, 0.65)
+    h_4d.GetXaxis().SetRangeUser(15, 55)
+    h_4d.GetXaxis().SetTitle('Spill POT (#times 10^{12})')
+    h_4d.GetYaxis().SetTitle('Ratio of Good Slice Count to TrueSlicer')
+    # h_4d.SetTitle('TimeThreshold = {}, MinPrimDist = {}'.format(timethreshold, minprimdist))
+    h_4d.SetMarkerColor(h_4d.GetLineColor())
+    h_4d.Draw()
+    h_4d.Fit('pol1')
+    f_4d = h_4d.GetFunction('pol1')
+    f_4d.SetLineColor(kBlue + 2)
+    f_4d_str = '{:.5f} X + {:.2f}'.format(f_4d.GetParameter(1), f_4d.GetParameter(0))
 
-    h_td.Divide(h_true)
-    # h_td.GetYaxis().SetRangeUser(0.9, 1.1)
-    h_td.GetXaxis().SetRangeUser(20, 50)
-    h_td.Draw()
+    set_h1_style(h_td)
+    h_td.SetLineColor(kRed)
+    h_td.SetMarkerColor(h_td.GetLineColor())
+    h_td.Draw('sames')
+    h_td.Fit('pol1')
+    f_td = h_td.GetFunction('pol1')
+    f_td_str = '{:.5f} X + {:.2f}'.format(f_td.GetParameter(1), f_td.GetParameter(0))
+    print(f_td_str)
 
+    lg1 = TLegend(0.2, 0.75, 0.88, 0.88)
+    set_legend_style(lg1)
+    lg1.SetFillStyle(1001)
+    lg1.SetMargin(0.3)
+    lg1.SetNColumns(2)
+    lg1.SetTextSize(22)
 
-    # h_4d.Draw()
-    # h_td.SetLineColor(kRed)
-    # h_td.Draw('sames')
+    lg1.AddEntry(h_4d, 'Slicer4D', 'le')
+    lg1.AddEntry(h_4d, 'Slicer4D Fit: {}'.format(f_4d_str), 'l')
+    lg1.AddEntry(h_td, 'TDSlicer', 'le')
+    lg1.AddEntry(h_td, 'TDSlicer Fit: {}'.format(f_td_str), 'l')
+    lg1.Draw()
 
     c1.Update()
-    c1.SaveAs('{}/plot_good_slice_pot.pdf'.format(figure_dir))
+    c1.SaveAs('{}/plot_good_slice_pot.{}.pdf'.format(figure_dir, filename))
     input('Press any key to continue.')
 
 
@@ -990,6 +1017,29 @@ def hadd_nd_genie(source_dir, target_dir):
             # if file_count < 8:
             #     continue
             # call(cmd, shell=True)
+
+
+def plot_nd_genie_tuning():
+    data_sample = 'nd_genie'
+    with open('/Users/juntinghuang/beamer/20171022_tdslicer_nd_genie/plot_nd_genie_tuning.tex', 'w') as f_tex:
+        for timethreshold in [11, 10, 9]:
+            for minprimdist in [5, 4, 3]:
+                filename = '{}_minprimdist_{}_timethreshold_{}.root'.format(data_sample, minprimdist, timethreshold)
+                # plot_good_slice_pot(filename)
+                # plot(root_filename=filename, hist_name='NumSlices', statbox_position='right', x_min=-1, x_max=20)
+                # plot(root_filename=filename, hist_name='SlicePurity', statbox_position='left', log_y=True, y_title='slice count')
+                # plot(root_filename=filename, hist_name='SliceCompleteness', statbox_position='top', log_y=True, y_title='slice count')
+
+                f_tex.write('\\begin{frame}\n')
+                f_tex.write('  \\frametitle{{\\texttt{{TimeThreshold}} = {}, \\texttt{{MinPrimDist}} = {}}}\n'.format(timethreshold, minprimdist))
+                f_tex.write('  \\begin{tabular}{{c c}}\n')
+                f_tex.write('    \\includegraphics[scale = 0.275]{{figures/{{plot_good_slice_pot.nd_genie_minprimdist_{0}_timethreshold_{1}.root}}.pdf}}  & \\includegraphics[scale = 0.275]{{figures/{{plot.nd_genie_minprimdist_{0}_timethreshold_{1}.root.NumSlices}}.pdf}} \\\\\n'.format(minprimdist, timethreshold))
+                f_tex.write('    \\includegraphics[scale = 0.275]{{figures/{{plot.nd_genie_minprimdist_{0}_timethreshold_{1}.root.SlicePurity}}.pdf}}  & \\includegraphics[scale = 0.275]{{figures/{{plot.nd_genie_minprimdist_{0}_timethreshold_{1}.root.SliceCompleteness}}.pdf}}\n'.format(minprimdist, timethreshold))
+                f_tex.write('  \\end{tabular}\n')
+                f_tex.write('\\end{frame}\n')
+                f_tex.write('% .........................................................\n\n')
+            # break
+        # break
 
 
 # gStyle.SetOptStat('emr')
@@ -1124,4 +1174,11 @@ def hadd_nd_genie(source_dir, target_dir):
 # plot(root_filename='nd_genie.root', hist_name='SlicePurity', statbox_position='left', log_y=True, y_title='slice count')
 # plot(root_filename='nd_genie.root', hist_name='SliceCompleteness', statbox_position='top', log_y=True, y_title='slice count')
 # plot_good_slice_pot()
-# hadd_nd_genie()
+# hadd_nd_genie('data/nd_genie/scan', 'data/nd_genie')
+# hadd_nd_genie('/pnfs/nova/scratch/users/junting/slicer', '/nova/app/users/junting/slicer/data')
+# delete_empty_file('data/nd_genie/scan', 'data/nd_genie/tmp')
+# plot_good_slice_pot('nd_genie_minprimdist_5_timethreshold_11.root')
+# plot_good_slice_pot('nd_genie_minprimdist_5_timethreshold_10.root')
+# plot_good_slice_pot('nd_genie_minprimdist_5_timethreshold_9.root')
+plot_nd_genie_tuning()
+# plot(root_filename='nd_genie_minprimdist_3_timethreshold_10.root', hist_name='NumSlices', statbox_position='right', x_min=-1, x_max=20)
