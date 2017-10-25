@@ -1,5 +1,7 @@
 from subprocess import call
 from rootalias import *
+from util import *
+
 
 figure_dir = '/Users/juntinghuang/beamer/20171022_tdslicer_nd_genie/figures'
 data_dir = 'data/nd_genie'
@@ -958,6 +960,26 @@ def plot_good_slice_pot():
     c1.SaveAs('{}/plot_good_slice_pot.pdf'.format(figure_dir))
     input('Press any key to continue.')
 
+
+def hadd_nd_genie():
+    data_sample = 'nd_genie'
+    file_count = 0
+    for timethreshold in [9, 10, 11]:
+        for minprimdist in [3, 4, 5]:
+            if timethreshold == 10 and minprimdist == 4:
+                continue
+            file_count += 1
+            jobname = '{}_minprimdist_{}_timethreshold_{}'.format(data_sample, minprimdist, timethreshold)
+            cmd = 'hadd data/nd_genie/{}.root data/nd_genie/scan/*{}.root'.format(jobname, jobname)
+
+            # if file_count < 8:
+            # continue
+            call(cmd, shell=True)
+
+
+
+# delete_empty_file('data/nd_genie/scan', 'data/nd_genie/tmp')
+
 # gStyle.SetOptStat('emr')
 # plot(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.FLS.root', hist_name='fSliceCountWithNuNueContainment0GeV', statbox_position='right', x_min=-0.1, x_max=5, x_title='Total FLS Hit Energy Deposition (GeV)', y_title='Event Count')
 # plot(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.FLS.root', hist_name='fSliceCountWithNuNueContainment1GeV', statbox_position='right', x_min=-0.1, x_max=5, x_title='Total FLS Hit Energy Deposition (GeV)', y_title='Event Count')
@@ -1089,4 +1111,5 @@ def plot_good_slice_pot():
 # plot(root_filename='nd_genie.root', hist_name='NumSlices', statbox_position='right', x_min=-1, x_max=20)
 # plot(root_filename='nd_genie.root', hist_name='SlicePurity', statbox_position='left', log_y=True, y_title='slice count')
 # plot(root_filename='nd_genie.root', hist_name='SliceCompleteness', statbox_position='top', log_y=True, y_title='slice count')
-plot_good_slice_pot()
+# plot_good_slice_pot()
+# hadd_nd_genie()
