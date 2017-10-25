@@ -59,13 +59,16 @@ def scan_fd():
 def scan_nd():
     data_sample = 'nd_genie'
     defname = get_defname(data_sample)
-    njobs = 250
-    files_per_job = 8
-    # nevts = 100
+    njobs = 100
+    files_per_job = 20
+    nevts = 100
     dest = '/pnfs/nova/scratch/users/junting/slicer'
 
-    for timethreshold in [9, 11]:
-        for minprimdist in [4]:
+    for timethreshold in [9, 10, 11]:
+        for minprimdist in [3, 4, 5]:
+            if timethreshold == 10 and minprimdist == 4:
+                continue
+
             jobname = '{}_minprimdist_{}_timethreshold_{}'.format(data_sample, minprimdist, timethreshold)
             fcl_filename = '{}.fcl'.format(jobname)
             job_config_filename = '{}.config'.format(jobname)
@@ -83,9 +86,9 @@ def scan_nd():
                 f_job.write('--defname {}\n'.format(defname))
                 f_job.write('--njobs {}\n'.format(njobs))
                 f_job.write('--files_per_job {}\n'.format(files_per_job))
-                # f_job.write('--nevts {}\n'.format(nevts))
+                f_job.write('--nevts {}\n'.format(nevts))
                 f_job.write('--opportunistic\n')
-                f_job.write('--expected_lifetime short\n')
+                # f_job.write('--expected_lifetime short\n')
                 f_job.write('-c {}\n'.format(fcl_filename))
                 f_job.write('--testrel /nova/app/users/junting/slicer\n')
                 f_job.write('--tag development\n')
