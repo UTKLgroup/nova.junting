@@ -939,22 +939,33 @@ def get_hist(filename, slicer, hist_name):
 
 
 def plot_good_slice_pot():
-    filename = 'SlicerAna_hist.period_5.root'
+    # filename = 'SlicerAna_hist.period_5.root'
+    filename = 'nd_genie_minprimdist_4_timethreshold_10.root'
     hist_name = 'hGoodSlicePot'
     h_true = get_hist(filename, 'trueslicerana', hist_name)
     h_4d = get_hist(filename, 'slicerana', hist_name)
     h_td = get_hist(filename, 'tdslicerana', hist_name)
+    h_true.Sumw2()
+    h_4d.Sumw2()
+    h_td.Sumw2()
 
-    h_4d.Divide(h_true)
-    h_td.Divide(h_true)
+    # h_4d.Divide(h_true)
+    # h_td.Divide(h_true)
+
+
 
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
 
-    h_4d.Draw()
+    h_td.Divide(h_true)
+    # h_td.GetYaxis().SetRangeUser(0.9, 1.1)
+    h_td.GetXaxis().SetRangeUser(20, 50)
+    h_td.Draw()
 
-    h_td.SetLineColor(kRed)
-    h_td.Draw('sames')
+
+    # h_4d.Draw()
+    # h_td.SetLineColor(kRed)
+    # h_td.Draw('sames')
 
     c1.Update()
     c1.SaveAs('{}/plot_good_slice_pot.pdf'.format(figure_dir))
