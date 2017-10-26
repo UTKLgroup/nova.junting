@@ -1,6 +1,7 @@
 from subprocess import call
 from rootalias import *
 from util import *
+from pprint import pprint
 
 
 figure_dir = '/Users/juntinghuang/beamer/20171022_tdslicer_nd_genie/figures'
@@ -1042,6 +1043,103 @@ def plot_nd_genie_tuning():
         # break
 
 
+def get_nd_genie_slope_intercept_ratio_count_purity_completeness(filename, slicerana):
+    hist_name_pot = 'hGoodSlicePot'
+    h_true_pot = get_hist(filename, 'trueslicerana', hist_name_pot)
+    h_td_pot = get_hist(filename, slicerana, hist_name_pot)
+    h_true_pot.Sumw2()
+    h_td_pot.Sumw2()
+    h_td_pot.Divide(h_true_pot)
+
+    h_td_pol1 = h_td_pot.Clone()
+    h_td_pol1.Fit('pol1')
+    f_td_pol1 = h_td_pol1.GetFunction('pol1')
+    intercept = f_td_pol1.GetParameter(0)
+    slope = f_td_pol1.GetParameter(1)
+
+    h_td_pol0 = h_td_pot.Clone()
+    h_td_pol0.Fit('pol0')
+    f_td_pol0 = h_td_pol0.GetFunction('pol0')
+    ratio = f_td_pol0.GetParameter(0)
+
+    h_td_numslices = get_hist(filename, slicerana, 'NumSlices')
+    h_td_purity = get_hist(filename, slicerana, 'SlicePurity')
+    h_td_completeness = get_hist(filename, slicerana, 'SliceCompleteness')
+    numslices = h_td_numslices.GetMean()
+    purity = h_td_purity.GetMean()
+    completeness = h_td_completeness.GetMean()
+
+    performance = {
+        'slope': slope,
+        'intercept': intercept,
+        'ratio': ratio,
+        'numslices': numslices,
+        'purity': purity,
+        'completeness': completeness
+    }
+
+    pprint(performance)
+    return performance
+
+
+def plot_performance_vs_configuration(performance):
+    h_performance = TH2D('h_performance', 'h_performance', 3, 8.5, 11.5, 3, 2.5, 5.5)
+    for timethreshold in [9, 10, 11]:
+        for minprimdist in [3, 4, 5]:
+            h_performance.Fill(
+                timethreshold, minprimdist,
+                get_nd_genie_slope_intercept_ratio_count_purity_completeness('nd_genie_minprimdist_{}_timethreshold_{}.root'.format(minprimdist, timethreshold), 'tdslicerana').get(performance))
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    gStyle.SetOptStat(0)
+    set_margin()
+    gPad.SetRightMargin(0.2)
+    set_h2_color_style()
+
+    set_h2_style(h_performance)
+    h_performance.GetXaxis().SetTitle('TimeThreshold')
+    h_performance.GetYaxis().SetTitle('MinPrimDist')
+    h_performance.SetTitle(get_performance_titles()[performance]['slide'])
+    h_performance.Draw('colz')
+
+    c1.Update()
+    c1.SaveAs('{}/plot_performance_vs_configuration.{}.pdf'.format(figure_dir, performance))
+    input('Press any key to continue.')
+
+
+def get_performance_titles():
+    return {
+        'slope': {'axis': 'Slope', 'slide': 'Slope of Good Slice Count vs. Spill POT'},
+        'intercept': {'axis': 'Intercept', 'slide': 'Intercept'},
+        'ratio': {'axis': 'Average Good Slice Count', 'slide': 'Average Good Slice Count (norm. by TrueSlicer)'},
+        'numslices': {'axis': 'Average Slice Count', 'slide': 'Average Slice Count'},
+        'purity': {'axis': 'Average Purity', 'slide': 'Average Purity'},
+        'completeness': {'axis': 'Average Completeness', 'slide': 'Average Completeness'}
+    }
+
+
+def plot_performances():
+    performances = get_nd_genie_slope_intercept_ratio_count_purity_completeness('nd_genie_minprimdist_5_timethreshold_11.root', 'tdslicerana').keys()
+
+    with open('/Users/juntinghuang/beamer/20171022_tdslicer_nd_genie/plot_performances.tex', 'w') as f_tex:
+        for performance in ['ratio', 'slope', 'completeness', 'purity', 'numslices']:
+            print(performance)
+            # plot_performance_vs_configuration(performance)
+            if performance == 'intercept':
+                continue
+            f_tex.write('\\begin{frame}\n')
+            f_tex.write('  \\frametitle{{{}}}\n'.format(get_performance_titles()[performance]['slide']))
+            f_tex.write('  \\begin{figure}\n')
+            f_tex.write('    \\includegraphics[scale = 0.5]{{figures/{{plot_performance_vs_configuration.{}}}.pdf}}\n'.format(performance))
+            f_tex.write('  \\end{figure}\n')
+            f_tex.write('\\end{frame}\n')
+            f_tex.write('% .........................................................\n\n')
+
+plot_performances()
+# plot_performance_vs_configuration('slope')
+# get_nd_genie_slope_intercept_ratio_count_purity_completeness('nd_genie_minprimdist_5_timethreshold_11.root', 'tdslicerana')
+
+
 # gStyle.SetOptStat('emr')
 # plot(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.FLS.root', hist_name='fSliceCountWithNuNueContainment0GeV', statbox_position='right', x_min=-0.1, x_max=5, x_title='Total FLS Hit Energy Deposition (GeV)', y_title='Event Count')
 # plot(root_filename='fd_genie_nonswap.ZScale_27.TScale_57.Tolerance_15.MinPrimDist_8.FLS.root', hist_name='fSliceCountWithNuNueContainment1GeV', statbox_position='right', x_min=-0.1, x_max=5, x_title='Total FLS Hit Energy Deposition (GeV)', y_title='Event Count')
@@ -1180,5 +1278,5 @@ def plot_nd_genie_tuning():
 # plot_good_slice_pot('nd_genie_minprimdist_5_timethreshold_11.root')
 # plot_good_slice_pot('nd_genie_minprimdist_5_timethreshold_10.root')
 # plot_good_slice_pot('nd_genie_minprimdist_5_timethreshold_9.root')
-plot_nd_genie_tuning()
+# plot_nd_genie_tuning()
 # plot(root_filename='nd_genie_minprimdist_3_timethreshold_10.root', hist_name='NumSlices', statbox_position='right', x_min=-1, x_max=20)
