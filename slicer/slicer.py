@@ -964,7 +964,7 @@ def plot_good_slice_pot(filename):
     h_4d.GetYaxis().SetRangeUser(0.45, 0.65)
     h_4d.GetXaxis().SetRangeUser(15, 55)
     h_4d.GetXaxis().SetTitle('Spill POT (#times 10^{12})')
-    h_4d.GetYaxis().SetTitle('Ratio of Good Slice Count to TrueSlicer')
+    h_4d.GetYaxis().SetTitle('Good Slice Count (norm. by TrueSlicer)')
     # h_4d.SetTitle('TimeThreshold = {}, MinPrimDist = {}'.format(timethreshold, minprimdist))
     h_4d.SetMarkerColor(h_4d.GetLineColor())
     h_4d.Draw()
@@ -1026,13 +1026,13 @@ def plot_nd_genie_tuning():
         for timethreshold in [11, 10, 9]:
             for minprimdist in [5, 4, 3]:
                 filename = '{}_minprimdist_{}_timethreshold_{}.root'.format(data_sample, minprimdist, timethreshold)
-                # plot_good_slice_pot(filename)
+                plot_good_slice_pot(filename)
                 # plot(root_filename=filename, hist_name='NumSlices', statbox_position='right', x_min=-1, x_max=20)
                 # plot(root_filename=filename, hist_name='SlicePurity', statbox_position='left', log_y=True, y_title='slice count')
                 # plot(root_filename=filename, hist_name='SliceCompleteness', statbox_position='top', log_y=True, y_title='slice count')
 
                 f_tex.write('\\begin{frame}\n')
-                f_tex.write('  \\frametitle{{\\texttt{{TimeThreshold}} = {}, \\texttt{{MinPrimDist}} = {}}}\n'.format(timethreshold, minprimdist))
+                f_tex.write('  \\frametitle{{\\texttt{{TimeThreshold}} = {}, \\texttt{{MinPrimDist}} = {}{}}}\n'.format(timethreshold, minprimdist, ' (Current Setup)' if minprimdist == 4 and timethreshold == 10 else ''))
                 f_tex.write('  \\begin{tabular}{{c c}}\n')
                 f_tex.write('    \\includegraphics[scale = 0.275]{{figures/{{plot_good_slice_pot.nd_genie_minprimdist_{0}_timethreshold_{1}.root}}.pdf}}  & \\includegraphics[scale = 0.275]{{figures/{{plot.nd_genie_minprimdist_{0}_timethreshold_{1}.root.NumSlices}}.pdf}} \\\\\n'.format(minprimdist, timethreshold))
                 f_tex.write('    \\includegraphics[scale = 0.275]{{figures/{{plot.nd_genie_minprimdist_{0}_timethreshold_{1}.root.SlicePurity}}.pdf}}  & \\includegraphics[scale = 0.275]{{figures/{{plot.nd_genie_minprimdist_{0}_timethreshold_{1}.root.SliceCompleteness}}.pdf}}\n'.format(minprimdist, timethreshold))
@@ -1109,20 +1109,43 @@ def plot_performance_vs_configuration(performance):
 
 def get_performance_titles():
     return {
-        'slope': {'axis': 'Slope', 'slide': 'Slope of Good Slice Count vs. Spill POT'},
-        'intercept': {'axis': 'Intercept', 'slide': 'Intercept'},
-        'ratio': {'axis': 'Average Good Slice Count', 'slide': 'Average Good Slice Count (norm. by TrueSlicer)'},
-        'numslices': {'axis': 'Average Slice Count', 'slide': 'Average Slice Count'},
-        'purity': {'axis': 'Average Purity', 'slide': 'Average Purity'},
-        'completeness': {'axis': 'Average Completeness', 'slide': 'Average Completeness'}
+        'slope': {
+            'axis': 'Slope',
+            'slide': 'Slope of Good Slice Count vs. Spill POT',
+            'caption': 'Slope of good slice count vs. spill POT for diff. configurations. \\textcolor{dred}{Lower \\texttt{MinPrimDist} is better. \\texttt{TimeThreshold} = 10 is the best.}'
+        },
+        'ratio': {
+            'axis': 'Average Good Slice Count',
+            'slide': 'Average Good Slice Count (norm. by TrueSlicer)',
+            'caption': 'Average Good Slice Count for different configurations. \\textcolor{dred}{Higher \\texttt{MinPrimDist} is better. Higher \\texttt{TimeThreshold} is slightly better.}'
+        },
+        'completeness': {
+            'axis': 'Average Completeness',
+            'slide': 'Average Completeness',
+            'caption': 'Average Completeness. \\textcolor{dred}{Higher \\texttt{MinPrimDist} is better}.'
+        },
+        'purity': {
+            'axis': 'Average Purity',
+            'slide': 'Average Purity',
+            'caption': 'Average Purity for different configurations. \\textcolor{dred}{Lower \\texttt{MinPrimDist} is better}.'
+        },
+        'numslices': {
+            'axis': 'Average Slice Count',
+            'slide': 'Average Slice Count',
+            'caption': 'Average Slice Count for different configurations. \\textcolor{dred}{Lower \\texttt{MinPrimDist} and higher \\texttt{TimeThreshold} is better.}'
+        },
+        'intercept': {
+            'axis': 'Intercept',
+            'slide': 'Intercept',
+            'caption': 'Intercept.'
+        }
     }
 
 
 def plot_performances():
-    performances = get_nd_genie_slope_intercept_ratio_count_purity_completeness('nd_genie_minprimdist_5_timethreshold_11.root', 'tdslicerana').keys()
-
+    # performances = get_nd_genie_slope_intercept_ratio_count_purity_completeness('nd_genie_minprimdist_5_timethreshold_11.root', 'tdslicerana').keys()
     with open('/Users/juntinghuang/beamer/20171022_tdslicer_nd_genie/plot_performances.tex', 'w') as f_tex:
-        for performance in ['ratio', 'slope', 'completeness', 'purity', 'numslices']:
+        for performance in ['slope', 'ratio', 'completeness', 'purity', 'numslices']:
             print(performance)
             # plot_performance_vs_configuration(performance)
             if performance == 'intercept':
@@ -1130,11 +1153,15 @@ def plot_performances():
             f_tex.write('\\begin{frame}\n')
             f_tex.write('  \\frametitle{{{}}}\n'.format(get_performance_titles()[performance]['slide']))
             f_tex.write('  \\begin{figure}\n')
-            f_tex.write('    \\includegraphics[scale = 0.5]{{figures/{{plot_performance_vs_configuration.{}}}.pdf}}\n'.format(performance))
+            f_tex.write('    \\includegraphics[scale = 0.48]{{figures/{{plot_performance_vs_configuration.{}}}.pdf}}\n'.format(performance))
+            f_tex.write('    \\caption{{{}}}\n'.format(get_performance_titles()[performance]['caption']))
             f_tex.write('  \\end{figure}\n')
             f_tex.write('\\end{frame}\n')
             f_tex.write('% .........................................................\n\n')
 
+
+# run
+# plot_nd_genie_tuning()
 plot_performances()
 # plot_performance_vs_configuration('slope')
 # get_nd_genie_slope_intercept_ratio_count_purity_completeness('nd_genie_minprimdist_5_timethreshold_11.root', 'tdslicerana')
