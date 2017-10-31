@@ -2,6 +2,7 @@ from subprocess import call
 from datetime import datetime
 from time import sleep
 import argparse
+import pyautogui
 
 
 x0 = 6
@@ -24,6 +25,12 @@ def single(figure_dir, prefix):
     call('screencapture -x -R{},{},{},{} {}/{}{}.png'.format(x0, y0, width, height, figure_dir, prefix, time), shell=True)
 
 
+def click():
+    print(pyautogui.position())
+    pyautogui.moveTo(115, 84)
+    pyautogui.click()
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--figure_dir', help='figure dir', default='.')
@@ -31,4 +38,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     prefix = args.prefix if args.prefix.endswith('.') else args.prefix + '.'
+    # pyautogui.hotkey('command', 'tab')
+    # click()
+    # pyautogui.hotkey('command', 'tab')
     single(args.figure_dir, args.prefix)
