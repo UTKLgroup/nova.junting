@@ -20,9 +20,11 @@ def scan(figure_dir, prefix):
     print('Finished.')
 
 
-def single(figure_dir, prefix):
-    time = datetime.now().strftime('%Y_%m_%d.%H_%M_%S')
-    call('screencapture -x -R{},{},{},{} {}/{}{}.png'.format(x0, y0, width, height, figure_dir, prefix, time), shell=True)
+def single(figure_dir, **kwargs):
+    prefix = kwargs.get('prefix', '')
+    suffix = kwargs.get('suffix', datetime.now().strftime('%Y_%m_%d.%H_%M_%S'))
+    print(suffix)
+    call('screencapture -x -R{},{},{},{} {}/{}{}{}.png'.format(x0, y0, width, height, figure_dir, prefix, '.' if prefix != '' else '', suffix), shell=True)
 
 
 def click():
@@ -31,14 +33,22 @@ def click():
     pyautogui.click()
 
 
+def single_click(figure_dir, prefix):
+    pyautogui.hotkey('command', 'tab')
+    for i in range(200):
+        single(figure_dir, prefix=prefix, suffix=str(i))
+        click()
+        sleep(10)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--figure_dir', help='figure dir', default='.')
     parser.add_argument('-p', '--prefix', help='figure name prefix', default='')
     args = parser.parse_args()
 
-    prefix = args.prefix if args.prefix.endswith('.') else args.prefix + '.'
     # pyautogui.hotkey('command', 'tab')
     # click()
     # pyautogui.hotkey('command', 'tab')
-    single(args.figure_dir, args.prefix)
+    # single(args.figure_dir, prefix=args.prefix)
+    single_click(args.figure_dir, prefix=args.prefix)
