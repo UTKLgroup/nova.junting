@@ -6,9 +6,9 @@ import pyautogui
 
 
 x0 = 6
-y0 = 131
+y0 = 132
 width = 1247
-height = 747
+height = 746
 
 
 def scan(figure_dir, prefix):
