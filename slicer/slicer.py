@@ -4,8 +4,9 @@ from util import *
 from pprint import pprint
 
 
-figure_dir = '/Users/juntinghuang/beamer/20171022_tdslicer_nd_genie/figures'
-data_dir = 'data/nd_genie'
+figure_dir = '/Users/juntinghuang/beamer/20171111_tdslicer_nd_activity/figures'
+# data_dir = 'data/nd_genie'
+data_dir = 'data/nd_data_activity'
 
 def plot(**kwargs):
     hist_name = kwargs.get('hist_name', 'NumSlices')
@@ -1161,8 +1162,15 @@ def plot_performances():
 
 
 # run
+# 20171111_tdslicer_nd_activity
+# plot(root_filename='neardet_r00012091_s08_ddactivity1_S17-02-21_v1_data.artdaq.hist.fix.root', hist_name='NumSlices', statbox_position='right', x_min=-0.5, x_max=13.5, log_y=True)
+
+plot(root_filename='neardet_r00012091_s08_ddactivity1_S17-02-21_v1_data.artdaq.hist.root', hist_name='NumSlices', statbox_position='right', x_min=-0.5, x_max=13.5, log_y=True)
+
+
+# 20171022_tdslicer_nd_genie
 # plot_nd_genie_tuning()
-plot_performances()
+# plot_performances()
 # plot_performance_vs_configuration('slope')
 # get_nd_genie_slope_intercept_ratio_count_purity_completeness('nd_genie_minprimdist_5_timethreshold_11.root', 'tdslicerana')
 
