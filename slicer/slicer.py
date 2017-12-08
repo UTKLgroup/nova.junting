@@ -4,9 +4,9 @@ from util import *
 from pprint import pprint
 
 
-figure_dir = '/Users/juntinghuang/beamer/20171111_tdslicer_nd_activity/figures'
+figure_dir = '/Users/juntinghuang/beamer/20171207_short_tracks_magnet/figures'
 # data_dir = 'data/nd_genie'
-data_dir = 'data/nd_data_activity'
+data_dir = 'data/fd_mc_cosmic'
 
 def plot(**kwargs):
     hist_name = kwargs.get('hist_name', 'NumSlices')
@@ -1161,11 +1161,46 @@ def plot_performances():
             f_tex.write('% .........................................................\n\n')
 
 
+def slice_count_event_by_event():
+    slicer4d_numslices = []
+    tdslicer_numslices = []
+
+    tfile = TFile('{}/SlicerAna_hist.root'.format(data_dir))
+    for event in tfile.Get('slicerana/SlicerAna'):
+        slicer4d_numslices.append(event.NumSlice)
+
+    for event in tfile.Get('tdslicerana/SlicerAna'):
+        tdslicer_numslices.append(event.NumSlice)
+
+    for i in range(len(slicer4d_numslices)):
+        slicer4d_numslice = slicer4d_numslices[i]
+        tdslicer_numslice = tdslicer_numslices[i]
+        print(i + 1, slicer4d_numslice, tdslicer_numslice)
+
+    for i in range(11):
+        slicer4d_numslice = slicer4d_numslices[i]
+        tdslicer_numslice = tdslicer_numslices[i]
+        print('{} & {} & & & \\\\'.format(i + 1, slicer4d_numslice - tdslicer_numslice))
+        # print('{} & {} & {} & {} \\\\'.format(i + 1, slicer4d_numslice, tdslicer_numslice, slicer4d_numslice - tdslicer_numslice))
+        # print()
+        # print('% .........................................................')
+        # print()
+        # print('\\begin{frame}')
+        # print('  \\frametitle{{Event {}, Difference = {}}}'.format(i + 1, slicer4d_numslice - tdslicer_numslice))
+        # print('  \\begin{figure}')
+        # print('    \\includegraphics[scale = 0.125]{{figures/{{fd_mc_cosmic.all.{}}}.png}}'.format(i))
+        # print('  \\end{figure}')
+        # print('\\end{frame}')
+
 # run
+# 20171207_short_tracks_magnet
+slice_count_event_by_event()
+# plot(root_filename='SlicerAna_hist.root', hist_name='NumSlices', statbox_position='right', x_min=30, x_max=70)
+
+
 # 20171111_tdslicer_nd_activity
 # plot(root_filename='neardet_r00012091_s08_ddactivity1_S17-02-21_v1_data.artdaq.hist.fix.root', hist_name='NumSlices', statbox_position='right', x_min=-0.5, x_max=13.5, log_y=True)
-
-plot(root_filename='neardet_r00012091_s08_ddactivity1_S17-02-21_v1_data.artdaq.hist.root', hist_name='NumSlices', statbox_position='right', x_min=-0.5, x_max=13.5, log_y=True)
+# plot(root_filename='neardet_r00012091_s08_ddactivity1_S17-02-21_v1_data.artdaq.hist.root', hist_name='NumSlices', statbox_position='right', x_min=-0.5, x_max=13.5, log_y=True)
 
 
 # 20171022_tdslicer_nd_genie
