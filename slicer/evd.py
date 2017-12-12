@@ -38,19 +38,19 @@ def click():
 def single_click(figure_dir, prefix):
     pyautogui.hotkey('command', 'tab')
     click()
-    for i in range(200):
+    for i in range(20):
         single(figure_dir, prefix=prefix, suffix=str(i))
         click()
         sleep(15)
 
 
 def join(figure_dir, prefix):
-    for i in range(200):
+    for i in range(20):
         print('processing event ', i)
         raw = cv2.imread('{}/{}.{}.png'.format(figure_dir, prefix, i))
         slicer4d = cv2.imread('{}/{}.slicer4d.{}.png'.format(figure_dir, prefix, i))
-        tdslicer_2d = cv2.imread('{}/{}.tdslicer.2d.fix.{}.png'.format(figure_dir, prefix, i))
-        tdslicer_merge = cv2.imread('{}/{}.tdslicer.merge.fix.{}.png'.format(figure_dir, prefix, i))
+        tdslicer_2d = cv2.imread('{}/{}.tdslicer.2d.{}.png'.format(figure_dir, prefix, i))
+        tdslicer_merge = cv2.imread('{}/{}.tdslicer.merge.{}.png'.format(figure_dir, prefix, i))
 
         top = np.concatenate((raw, slicer4d), axis=1)
         bottom = np.concatenate((tdslicer_2d, tdslicer_merge), axis=1)
