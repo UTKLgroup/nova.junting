@@ -1,3 +1,4 @@
+*.pickle
 *.png
 *.log
 util.py
