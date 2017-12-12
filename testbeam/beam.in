@@ -10,7 +10,7 @@ param sinDS=0.052335956 #sin (3 deg)
 param cosDS=0.998629535 #cos (3 deg)
 param killshld=0
 param Bscale=0.5
-g4ui when=4 “/vis/viewer/set/background 1 1 1”
+g4ui when=4 "/vis/viewer/set/background 1 1 1"
 
 beam gaussian particle=pi+ firstEvent=$first lastEvent=$last sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=64000.0
 trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton
