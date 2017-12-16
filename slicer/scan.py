@@ -12,18 +12,21 @@ def get_defname(data_sample):
         raise Exception('Data sample {} does not exist.'.format(data_sample))
 
 def scan_fd():
-    # data_sample = 'fd_cry'
-    data_sample = 'fd_genie_nonswap'
+    data_sample = 'fd_cry'
+    # data_sample = 'fd_genie_nonswap'
     defname = get_defname(data_sample)
-    njobs = 100
+    njobs = 80
     files_per_job = 1
-    nevts = 100
+    nevts = 25
     
     # for tolerance in [15]:
-    for tolerance in [6]:
+    # for tolerance in [6]:
+    for t_scale in [60]:
         # for minprimdist in [8]:
-        for minprimdist in [4]:
-            jobname = '{}_zscale_100_tscale_10_minprimdist_{}_tolerance_{}'.format(data_sample, minprimdist, tolerance)
+        # for minprimdist in [4]:
+        for z_scale in [30, 40, 50]:
+            # jobname = '{}_zscale_100_tscale_10_minprimdist_{}_tolerance_{}'.format(data_sample, minprimdist, tolerance)
+            jobname = '{}_zscale_{}_tscale_{}'.format(data_sample, z_scale, t_scale)
             fcl_filename = '{}.fcl'.format(jobname)
             job_config_filename = '{}.config'.format(jobname)
             hist_tier = jobname
@@ -32,10 +35,10 @@ def scan_fd():
                 with open('../RecoValidation/sliceranajob.template.fcl') as f_template:
                     for row in f_template:
                         f_fcl.write(row)
-                f_fcl.write('physics.producers.slicer2d.fd.MinPrimDist: {}\n'.format(minprimdist))
-                f_fcl.write('physics.producers.slicermergeviews.fd.Tolerance: {}\n'.format(tolerance))
-                f_fcl.write('physics.producers.slicermergeviews.fd.ZScale: 100\n')
-                f_fcl.write('physics.producers.slicermergeviews.fd.TScale: 10')
+                # f_fcl.write('physics.producers.slicer2d.fd.MinPrimDist: {}\n'.format(minprimdist))
+                # f_fcl.write('physics.producers.slicermergeviews.fd.Tolerance: {}\n'.format(tolerance))
+                f_fcl.write('physics.producers.slicermergeviews.fd.ZScale: {}\n'.format(z_scale))
+                f_fcl.write('physics.producers.slicermergeviews.fd.TScale: {}'.format(t_scale))
 
             with open(job_config_filename, 'w') as f_job:
                 f_job.write('--jobname {}\n'.format(jobname))
@@ -48,12 +51,13 @@ def scan_fd():
                 f_job.write('-c {}\n'.format(fcl_filename))
                 f_job.write('--testrel /nova/app/users/junting/slicer\n')
                 f_job.write('--tag development\n')
-                f_job.write('--dest /nova/ana/users/junting/slice\n')
+                # f_job.write('--dest /nova/ana/users/junting/slice\n')
+                f_job.write('--dest /pnfs/nova/scratch/users/junting/slicer\n')
                 f_job.write('--copyOut\n')
                 f_job.write('--histTier {}\n'.format(hist_tier))
                 f_job.write('-G nova\n')
 
-            call('../submit_nova_art.py -f {}'.format(job_config_filename), shell=True)
+            call('submit_nova_art.py -f {}'.format(job_config_filename), shell=True)
 
 
 def scan_nd():
@@ -100,5 +104,5 @@ def scan_nd():
             call('../submit_nova_art.py -f {}'.format(job_config_filename), shell=True)
 
 
-# scan_fd()
-scan_nd()
+scan_fd()
+# scan_nd()
