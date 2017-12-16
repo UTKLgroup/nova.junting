@@ -297,6 +297,7 @@ if maxspill <= 0:
 else:
     print ("Processing %s into %s spills of %s events each." % (infilename, maxspill, spillsize ))
 
+last_event = None
 # Loop over input TTree
 for ds_track in INtuples[starterTree]:
     trackcount += 1
@@ -304,6 +305,9 @@ for ds_track in INtuples[starterTree]:
     ## Unique identifiers for this track:
     (event, track) = (int(ds_track.EventID), int(ds_track.TrackID))
     spill = 1 + (event//spillsize) # Arbitrarily group tracks by EventID into spills.
+    if event % 100 == 0 and last_event != event:
+        print(event)
+    last_event = event
 
     # Skip low-E photons
     if gammacutoff > 0.0 and ds_track.PDGid == 22:

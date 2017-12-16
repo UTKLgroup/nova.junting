@@ -4,9 +4,8 @@ from util import *
 from pprint import pprint
 
 
-figure_dir = '/Users/juntinghuang/beamer/20171207_short_tracks_magnet/figures'
-# data_dir = 'data/nd_genie'
-data_dir = 'data/fd_mc_cosmic'
+figure_dir = '/Users/juntinghuang/beamer/20171215_tdslicer_merging_short_tracks/figures'
+data_dir = 'data/20171215_tdslicer_merging_short_tracks'
 
 def plot(**kwargs):
     hist_name = kwargs.get('hist_name', 'NumSlices')
@@ -1193,8 +1192,12 @@ def slice_count_event_by_event():
         # print('\\end{frame}')
 
 # run
+# 20171215_tdslicer_merging_short_tracks
+plot(root_filename='fd_cry_zscale_50_tscale_60_mincell_4.root', hist_name='NumSlices', statbox_position='right', x_min=20, x_max=100)
+
+
 # 20171207_short_tracks_magnet
-slice_count_event_by_event()
+# slice_count_event_by_event()
 # plot(root_filename='SlicerAna_hist.root', hist_name='NumSlices', statbox_position='right', x_min=30, x_max=70)
 
 
