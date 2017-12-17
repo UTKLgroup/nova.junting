@@ -1193,7 +1193,9 @@ def slice_count_event_by_event():
 
 # run
 # 20171215_tdslicer_merging_short_tracks
-plot(root_filename='fd_cry_zscale_50_tscale_60_mincell_4.root', hist_name='NumSlices', statbox_position='right', x_min=20, x_max=100)
+# plot(root_filename='fd_cry_zscale_50_tscale_60_mincell_4.root', hist_name='NumSlices', statbox_position='right', x_min=20, x_max=100)
+plot(root_filename='fd_cry_zscale_50_tscale_60_mincell_4.root', hist_name='SlicePurity', statbox_position='left', log_y=True)
+# plot(root_filename='fd_cry_zscale_50_tscale_60_mincell_4.root', hist_name='SliceCompleteness', statbox_position='top', log_y=True)
 
 
 # 20171207_short_tracks_magnet
