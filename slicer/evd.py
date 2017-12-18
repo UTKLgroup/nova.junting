@@ -38,14 +38,14 @@ def click():
 def single_click(figure_dir, prefix):
     pyautogui.hotkey('command', 'tab')
     click()
-    for i in range(20):
+    for i in range(200):
         single(figure_dir, prefix=prefix, suffix=str(i))
         click()
         sleep(15)
 
 
 def join(figure_dir, prefix):
-    for i in range(20):
+    for i in range(200):
         print('processing event ', i)
         raw = cv2.imread('{}/{}.{}.png'.format(figure_dir, prefix, i))
         slicer4d = cv2.imread('{}/{}.slicer4d.{}.png'.format(figure_dir, prefix, i))
