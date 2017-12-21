@@ -4,8 +4,9 @@ from util import *
 from pprint import pprint
 
 
-figure_dir = '/Users/juntinghuang/beamer/20171215_tdslicer_merging_short_tracks/figures'
-data_dir = 'data/20171215_tdslicer_merging_short_tracks'
+slide_name = '20171215_tdslicer_summary'
+figure_dir = '/Users/juntinghuang/beamer/{}/figures'.format(slide_name)
+data_dir = 'data/{}'.format(slide_name)
 
 def plot(**kwargs):
     hist_name = kwargs.get('hist_name', 'NumSlices')
@@ -19,6 +20,7 @@ def plot(**kwargs):
     normalize = kwargs.get('normalize', False)
     statbox_position = kwargs.get('statbox_position', 'right')
     root_filename = kwargs.get('root_filename')
+    square_canvas = kwargs.get('square_canvas', False)
 
     f_slicer = TFile('{}/{}'.format(data_dir, root_filename))
     h_4d = f_slicer.Get('slicerana/{}'.format(hist_name))
@@ -32,7 +34,10 @@ def plot(**kwargs):
         h_4d.Scale(1. / h_4d.Integral())
         h_td.Scale(1. / h_td.Integral())
 
-    c1 = TCanvas('c1', 'c1', 800, 600)
+    canvas_height = 600
+    if square_canvas:
+        canvas_height = 800
+    c1 = TCanvas('c1', 'c1', 800, canvas_height)
     set_margin()
     gPad.SetLogy(log_y)
     gPad.SetLogx(log_x)
@@ -1000,6 +1005,67 @@ def plot_good_slice_pot(filename):
     input('Press any key to continue.')
 
 
+def plot_good_slice_count(filename):
+    # filename = 'SlicerAna_hist.period_5.root'
+    # filename = 'nd_genie_minprimdist_5_timethreshold_11.root'
+    filename_split = filename.split('_')
+    minprimdist = int(filename_split[3])
+    timethreshold = int(filename_split[5].split('.')[0])
+
+    hist_name = 'hGoodSlicePot'
+    h_true = get_hist(filename, 'trueslicerana', hist_name)
+    h_4d = get_hist(filename, 'slicerana', hist_name)
+    h_td = get_hist(filename, 'tdslicerana', hist_name)
+    h_true.Sumw2()
+    h_4d.Sumw2()
+    h_td.Sumw2()
+
+    h_4d.Divide(h_true)
+    h_td.Divide(h_true)
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    gStyle.SetOptStat(0)
+    set_margin()
+    set_h1_style(h_4d)
+    h_4d.GetYaxis().SetRangeUser(0.45, 0.65)
+    h_4d.GetXaxis().SetRangeUser(15, 55)
+    h_4d.GetXaxis().SetTitle('Spill POT (#times 10^{12})')
+    h_4d.GetYaxis().SetTitle('Good Slice Count (norm. by TrueSlicer)')
+    # h_4d.SetTitle('TimeThreshold = {}, MinPrimDist = {}'.format(timethreshold, minprimdist))
+    h_4d.SetMarkerColor(h_4d.GetLineColor())
+    h_4d.Draw()
+    h_4d.Fit('pol0')
+    f_4d = h_4d.GetFunction('pol0')
+    f_4d.SetLineColor(kBlue + 2)
+    f_4d_str = '{:.2f}'.format(f_4d.GetParameter(0))
+
+    set_h1_style(h_td)
+    h_td.SetLineColor(kRed)
+    h_td.SetMarkerColor(h_td.GetLineColor())
+    h_td.Draw('sames')
+    h_td.Fit('pol0')
+    f_td = h_td.GetFunction('pol0')
+    f_td_str = '{:.2f}'.format(f_td.GetParameter(0))
+    print(f_td_str)
+
+    lg1 = TLegend(0.2, 0.75, 0.88, 0.88)
+    set_legend_style(lg1)
+    lg1.SetFillStyle(1001)
+    lg1.SetMargin(0.3)
+    lg1.SetNColumns(2)
+    lg1.SetTextSize(22)
+
+    lg1.AddEntry(h_4d, 'Slicer4D', 'le')
+    lg1.AddEntry(h_4d, 'Slicer4D Fit: {}'.format(f_4d_str), 'l')
+    lg1.AddEntry(h_td, 'TDSlicer', 'le')
+    lg1.AddEntry(h_td, 'TDSlicer Fit: {}'.format(f_td_str), 'l')
+    lg1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_good_slice_count.{}.pdf'.format(figure_dir, filename))
+    input('Press any key to continue.')
+
+
 def hadd_nd_genie(source_dir, target_dir):
     data_sample = 'nd_genie'
     file_count = 0
@@ -1191,10 +1257,78 @@ def slice_count_event_by_event():
         # print('  \\end{figure}')
         # print('\\end{frame}')
 
+def plot_th2(**kwargs):
+    hist_name = kwargs.get('hist_name', 'SliceCompletenessVsPurity')
+    x_title = kwargs.get('x_title')
+    y_title = kwargs.get('y_title')
+    rebin = kwargs.get('rebin')
+    root_filename = kwargs.get('root_filename')
+    slicerana = kwargs.get('slicer', 'tdslicerana')
+    log_z = kwargs.get('log_z', False)
+    data_dir_special = kwargs.get('data_dir', data_dir)
+    name = kwargs.get('name')
+    stat_box = kwargs.get('stat_box')
+    square_canvas = kwargs.get('square_canvas')
+
+    f_slicer = TFile('{}/{}'.format(data_dir_special, root_filename))
+    h1 = f_slicer.Get('{}/{}'.format(slicerana, hist_name))
+    if x_title:
+        h1.GetXaxis().SetTitle(x_title)
+    if y_title:
+        h1.GetYaxis().SetTitle(y_title)
+    if name:
+        h1.SetName(name)
+
+    canvas_height = 600
+    if square_canvas:
+        canvas_height = 800
+    c1 = TCanvas('c1', 'c1', 800, canvas_height)
+    set_margin()
+    gPad.SetRightMargin(0.15)
+    set_h2_style(h1)
+    set_h2_color_style()
+    h1.Draw('colz')
+    if log_z:
+        gPad.SetLogz()
+
+    if not stat_box:
+        gStyle.SetOptStat(0)
+    else:
+        gStyle.SetOptStat('emnr')
+        if isinstance(stat_box, bool):
+            draw_statbox(h1)
+        elif isinstance(stat_box, list):
+            draw_statbox(h1, x1=stat_box[0], x2=stat_box[1], y1=stat_box[2], y2=stat_box[3])
+
+    c1.Update()
+    c1.SaveAs('{}/plot_th2.{}.{}.{}.pdf'.format(figure_dir, root_filename, slicerana, hist_name))
+    input('Press any key to continue.')
+
+
 # run
+# 20171215_tdslicer_summary
+# fd cry
+# plot_th2(data_dir='data/20171215_tdslicer_merging_short_tracks', root_filename='fd_cry_zscale_50_tscale_60_mincell_4.root', slicerana='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5])
+# nd genie
+# plot_th2(root_filename='nd_genie_minprimdist_5_timethreshold_10.root', slicerana='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5])
+# plot_good_slice_count('nd_genie_minprimdist_5_timethreshold_10.root')
+# fd genie
+# plot(root_filename='slicer_fd_genie_nonswap.root', hist_name='fNuPurityByRecoHitGeV', statbox_position='left', log_y=True, square_canvas=True)
+# plot(root_filename='slicer_fd_genie_nonswap.root', hist_name='fNuPurityByRecoHitCount', statbox_position='left', log_y=True, square_canvas=True)
+# plot(root_filename='slicer_fd_genie_nonswap.root', hist_name='fNuCompleteness', statbox_position='left', log_y=True)
+# plot_th2(root_filename='slicer_fd_genie_nonswap.root', hist_name='fNuCompletenessVsPurityByRecoHitGeV', slicerana='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5], square_canvas=True)
+# plot_th2(root_filename='slicer_fd_genie_nonswap.root', hist_name='fNuCompletenessVsPurityByRecoHitCount', slicerana='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5], square_canvas=True)
+# plot(root_filename='slicer_fd_genie_nonswap.root', hist_name='fSliceCountWithNuNueContainment', statbox_position='right', x_min=-0.5, x_max=3, x_title='Number of Slices With Contributions from #nu', y_title='Event Count', square_canvas=True)
+# plot(root_filename='slicer_fd_genie_nonswap.root', hist_name='fSliceCountNoNuNueContainment', statbox_position='right', x_min=-0.5, x_max=15.5, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count', square_canvas=True)
+# plot(root_filename='slicer_fd_genie_nonswap.root', hist_name='fSliceCountWithNuNumuContainment', statbox_position='right', x_min=-0.5, x_max=3, x_title='Number of Slices With Contributions from #nu', y_title='Event Count', square_canvas=True)
+# plot(root_filename='slicer_fd_genie_nonswap.root', hist_name='fSliceCountNoNuNumuContainment', statbox_position='right', x_min=-0.5, x_max=15.5, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count', square_canvas=True)
+# plot(root_filename='slicer_fd_genie_nonswap.root', hist_name='fSliceCountWithNu', statbox_position='right', x_min=-0.5, x_max=3, x_title='Number of Slices With Contributions from #nu', y_title='Event Count', square_canvas=True)
+# plot(root_filename='slicer_fd_genie_nonswap.root', hist_name='fSliceCountNoNu', statbox_position='left', x_min=10, x_max=100, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count', square_canvas=True)
+
+
 # 20171215_tdslicer_merging_short_tracks
 # plot(root_filename='fd_cry_zscale_50_tscale_60_mincell_4.root', hist_name='NumSlices', statbox_position='right', x_min=20, x_max=100)
-plot(root_filename='fd_cry_zscale_50_tscale_60_mincell_4.root', hist_name='SlicePurity', statbox_position='left', log_y=True)
+# plot(root_filename='fd_cry_zscale_50_tscale_60_mincell_4.root', hist_name='SlicePurity', statbox_position='left', log_y=True)
 # plot(root_filename='fd_cry_zscale_50_tscale_60_mincell_4.root', hist_name='SliceCompleteness', statbox_position='top', log_y=True)
 
 
