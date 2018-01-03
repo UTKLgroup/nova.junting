@@ -32,12 +32,11 @@ exposures = get_xs(exposure_0, exposure_sigma)
 efficiencies = get_xs(efficiency_0, efficiency_sigma)
 backgrounds = get_xs(background_0, background_sigma)
 
-delta_event_rate_true = 1.
+delta_event_rate_true = 0.1
 event_rate_trues = np.arange(0., 120., delta_event_rate_true)
 probabilities = []
 
 for event_rate_true in event_rate_trues:
-    # print('event_rate_true = ', event_rate_true)
     probability = 0.
     for exposure in exposures:
         for efficiency in efficiencies:
@@ -67,7 +66,10 @@ for i, event_rate_true in enumerate(event_rate_trues):
         event_rate_true_cl = event_rate_true
         break
 
-print('event_rate_true_cl = ', event_rate_true_cl, ' at 90% C.L.')
+life_time_cl = 1. / event_rate_true_cl
+print('event_rate_true_cl = ', event_rate_true_cl * 1.e-34, ' per year at 90% C.L.')
+print('life_time_cl = ', life_time_cl * 1.e34, ' years at 90% C.L.')
+
 probabilities = list(map(lambda x: x / total_area, probabilities))
 gr = TGraph(len(event_rate_trues), event_rate_trues, np.array(probabilities))
 
