@@ -36,28 +36,22 @@ int main(int argc, char ** argv)
     return 1;
   }
 
+  ofstream output;
+  output.open(TString::Format("%s.txt", gOptInpFilename.c_str()));
+  output << "Writing this to a file.\n";
+
   NtpMCEventRecord* mcrec = 0;
   tree->SetBranchAddress("gmcrec", &mcrec);
   int nev = (gOptNEvt > 0) ? TMath::Min(gOptNEvt, (int)tree->GetEntries()) : (int) tree->GetEntries();
-
   for(int i = 0; i < nev; i++) {
     tree->GetEntry(i);
     EventRecord & event = *(mcrec->event);
-    // LOG("myAnalysis", pNOTICE) << event;
-    // Put your event analysis code here
-
-    ofstream output;
-    output.open(TString::Format("%s.txt", gOptInpFilename.c_str()));
-    output << "Writing this to a file.\n";
-
     GHepParticle* p = 0;
     TIter event_iter(&event);
 
     vector<vector<double>> particles;
     while((p=dynamic_cast<GHepParticle *>(event_iter.Next()))) {
        if (p->Status() == kIStStableFinalState ) {
-         
-
 	  // if (p->Pdg() == kPdgPi0 ||
 	  //     p->Pdg() == kPdgPiP ||
 	  //     p->Pdg() == kPdgPiM) {
@@ -65,7 +59,6 @@ int main(int argc, char ** argv)
           // }
        }
     } // end loop over particles
-
     mcrec->Clear();
   } //end loop over events
 
