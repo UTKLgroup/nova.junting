@@ -1,5 +1,6 @@
 #include <string>
 #include <fstream>
+#include <iostream>
 
 #include <TSystem.h>
 #include <TFile.h>
@@ -38,32 +39,52 @@ int main(int argc, char ** argv)
 
   ofstream output;
   output.open(TString::Format("%s.txt", gOptInpFilename.c_str()));
-  output << "Writing this to a file.\n";
 
   NtpMCEventRecord* mcrec = 0;
   tree->SetBranchAddress("gmcrec", &mcrec);
-  int nev = (gOptNEvt > 0) ? TMath::Min(gOptNEvt, (int)tree->GetEntries()) : (int) tree->GetEntries();
+  int nev = (gOptNEvt > 0) ?
+    TMath::Min(gOptNEvt, (int)tree->GetEntries()) :
+    (int) tree->GetEntries();
+
   for(int i = 0; i < nev; i++) {
     tree->GetEntry(i);
     EventRecord & event = *(mcrec->event);
     GHepParticle* p = 0;
     TIter event_iter(&event);
 
-    vector<vector<double>> particles;
+    vector<vector<double>> particle_infos;
+    const int info_count = 6;
+
     while((p=dynamic_cast<GHepParticle *>(event_iter.Next()))) {
-       if (p->Status() == kIStStableFinalState ) {
-	  // if (p->Pdg() == kPdgPi0 ||
-	  //     p->Pdg() == kPdgPiP ||
-	  //     p->Pdg() == kPdgPiM) {
-          //   LOG("myAnalysis", pNOTICE) << "Got a : " << p->Name() << " with E = " << p->E() << " GeV";
-          // }
-       }
+      if (p->Status() == kIStStableFinalState ) {
+        double infos[info_count] = {
+          (double) p->Pdg(),
+          p->Px(),
+          p->Py(),
+          p->Pz(),
+          p->Energy(),
+          p->Mass()
+        };
+        particle_infos.push_back(vector<double>(infos, infos + info_count));
+      }
     } // end loop over particles
+
+    output << TString::Format("0 %lu\n", particle_infos.size());
+    for (unsigned int j = 0; j < particle_infos.size(); j++) {
+      output << TString::Format("1 %.0f 0 0 0 0 %f %f %f %f %f 0. 0. 3000. 225000\n",
+                                particle_infos[j][0],
+                                particle_infos[j][1],
+                                particle_infos[j][2],
+                                particle_infos[j][3],
+                                particle_infos[j][4],
+                                particle_infos[j][5]);
+    }
+
     mcrec->Clear();
   } //end loop over events
 
-  file.Close();
   output.close();
+  file.Close();
   LOG("myAnalysis", pNOTICE)  << "Done!";
   return 0;
 }
@@ -77,11 +98,11 @@ void GetCommandLineArgs(int argc, char** argv)
   // get GENIE event sample
   if( parser.OptionExists('f') ) {
     LOG("myAnalysis", pINFO)
-       << "Reading event sample filename";
+      << "Reading event sample filename";
     gOptInpFilename = parser.ArgAsString('f');
   } else {
     LOG("myAnalysis", pFATAL)
-        << "Unspecified input filename - Exiting";
+      << "Unspecified input filename - Exiting";
     exit(1);
   }
 
