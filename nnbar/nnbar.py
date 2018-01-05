@@ -186,5 +186,38 @@ def plot_life_time_free():
     input('Press any key to continue.')
 
 
+def print_evd():
+    events = {
+        1: 'p + \\bar{n} \\rightarrow \\pi^{+} + \\pi^{0}',
+        2: 'p + \\bar{n} \\rightarrow \\pi^{+} + 2\\pi^{0}',
+        3: 'p + \\bar{n} \\rightarrow \\pi^{+} + 3\\pi^{0}',
+        4: 'p + \\bar{n} \\rightarrow 2\\pi^{+} + \\pi^{-} + \\pi^{0}',
+        5: 'p + \\bar{n} \\rightarrow 2\\pi^{+} + \\pi^{-} + 2\\pi^{0}',
+        6: 'p + \\bar{n} \\rightarrow 2\\pi^{+} + \\pi^{-} + 2\\omega^{0}',
+        7: 'p + \\bar{n} \\rightarrow 3\\pi^{+} + 2\\pi^{-} + \\pi^{0}',
+        8: 'n + \\bar{n} \\rightarrow \\pi^{+} + \\pi^{-}',
+        9: 'n + \\bar{n} \\rightarrow 2\\pi^{0}',
+        10: 'n + \\bar{n} \\rightarrow \\pi^{+} + \\pi^{-} + \\pi^{0}',
+        11: 'n + \\bar{n} \\rightarrow \\pi^{+} + \\pi^{-} + 2\\pi^{0}',
+        12: 'n + \\bar{n} \\rightarrow \\pi^{+} + \\pi^{-} + 3\\pi^{0}',
+        13: 'n + \\bar{n} \\rightarrow 2\\pi^{+} + 2\\pi^{-}',
+        14: 'n + \\bar{n} \\rightarrow 2\\pi^{+} + 2\\pi^{-} + \\pi^{0}',
+        15: 'n + \\bar{n} \\rightarrow \\pi^{+} + \\pi^{-} + \\omega^{0}',
+        16: 'n + \\bar{n} \\rightarrow 2\\pi^{+} + 2\\pi^{-} + 2\\pi^{0}'
+    }
+
+    with open('print_evd.tex', 'w') as f_evd:
+        for i in range(1, 17):
+            reaction = events[i]
+            f_evd.write('\\begin{frame}\n')
+            f_evd.write('  \\frametitle{{Example of ${}$}}\n'.format(reaction))
+            f_evd.write('  \\begin{figure}\n')
+            f_evd.write('    \\includegraphics[scale = 0.25]{{figures/{{nnbar.{}}}.png}}\n'.format(i))
+            f_evd.write('    \\caption{{An example event of ${}$.}}\n'.format(reaction))
+            f_evd.write('  \\end{figure}\n')
+            f_evd.write('\\end{frame}\n\n')
+            f_evd.write('% .........................................................\n\n')
+
 # plot_life_time_bound()
-plot_life_time_free()
+# plot_life_time_free()
+print_evd()
