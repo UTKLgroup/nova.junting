@@ -2,7 +2,8 @@ from rootalias import *
 import math
 import numpy as np
 
-figure_dir = 'figures'
+figure_dir = '/Users/juntinghuang/beamer/20180103_nnbar_limit/figures'
+data_dir = './'
 
 exposure_0 = 2.45               # 1.e34 * neutron * year
 efficiency_0 = 12.1e-2
@@ -218,6 +219,67 @@ def print_evd():
             f_evd.write('\\end{frame}\n\n')
             f_evd.write('% .........................................................\n\n')
 
+
+def plot(**kwargs):
+    hist_name = kwargs.get('hist_name', 'fSliceCount')
+    x_min = kwargs.get('x_min')
+    x_max = kwargs.get('x_max')
+    log_y = kwargs.get('log_y', False)
+    log_x = kwargs.get('log_x', False)
+    x_title = kwargs.get('x_title')
+    y_title = kwargs.get('y_title')
+    rebin = kwargs.get('rebin')
+    normalize = kwargs.get('normalize', False)
+    statbox_position = kwargs.get('statbox_position', 'right')
+    root_filename = kwargs.get('root_filename')
+    square_canvas = kwargs.get('square_canvas', False)
+
+    tf = TFile('{}/{}'.format(data_dir, root_filename))
+    h1 = tf.Get('nnbarana/{}'.format(hist_name))
+
+    if rebin:
+        h1.Rebin(rebin)
+
+    if normalize:
+        h1.Scale(1. / h1.Integral())
+
+    canvas_height = 600
+    if square_canvas:
+        canvas_height = 800
+    c1 = TCanvas('c1', 'c1', 800, canvas_height)
+    set_margin()
+    gPad.SetLogy(log_y)
+    gPad.SetLogx(log_x)
+
+    set_h1_style(h1)
+    if x_min and x_max:
+        h1.GetXaxis().SetRangeUser(x_min, x_max)
+    if not log_y:
+        h1.GetYaxis().SetRangeUser(0, get_max_y([h1]) * 1.1)
+    if x_title:
+        h1.GetXaxis().SetTitle(x_title)
+    if y_title:
+        h1.GetYaxis().SetTitle(y_title)
+    h1.Draw('hist')
+
+    c1.Update()
+    draw_statbox(h1, x1=0.68)
+
+    c1.Update()
+    c1.SaveAs('{}/plot.{}.{}.pdf'.format(figure_dir, root_filename, hist_name))
+    input('Press any key to continue.')
+
+
+# 20180103_nnbar_limit.tex
+gStyle.SetOptStat('emr')
+# plot(root_filename='nnbar_hist.root', hist_name='fSliceCount', x_min=-0.5, x_max=4.5, log_y=True)
+# plot(root_filename='nnbar_hist.root', hist_name='fRecoHitGeV', x_min=-0.5, x_max=2.5, square_canvas=True, rebin=2)
+# plot(root_filename='nnbar_hist.root', hist_name='fRecoHitCount', x_min=-0.5, x_max=140, square_canvas=True, rebin=2)
+# plot(root_filename='nnbar_hist.root', hist_name='fExtentPlane', x_min=-0.5, x_max=100)
+# plot(root_filename='nnbar_hist.root', hist_name='fExtentCellX', x_min=-0.5, x_max=200)
+plot(root_filename='nnbar_hist.root', hist_name='fExtentCellY', x_min=-0.5, x_max=200)
+# plot(root_filename='nnbar_hist.root', hist_name='fFlsHitCount', square_canvas=True, rebin=10)
+# plot(root_filename='nnbar_hist.root', hist_name='fFlsHitGeV', x_min=0.7, x_max=1.6, square_canvas=True)
 # plot_life_time_bound()
 # plot_life_time_free()
-print_evd()
+# print_evd()
