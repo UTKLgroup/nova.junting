@@ -4,7 +4,8 @@ import csv
 from math import pi, cos, sin
 
 
-figure_dir = 'figures'
+# figure_dir = 'figures'
+figure_dir = '/Users/juntinghuang/beamer/20171211_test_beam_geometry/figures'
 
 
 def get_particle_filter():
@@ -104,7 +105,7 @@ def generate_text():
     t0 = 60.
     delta_t = 0.55
 
-    h1 = TH1D('h1', 'h1', 300, 58, 66)
+    h1 = TH1D('h1', 'h1', 300, 0, 5.)
     with open ('beam.txt', 'w') as f_txt:
         tracks = []
         event_count = 0
@@ -124,7 +125,7 @@ def generate_text():
             t = particle['t']
             mass = PDG.GetParticle(pid).Mass()
             energy = (mass**2 + px**2 + py**2 + pz**2)**0.5
-            h1.Fill(particle['t'])
+            h1.Fill(particle['t'] - 60.)
 
             if t > t0 + delta_t:
                 f_txt.write('0 {}\n'.format(len(tracks)))
@@ -148,10 +149,27 @@ def generate_text():
     print('particle_count = ', particle_count)
     print('len(particles) = ', len(particles))
 
+    t0s = []
+    for i in range(1, event_count + 1):
+        t0s.append(delta_t * i)
+
+    gStyle.SetOptStat(0)
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
-
+    set_h1_style(h1)
     h1.Draw()
+    h1.GetXaxis().SetTitle('Time (s)')
+    h1.GetYaxis().SetTitle('Particle Count')
+
+    tls = []
+    c1.Update()
+    for i, t0 in enumerate(t0s):
+        tl = TLine(t0, gPad.GetUymin(), t0, gPad.GetUymax())
+        tl.SetLineColor(kRed + 1)
+        tl.SetLineStyle(7)
+        tl.SetLineWidth(2)
+        tls.append(tl)
+        tls[i].Draw()
 
     c1.Update()
     c1.SaveAs('{}/generate_text.pdf'.format(figure_dir))
