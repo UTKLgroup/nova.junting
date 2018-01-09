@@ -100,58 +100,57 @@ def generate_text():
     particles = get_csv('fraction.tof.csv')
     PDG = TDatabasePDG()
 
+    rotate_y_degree = -3.0
     z0 = 8005.9022 / 10.0
     x0 = -1186.1546 / 10.0
     t0 = 60.
-    delta_t = 0.55
+    delta_t = 550.e-6
 
+    event_id_particle_ids = {}
     h1 = TH1D('h1', 'h1', 300, 0, 5.)
+    for i, particle in enumerate(particles):
+        t = particle['t'] - t0
+        h1.Fill(t)
+        event_id = int(t // delta_t)
+        if event_id not in event_id_particle_ids:
+            event_id_particle_ids[event_id] = [i]
+        else:
+            event_id_particle_ids[event_id].append(i)
+
+    pprint(event_id_particle_ids)
+    for event_id, particle_ids in event_id_particle_ids.items():
+        particle_count = len(particle_ids)
+        if particle_count > 1:
+            print('pile up of {} particles in event {} '.format(paticle_count, event_id))
+
+
     with open ('beam.txt', 'w') as f_txt:
-        tracks = []
-        event_count = 0
         particle_count = 0
-        for i, particle in enumerate(particles):
-            pid = particle['PDGid']
-            px = particle['Px'] / 1000.0
-            py = particle['Py'] / 1000.0
-            pz = particle['Pz'] / 1000.0
-            x = particle['x'] / 10.0
-            y = particle['y'] / 10.0
-            z = particle['z'] / 10.0
+        for event_id, particle_ids in event_id_particle_ids.items():
+            f_txt.write('0 {}\n'.format(len(particle_ids)))
+            for particle_id in particle_ids:
+                particle = particles[particle_id]
+                pid = particle['PDGid']
+                px = particle['Px'] / 1000.0
+                py = particle['Py'] / 1000.0
+                pz = particle['Pz'] / 1000.0
+                x = particle['x'] / 10.0
+                y = particle['y'] / 10.0
+                z = particle['z'] / 10.0
 
-            rotate_y_degree = -3.0
-            px, pz = rotate_y(px, pz, rotate_y_degree)
-            x, z = rotate_y(x - x0, z - z0, rotate_y_degree)
-            t = particle['t']
-            mass = PDG.GetParticle(pid).Mass()
-            energy = (mass**2 + px**2 + py**2 + pz**2)**0.5
-            h1.Fill(particle['t'] - 60.)
+                px, pz = rotate_y(px, pz, rotate_y_degree)
+                x, z = rotate_y(x - x0, z - z0, rotate_y_degree)
+                t = (particle['t'] - event_id * delta_t - t0) * 1.e9
+                mass = PDG.GetParticle(pid).Mass()
+                energy = (mass**2 + px**2 + py**2 + pz**2)**0.5
 
-            if t > t0 + delta_t:
-                f_txt.write('0 {}\n'.format(len(tracks)))
-                for track in tracks:
-                    track[-1] = (track[-1] - t0) * 1.e9
-                    f_txt.write(' '.join(map(str, track)) + '\n')
-                    particle_count += 1
-                tracks = []
-                t0 += delta_t
-                event_count += 1
-            tracks.append([1, pid, 0, 0, 0, 0, px, py, pz, energy, mass, x, y, z, t])
+                track = [1, pid, 0, 0, 0, 0, px, py, pz, energy, mass, x, y, z, t]
+                f_txt.write(' '.join(map(str, track)) + '\n')
+                particle_count += 1
 
-        f_txt.write('0 {}\n'.format(len(tracks)))
-        for track in tracks:
-            track[-1] = (track[-1] - t0) * 1.e9
-            f_txt.write(' '.join(map(str, track)) + '\n')
-            particle_count += 1
-        event_count += 1
-
-    print('event_count = ', event_count)
+    print('event_count = ', len(event_id_particle_ids))
     print('particle_count = ', particle_count)
     print('len(particles) = ', len(particles))
-
-    t0s = []
-    for i in range(1, event_count + 1):
-        t0s.append(delta_t * i)
 
     gStyle.SetOptStat(0)
     c1 = TCanvas('c1', 'c1', 800, 600)
@@ -161,23 +160,31 @@ def generate_text():
     h1.GetXaxis().SetTitle('Time (s)')
     h1.GetYaxis().SetTitle('Particle Count')
 
-    tls = []
-    c1.Update()
-    for i, t0 in enumerate(t0s):
-        tl = TLine(t0, gPad.GetUymin(), t0, gPad.GetUymax())
-        tl.SetLineColor(kRed + 1)
-        tl.SetLineStyle(7)
-        tl.SetLineWidth(2)
-        tls.append(tl)
-        tls[i].Draw()
+    # t0s = []
+    # for i in range(1, event_count + 1):
+    #     t0s.append(delta_t * i)
+    # tls = []
+    # c1.Update()
+    # for i, t0 in enumerate(t0s):
+    #     tl = TLine(t0, gPad.GetUymin(), t0, gPad.GetUymax())
+    #     tl.SetLineColor(kRed + 1)
+    #     tl.SetLineStyle(7)
+    #     tl.SetLineWidth(2)
+    #     tls.append(tl)
+    #     tls[i].Draw()
 
     c1.Update()
     c1.SaveAs('{}/generate_text.pdf'.format(figure_dir))
     input('Press any key to continue.')
 
 
+def get_momentum(kinetic_energy, mass):
+    return (kinetic_energy**2 + 2. * mass * kinetic_energy)**0.5
+
+
 # 20171211_test_beam_geometry
 # get_particle_count_filter()
 # get_particle_count()
 # print_particle_count_table()
-generate_text()
+# generate_text()
+print(get_momentum(237.843, 938.272))
