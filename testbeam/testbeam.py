@@ -1,6 +1,10 @@
 from rootalias import *
 from pprint import pprint
 import csv
+from math import pi, cos, sin
+
+
+figure_dir = 'figures'
 
 
 def get_particle_filter():
@@ -62,6 +66,78 @@ def print_particle_count_table():
         print('{} & {} & {} & {} & {} \\\\'.format(pdg_id, name, particle_count.get(pdg_id, ''), particle_count_filter_tof.get(pdg_id, ''), particle_count_filter_all.get(pdg_id, '')))
 
 
+def get_csv(filename):
+    particles = []
+    with open(filename) as f_csv:
+        for row in csv.reader(f_csv, delimiter=','):
+            particles.append({
+                'EventID': int(row[0]),
+                'TrackID': int(row[1]),
+                'TrackPresent': int(row[2]),
+                'x': float(row[3]),
+                'y': float(row[4]),
+                'z': float(row[5]),
+                't': float(row[6]),
+                'Px': float(row[7]),
+                'Py': float(row[8]),
+                'Pz': float(row[9]),
+                'PDGid': int(float(row[10])),
+                'ParentID': int(float(row[11]))
+            })
+    return particles
+
+
+def rotate_y(x, z, degree):
+    theta = degree * pi / 180.0
+    x = cos(theta) * x - sin(theta) * z
+    z = sin(theta) * x + cos(theta) * z
+    return x, z
+
+
+def generate_text():
+    particles = get_csv('fraction.tof.csv')
+    PDG = TDatabasePDG()
+
+    z0 = 8005.9022 / 10.0
+    x0 = -1186.1546 / 10.0
+
+    h1 = TH1D('h1', 'h1', 300, 58, 66)
+    with open ('beam.txt', 'w') as f_txt:
+        f_txt.write('0 {}\n'.format(len(particles)))
+        for particle in particles:
+            pid = particle['PDGid']
+            px = particle['Px'] / 1000.0
+            py = particle['Py'] / 1000.0
+            pz = particle['Pz'] / 1000.0
+            x = particle['x'] / 10.0
+            y = particle['y'] / 10.0
+            z = particle['z'] / 10.0
+
+            rotate_y_degree = -3.0
+            px, pz = rotate_y(px, pz, rotate_y_degree)
+            x, z = rotate_y(x - x0, z - z0, rotate_y_degree)
+            t = particle['t'] * 1.e9
+            mass = PDG.GetParticle(pid).Mass()
+            energy = (mass**2 + px**2 + py**2 + pz**2)**0.5
+
+            track = [1, pid, 0, 0, 0, 0, px, py, pz, energy, mass, x, y, z, t]
+            f_txt.write(' '.join(map(str, track)))
+            f_txt.write('\n')
+
+            h1.Fill(particle['t'])
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+
+    h1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/generate_text.pdf'.format(figure_dir))
+    input('Press any key to continue.')
+
+
+# 20171211_test_beam_geometry
 # get_particle_count_filter()
 # get_particle_count()
-print_particle_count_table()
+# print_particle_count_table()
+generate_text()
