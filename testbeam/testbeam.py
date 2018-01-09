@@ -84,6 +84,7 @@ def get_csv(filename):
                 'PDGid': int(float(row[10])),
                 'ParentID': int(float(row[11]))
             })
+    particles = sorted(particles, key=lambda x: x['t'])
     return particles
 
 
@@ -100,11 +101,15 @@ def generate_text():
 
     z0 = 8005.9022 / 10.0
     x0 = -1186.1546 / 10.0
+    t0 = 60.
+    delta_t = 0.55
 
     h1 = TH1D('h1', 'h1', 300, 58, 66)
     with open ('beam.txt', 'w') as f_txt:
-        f_txt.write('0 {}\n'.format(len(particles)))
-        for particle in particles:
+        tracks = []
+        event_count = 0
+        particle_count = 0
+        for i, particle in enumerate(particles):
             pid = particle['PDGid']
             px = particle['Px'] / 1000.0
             py = particle['Py'] / 1000.0
@@ -116,15 +121,32 @@ def generate_text():
             rotate_y_degree = -3.0
             px, pz = rotate_y(px, pz, rotate_y_degree)
             x, z = rotate_y(x - x0, z - z0, rotate_y_degree)
-            t = particle['t'] * 1.e9
+            t = particle['t']
             mass = PDG.GetParticle(pid).Mass()
             energy = (mass**2 + px**2 + py**2 + pz**2)**0.5
-
-            track = [1, pid, 0, 0, 0, 0, px, py, pz, energy, mass, x, y, z, t]
-            f_txt.write(' '.join(map(str, track)))
-            f_txt.write('\n')
-
             h1.Fill(particle['t'])
+
+            if t > t0 + delta_t:
+                f_txt.write('0 {}\n'.format(len(tracks)))
+                for track in tracks:
+                    track[-1] = (track[-1] - t0) * 1.e9
+                    f_txt.write(' '.join(map(str, track)) + '\n')
+                    particle_count += 1
+                tracks = []
+                t0 += delta_t
+                event_count += 1
+            tracks.append([1, pid, 0, 0, 0, 0, px, py, pz, energy, mass, x, y, z, t])
+
+        f_txt.write('0 {}\n'.format(len(tracks)))
+        for track in tracks:
+            track[-1] = (track[-1] - t0) * 1.e9
+            f_txt.write(' '.join(map(str, track)) + '\n')
+            particle_count += 1
+        event_count += 1
+
+    print('event_count = ', event_count)
+    print('particle_count = ', particle_count)
+    print('len(particles) = ', len(particles))
 
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
