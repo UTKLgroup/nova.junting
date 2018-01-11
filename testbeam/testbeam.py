@@ -182,9 +182,37 @@ def get_momentum(kinetic_energy, mass):
     return (kinetic_energy**2 + 2. * mass * kinetic_energy)**0.5
 
 
+def plot_momentum():
+    particles = get_csv('fraction.tof.csv')
+    h1 = TH1D('h1', 'h1', 100, 0, 1500)
+    for particle in particles:
+        p = (particle['Px']**2 + particle['Py']**2 + particle['Pz']**2)**0.5
+        h1.Fill(p)
+        if p < 200:
+            print(particle['PDGid'])
+        if particle['PDGid'] == 11:
+            print(p)
+
+    gStyle.SetOptStat('emr')
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    set_h1_style(h1)
+    h1.Draw()
+    h1.GetXaxis().SetTitle('P (MeV)')
+    h1.GetYaxis().SetTitle('Particle Count')
+    gPad.SetLogy()
+    c1.Update()
+    draw_statbox(h1, x1=0.7)
+
+    c1.Update()
+    c1.SaveAs('{}/plot_momentum.pdf'.format(figure_dir))
+    input('Press any key to continue.')
+
+
 # 20171211_test_beam_geometry
 # get_particle_count_filter()
 # get_particle_count()
 # print_particle_count_table()
 # generate_text()
-print(get_momentum(237.843, 938.272))
+# print(get_momentum(237.843, 938.272))
+plot_momentum()
