@@ -5,7 +5,7 @@ from math import pi, cos, sin
 import numpy as np
 
 
-# figure_dir = 'figures'
+PDG = TDatabasePDG()
 figure_dir = '/Users/juntinghuang/beamer/20180109_testbeam_momentum_pid/figures'
 
 
@@ -282,9 +282,58 @@ def plot_p_vs_angle():
     c1.SaveAs('{}/plot_p_vs_angle.pdf'.format(figure_dir))
     input('Press any key to continue.')
 
-# 20180109_testbeam_momentum_pid
-plot_p_vs_angle()
 
+def plot_cherenkov():
+    names = ['proton', 'K+', 'pi+', 'mu+', 'e+']
+    masses = list(map(lambda x: PDG.GetParticle(x).Mass(), names)) # GeV
+    colors = [kRed + 2, kMagenta + 2, kBlue + 2, kGreen + 2, kBlack]
+    eta = 4.1e-4                  # atm-1
+
+    momentums = np.arange(0.01, 10, 0.01)
+    ppressures = []
+    for i, mass in enumerate(masses):
+        pressures = []
+        for momentum in momentums:
+            pressure = 1. / eta * ((1 + (mass / momentum)**2)**0.5 - 1.)
+            pressures.append(pressure)
+        ppressures.append(pressures)
+
+    grs = []
+    for i in range(len(ppressures)):
+        gr = TGraph(len(momentums), np.array(momentums), np.array(ppressures[i]))
+        set_graph_style(gr)
+        grs.append(gr)
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetLogy()
+    gPad.SetGrid()
+
+    lg1 = TLegend(0.2, 0.8, 0.88, 0.88)
+    set_legend_style(lg1)
+    lg1.SetNColumns(5)
+
+    grs[0].Draw('AL')
+    grs[0].SetLineColor(colors[0])
+    grs[0].GetXaxis().SetRangeUser(0., 3)
+    grs[0].GetYaxis().SetRangeUser(1.e-5, 1e6)
+    grs[0].GetYaxis().SetTitle('Pressure Threshold (atm)')
+    grs[0].GetXaxis().SetTitle('Momentum (GeV)')
+    lg1.AddEntry(grs[0], names[0], 'l')
+    for i in range(1, len(names)):
+        grs[i].Draw('sames,L')
+        grs[i].SetLineColor(colors[i])
+        lg1.AddEntry(grs[i], names[i], 'l')
+    lg1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_cherenkov.pdf'.format(figure_dir))
+    input('Press any key to continue.')
+
+
+# 20180109_testbeam_momentum_pid
+# plot_p_vs_angle()
+plot_cherenkov()
 
 # 20171211_test_beam_geometry
 # get_particle_count_filter()
