@@ -2,10 +2,11 @@ from rootalias import *
 from pprint import pprint
 import csv
 from math import pi, cos, sin
+import numpy as np
 
 
 # figure_dir = 'figures'
-figure_dir = '/Users/juntinghuang/beamer/20171211_test_beam_geometry/figures'
+figure_dir = '/Users/juntinghuang/beamer/20180109_testbeam_momentum_pid/figures'
 
 
 def get_particle_filter():
@@ -209,10 +210,86 @@ def plot_momentum():
     input('Press any key to continue.')
 
 
+def plot_p_vs_angle():
+    b_field = 0.14                   # tesla
+    field_length = 591. / 1000. * 2. # m
+
+    unit_charge = 1.602e-19     # coulomb
+    joule_mev = 1. / unit_charge
+    speed_of_light = 3.e8
+    degree_to_radian = 3.14 / 180.
+
+    degrees = np.arange(0.1, 15., 0.1)
+    b_fields = [0.14, 0.175, 0.35]
+    colors = [kBlue + 2, kGreen + 2, kRed + 2]
+
+    b_field_momentums = []
+    for b_field in b_fields:
+        momentums = []
+        for degree in degrees:
+            momentum = b_field * field_length * speed_of_light / (degree * degree_to_radian) * 1.e-6 # MeV
+            momentums.append(momentum)
+        b_field_momentums.append(momentums)
+
+    print(degrees)
+    print(momentums)
+
+    gr_0 = TGraph(len(degrees), np.array(degrees), np.array(b_field_momentums[0]))
+    gr_1 = TGraph(len(degrees), np.array(degrees), np.array(b_field_momentums[1]))
+    gr_2 = TGraph(len(degrees), np.array(degrees), np.array(b_field_momentums[2]))
+
+    gr_data_0 = TGraph(1, np.array([12.]), np.array([250.]))
+    gr_data_1 = TGraph(1, np.array([10.]), np.array([450.]))
+    gr_data_2 = TGraph(1, np.array([12.]), np.array([600.]))
+
+    for gr in [gr_0, gr_1, gr_2, gr_data_0, gr_data_1, gr_data_2]:
+        set_graph_style(gr)
+        gr.SetMarkerStyle(24)
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gr_0.Draw('AL')
+    gr_0.GetYaxis().SetRangeUser(0., 3000.)
+    gr_0.GetXaxis().SetTitle('Magnet Bending Angle (degree)')
+    gr_0.GetYaxis().SetTitle('Particle Momentum (MeV)')
+    gr_0.GetYaxis().SetTitleOffset(1.5)
+    gr_0.SetLineColor(colors[0])
+    gPad.SetGrid()
+    gr_data_0.SetMarkerColor(colors[0])
+    gr_data_0.Draw('sames,P')
+
+    # gr_1.Draw('sames,L')
+    # gr_1.SetLineColor(colors[1])
+    # gr_data_1.SetMarkerColor(colors[1])
+    # gr_data_1.Draw('sames,P')
+
+    gr_2.Draw('sames,L')
+    gr_2.SetLineColor(colors[2])
+    gr_data_2.SetMarkerColor(colors[2])
+    gr_data_2.Draw('sames,P')
+
+    lg1 = TLegend(0.4, 0.7, 0.88, 0.88)
+    set_legend_style(lg1)
+    lg1.SetNColumns(2)
+
+    lg1.AddEntry(gr_2, 'B = 0.35 T', 'l')
+    lg1.AddEntry(gr_data_2, 'MC peak', 'p')
+    lg1.AddEntry(gr_0, 'B = 0.14 T', 'l')
+    lg1.AddEntry(gr_data_0, 'MC peak', 'p')
+    lg1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_p_vs_angle.pdf'.format(figure_dir))
+    input('Press any key to continue.')
+
+# 20180109_testbeam_momentum_pid
+plot_p_vs_angle()
+
+
 # 20171211_test_beam_geometry
 # get_particle_count_filter()
 # get_particle_count()
 # print_particle_count_table()
 # generate_text()
 # print(get_momentum(237.843, 938.272))
-plot_momentum()
+# plot_momentum()
