@@ -6,7 +6,8 @@ import numpy as np
 
 
 PDG = TDatabasePDG()
-figure_dir = '/Users/juntinghuang/beamer/20180109_testbeam_momentum_pid/figures'
+SPEED_OF_LIGHT = 3.e8           # m/s
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180109_testbeam_momentum_pid/figures'
 
 
 def get_particle_filter():
@@ -175,7 +176,7 @@ def generate_text():
     #     tls[i].Draw()
 
     c1.Update()
-    c1.SaveAs('{}/generate_text.pdf'.format(figure_dir))
+    c1.SaveAs('{}/generate_text.pdf'.format(FIGURE_DIR))
     input('Press any key to continue.')
 
 
@@ -206,7 +207,7 @@ def plot_momentum():
     draw_statbox(h1, x1=0.7)
 
     c1.Update()
-    c1.SaveAs('{}/plot_momentum.pdf'.format(figure_dir))
+    c1.SaveAs('{}/plot_momentum.pdf'.format(FIGURE_DIR))
     input('Press any key to continue.')
 
 
@@ -216,7 +217,6 @@ def plot_p_vs_angle():
 
     unit_charge = 1.602e-19     # coulomb
     joule_mev = 1. / unit_charge
-    speed_of_light = 3.e8
     degree_to_radian = 3.14 / 180.
 
     degrees = np.arange(0.1, 15., 0.1)
@@ -227,7 +227,7 @@ def plot_p_vs_angle():
     for b_field in b_fields:
         momentums = []
         for degree in degrees:
-            momentum = b_field * field_length * speed_of_light / (degree * degree_to_radian) * 1.e-6 # MeV
+            momentum = b_field * field_length * SPEED_OF_LIGHT / (degree * degree_to_radian) * 1.e-6 # MeV
             momentums.append(momentum)
         b_field_momentums.append(momentums)
 
@@ -279,7 +279,7 @@ def plot_p_vs_angle():
     lg1.Draw()
 
     c1.Update()
-    c1.SaveAs('{}/plot_p_vs_angle.pdf'.format(figure_dir))
+    c1.SaveAs('{}/plot_p_vs_angle.pdf'.format(FIGURE_DIR))
     input('Press any key to continue.')
 
 
@@ -327,13 +327,64 @@ def plot_cherenkov():
     lg1.Draw()
 
     c1.Update()
-    c1.SaveAs('{}/plot_cherenkov.pdf'.format(figure_dir))
+    c1.SaveAs('{}/plot_cherenkov.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
+def plot_time_of_flight():
+    distance = 10.            # m
+    names = ['proton', 'K+', 'pi+', 'mu+', 'e+']
+    masses = list(map(lambda x: PDG.GetParticle(x).Mass(), names)) # GeV
+    colors = [kRed + 2, kMagenta + 2, kBlue + 2, kGreen + 2, kBlack]
+
+    momentums = np.arange(0.001, 10, 0.001)
+    ttofs = []
+    for i in range(len(names)):
+        tofs= []
+        for momentum in momentums:
+            tof = distance / SPEED_OF_LIGHT * (1. + (masses[i] / momentum)**2)**0.5 * 1.e9
+            tofs.append(tof)
+        ttofs.append(tofs)
+
+    grs = []
+    for i in range(len(ttofs)):
+        gr = TGraph(len(momentums), np.array(momentums), np.array(ttofs[i]))
+        gr.SetLineColor(colors[i])
+        grs.append(gr)
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetLogy()
+    gPad.SetLogx()
+
+
+    lg1 = TLegend(0.65, 0.5, 0.9, 0.85)
+    set_legend_style(lg1)
+
+    grs[0].Draw('AL')
+    grs[0].GetXaxis().SetRangeUser(0, 3)
+    grs[0].GetXaxis().SetTitle('Momentum (GeV)')
+    grs[0].GetYaxis().SetTitle('Time of Flight (ns)')
+    grs[0].GetYaxis().SetRangeUser(10., 1.e5)
+    set_graph_style(grs[0])
+    lg1.AddEntry(grs[0], names[0], 'l')
+
+    for i in range(1, len(names)):
+        set_graph_style(grs[i])
+        grs[i].Draw('sames,L')
+        lg1.AddEntry(grs[i], names[i], 'l')
+    lg1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_time_of_flight.pdf'.format(figure_dir))
     input('Press any key to continue.')
 
 
 # 20180109_testbeam_momentum_pid
 # plot_p_vs_angle()
-plot_cherenkov()
+# plot_cherenkov()
+plot_time_of_flight()
+
 
 # 20171211_test_beam_geometry
 # get_particle_count_filter()
