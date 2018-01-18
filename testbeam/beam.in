@@ -61,7 +61,7 @@ place ChFram            z=1730.3369 x=-403.0472 y=0.0508 rotation=y-13
 place Det rename=Det2   z=3181.9215 x=-738.0351 y=0.0762 rotation=y-13
 place ChFram            z=3181.9215 x=-738.0351 y=0.0762 rotation=y-13
 
-# 10 degree bend
+# bending magnet
 genericbend M1 fieldWidth=4*$inch fieldHeight=3.5*$inch fieldLength=42*$inch kill=$killshld ironColor=1,0,0 ironWidth=42*$inch ironHeight=28*$inch ironLength=42*$inch
 place M1 By=1.8*$Bscale rotation=Y-13+5 z=4228.9 x=-945.7
 
