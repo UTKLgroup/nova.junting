@@ -5,7 +5,7 @@ param inch=25.4
 param first=0
 param last=300000
 param killshld=0
-param Bscale=0.5
+param Bscale=1.
 param FramKill=0
 g4ui when=4 "/vis/viewer/set/background 1 1 1"
 
@@ -62,13 +62,8 @@ place Det rename=Det2   z=3181.9215 x=-738.0351 y=0.0762 rotation=y-13
 place ChFram            z=3181.9215 x=-738.0351 y=0.0762 rotation=y-13
 
 # 10 degree bend
-genericbend NDB fieldWidth=317.5 fieldHeight=142.24 fieldLength=591.0 kill=$killshld ironColor=1,0,0 ironWidth=533.4 ironHeight=474.675 ironLength=466.725
-param B1=-0.35*$Bscale
-param B1z=3889.88
-param B2=-0.35*$Bscale
-param B2z=4567.92
-place NDB rename=NDB22 By=$B1 z=$B1z rotation=Y-13+2.5 x=-898.05
-place NDB rename=NDB21 By=$B2 z=$B2z  rotation=Y-5.5 x=-993.34
+genericbend M1 fieldWidth=4*$inch fieldHeight=3.5*$inch fieldLength=42*$inch kill=$killshld ironColor=1,0,0 ironWidth=42*$inch ironHeight=28*$inch ironLength=42*$inch
+place M1 By=1.8*$Bscale rotation=Y-13+5 z=4228.9 x=-945.7
 
 # wire chamber
 place Det rename=Det3 z=5167.5665 x=-1064.133 y=-2.921 rotation=y-3
