@@ -1,20 +1,19 @@
-param worldMaterial=Air
 physics QGSP_BIC
-param inch=25.4
+param worldMaterial=Air
 param histoFile=beam.root
+param inch=25.4
 param first=0
 param last=300000
-param sinUS=0.224951054 #sin (13 deg)
-param cosUS=0.974370065 #cos (13 deg)
-param sinDS=0.052335956 #sin (3 deg)
-param cosDS=0.998629535 #cos (3 deg)
 param killshld=0
 param Bscale=0.5
+param FramKill=0
 g4ui when=4 "/vis/viewer/set/background 1 1 1"
 
+# beam
 beam gaussian particle=pi+ firstEvent=$first lastEvent=$last sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=64000.0
 trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton
 
+# target
 box slab height=31.75 length=209.55 width=6.35 material=Cu color=1,0.01,0.01
 place slab rename=slabMinus2 x=+2*(31.75)/5 z=-2*22.145
 place slab rename=slabMinus1 x=+1*(31.75)/5 z=-1*22.145
@@ -22,7 +21,7 @@ place slab rename=slabCenter  x=0*(31.75)/5  z=0*22.145
 place slab rename=slabPlus2  x=-1*(31.75)/5 z=+1*22.145
 place slab rename=slabPlus2  x=-2*(31.75)/5 z=+2*22.145
 
-# collimator
+# upstream collimator
 group  NewCol
   box  botslab height=5.19*25.4 length=58.00*25.4  width=32.0*25.4  material=Fe color=0,1,1 kill=$killshld
   box  topbot  height=5.19*25.4 length=42.76*25.4  width=32.0*25.4  material=Fe color=0,1,1 kill=$killshld
@@ -37,7 +36,16 @@ group  NewCol
 endgroup
 place NewCol z=(29.0+7.62)*25.4    x=-8.315*25.4+40.0  rotation=y3
 
-param FramKill=0
+# fake detector
+virtualdetector StartLine radius=1750.0 length=1 material=Air color=0.9,0.9,0.7
+place StartLine rotation=y-13 z=1400.0-26.4 x=-335.0+5.7
+
+# upstream tof counter
+param TOFusThick=50.8
+virtualdetector TOFus width=150 height=150 length=$TOFusThick material=LUCITE color=0.05,0.05,0.93
+place TOFus rotation=z45,y-13 z=1423.0 x=-346.54341
+
+# wire chambers
 group ChFram
   box FramS height=254.0 width=63.0  length=25.0 color=1,0,1 kill=$FramKill material=Al
   box FramT height=63.0  width=128.0 length=25.0 color=1,0,1 kill=$FramKill material=Al
@@ -47,34 +55,26 @@ group ChFram
   place FramT rename=FrameTop	 z=0.0 y=+95.5
 endgroup
 
-# Fake Detector
-virtualdetector StartLine radius=1750.0 length=1 material=Air color=0.9,0.9,0.7
-place StartLine rotation=y-13 z=1400.0-26.4 x=-335.0+5.7
-
-# time of flight (TOF) counter
-param TOFusThick=50.8
-virtualdetector TOFus width=150 height=150 length=$TOFusThick material=LUCITE color=0.05,0.05,0.93
-place TOFus rotation=z45,y-13 z=1423.0 x=-346.54341
-
 virtualdetector Det  width=128.0  height=125.0 color=0,1,0  length=25.0
 place Det rename=Det1   z=1730.3369 x=-403.0472 y=0.0508 rotation=y-13
 place ChFram            z=1730.3369 x=-403.0472 y=0.0508 rotation=y-13
 place Det rename=Det2   z=3181.9215 x=-738.0351 y=0.0762 rotation=y-13
 place ChFram            z=3181.9215 x=-738.0351 y=0.0762 rotation=y-13
 
-# total 10 deg bend
+# 10 degree bend
 genericbend NDB fieldWidth=317.5 fieldHeight=142.24 fieldLength=591.0 kill=$killshld ironColor=1,0,0 ironWidth=533.4 ironHeight=474.675 ironLength=466.725
 param B1=-0.35*$Bscale
 param B1z=3889.88
 param B2=-0.35*$Bscale
 param B2z=4567.92
-
 place NDB rename=NDB22 By=$B1 z=$B1z rotation=Y-13+2.5 x=-898.05
 place NDB rename=NDB21 By=$B2 z=$B2z  rotation=Y-5.5 x=-993.34
+
+# wire chamber
 place Det rename=Det3 z=5167.5665 x=-1064.133 y=-2.921 rotation=y-3
 place ChFram          z=5167.5665 x=-1064.133 y=-2.921 rotation=y-3
 
-# downstream aperture collimator
+# downstream collimator
 group DScoll
   box dstb   height=8.5*$inch length=36*$inch width=30*$inch material=Fe color=0,1,1 kill=$killshld
   box dsside height=6*$inch  length=36*$inch width=11*$inch  material=Fe color=0,.8,1 kill=$killshld
@@ -86,11 +86,11 @@ group DScoll
 endgroup
 place DScoll z=6188.0 x=-1077 rotation=y-3.0
 
-# complex group of detectors right before the TiWindow
+# wire chamber
 place Det rename=Det4 z=7606.4872 x=-1195.0827 y=-20.4724 rotation=y-3
 place ChFram          z=7606.4872 x=-1195.0827 y=-20.4724 rotation=y-3
 
-# downstream TOF counter
+# downstream tof counter
 param TOFdsThick=50.8
 param TOFdsHeight=130.0
 virtualdetector TOFds width=$TOFdsHeight height=$TOFdsHeight length=$TOFdsThick material=LUCITE color=0.05,0.05,0.93
