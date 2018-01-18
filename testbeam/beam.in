@@ -7,7 +7,10 @@ param last=300000
 param killshld=0
 param Bscale=1.
 param FramKill=0
-g4ui when=4 "/vis/viewer/set/background 1 1 1"
+# g4ui when=4 "/vis/viewer/set/background 1 1 1"
+g4ui when=4 "/vis/viewer/set/viewpointVector 0 1 0"
+g4ui when=4 "/vis/viewer/set/style wireframe"
+g4ui when=4 "/vis/filtering/trajectories/create/particleFilter"
 
 # beam
 beam gaussian particle=pi+ firstEvent=$first lastEvent=$last sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=64000.0
