@@ -332,7 +332,7 @@ def plot_cherenkov():
 
 
 def plot_time_of_flight():
-    distance = 10.            # m
+    distance = 6.075            # m
     names = ['proton', 'K+', 'pi+', 'mu+', 'e+']
     masses = list(map(lambda x: PDG.GetParticle(x).Mass(), names)) # GeV
     colors = [kRed + 2, kMagenta + 2, kBlue + 2, kGreen + 2, kBlack]
@@ -342,7 +342,7 @@ def plot_time_of_flight():
     for i in range(len(names)):
         tofs= []
         for momentum in momentums:
-            tof = distance / SPEED_OF_LIGHT * (1. + (masses[i] / momentum)**2)**0.5 * 1.e9
+            tof = distance / SPEED_OF_LIGHT * (1. + (masses[i] / momentum)**2)**0.5 * 1.e12
             tofs.append(tof)
         ttofs.append(tofs)
 
@@ -352,21 +352,23 @@ def plot_time_of_flight():
         gr.SetLineColor(colors[i])
         grs.append(gr)
 
-    c1 = TCanvas('c1', 'c1', 800, 600)
+    c1 = TCanvas('c1', 'c1', 800, 800)
     set_margin()
+    # gPad.SetLogx()
     gPad.SetLogy()
-    gPad.SetLogx()
-
+    gPad.SetGrid()
 
     lg1 = TLegend(0.65, 0.5, 0.9, 0.85)
     set_legend_style(lg1)
 
+    set_graph_style(grs[0])
     grs[0].Draw('AL')
     grs[0].GetXaxis().SetRangeUser(0, 3)
     grs[0].GetXaxis().SetTitle('Momentum (GeV)')
-    grs[0].GetYaxis().SetTitle('Time of Flight (ns)')
-    grs[0].GetYaxis().SetRangeUser(10., 1.e5)
-    set_graph_style(grs[0])
+    grs[0].GetYaxis().SetTitle('Time of Flight (ps)')
+    grs[0].GetYaxis().SetRangeUser(9.9e3, 2.e5)
+    grs[0].GetXaxis().SetRangeUser(1.e-1, 3.)
+    grs[0].GetYaxis().SetTitleOffset(1.8)
     lg1.AddEntry(grs[0], names[0], 'l')
 
     for i in range(1, len(names)):
@@ -380,11 +382,78 @@ def plot_time_of_flight():
     input('Press any key to continue.')
 
 
+def plot_time_of_flight_diff():
+    distance = 6.075            # m
+    # distance = 9.1            # m
+    # distance = 12.            # m
+    names = ['proton', 'K+', 'pi+', 'mu+', 'e+']
+    masses = list(map(lambda x: PDG.GetParticle(x).Mass(), names)) # GeV
+    colors = [kRed + 2, kMagenta + 2, kBlue + 2, kGreen + 2, kBlack]
+    name_diffs = ['proton - K+', 'K+ - pi+', 'pi+ - mu+', 'mu+ - e+']
+
+    momentums = np.arange(0.001, 10, 0.001)
+    ttofs = []
+    for i in range(len(names)):
+        tofs= []
+        for momentum in momentums:
+            tof = distance / SPEED_OF_LIGHT * (1. + (masses[i] / momentum)**2)**0.5 * 1.e12
+            # tof /= 35.
+            tofs.append(tof)
+        ttofs.append(tofs)
+
+    ttof_diffs = []
+    for i in range(len(ttofs) - 1):
+        tof_diffs = []
+        for j in range(len(ttofs[i])):
+            tof_diff = ttofs[i][j] - ttofs[i + 1][j]
+            tof_diffs.append(tof_diff)
+        ttof_diffs.append(tof_diffs)
+
+    grs = []
+    for i in range(len(ttof_diffs)):
+        gr = TGraph(len(momentums), np.array(momentums), np.array(ttof_diffs[i]))
+        gr.SetLineColor(colors[i])
+        grs.append(gr)
+
+    c1 = TCanvas('c1', 'c1', 800, 800)
+    set_margin()
+    gPad.SetLogy()
+    gPad.SetGrid()
+
+    lg1 = TLegend(0.5, 0.6, 0.85, 0.9)
+    set_legend_style(lg1)
+
+    set_graph_style(grs[0])
+    grs[0].Draw('AL')
+    grs[0].GetXaxis().SetTitle('Momentum (GeV)')
+    grs[0].GetYaxis().SetTitle('Time of Flight (ps)')
+    grs[0].GetYaxis().SetRangeUser(10, 1.e6)
+    grs[0].GetXaxis().SetRangeUser(0., 3.)
+    grs[0].GetYaxis().SetTitleOffset(1.8)
+    lg1.AddEntry(grs[0], name_diffs[0], 'l')
+
+    for i in range(1, len(grs)):
+        set_graph_style(grs[i])
+        grs[i].Draw('sames,L')
+        lg1.AddEntry(grs[i], name_diffs[i], 'l')
+
+    tl = TLine(0., 200., 3., 200.)
+    tl.SetLineWidth(3)
+    tl.SetLineStyle(7)
+    tl.Draw('sames')
+    lg1.AddEntry(tl, 'timing resolution', 'l')
+    lg1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_time_of_flight_diff.pdf'.format(figure_dir))
+    input('Press any key to continue.')
+
+
 # 20180109_testbeam_momentum_pid
 # plot_p_vs_angle()
 # plot_cherenkov()
 plot_time_of_flight()
-
+# plot_time_of_flight_diff()
 
 # 20171211_test_beam_geometry
 # get_particle_count_filter()
