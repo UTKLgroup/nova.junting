@@ -586,43 +586,54 @@ def plot_m1_upstream():
     input('Press any key to continue.')
 
 
-def plot_m1_updownstream():
+def plot_m1_block_momentum():
     h_up = TH1D('h_up', 'h_up', 30, 0., 15.)
-    h_down = TH1D('h_down', 'h_down', 30, 0., 15.)
+    h_downs = []
 
-    tf = TFile('magnet.root')
-    for event in tf.Get('VirtualDetector/UpstreamDetector'):
-        momentum = event.Pz / 1.e3
-        h_up.Fill(momentum)
+    filenames = ['magnet.1.8T.root', 'magnet.0.9T.root', 'magnet.0.4T.root']
+    colors = [kBlue + 2, kGreen + 2, kRed + 2]
+    b_fields = [1.8, 0.9, 0.4]
 
-    for event in tf.Get('VirtualDetector/DownstreamDetector'):
-        momentum = (event.Px**2 + event.Py**2 + event.Pz**2)**0.5 / 1.e3      # GeV
-        h_down.Fill(momentum)
+    for i, filename in enumerate(filenames):
+        tf = TFile(filename)
+        if i == 0:
+            for event in tf.Get('VirtualDetector/UpstreamDetector'):
+                momentum = event.Pz / 1.e3
+                h_up.Fill(momentum)
 
+        h_down = TH1D('h_down_{}'.format(i), 'h_down_{}'.format(i), 30, 0., 15.)
+        for event in tf.Get('VirtualDetector/DownstreamDetector'):
+            momentum = (event.Px**2 + event.Py**2 + event.Pz**2)**0.5 / 1.e3      # GeV
+            h_down.Fill(momentum)
+        h_down.SetDirectory(0)
+        tf.Close()
+        h_downs.append(h_down)
 
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
     gStyle.SetOptStat(0)
+    lg1 = TLegend(0.52, 0.17, 0.75, 0.42)
+    set_legend_style(lg1)
+
     set_h1_style(h_up)
-    h_up.GetYaxis().SetRangeUser(0, 5000)
+    h_up.GetYaxis().SetRangeUser(0, 4500)
     h_up.GetXaxis().SetTitle('Momentum (GeV)')
     h_up.GetYaxis().SetTitle('Particle Count')
     h_up.GetYaxis().SetTitleOffset(1.5)
+    h_up.SetLineColor(kBlack)
     h_up.Draw()
+    lg1.AddEntry(h_up, 'Before magnet', 'l')
 
-    set_h1_style(h_down)
-    h_down.SetLineColor(kRed + 1)
-    h_down.Draw('sames')
+    for i, h_down in enumerate(h_downs):
+        h_down.Draw('sames')
+        set_h1_style(h_down)
+        h_down.SetLineColor(colors[i])
+        lg1.AddEntry(h_down, 'After {} T magnet'.format(b_fields[i]), 'l')
 
-    lg1 = TLegend(0.55, 0.20, 0.78, 0.32)
-    set_legend_style(lg1)
-    lg1.AddEntry(h_up, 'Before magnet ', 'l')
-    lg1.AddEntry(h_down, 'After magnet ', 'l')
     lg1.Draw()
-
     c1.Update()
-    c1.SaveAs('{}/plot_m1_updownstream.pdf'.format(FIGURE_DIR))
-    c1.SaveAs('{}/plot_m1_updownstream.png'.format(FIGURE_DIR))
+    c1.SaveAs('{}/plot_m1_block_momentum.pdf'.format(FIGURE_DIR))
+    c1.SaveAs('{}/plot_m1_block_momentum.png'.format(FIGURE_DIR))
     input('Press any key to continue.')
 
 
@@ -684,6 +695,7 @@ def plot_p_vs_angle_max_angle():
 
     c1.Update()
     c1.SaveAs('{}/plot_p_vs_angle_max_angle.pdf'.format(FIGURE_DIR))
+    c1.SaveAs('{}/plot_p_vs_angle_max_angle.png'.format(FIGURE_DIR))
     input('Press any key to continue.')
 
 
@@ -693,7 +705,7 @@ def plot_p_vs_angle_max_angle():
 # get_min_momentum()
 # plot_m1_upstream()
 # plot_m1_downstream()
-# plot_m1_updownstream()
+# plot_m1_block_momentum()
 plot_p_vs_angle_max_angle()
 
 # 20180109_testbeam_momentum_pid
