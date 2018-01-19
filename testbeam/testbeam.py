@@ -1,12 +1,13 @@
 from rootalias import *
 from pprint import pprint
 import csv
-from math import pi, cos, sin
+from math import pi, cos, sin, atan
 import numpy as np
 
 
 PDG = TDatabasePDG()
-SPEED_OF_LIGHT = 3.e8           # m/s
+SPEED_OF_LIGHT = 3.e8              # m/s
+ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 FIGURE_DIR = '/Users/juntinghuang/beamer/20180109_testbeam_momentum_pid/figures'
 
 
@@ -449,10 +450,31 @@ def plot_time_of_flight_diff():
     input('Press any key to continue.')
 
 
+def compute_bending_angle():
+    b_field = 1.8
+    b_field_length = 42. * 2.54 / 100.
+
+    tf = TFile('magnet.root')
+    for event in tf.Get('VirtualDetector/Detector'):
+        theta = atan(event.Px / event.Pz)
+        theta_degree = theta * 180. / pi
+        momentum = (event.Px**2 + event.Pz**2)**0.5 / 1.e3      # GeV
+        momentum_reconstruct = b_field * b_field_length / theta # si unit
+        momentum_reconstruct = momentum_reconstruct * SPEED_OF_LIGHT / 1.e9 # GeV
+        print('momentum = ', momentum)
+        print('momentum_reconstruct = ', momentum_reconstruct)
+        print('theta = ', theta)
+        print('theta_degree = ', theta_degree)
+        break
+
+
+# 20180118_testbeam_m1_magnet
+compute_bending_angle()
+
 # 20180109_testbeam_momentum_pid
 # plot_p_vs_angle()
 # plot_cherenkov()
-plot_time_of_flight()
+# plot_time_of_flight()
 # plot_time_of_flight_diff()
 
 # 20171211_test_beam_geometry
