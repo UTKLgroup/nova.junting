@@ -582,12 +582,54 @@ def plot_m1_upstream():
     c1.SaveAs('{}/plot_m1_upstream.pdf'.format(FIGURE_DIR))
     input('Press any key to continue.')
 
+
+def plot_m1_updownstream():
+    h_up = TH1D('h_up', 'h_up', 30, 0., 15.)
+    h_down = TH1D('h_down', 'h_down', 30, 0., 15.)
+
+    tf = TFile('magnet.root')
+    for event in tf.Get('VirtualDetector/UpstreamDetector'):
+        momentum = event.Pz / 1.e3
+        h_up.Fill(momentum)
+
+    for event in tf.Get('VirtualDetector/DownstreamDetector'):
+        momentum = (event.Px**2 + event.Py**2 + event.Pz**2)**0.5 / 1.e3      # GeV
+        h_down.Fill(momentum)
+
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gStyle.SetOptStat(0)
+    set_h1_style(h_up)
+    h_up.GetYaxis().SetRangeUser(0, 5000)
+    h_up.GetXaxis().SetTitle('Momentum (GeV)')
+    h_up.GetYaxis().SetTitle('Particle Count')
+    h_up.GetYaxis().SetTitleOffset(1.5)
+    h_up.Draw()
+
+    set_h1_style(h_down)
+    h_down.SetLineColor(kRed + 1)
+    h_down.Draw('sames')
+
+    lg1 = TLegend(0.55, 0.20, 0.78, 0.32)
+    set_legend_style(lg1)
+    lg1.AddEntry(h_up, 'Before magnet ', 'l')
+    lg1.AddEntry(h_down, 'After magnet ', 'l')
+    lg1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_m1_updownstream.pdf'.format(FIGURE_DIR))
+    c1.SaveAs('{}/plot_m1_updownstream.png'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
 # 20180118_testbeam_m1_magnet
 # compute_bending_angle()
 # compute_b_times_l()
 # get_min_momentum()
 # plot_m1_upstream()
-plot_m1_downstream()
+# plot_m1_downstream()
+plot_m1_updownstream()
 
 # 20180109_testbeam_momentum_pid
 # plot_p_vs_angle()
