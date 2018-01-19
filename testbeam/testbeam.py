@@ -9,7 +9,8 @@ PDG = TDatabasePDG()
 SPEED_OF_LIGHT = 3.e8              # m/s
 ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
-FIGURE_DIR = '/Users/juntinghuang/beamer/20180109_testbeam_momentum_pid/figures'
+DEGREE_TO_RADIAN = 3.14 / 180.
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180118_testbeam_m1_magnet/figures'
 
 
 def get_particle_filter():
@@ -482,7 +483,7 @@ def compute_b_times_l():
 
 def get_min_momentum():
     b_field = 1.8                  # T
-    sagitta = 6. * INCH_TO_METER # m
+    sagitta = 4. * INCH_TO_METER # m
     half_chord = 42. * INCH_TO_METER # m
 
     min_radius = sagitta / 2. + half_chord**2 / (2. * sagitta)
@@ -494,11 +495,99 @@ def get_min_momentum():
     print('min_momentum_gev = ', min_momentum_gev)
     print('max_theta_degree = ', max_theta_degree)
 
+    return min_momentum_gev, max_theta_degree
+
+
+def plot_m1_downstream():
+    h1 = TH2D('h1', 'h1', 900, 0., 90., 600, 0., 15.)
+
+    tf = TFile('magnet.root')
+    event_count = 0
+    for event in tf.Get('VirtualDetector/DownstreamDetector'):
+        theta = abs(atan(event.Px / event.Pz))
+        theta_degree = theta * 180. / pi
+        momentum = (event.Px**2 + event.Py**2 + event.Pz**2)**0.5 / 1.e3      # GeV
+        h1.Fill(theta_degree, momentum)
+        event_count += 1
+        # if event_count == 1000:
+            # break
+
+    b_field = 1.8
+    field_length = 42. * INCH_TO_METER
+    degrees = np.arange(0.1, 15., 0.1)
+    momentums = []
+    for degree in degrees:
+        momentum = b_field * field_length * SPEED_OF_LIGHT / (degree * DEGREE_TO_RADIAN) * 1.e-9 # MeV
+        momentums.append(momentum)
+    gr = TGraph(len(degrees), np.array(degrees), np.array(momentums))
+
+    min_momentum_gev, max_theta_degree = get_min_momentum()
+    tl = TLine(max_theta_degree, 0, max_theta_degree, 15)
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    gStyle.SetOptStat(0)
+    set_margin()
+    gPad.SetRightMargin(0.2)
+    gPad.SetLogz()
+    set_h2_color_style()
+
+    set_h2_style(h1)
+    h1.GetYaxis().SetTitle('Momentum (GeV)')
+    h1.GetXaxis().SetTitle('Bending Angle (degree)')
+
+    h1.GetXaxis().SetRangeUser(0, 12)
+    h1.Draw('colz')
+
+    set_graph_style(gr)
+    gr.SetLineColor(kBlue)
+    gr.SetLineStyle(7)
+    gr.Draw('sames,L')
+
+    tl.SetLineWidth(3)
+    tl.SetLineColor(kMagenta + 1)
+    tl.SetLineStyle(10)
+    tl.Draw()
+
+    lg1 = TLegend(0.17, 0.17, 0.39, 0.29)
+    set_legend_style(lg1)
+    lg1.AddEntry(gr, 'Calculated P vs. #theta', 'l')
+    lg1.AddEntry(tl, 'Calculated maximum #theta', 'l')
+    lg1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_m1_downstream.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
+def plot_m1_upstream():
+    h1 = TH1D('h1', 'h1', 30, 0., 15.)
+
+    tf = TFile('magnet.root')
+    for event in tf.Get('VirtualDetector/UpstreamDetector'):
+        # momentum = (event.Px**2 + event.Py**2 + event.Pz**2)**0.5 / 1.e3      # GeV
+        momentum = event.Pz / 1.e3
+        h1.Fill(momentum)
+        # break
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    set_h1_style(h1)
+    h1.GetYaxis().SetRangeUser(0, 5000)
+    h1.GetXaxis().SetTitle('Momentum (GeV)')
+    h1.GetYaxis().SetTitle('Particle Count')
+    h1.GetYaxis().SetTitleOffset(1.5)
+    h1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_m1_upstream.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
 # 20180118_testbeam_m1_magnet
 # compute_bending_angle()
 # compute_b_times_l()
-get_min_momentum()
-
+# get_min_momentum()
+# plot_m1_upstream()
+plot_m1_downstream()
 
 # 20180109_testbeam_momentum_pid
 # plot_p_vs_angle()

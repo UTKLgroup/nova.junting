@@ -1,0 +1,26 @@
+physics QGSP_BIC
+param histoFile=magnet.test.root
+param inch=25.4
+param Bscale=1.
+g4ui when=4 "/vis/viewer/set/background 1 1 1"
+g4ui when=4 "/vis/viewer/set/viewpointVector 0 1 0"
+g4ui when=4 "/vis/viewer/set/style wireframe"
+# g4ui when=4 "/vis/filtering/trajectories/create/particleFilter"
+
+param apertureWidth=4*$inch
+param apertureHeight=3.5*$inch
+
+# beam
+# beam rectangular beamWidth=$apertureWidth beamHeight=$apertureHeight particle=pi+ firstEvent=0 lastEvent=1000000 beamZ=0. meanMomentum=2000. sigmaP=100000.
+beam gaussian particle=pi+ firstEvent=0 lastEvent=1 beamZ=0. meanMomentum=8000.
+trackcuts keep=pi+
+
+# detectors
+# virtualdetector Detector radius=1750. length=1 material=Vacuum color=0.9,0.9,0.7
+virtualdetector Detector radius=1750. length=1 material=Vacuum color=0,0,0
+place Detector rename=UpstreamDetector z=100.
+place Detector rename=DownstreamDetector z=2000.
+
+# bending magnet
+genericbend M1 fieldWidth=$apertureWidth fieldHeight=$apertureHeight fieldLength=42*$inch kill=1 ironColor=1,0,0 ironWidth=42*$inch ironHeight=28*$inch ironLength=42*$inch
+place M1 By=1.8*$Bscale z=1000.
