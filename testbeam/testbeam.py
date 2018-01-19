@@ -481,10 +481,13 @@ def compute_b_times_l():
     print('bl = ', bl)
 
 
-def get_min_momentum():
-    b_field = 1.8                  # T
-    sagitta = 4. * INCH_TO_METER # m
-    half_chord = 42. * INCH_TO_METER # m
+def get_min_momentum(**kwargs):
+    b_field = kwargs.get('b_field', 1.8) # T
+    b_field_length = kwargs.get('b_field_length', 42. * INCH_TO_METER)
+    aperture_width = kwargs.get('aperture_width', 4. * INCH_TO_METER)
+
+    sagitta = aperture_width
+    half_chord = b_field_length
 
     min_radius = sagitta / 2. + half_chord**2 / (2. * sagitta)
     min_momentum_si = ELEMENTARY_CHARGE * min_radius * b_field
@@ -623,13 +626,75 @@ def plot_m1_updownstream():
     input('Press any key to continue.')
 
 
+def plot_p_vs_angle_max_angle():
+    field_length = 42. * INCH_TO_METER # m
+
+    min_momentum_gev, max_theta_degree = get_min_momentum()
+    tl = TLine(max_theta_degree, 0, max_theta_degree, 15)
+
+    b_fields = [1.8, 0.9, 0.4]
+    colors = [kBlue + 2, kGreen + 2, kRed + 2]
+    degrees = np.arange(0.1, 16., 0.1)
+
+    b_field_momentums = []
+    for b_field in b_fields:
+        momentums = []
+        for degree in degrees:
+            momentum = b_field * field_length * SPEED_OF_LIGHT / (degree * DEGREE_TO_RADIAN) * 1.e-9 # GeV
+            momentums.append(momentum)
+        b_field_momentums.append(momentums)
+
+    print(degrees)
+    print(momentums)
+
+    grs = []
+    for b_field_momentum in b_field_momentums:
+        gr = TGraph(len(degrees), np.array(degrees), np.array(b_field_momentum))
+        set_graph_style(gr)
+        gr.SetMarkerStyle(24)
+        grs.append(gr)
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    lg1 = TLegend(0.34, 0.64, 0.58, 0.86)
+    set_legend_style(lg1)
+    gPad.SetGrid()
+
+    grs[0].Draw('AL')
+    grs[0].GetXaxis().SetRangeUser(0., 16.)
+    grs[0].GetYaxis().SetRangeUser(0., 15.)
+    grs[0].GetXaxis().SetTitle('Bending Angle #theta (degree)')
+    grs[0].GetYaxis().SetTitle('Particle Momentum (GeV)')
+    grs[0].GetYaxis().SetTitleOffset(1.5)
+    grs[0].SetLineColor(colors[0])
+    lg1.AddEntry(grs[0], 'B = {} T'.format(b_fields[0]), 'l')
+
+    for i in range(1, len(grs)):
+        grs[i].Draw('sames,L')
+        grs[i].SetLineColor(colors[i])
+        lg1.AddEntry(grs[i], 'B = {} T'.format(b_fields[i]), 'l')
+
+    tl.SetLineWidth(3)
+    tl.SetLineColor(kMagenta + 1)
+    tl.SetLineStyle(10)
+    tl.Draw()
+    lg1.AddEntry(tl, 'Maximum #theta', 'l')
+
+    lg1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_p_vs_angle_max_angle.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
 # 20180118_testbeam_m1_magnet
 # compute_bending_angle()
 # compute_b_times_l()
 # get_min_momentum()
 # plot_m1_upstream()
 # plot_m1_downstream()
-plot_m1_updownstream()
+# plot_m1_updownstream()
+plot_p_vs_angle_max_angle()
 
 # 20180109_testbeam_momentum_pid
 # plot_p_vs_angle()
