@@ -8,6 +8,7 @@ import numpy as np
 PDG = TDatabasePDG()
 SPEED_OF_LIGHT = 3.e8              # m/s
 ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
+INCH_TO_METER = 2.54 / 100.
 FIGURE_DIR = '/Users/juntinghuang/beamer/20180109_testbeam_momentum_pid/figures'
 
 
@@ -468,8 +469,36 @@ def compute_bending_angle():
         break
 
 
+def compute_b_times_l():
+    momentum_gev = 2.           # GeV
+    theta_degree = 16.          # degree
+
+    momentum_si = momentum_gev * 1.e9 * ELEMENTARY_CHARGE / SPEED_OF_LIGHT
+    theta_radian = theta_degree * pi / 180.
+
+    bl = momentum_si / ELEMENTARY_CHARGE * theta_radian
+    print('bl = ', bl)
+
+
+def get_min_momentum():
+    b_field = 1.8                  # T
+    sagitta = 6. * INCH_TO_METER # m
+    half_chord = 42. * INCH_TO_METER # m
+
+    min_radius = sagitta / 2. + half_chord**2 / (2. * sagitta)
+    min_momentum_si = ELEMENTARY_CHARGE * min_radius * b_field
+    min_momentum_gev = min_momentum_si * SPEED_OF_LIGHT / ELEMENTARY_CHARGE / 1.e9
+    max_theta_radian = half_chord / min_radius
+    max_theta_degree = max_theta_radian * 180. / pi
+
+    print('min_momentum_gev = ', min_momentum_gev)
+    print('max_theta_degree = ', max_theta_degree)
+
 # 20180118_testbeam_m1_magnet
-compute_bending_angle()
+# compute_bending_angle()
+# compute_b_times_l()
+get_min_momentum()
+
 
 # 20180109_testbeam_momentum_pid
 # plot_p_vs_angle()
