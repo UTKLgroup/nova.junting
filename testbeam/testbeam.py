@@ -703,9 +703,7 @@ def plot_max_theta():
     b_field = 1.8               # T
     b_field_length = 42. * INCH_TO_METER # m
 
-
     aperture_widths = np.arange(0., 10., 0.1)
-
     max_theta_degrees = []
     for aperture_width in aperture_widths:
         min_momentum_gev, max_theta_degree = get_min_momentum(b_field=b_field,
