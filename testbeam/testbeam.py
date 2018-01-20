@@ -689,7 +689,7 @@ def plot_p_vs_angle_max_angle():
     tl.SetLineColor(kMagenta + 1)
     tl.SetLineStyle(10)
     tl.Draw()
-    lg1.AddEntry(tl, 'Maximum #theta', 'l')
+    lg1.AddEntry(tl, '#theta_{max}', 'l')
 
     lg1.Draw()
 
@@ -733,8 +733,8 @@ def plot_max_theta():
 # plot_m1_upstream()
 # plot_m1_downstream()
 # plot_m1_block_momentum()
-# plot_p_vs_angle_max_angle()
-plot_max_theta()
+plot_p_vs_angle_max_angle()
+# plot_max_theta()
 
 # 20180109_testbeam_momentum_pid
 # plot_p_vs_angle()
