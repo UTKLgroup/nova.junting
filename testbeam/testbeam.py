@@ -501,6 +501,20 @@ def get_min_momentum(**kwargs):
     return min_momentum_gev, max_theta_degree
 
 
+def get_max_theta(**kwargs):
+    b_field_length = kwargs.get('b_field_length', 42. * INCH_TO_METER)
+    aperture_width = kwargs.get('aperture_width', 4. * INCH_TO_METER)
+
+    sagitta = aperture_width
+    half_chord = b_field_length
+
+    min_radius = sagitta / 2. + half_chord**2 / (2. * sagitta)
+    max_theta_radian = half_chord / min_radius
+    max_theta_degree = max_theta_radian * 180. / pi
+
+    return max_theta_radian, max_theta_degree
+
+
 def plot_m1_downstream():
     h1 = TH2D('h1', 'h1', 900, 0., 90., 600, 0., 15.)
 
@@ -724,6 +738,54 @@ def plot_max_theta():
     c1.SaveAs('{}/plot_max_theta.pdf'.format(FIGURE_DIR))
     input('Press any key to continue.')
 
+
+def plot_min_b_field():
+    # aperture_width = 4. * INCH_TO_METER
+    b_field_length = 42. * INCH_TO_METER
+
+    aperture_widths = [4., 6.]  # inch
+    min_momentum_gevs = np.arange(0.1, 1, 0.1)
+    grs = []
+    for aperture_width in aperture_widths:
+        aperture_width *= INCH_TO_METER
+        min_b_fields = []
+        for min_momentum_gev in min_momentum_gevs:
+            min_momentum_si = min_momentum_gev * 1.e9 / SPEED_OF_LIGHT * ELEMENTARY_CHARGE
+            max_theta_radian, max_theta_degree = get_max_theta(b_field_length=b_field_length, aperture_width=aperture_width)
+            min_b_field = min_momentum_si * max_theta_radian / ELEMENTARY_CHARGE / b_field_length
+            min_b_fields.append(min_b_field)
+            # print('min_momentum_si = ', min_momentum_si)
+            # print('max_theta_radian = ', max_theta_radian)
+            # print('max_theta_degree = ', max_theta_degree)
+            # print('min_b_field = ', min_b_field)
+        gr = TGraph(len(min_momentum_gevs), np.array(min_momentum_gevs), np.array(min_b_fields))
+        set_graph_style(gr)
+        grs.append(gr)
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+
+    lg1 = TLegend(0.18, 0.74, 0.44, 0.86)
+    set_legend_style(lg1)
+    gPad.SetGrid()
+
+    grs[0].Draw('AL')
+    grs[0].GetXaxis().SetTitle('Minimum Momentum (GeV)')
+    grs[0].GetYaxis().SetTitle('Minimum B Field (T)')
+    grs[0].GetYaxis().SetRangeUser(0., 0.8)
+    lg1.AddEntry(grs[0], '{:.0f} inch wide aperture'.format(aperture_widths[0]), 'l')
+
+    grs[1].Draw('sames,L')
+    grs[1].SetLineColor(kBlue + 1)
+    lg1.AddEntry(grs[1], '{:.0f} inch wide aperture'.format(aperture_widths[1]), 'l')
+
+    lg1.Draw()
+    c1.Update()
+    # c1.SaveAs('{}/plot_min_b_field.pdf'.format(FIGURE_DIR))
+    c1.SaveAs('{}/plot_min_b_field.png'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
 # 20180118_testbeam_m1_magnet
 # compute_bending_angle()
 # compute_b_times_l()
@@ -731,8 +793,9 @@ def plot_max_theta():
 # plot_m1_upstream()
 # plot_m1_downstream()
 # plot_m1_block_momentum()
-plot_p_vs_angle_max_angle()
+# plot_p_vs_angle_max_angle()
 # plot_max_theta()
+plot_min_b_field()
 
 # 20180109_testbeam_momentum_pid
 # plot_p_vs_angle()
