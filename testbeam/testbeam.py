@@ -675,7 +675,7 @@ def plot_p_vs_angle_max_angle():
     grs[0].GetXaxis().SetRangeUser(0., 16.)
     grs[0].GetYaxis().SetRangeUser(0., 15.)
     grs[0].GetXaxis().SetTitle('Bending Angle #theta (degree)')
-    grs[0].GetYaxis().SetTitle('Particle Momentum (GeV)')
+    grs[0].GetYaxis().SetTitle('Momentum (GeV)')
     grs[0].GetYaxis().SetTitleOffset(1.5)
     grs[0].SetLineColor(colors[0])
     lg1.AddEntry(grs[0], 'B = {} T'.format(b_fields[0]), 'l')
@@ -699,6 +699,33 @@ def plot_p_vs_angle_max_angle():
     input('Press any key to continue.')
 
 
+def plot_max_theta():
+    b_field = 1.8               # T
+    b_field_length = 42. * INCH_TO_METER # m
+
+
+    aperture_widths = np.arange(0., 10., 0.1)
+
+    max_theta_degrees = []
+    for aperture_width in aperture_widths:
+        min_momentum_gev, max_theta_degree = get_min_momentum(b_field=b_field,
+                                                              b_field_length=b_field_length,
+                                                              aperture_width=aperture_width * INCH_TO_METER)
+        max_theta_degrees.append(max_theta_degree)
+    gr = TGraph(len(aperture_widths), np.array(aperture_widths), np.array(max_theta_degrees))
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetGrid()
+
+    set_graph_style(gr)
+    gr.GetXaxis().SetTitle('Aperture Width W (inch)')
+    gr.GetYaxis().SetTitle('#theta_{max} (degree)')
+    gr.Draw('AL')
+
+    c1.Update()
+    c1.SaveAs('{}/plot_max_theta.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
 # 20180118_testbeam_m1_magnet
 # compute_bending_angle()
 # compute_b_times_l()
@@ -706,7 +733,8 @@ def plot_p_vs_angle_max_angle():
 # plot_m1_upstream()
 # plot_m1_downstream()
 # plot_m1_block_momentum()
-plot_p_vs_angle_max_angle()
+# plot_p_vs_angle_max_angle()
+plot_max_theta()
 
 # 20180109_testbeam_momentum_pid
 # plot_p_vs_angle()
