@@ -771,7 +771,7 @@ def plot_min_b_field():
 
     grs[0].Draw('AL')
     grs[0].GetXaxis().SetTitle('Minimum Momentum (GeV)')
-    grs[0].GetYaxis().SetTitle('Minimum B Field (T)')
+    grs[0].GetYaxis().SetTitle('Required B Field (T)')
     grs[0].GetYaxis().SetRangeUser(0., 0.8)
     lg1.AddEntry(grs[0], '{:.0f} inch wide aperture'.format(aperture_widths[0]), 'l')
 
