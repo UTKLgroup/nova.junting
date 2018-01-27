@@ -10,7 +10,7 @@ SPEED_OF_LIGHT = 3.e8              # m/s
 ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
-FIGURE_DIR = '/Users/juntinghuang/beamer/20180118_testbeam_m1_magnet/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180123_testbeam_cu_target/figures'
 
 
 def get_particle_filter():
@@ -786,6 +786,52 @@ def plot_min_b_field():
     input('Press any key to continue.')
 
 
+def plot_target():
+    tf = TFile('target.root')
+    h_py = TH1D('h_py', 'h_py', 100, 0, 25)
+
+    pdgs = [11, -11, -13, 13, 211, -211, 2212, -2212, 2112, -2112, 22]
+    h_pdg_pxy_thetas = {}
+    h_pdg_pxys = {}
+
+    for pdg in pdgs:
+        name = PDG.GetParticle(pdg).GetName()
+        h_pxy_theta = TH2D('h_pxy_theta_{}'.format(name), 'h_pxy_theta_{}'.format(name), 100, -180, 180, 100, 0, 2)
+        set_h2_style(h_pxy_theta)
+        h_pdg_pxy_thetas[pdg] = h_pxy_theta
+
+        h_pxy = TH1D('h_pxy_{}'.format(name), 'h_pxy_{}'.format(name), 100, 0, 2)
+        set_h1_style(h_pxy)
+        h_pdg_pxys[pdg] = h_pxy
+
+    for event in tf.Get('VirtualDetector/Detector'):
+        theta = atan(event.Px / event.Pz)
+        theta_degree = theta * 180. / pi
+        momentum = (event.Px**2 + event.Pz**2)**0.5 / 1.e3      # GeV
+        h_py.Fill(event.Py / 1.e3)                              # GeV
+        if event.PDGid in pdgs:
+            h_pdg_pxy_thetas[event.PDGid].Fill(theta_degree, momentum)
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    set_h2_color_style()
+
+    # gPad.SetLogy()
+    # set_h1_style(h_py)
+    # h_py.Draw()
+
+    gStyle.SetOptStat(0)
+    gPad.SetRightMargin(0.2)
+    h_pdg_pxy_thetas[211].Draw('colz')
+
+    c1.Update()
+    c1.SaveAs('{}/plot_target.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
+# 20180123_testbeam_cu_target
+plot_target()
+
 # 20180118_testbeam_m1_magnet
 # compute_bending_angle()
 # compute_b_times_l()
@@ -795,7 +841,7 @@ def plot_min_b_field():
 # plot_m1_block_momentum()
 # plot_p_vs_angle_max_angle()
 # plot_max_theta()
-plot_min_b_field()
+# plot_min_b_field()
 
 # 20180109_testbeam_momentum_pid
 # plot_p_vs_angle()
