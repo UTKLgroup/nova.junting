@@ -68,8 +68,9 @@ namespace evgen {
     void beginRun(art::Run &run);
     void endSubRun(art::SubRun &sr);
     const genie::EventRecordVisitorI* NeutronOscGenerator(void);
-    int SelectAnnihilationMode(int pdg_code);
-    void FillMCTruth(const genie::EventRecord *record, simb::MCTruth &truth);
+    int selectAnnihilationMode(int pdg_code);
+    void fillMCTruth(const genie::EventRecord* record, simb::MCTruth &truth);
+    void setRandomEventVertexPosition(genie::EventRecord* record);
 
   private:
 
@@ -77,6 +78,7 @@ namespace evgen {
     int fCycle;                            ///< cycle number in the MC generation
     int target;                            ///< pdg code of the target
     genie::NeutronOscMode_t gOptDecayMode; ///< neutron oscillation mode
+    bool randomVertexPosition;
     const genie::EventRecordVisitorI* mcgen;
   };
 };
@@ -85,12 +87,13 @@ namespace evgen {
 
   //___________________________________________________________________________
   GENIENeutronOscGen::GENIENeutronOscGen(fhicl::ParameterSet const& pset)
-    : fCycle(pset.get< int >("Cycle", 0))
-    , target(pset.get< int >("Target", 1000060120))
+    : fCycle(pset.get<int>("Cycle", 0))
+    , target(pset.get<int>("Target", 1000060120))
+    , randomVertexPosition(pset.get<bool>("RandomVertexPosition", false))
   {
     fStopwatch.Start();
 
-    gOptDecayMode = (genie::NeutronOscMode_t) pset.get< int >("AnnihilationMode", 0);
+    gOptDecayMode = (genie::NeutronOscMode_t) pset.get<int>("AnnihilationMode", 0);
     bool valid_mode = genie::utils::neutron_osc::IsValidMode(gOptDecayMode);
     if (!valid_mode) {
       mf::LogError("GENIENeutronOscGen") << "You need to specify a valid annihilation mode (0-16)";
@@ -148,17 +151,41 @@ namespace evgen {
     std::unique_ptr< std::vector<simb::MCTruth> > truthcol(new std::vector<simb::MCTruth>);
     simb::MCTruth truth;
 
-    int decay = SelectAnnihilationMode(target);
+    int decay = selectAnnihilationMode(target);
     genie::Interaction* interaction = genie::Interaction::NOsc(target, decay);
     genie::EventRecord* event = new genie::EventRecord;
     event->AttachSummary(interaction);
     mcgen->ProcessEventRecord(event);
     // mf::LogInfo("GENIENeutronOscGen") << "Generated event: " << *event;
 
-    FillMCTruth(event, truth);
+    event->SetVertex(0., 0., 30., 225.e-6); // in si unit, m and s
+    if (randomVertexPosition) {
+      setRandomEventVertexPosition(event);
+    }
+
+    fillMCTruth(event, truth);
     truthcol->push_back(truth);
 
     evt.put(std::move(truthcol));
+  }
+
+  //___________________________________________________________________________
+  void GENIENeutronOscGen::setRandomEventVertexPosition(genie::EventRecord* record)
+  {
+    genie::RandomGen* rnd = genie::RandomGen::Instance();
+    rnd->SetSeed(0);
+    double p = rnd->RndNum().Rndm();
+
+    art::ServiceHandle<geo::Geometry> geo;
+    double half_width = geo->DetHalfWidth() / 100.;   // m
+    double half_height = geo->DetHalfHeight() / 100.; // m
+    double length = geo->DetLength() / 100.;          // m
+
+    double random_x = (p - 0.5) * half_width;  // m
+    double random_y = (p - 0.5) * half_height; // m
+    double random_z = p * length;              // m
+
+    record->SetVertex(random_x, random_y, random_z, record->Vertex()->T());
   }
 
   //___________________________________________________________________________
@@ -179,7 +206,7 @@ namespace evgen {
   }
 
   //___________________________________________________________________________
-  int GENIENeutronOscGen::SelectAnnihilationMode(int pdg_code)
+  int GENIENeutronOscGen::selectAnnihilationMode(int pdg_code)
   {
     if (gOptDecayMode == genie::kNORandom) {
       int mode;
@@ -210,7 +237,7 @@ namespace evgen {
           br[i] *= neutron_frac;
       }
 
-      genie::RandomGen * rnd = genie::RandomGen::Instance();
+      genie::RandomGen* rnd = genie::RandomGen::Instance();
       rnd->SetSeed(0);
       double p = rnd->RndNum().Rndm();
 
@@ -236,7 +263,7 @@ namespace evgen {
   }
 
   //___________________________________________________________________________
-  void GENIENeutronOscGen::FillMCTruth(const genie::EventRecord* record, simb::MCTruth &truth)
+  void GENIENeutronOscGen::fillMCTruth(const genie::EventRecord* record, simb::MCTruth &truth)
   {
     TLorentzVector* vertex = record->Vertex();
     TIter partitr(record);
@@ -256,7 +283,14 @@ namespace evgen {
                              part->Mass(),
                              part->Status());
 
-      double vtx[4] = {0., 0., 3000., 225000};
+      TLorentzVector* vertex = record->Vertex();
+      double vtx[4] = {
+        100. * (part->Vx() * 1.e-15 + vertex->X()), // cm
+        100. * (part->Vy() * 1.e-15 + vertex->Y()), // cm
+        100. * (part->Vz() * 1.e-15 + vertex->Z()), // cm
+        part->Vt() + vertex->T() * 1.e9             // ns
+      };
+
       TLorentzVector position(vtx[0], vtx[1], vtx[2], vtx[3]);
       TLorentzVector momentum(part->Px(), part->Py(), part->Pz(), part->E());
       tpart.AddTrajectoryPoint(position, momentum);

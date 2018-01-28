@@ -5,6 +5,7 @@ standard_nosc:
    module_type: GENIENeutronOscGen
    Target: 1000060120
    AnnihilationMode: 0
+   RandomVertexPosition: true
 }
 
 END_PROLOG
