@@ -1,0 +1,10 @@
+BEGIN_PROLOG
+
+standard_nosc:
+{
+   module_type: GENIENeutronOscGen
+   Target: 1000060120
+   AnnihilationMode: 0
+}
+
+END_PROLOG
