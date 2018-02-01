@@ -3,7 +3,7 @@ param worldMaterial=Air
 param histoFile=target.root
 param inch=25.4
 param first=0
-param last=100
+param last=1000
 # g4ui when=4 "/vis/filtering/trajectories/create/particleFilter"
 g4ui when=4 "/vis/viewer/set/background 1 1 1"
 # g4ui when=4 "/vis/viewer/set/viewpointVector 0 1 0"
@@ -22,5 +22,5 @@ place slab rename=slabPlus2  x=-1*(31.75)/5 z=+1*22.145
 place slab rename=slabPlus2  x=-2*(31.75)/5 z=+2*22.145
 
 # detector
-virtualdetector Detector radius=1750.0 length=1 material=Air color=0,0,0
+virtualdetector Detector radius=5000. length=1 material=Air color=0,0,0
 place Detector z=1000
