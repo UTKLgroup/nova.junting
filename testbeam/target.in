@@ -24,7 +24,7 @@ place slab rename=slabPlus2  x=-2*(31.75)/5 z=+2*22.145
 
 # detector
 tubs DetectorGeometry innerRadius=1000 outerRadius=1001 initialPhi=0 finalPhi=180 length=2.*25.4 color=0,0,0 material=Vacuum
-detector Detector solid=DetectorGeometry material=Vacuum color=0,0,0 perTrack=1
+detector Detector solid=DetectorGeometry material=Vacuum color=0,0,0 perTrack=1 kill=1
 place DetectorGeometry rotation=X90 z=0
 place Detector rotation=X90 z=0
 
