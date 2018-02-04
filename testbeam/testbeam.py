@@ -11,6 +11,7 @@ ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 FIGURE_DIR = '/Users/juntinghuang/beamer/20180123_testbeam_cu_target/figures'
+DATA_DIR = './data'
 
 
 def get_particle_filter():
@@ -786,9 +787,8 @@ def plot_min_b_field():
     input('Press any key to continue.')
 
 
-def plot_target():
-    tf = TFile('target.root')
-    h_py = TH1D('h_py', 'h_py', 100, 0, 25)
+def get_pdg_pxy_thetas(filename):
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
 
     pdgs = [11, -11, -13, 13, 211, -211, 2212, -2212, 2112, -2112, 22]
     h_pdg_pxy_thetas = {}
@@ -796,41 +796,59 @@ def plot_target():
 
     for pdg in pdgs:
         name = PDG.GetParticle(pdg).GetName()
-        h_pxy_theta = TH2D('h_pxy_theta_{}'.format(name), 'h_pxy_theta_{}'.format(name), 100, -180, 180, 100, 0, 2)
+        h_pxy_theta = TH2D('h_pxy_theta_{}'.format(name), 'h_pxy_theta_{}'.format(name), 180, -90, 90, 100, 0, 3)
         set_h2_style(h_pxy_theta)
+        h_pxy_theta.SetDirectory(0)
         h_pdg_pxy_thetas[pdg] = h_pxy_theta
 
         h_pxy = TH1D('h_pxy_{}'.format(name), 'h_pxy_{}'.format(name), 100, 0, 2)
         set_h1_style(h_pxy)
+        h_pxy.SetDirectory(0)
         h_pdg_pxys[pdg] = h_pxy
 
-    for event in tf.Get('VirtualDetector/Detector'):
-        theta = atan(event.Px / event.Pz)
+    event_count = 0
+    for event in tf.Get('Detector/Detector'):
+        theta = atan(event.Px / event.Py)
         theta_degree = theta * 180. / pi
-        momentum = (event.Px**2 + event.Pz**2)**0.5 / 1.e3      # GeV
-        h_py.Fill(event.Py / 1.e3)                              # GeV
+        momentum = (event.Px**2 + event.Py**2 + event.Pz**2)**0.5 / 1.e3      # GeV
         if event.PDGid in pdgs:
             h_pdg_pxy_thetas[event.PDGid].Fill(theta_degree, momentum)
 
+        event_count += 1
+        if event_count % 10000 == 0:
+            print('event_count = {}'.format(event_count))
+
+    return h_pdg_pxy_thetas
+
+
+def plot_pxy_theta(h_pdg_pxy_thetas, pdg, filename):
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
     set_h2_color_style()
 
-    # gPad.SetLogy()
-    # set_h1_style(h_py)
-    # h_py.Draw()
-
     gStyle.SetOptStat(0)
     gPad.SetRightMargin(0.2)
-    h_pdg_pxy_thetas[211].Draw('colz')
+    h_pdg_pxy_thetas[pdg].Draw('colz')
 
     c1.Update()
-    c1.SaveAs('{}/plot_target.pdf'.format(FIGURE_DIR))
-    input('Press any key to continue.')
+    c1.SaveAs('{}/plot_pxy_theta.{}.{}.pdf'.format(FIGURE_DIR, filename, PDG.GetParticle(pdg).GetName()))
+    # input('Press any key to continue.')
+
+
+def plot_pxy_thetas(filename):
+    h_pdg_pxy_thetas = get_pdg_pxy_thetas(filename)
+
+    pdgs = [11, -11, -13, 13, 211, -211, 2212, -2212, 2112, -2112, 22]
+    for pdg in pdgs:
+        plot_pxy_theta(h_pdg_pxy_thetas, pdg, filename)
 
 
 # 20180123_testbeam_cu_target
-plot_target()
+# plot_pxy_thetas('target.64GeV.root')
+# plot_pxy_thetas('target.32GeV.root')
+# plot_pxy_thetas('target.16GeV.root')
+# plot_pxy_thetas('target.8GeV.root')
+plot_pxy_thetas('target.8GeV.root')
 
 # 20180118_testbeam_m1_magnet
 # compute_bending_angle()
