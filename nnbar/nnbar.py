@@ -2,8 +2,8 @@ from rootalias import *
 import math
 import numpy as np
 
-figure_dir = '/Users/juntinghuang/beamer/20180103_nnbar_limit/figures'
-data_dir = './'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180128_nnbar_ddt_offline/figures'
+DATA_DIR = './data'
 
 exposure_0 = 2.45               # 1.e34 * neutron * year
 efficiency_0 = 12.1e-2
@@ -270,9 +270,55 @@ def plot(**kwargs):
     input('Press any key to continue.')
 
 
-# 20180128_nnbar_selection
+def plot_daq_hit(filename):
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    h_x = tf.Get('neutronoscana/fDaqHitXView')
+    h_y = tf.Get('neutronoscana/fDaqHitYView')
+
+    c1 = TCanvas('c1', 'c1', 1100, 800)
+    set_h2_color_style()
+
+    pad1 = TPad("pad1", "pad1", 0, 0.5, 1, 1)
+    pad1.SetLeftMargin(0.1)
+    pad1.SetRightMargin(0.05)
+    pad1.SetTopMargin(0.2)
+    pad1.SetBottomMargin(0.025)
+    pad1.Draw()
+    pad1.cd()
+
+    set_h2_style(h_x)
+    h_x.GetYaxis().SetTitle('X Cell Number')
+    h_x.GetYaxis().SetTitleOffset(1.3)
+    h_x.GetXaxis().SetLabelSize(0)
+    h_x.GetXaxis().SetTitleSize(0)
+    h_x.Draw('box')
+
+    c1.cd()
+    pad2 = TPad('pad2', 'pad2', 0, 0, 1, 0.5)
+    pad2.SetLeftMargin(0.1)
+    pad2.SetRightMargin(0.05)
+    pad2.SetBottomMargin(0.2)
+    pad2.SetTopMargin(0.025)
+    pad2.Draw()
+    pad2.cd()
+
+    set_h2_style(h_y)
+    h_y.GetYaxis().SetTitle('Y Cell Number')
+    h_y.GetYaxis().SetTitleOffset(1.3)
+    h_y.GetXaxis().SetTitleOffset(2.2)
+    h_y.Draw('box')
+
+    c1.Update()
+    c1.SaveAs('{}/plot_daq_hit.{}.pdf'.format(FIGURE_DIR, filename))
+    input('Press any key to continue.')
 
 
+# 20180128_nnbar_ddt_offline
+gStyle.SetOptStat(0)
+# plot_daq_hit('neutronosc_ddt_hist.removeonedslices.root')
+# plot_daq_hit('neutronosc_ddt_hist.containedslice.root')
+# plot_daq_hit('neutronosc_ddt_hist.daqhit_count.root')
+plot_daq_hit('neutronosc_ddt_hist.xy_asymmetry.root')
 
 # 20180103_nnbar_limit.tex
 # gStyle.SetOptStat('emr')
