@@ -790,13 +790,13 @@ def plot_min_b_field():
 def get_pdg_pxy_thetas(filename):
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
 
-    pdgs = [11, -11, -13, 13, 211, -211, 2212, -2212, 2112, -2112, 22]
+    pdgs = [11, -11, 13, -13, 211, -211, 321, -321, 2212, -2212, 2112, -2112, 22]
     h_pdg_pxy_thetas = {}
     h_pdg_pxys = {}
 
     for pdg in pdgs:
         name = PDG.GetParticle(pdg).GetName()
-        h_pxy_theta = TH2D('h_pxy_theta_{}'.format(name), 'h_pxy_theta_{}'.format(name), 180, -90, 90, 100, 0, 3)
+        h_pxy_theta = TH2D('h_pxy_theta_{}'.format(name), 'h_pxy_theta_{}'.format(name), 90, -90, 90, 60, 0, 3)
         set_h2_style(h_pxy_theta)
         h_pxy_theta.SetDirectory(0)
         h_pdg_pxy_thetas[pdg] = h_pxy_theta
@@ -843,12 +843,99 @@ def plot_pxy_thetas(filename):
         plot_pxy_theta(h_pdg_pxy_thetas, pdg, filename)
 
 
+def plot_momentum_pxy_theta(h_momentum_pdg_pxy_thetas, pdg):
+    c1 = TCanvas('c1', 'c1', 1000, 800)
+    gStyle.SetOptStat(0)
+    set_margin()
+    set_h2_color_style()
+
+    hs = []
+    texs = []
+    for momentum in h_momentum_pdg_pxy_thetas.keys():
+        hs.append(h_momentum_pdg_pxy_thetas[momentum][pdg])
+        tex = TLatex(85, 2.9, '{} GeV'.format(momentum))
+        tex.SetTextFont(43)
+        tex.SetTextSize(25)
+        tex.SetTextAlign(33)
+        texs.append(tex)
+
+    c1.Divide(2, 2)
+    c1.cd(1)
+    gPad.SetRightMargin(0.2)
+    gPad.SetTopMargin(0.05)
+    gPad.SetBottomMargin(0.15)
+    # gPad.SetLogz()
+
+    hs[0].Draw('colz')
+    hs[0].GetYaxis().SetTitle('Momentum (GeV)')
+    hs[0].GetYaxis().SetTitleOffset(1.25)
+    texs[0].Draw()
+
+    c1.cd(2)
+    gPad.SetRightMargin(0.2)
+    gPad.SetTopMargin(0.05)
+    gPad.SetBottomMargin(0.15)
+    hs[1].Draw('colz')
+    texs[1].Draw()
+
+    c1.cd(3)
+    gPad.SetRightMargin(0.2)
+    gPad.SetTopMargin(0.05)
+    gPad.SetBottomMargin(0.15)
+    hs[2].Draw('colz')
+    hs[2].GetYaxis().SetTitle('Momentum (GeV)')
+    hs[2].GetXaxis().SetTitle('Angle (degree)')
+    hs[2].GetXaxis().SetTitleOffset(2.05)
+    hs[2].GetYaxis().SetTitleOffset(1.25)
+    texs[2].Draw()
+
+    c1.cd(4)
+    gPad.SetRightMargin(0.2)
+    gPad.SetTopMargin(0.05)
+    gPad.SetBottomMargin(0.15)
+    hs[3].Draw('colz')
+    hs[3].GetXaxis().SetTitle('Angle (degree)')
+    hs[3].GetXaxis().SetTitleOffset(2.05)
+    texs[3].Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_momentum_pxy_theta.{}.pdf'.format(FIGURE_DIR, PDG.GetParticle(pdg).GetName()))
+    # input('Press any key to continue.')
+
+
+def plot_momentum_pxy_thetas():
+    h_momentum_pdg_pxy_thetas = {}
+    momentums = [8, 16, 32, 64]
+    for momentum in momentums:
+        h_momentum_pdg_pxy_thetas[momentum] = get_pdg_pxy_thetas('target.{}GeV.root'.format(momentum))
+
+    pdgs = [11, -11, 13, -13, 211, -211, 321, -321, 2212, -2212, 2112, -2112, 22]
+    # pdgs = [22]
+    for pdg in pdgs:
+        plot_momentum_pxy_theta(h_momentum_pdg_pxy_thetas, pdg)
+
+
+def print_slide_momentum_pxy_thetas():
+    pdgs = [11, -11, 13, -13, 211, -211, 321, -321, 2212, -2212]
+    with open('{}/../momentum_pxy_thetas.tex'.format(FIGURE_DIR), 'w') as f_momentum:
+        for pdg in pdgs:
+            particle_name = PDG.GetParticle(pdg).GetName()
+            f_momentum.write('\\begin{frame}\n')
+            f_momentum.write('  \\frametitle{{P vs. Angle at Various Beam Energies for {}}}\n'.format(particle_name))
+            f_momentum.write('  \\begin{figure}\n')
+            f_momentum.write('    \\includegraphics[width=10.5cm]{{{{figures/plot_momentum_pxy_theta.{}}}.pdf}}\n'.format(particle_name))
+            f_momentum.write('  \\end{figure}\n')
+            f_momentum.write('\\end{frame}\n')
+            f_momentum.write('\n% .........................................................\n\n')
+
 # 20180123_testbeam_cu_target
 # plot_pxy_thetas('target.64GeV.root')
 # plot_pxy_thetas('target.32GeV.root')
 # plot_pxy_thetas('target.16GeV.root')
 # plot_pxy_thetas('target.8GeV.root')
-plot_pxy_thetas('target.8GeV.root')
+# plot_pxy_thetas('target.8GeV.root')
+plot_momentum_pxy_thetas()
+# print_slide_momentum_pxy_thetas()
 
 # 20180118_testbeam_m1_magnet
 # compute_bending_angle()

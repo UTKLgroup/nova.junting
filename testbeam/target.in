@@ -3,14 +3,15 @@ param worldMaterial=Air
 param histoFile=target.root
 param inch=25.4
 param first=0
-param last=1000
+# param last=1000
+# param momentum=64
 # g4ui when=4 "/vis/filtering/trajectories/create/particleFilter"
 g4ui when=4 "/vis/viewer/set/background 1 1 1"
 # g4ui when=4 "/vis/viewer/set/viewpointVector 0 1 0"
 g4ui when=4 "/vis/viewer/set/style wireframe"
 
 # beam
-beam gaussian particle=pi+ firstEvent=$first lastEvent=$last sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=64000.0
+beam gaussian particle=pi+ firstEvent=$first lastEvent=$last sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=$momentum*1000
 trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton
 
 # target
@@ -22,5 +23,23 @@ place slab rename=slabPlus2  x=-1*(31.75)/5 z=+1*22.145
 place slab rename=slabPlus2  x=-2*(31.75)/5 z=+2*22.145
 
 # detector
-virtualdetector Detector radius=5000. length=1 material=Air color=0,0,0
-place Detector z=1000
+tubs DetectorGeometry innerRadius=1000 outerRadius=1001 initialPhi=0 finalPhi=180 length=2.*25.4 color=0,0,0 material=Vacuum
+detector Detector solid=DetectorGeometry material=Vacuum color=0,0,0 perTrack=1
+place DetectorGeometry rotation=X90 z=0
+place Detector rotation=X90 z=0
+
+# upstream collimator
+param killshld=0
+group  NewCol
+  box  botslab height=5.19*25.4 length=58.00*25.4  width=32.0*25.4  material=Fe color=0,1,1 kill=$killshld
+  box  topbot  height=5.19*25.4 length=42.76*25.4  width=32.0*25.4  material=Fe color=0,1,1 kill=$killshld
+  box  mid     height=2.00*25.4 length=42.76*25.4  width=11.6*25.4  material=Fe color=0,1,1 kill=$killshld
+  trap Coll    height=1160.0 upperWidth=70.0 lowerWidth=150.0 length=2.0*25.4 color=1,0,0 material=Air
+  param zmov=7.62*25.4
+  place botslab rename=btslab z=0.00  y=-6.19*25.4
+  place topbot  rename=bot     z=$zmov  y=-(1.0+5.19/2.0)*25.4
+  place mid  rename=midleft    z=$zmov  y=0.0 x=+296/2+67.29  rotation=y-14.03
+  place mid  rename=midrigh    z=$zmov  y=0.0 x=-296/2-67.29  rotation=y-17.97
+  place topbot  rename=top     z=$zmov  y=(1.0+5.19/2.0)*25.4
+endgroup
+# place NewCol z=(29.0+7.62)*25.4    x=-8.315*25.4+40.0  rotation=y3
