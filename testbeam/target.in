@@ -2,7 +2,7 @@ physics QGSP_BIC
 param worldMaterial=Air
 param histoFile=target.root
 param inch=25.4
-param first=0
+# param first=0
 # param last=1000
 # param momentum=64
 # g4ui when=4 "/vis/filtering/trajectories/create/particleFilter"
