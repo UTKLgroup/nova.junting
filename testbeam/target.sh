@@ -1,4 +1,9 @@
-MOMENTUM=8
+EVENT_COUNT=150000
 
-g4bl target.in last=10000 momentum=$MOMENTUM
-mv target.root data/target.${MOMENTUM}GeV.tubs.track.fix_angle.root
+MOMENTUM=32
+g4bl target.in last=$EVENT_COUNT momentum=$MOMENTUM
+mv -f target.root data/target.${MOMENTUM}GeV.final.root
+
+MOMENTUM=64
+g4bl target.in last=$EVENT_COUNT momentum=$MOMENTUM
+mv -f target.root data/target.${MOMENTUM}GeV.final.root
