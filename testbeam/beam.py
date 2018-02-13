@@ -60,9 +60,9 @@ with open('beam.py.in', 'w') as f_beam:
     f_beam.write('physics QGSP_BIC\n')
     f_beam.write('param worldMaterial=Air\n')
     f_beam.write('param histoFile=beam.root\n')
-    f_beam.write('box slab height={} length={} width={} material=Cu color=1,0.01,0.01\n'.format(target_slab_dimension[0], target_slab_dimension[1], target_slab_dimension[2]))
+    f_beam.write('box slab height={} length={} width={} material=Cu color=1,0.01,0.01\n'.format(target_slab_dimensions[0], target_slab_dimensions[1], target_slab_dimensions[2]))
     for i in range(-2, 3):
-        f_beam.write('place slab rename=target_slab_{} x={} z={}\n'.format(i, i * delta_x, -i * delta_z))
+        f_beam.write('place slab rename=target_slab_{} x={} z={}\n'.format(i, i * target_delta_x, -i * target_delta_z))
 
     f_beam.write('box collimator_upstream_base height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_upstream_base_dimensions[0], collimator_upstream_base_dimensions[1], collimator_upstream_base_dimensions[2], KILL))
     f_beam.write('box collimator_upstream_bottom height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_upstream_bottom_dimensions[0], collimator_upstream_bottom_dimensions[1], collimator_upstream_bottom_dimensions[2], KILL))
