@@ -24,7 +24,6 @@ collimator_upstream_theta = 3               # degree, positive here means a coun
 tof_upstream_dimensions = [150., 50.8, 150.]
 tof_upstream_positions = [-346.54341, 0., 1423.]
 tof_upstream_theta = -13
-
 tof_downstream_dimensions = [130., 50.8, 130.]
 tof_downstream_positions = [-1186.1546, 0., 8005.9022]
 tof_downstream_theta = -3
@@ -37,7 +36,6 @@ wire_chamber_frame_vertical_left_positions = [-95.5, 0., 12.5]
 wire_chamber_frame_vertical_right_positions = [95.5, 0., 12.5]
 wire_chamber_frame_horizontal_top_positions = [0., 95.5, 12.5]
 wire_chamber_frame_horizontal_bottom_positions = [0., -95.5, 12.5]
-
 wire_chamber_1_positions = [-403.0472, 0.0508, 1730.3369]
 wire_chamber_2_positions = [-738.0351, 0.0762, 3181.9215]
 wire_chamber_3_positions = [-1064.133, -2.921, 5167.5665]
@@ -47,7 +45,7 @@ wire_chamber_2_theta = -13
 wire_chamber_3_theta = -3
 wire_chamber_4_theta = -3
 
-magnet_field_dimensions = [3.5 * inch, 42 * inch, 4 * inch]
+magnet_field_dimensions = [3.5 * inch, 42 * inch, 5.6 * inch]
 magnet_iron_dimensions = [28. * inch, 42. * inch, 42. * inch]
 magnet_by = 1.8
 magnet_positions = [-945.7, 0., 4228.9]
