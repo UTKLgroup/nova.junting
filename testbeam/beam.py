@@ -25,6 +25,15 @@ collimator_upstream_theta = 3               # degree, positive here means a coun
 tof_upstream_dimensions = [150., 50.8, 150.]
 tof_downstream_dimensions = [130., 50.8, 130.]
 
+wire_chamber_1_positions = [-403.0472, 0.0508, 1730.3369]
+wire_chamber_2_positions = [-738.0351, 0.0762, 3181.9215]
+wire_chamber_3_positions = [-1064.133, -2.921, 5167.5665]
+wire_chamber_4_positions = [-1195.0827, -20.4724, 7606.4872]
+wire_chamber_1_theta = -13
+wire_chamber_2_theta = -13
+wire_chamber_3_theta = -3
+wire_chamber_4_theta = -3
+
 magnet_field_dimensions = [3.5 * inch, 42 * inch, 4 * inch]
 magnet_iron_dimensions = [28. * inch, 42. * inch, 42. * inch]
 magnet_by = 1.8
@@ -108,13 +117,13 @@ with open('beam.py.in', 'w') as f_beam:
     f_beam.write('  place wire_chamber_frame_horizontal rename=+_frame_top z=12.5 y=+95.5\n')
     f_beam.write('  place wire_chamber_detector rename=+_detector z=12.5 x=0. y=0.\n')
     f_beam.write('endgroup\n')
-    f_beam.write('place wire_chamber rename=wire_chamber_1 z=1730.3369 x=-403.0472 y=0.0508 rotation=y-13\n')
-    f_beam.write('place wire_chamber rename=wire_chamber_2 z=3181.9215 x=-738.0351 y=0.0762 rotation=y-13\n')
+    f_beam.write('place wire_chamber rename=wire_chamber_1 x={} y={} z={} rotation=y{}\n'.format(wire_chamber_1_positions[0], wire_chamber_1_positions[1], wire_chamber_1_positions[2], wire_chamber_1_theta))
+    f_beam.write('place wire_chamber rename=wire_chamber_2 x={} y={} z={} rotation=y{}\n'.format(wire_chamber_2_positions[0], wire_chamber_2_positions[1], wire_chamber_2_positions[2], wire_chamber_2_theta))
 
     f_beam.write('genericbend M1 fieldHeight={} fieldLength={} fieldWidth={} kill={} ironColor=1,0,0 ironHeight={} ironLength={} ironWidth={}\n'.format(magnet_field_dimensions[0], magnet_field_dimensions[1], magnet_field_dimensions[2], kill, magnet_iron_dimensions[0], magnet_iron_dimensions[1], magnet_iron_dimensions[2]))
     f_beam.write('place M1 By={} x={} y={} z={} rotation=Y{}\n'.format(magnet_by, magnet_positions[0], magnet_positions[1], magnet_positions[2], magnet_theta))
 
-    f_beam.write('place wire_chamber rename=wire_chamber_3 z=5167.5665 x=-1064.133 y=-2.921 rotation=y-3\n')
+    f_beam.write('place wire_chamber rename=wire_chamber_3 x={} y={} z={} rotation=y{}\n'.format(wire_chamber_3_positions[0], wire_chamber_3_positions[1], wire_chamber_3_positions[2], wire_chamber_3_theta))
 
     f_beam.write('group collimator_downstream\n')
     f_beam.write('  box collimator_downstream_bottom height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_downstream_bottom_dimensions[0], collimator_downstream_bottom_dimensions[1], collimator_downstream_bottom_dimensions[2], kill))
@@ -126,7 +135,7 @@ with open('beam.py.in', 'w') as f_beam:
     f_beam.write('endgroup\n')
     f_beam.write('place collimator_downstream z=6188.0-9*$inch x=-1077 rotation=y-3.0\n')
 
-    f_beam.write('place wire_chamber rename=wire_chamber_4 z=7606.4872 x=-1195.0827 y=-20.4724 rotation=y-3\n')
+    f_beam.write('place wire_chamber rename=wire_chamber_4 x={} y={} z={} rotation=y{}\n'.format(wire_chamber_4_positions[0], wire_chamber_4_positions[1], wire_chamber_4_positions[2], wire_chamber_4_theta))
 
     f_beam.write('virtualdetector tof_downstream height={} length={} width={} material=LUCITE color=0.05,0.05,0.93\n'.format(tof_downstream_dimensions[0], tof_downstream_dimensions[1], tof_downstream_dimensions[2]))
     f_beam.write('place tof_downstream rename=tof_downstream z=8005.9022  x=-1186.1546 rotation=z90,y-3\n')
