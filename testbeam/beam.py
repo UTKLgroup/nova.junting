@@ -46,8 +46,13 @@ magnet_theta = -13 + 5
 
 collimator_downstream_bottom_dimensions = [8.5 * inch, 36. * inch, 30. * inch]
 collimator_downstream_middle_dimensions = [6. * inch, 36. * inch, 11. * inch]
+collimator_downstream_middle_1_positions=[9. * inch, 0., 18. * inch]
+collimator_downstream_middle_2_positions = [-9. * inch, 0., 18. * inch ]
+collimator_downstream_bottom_positions = [0., (4.25 + 3.) * inch, 18. * inch]
+collimator_downstream_top_positions = [0., -(4.25 + 3.) * inch, 18. * inch]
 collimator_downstream_positions = [-1077., 0., 6188. - 9. * inch]
 collimator_downstream_theta = -3
+
 
 def translate(positions, deltas):
     for i in range(len(positions)):
@@ -134,10 +139,10 @@ with open('beam.py.in', 'w') as f_beam:
     f_beam.write('group collimator_downstream\n')
     f_beam.write('  box collimator_downstream_bottom height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_downstream_bottom_dimensions[0], collimator_downstream_bottom_dimensions[1], collimator_downstream_bottom_dimensions[2], kill))
     f_beam.write('  box collimator_downstream_middle height={} length={} width={} material=Fe color=0,.8,1 kill={}\n'.format(collimator_downstream_middle_dimensions[0], collimator_downstream_middle_dimensions[1], collimator_downstream_middle_dimensions[2], kill))
-    f_beam.write('  place collimator_downstream_middle rename=+_middle_1 z=18*$inch x=+9*$inch\n')
-    f_beam.write('  place collimator_downstream_middle rename=+_middle_2 z=18*$inch x=-9*$inch\n')
-    f_beam.write('  place collimator_downstream_bottom rename=+_bottom z=18*$inch y=+(4.25+3)*$inch\n')
-    f_beam.write('  place collimator_downstream_bottom rename=+_top z=18*$inch y=-(4.25+3)*$inch\n')
+    f_beam.write('  place collimator_downstream_middle rename=+_middle_1 x={} y={} z={}\n'.format(collimator_downstream_middle_1_positions[0], collimator_downstream_middle_1_positions[1], collimator_downstream_middle_1_positions[2]))
+    f_beam.write('  place collimator_downstream_middle rename=+_middle_2 x={} y={} z={}\n'.format(collimator_downstream_middle_2_positions[0], collimator_downstream_middle_2_positions[1], collimator_downstream_middle_2_positions[2]))
+    f_beam.write('  place collimator_downstream_bottom rename=+_bottom x={} y={} z={}\n'.format(collimator_downstream_bottom_positions[0], collimator_downstream_bottom_positions[1], collimator_downstream_bottom_positions[2]))
+    f_beam.write('  place collimator_downstream_bottom rename=+_top x={} y={} z={}\n'.format(collimator_downstream_top_positions[0], collimator_downstream_top_positions[1], collimator_downstream_top_positions[2]))
     f_beam.write('endgroup\n')
     f_beam.write('place collimator_downstream x={} y={} z={} rotation=y{}\n'.format(collimator_downstream_positions[0], collimator_downstream_positions[1], collimator_downstream_positions[2], collimator_downstream_theta))
 
