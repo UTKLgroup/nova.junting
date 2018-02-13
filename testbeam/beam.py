@@ -3,8 +3,8 @@ from math import cos, sin, pi
 inch = 25.4
 kill = 1
 
+target_positions = [0., 0., 0.]
 target_slab_dimensions = [31.75, 209.55, 6.35] # [height, length, width]
-target_slab_positions = [0., 0., 0.]
 target_slab_count = 5.
 target_delta_x = target_slab_dimensions[0] / target_slab_count
 target_delta_z = 22.145
@@ -96,7 +96,7 @@ with open('beam.py.in', 'w') as f_beam:
 
     f_beam.write('box slab height={} length={} width={} material=Cu color=1,0.01,0.01\n'.format(target_slab_dimensions[0], target_slab_dimensions[1], target_slab_dimensions[2]))
     for i in range(-2, 3):
-        f_beam.write('place slab rename=target_slab_{} x={} z={}\n'.format(i, i * target_delta_x, -i * target_delta_z))
+        f_beam.write('place slab rename=target_slab_{} x={} y={} z={}\n'.format(i, target_positions[0] + i * target_delta_x, target_positions[1], -i * target_delta_z + target_positions[2]))
 
     f_beam.write('box collimator_upstream_base height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_upstream_base_dimensions[0], collimator_upstream_base_dimensions[1], collimator_upstream_base_dimensions[2], kill))
     f_beam.write('box collimator_upstream_bottom height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_upstream_bottom_dimensions[0], collimator_upstream_bottom_dimensions[1], collimator_upstream_bottom_dimensions[2], kill))
