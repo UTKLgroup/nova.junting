@@ -29,6 +29,15 @@ tof_downstream_dimensions = [130., 50.8, 130.]
 tof_downstream_positions = [-1186.1546, 0., 8005.9022]
 tof_downstream_theta = -3
 
+wire_chamber_detector_dimensions = [125., 25., 128.]
+wire_chamber_frame_vertical_dimensions = [254., 25., 63.]
+wire_chamber_frame_horizontal_dimensions = [63., 25., 128.]
+wire_chamber_detector_positions = [0., 0., 12.5]
+wire_chamber_frame_vertical_left_positions = [-95.5, 0., 12.5]
+wire_chamber_frame_vertical_right_positions = [95.5, 0., 12.5]
+wire_chamber_frame_horizontal_top_positions = [0., 95.5, 12.5]
+wire_chamber_frame_horizontal_bottom_positions = [0., -95.5, 12.5]
+
 wire_chamber_1_positions = [-403.0472, 0.0508, 1730.3369]
 wire_chamber_2_positions = [-738.0351, 0.0762, 3181.9215]
 wire_chamber_3_positions = [-1064.133, -2.921, 5167.5665]
@@ -119,14 +128,14 @@ with open('beam.py.in', 'w') as f_beam:
     f_beam.write('place tof_upstream rename=tof_upstream x={} y={} z={} rotation=z45,y{}\n'.format(tof_upstream_positions[0], tof_upstream_positions[1], tof_upstream_positions[2], tof_upstream_theta))
 
     f_beam.write('group wire_chamber\n')
-    f_beam.write('  virtualdetector wire_chamber_detector  width=128.0  height=125.0 color=0,1,0  length=25.0\n')
-    f_beam.write('  box wire_chamber_frame_vertical height=254.0 width=63.0  length=25.0 color=1,0,1 kill={} material=Al\n'.format(kill))
-    f_beam.write('  box wire_chamber_frame_horizontal height=63.0  width=128.0 length=25.0 color=1,0,1 kill={} material=Al\n'.format(kill))
-    f_beam.write('  place wire_chamber_frame_vertical rename=+_frame_left z=12.5 x=-95.5\n')
-    f_beam.write('  place wire_chamber_frame_vertical rename=+_frame_right z=12.5 x=+95.5\n')
-    f_beam.write('  place wire_chamber_frame_horizontal rename=+_frame_bottom z=12.5 y=-95.5\n')
-    f_beam.write('  place wire_chamber_frame_horizontal rename=+_frame_top z=12.5 y=+95.5\n')
-    f_beam.write('  place wire_chamber_detector rename=+_detector z=12.5 x=0. y=0.\n')
+    f_beam.write('  virtualdetector wire_chamber_detector height={} length={} width={} color=0,1,0\n'.format(wire_chamber_detector_dimensions[0], wire_chamber_detector_dimensions[1], wire_chamber_detector_dimensions[2]))
+    f_beam.write('  box wire_chamber_frame_vertical height={} length={} width={} color=1,0,1 kill={} material=Al\n'.format(wire_chamber_frame_vertical_dimensions[0], wire_chamber_frame_vertical_dimensions[1], wire_chamber_frame_vertical_dimensions[2], kill))
+    f_beam.write('  box wire_chamber_frame_horizontal height={} length={} width={} color=1,0,1 kill={} material=Al\n'.format(wire_chamber_frame_horizontal_dimensions[0], wire_chamber_frame_horizontal_dimensions[1], wire_chamber_frame_horizontal_dimensions[2], kill))
+    f_beam.write('  place wire_chamber_frame_vertical rename=+_frame_left x={} y={} z={}\n'.format(wire_chamber_frame_vertical_left_positions[0], wire_chamber_frame_vertical_left_positions[1], wire_chamber_frame_vertical_left_positions[2]))
+    f_beam.write('  place wire_chamber_frame_vertical rename=+_frame_right x={} y={} z={}\n'.format(wire_chamber_frame_vertical_right_positions[0], wire_chamber_frame_vertical_right_positions[1], wire_chamber_frame_vertical_right_positions[2]))
+    f_beam.write('  place wire_chamber_frame_horizontal rename=+_frame_top x={} y={} z={}\n'.format(wire_chamber_frame_horizontal_top_positions[0], wire_chamber_frame_horizontal_top_positions[1], wire_chamber_frame_horizontal_top_positions[2]))
+    f_beam.write('  place wire_chamber_frame_horizontal rename=+_frame_bottom x={} y={} z={}\n'.format(wire_chamber_frame_horizontal_bottom_positions[0], wire_chamber_frame_horizontal_bottom_positions[1], wire_chamber_frame_horizontal_bottom_positions[2]))
+    f_beam.write('  place wire_chamber_detector rename=+_detector x={} y={} z={}\n'.format(wire_chamber_detector_positions[0], wire_chamber_detector_positions[1], wire_chamber_detector_positions[2]))
     f_beam.write('endgroup\n')
     f_beam.write('place wire_chamber rename=wire_chamber_1 x={} y={} z={} rotation=y{}\n'.format(wire_chamber_1_positions[0], wire_chamber_1_positions[1], wire_chamber_1_positions[2], wire_chamber_1_theta))
     f_beam.write('place wire_chamber rename=wire_chamber_2 x={} y={} z={} rotation=y{}\n'.format(wire_chamber_2_positions[0], wire_chamber_2_positions[1], wire_chamber_2_positions[2], wire_chamber_2_theta))

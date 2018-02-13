@@ -24,14 +24,14 @@ place collimator_upstream_top rename=collimator_upstream_top x=-180.346813025366
 virtualdetector tof_upstream  height=150.0 length=50.8 width=150.0 material=LUCITE color=0.05,0.05,0.93
 place tof_upstream rename=tof_upstream x=-346.54341 y=0.0 z=1423.0 rotation=z45,y-13
 group wire_chamber
-  virtualdetector wire_chamber_detector  width=128.0  height=125.0 color=0,1,0  length=25.0
-  box wire_chamber_frame_vertical height=254.0 width=63.0  length=25.0 color=1,0,1 kill=1 material=Al
-  box wire_chamber_frame_horizontal height=63.0  width=128.0 length=25.0 color=1,0,1 kill=1 material=Al
-  place wire_chamber_frame_vertical rename=+_frame_left z=12.5 x=-95.5
-  place wire_chamber_frame_vertical rename=+_frame_right z=12.5 x=+95.5
-  place wire_chamber_frame_horizontal rename=+_frame_bottom z=12.5 y=-95.5
-  place wire_chamber_frame_horizontal rename=+_frame_top z=12.5 y=+95.5
-  place wire_chamber_detector rename=+_detector z=12.5 x=0. y=0.
+  virtualdetector wire_chamber_detector height=125.0 length=25.0 width=128.0 color=0,1,0
+  box wire_chamber_frame_vertical height=254.0 length=25.0 width=63.0 color=1,0,1 kill=1 material=Al
+  box wire_chamber_frame_horizontal height=63.0 length=25.0 width=128.0 color=1,0,1 kill=1 material=Al
+  place wire_chamber_frame_vertical rename=+_frame_left x=-95.5 y=0.0 z=12.5
+  place wire_chamber_frame_vertical rename=+_frame_right x=95.5 y=0.0 z=12.5
+  place wire_chamber_frame_horizontal rename=+_frame_top x=0.0 y=95.5 z=12.5
+  place wire_chamber_frame_horizontal rename=+_frame_bottom x=0.0 y=-95.5 z=12.5
+  place wire_chamber_detector rename=+_detector x=0.0 y=0.0 z=12.5
 endgroup
 place wire_chamber rename=wire_chamber_1 x=-403.0472 y=0.0508 z=1730.3369 rotation=y-13
 place wire_chamber rename=wire_chamber_2 x=-738.0351 y=0.0762 z=3181.9215 rotation=y-13
