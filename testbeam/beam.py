@@ -23,7 +23,12 @@ collimator_upstream_positions = [-8.315 * inch + 40., 0., (29. / 2. + 7.62) * in
 collimator_upstream_theta = 3               # degree, positive here means a counter-clockwise rotation in the top view
 
 tof_upstream_dimensions = [150., 50.8, 150.]
+tof_upstream_positions = [-346.54341, 0., 1423.]
+tof_upstream_theta = -13
+
 tof_downstream_dimensions = [130., 50.8, 130.]
+tof_downstream_positions = [-1186.1546, 0., 8005.9022]
+tof_downstream_theta = -3
 
 wire_chamber_1_positions = [-403.0472, 0.0508, 1730.3369]
 wire_chamber_2_positions = [-738.0351, 0.0762, 3181.9215]
@@ -105,7 +110,7 @@ with open('beam.py.in', 'w') as f_beam:
     f_beam.write('place collimator_upstream_top rename=collimator_upstream_top x={} y={} z={} rotation=y{}\n'.format(collimator_upstream_top_positions[0], collimator_upstream_top_positions[1], collimator_upstream_top_positions[2], collimator_upstream_theta))
 
     f_beam.write('virtualdetector tof_upstream  height={} length={} width={} material=LUCITE color=0.05,0.05,0.93\n'.format(tof_upstream_dimensions[0], tof_upstream_dimensions[1], tof_upstream_dimensions[2]))
-    f_beam.write('place tof_upstream rename=tof_upstream rotation=z45,y-13 z=1423.0 x=-346.54341\n')
+    f_beam.write('place tof_upstream rename=tof_upstream x={} y={} z={} rotation=z45,y{}\n'.format(tof_upstream_positions[0], tof_upstream_positions[1], tof_upstream_positions[2], tof_upstream_theta))
 
     f_beam.write('group wire_chamber\n')
     f_beam.write('  virtualdetector wire_chamber_detector  width=128.0  height=125.0 color=0,1,0  length=25.0\n')
@@ -138,4 +143,4 @@ with open('beam.py.in', 'w') as f_beam:
     f_beam.write('place wire_chamber rename=wire_chamber_4 x={} y={} z={} rotation=y{}\n'.format(wire_chamber_4_positions[0], wire_chamber_4_positions[1], wire_chamber_4_positions[2], wire_chamber_4_theta))
 
     f_beam.write('virtualdetector tof_downstream height={} length={} width={} material=LUCITE color=0.05,0.05,0.93\n'.format(tof_downstream_dimensions[0], tof_downstream_dimensions[1], tof_downstream_dimensions[2]))
-    f_beam.write('place tof_downstream rename=tof_downstream z=8005.9022  x=-1186.1546 rotation=z90,y-3\n')
+    f_beam.write('place tof_downstream rename=tof_downstream x={} y={} z={} rotation=z90,y{}\n'.format(tof_downstream_positions[0], tof_downstream_positions[1], tof_downstream_positions[2], tof_downstream_theta))

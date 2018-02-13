@@ -22,7 +22,7 @@ place collimator_upstream_middle rename=collimator_upstream_middle_1 x=34.648139
 place collimator_upstream_middle rename=collimator_upstream_middle_2 x=-395.34176556267914 y=0.0 z=766.902899562112 rotation=y3-17.97
 place collimator_upstream_top rename=collimator_upstream_top x=-180.34681302536688 y=91.313 z=755.6354915425686 rotation=y3
 virtualdetector tof_upstream  height=150.0 length=50.8 width=150.0 material=LUCITE color=0.05,0.05,0.93
-place tof_upstream rename=tof_upstream rotation=z45,y-13 z=1423.0 x=-346.54341
+place tof_upstream rename=tof_upstream x=-346.54341 y=0.0 z=1423.0 rotation=z45,y-13
 group wire_chamber
   virtualdetector wire_chamber_detector  width=128.0  height=125.0 color=0,1,0  length=25.0
   box wire_chamber_frame_vertical height=254.0 width=63.0  length=25.0 color=1,0,1 kill=1 material=Al
@@ -49,4 +49,4 @@ endgroup
 place collimator_downstream z=6188.0-9*$inch x=-1077 rotation=y-3.0
 place wire_chamber rename=wire_chamber_4 x=-1195.0827 y=-20.4724 z=7606.4872 rotation=y-3
 virtualdetector tof_downstream height=130.0 length=50.8 width=130.0 material=LUCITE color=0.05,0.05,0.93
-place tof_downstream rename=tof_downstream z=8005.9022  x=-1186.1546 rotation=z90,y-3
+place tof_downstream rename=tof_downstream x=-1186.1546 y=0.0 z=8005.9022 rotation=z90,y-3
