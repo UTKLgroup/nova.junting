@@ -20,8 +20,10 @@ collimator_upstream_middle_2_positions = [-296. / 2. - 67.29, 0., 7.62 * inch]
 collimator_upstream_top_positions = [0., (1. + 5.19 / 2.) * inch, 7.62 * inch]
 collimator_upstream_positions = [-8.315 * inch + 40., 0., (29. / 2. + 7.62) * inch]
 collimator_upstream_base_theta = 3               # degree, positive here means a counter-clockwise rotation in the top view
-collimator_upstream_middle_1_theta = collimator_upstream_base_theta - 14.03
-collimator_upstream_middle_2_theta = collimator_upstream_base_theta - 17.97
+collimator_upstream_theta = -13
+collimator_upstream_theta_offset = 1.97
+collimator_upstream_middle_1_theta = collimator_upstream_theta + collimator_upstream_theta_offset
+collimator_upstream_middle_2_theta = collimator_upstream_theta - collimator_upstream_theta_offset
 
 tof_upstream_dimensions = [150., 50.8, 150.]
 tof_upstream_positions = [-346.54341, 0., 1423.]
