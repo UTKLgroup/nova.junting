@@ -73,6 +73,7 @@ with open('beam.py.in', 'w') as f_beam:
 
     f_beam.write('g4ui when=4 "/vis/viewer/set/viewpointVector 0 1 0"\n')
     f_beam.write('g4ui when=4 "/vis/viewer/set/style wireframe"\n')
+    # f_beam.write('g4ui when=4 "/vis/viewer/set/background 1 1 1"\n')
 
     f_beam.write('beam gaussian particle=pi+ firstEvent=0 lastEvent=1 sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=64000.0\n')
     f_beam.write('trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton\n')
