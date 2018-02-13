@@ -13,7 +13,6 @@ collimator_upstream_base_dimensions = [5.19 * inch, 58. * inch, 32. * inch]
 collimator_upstream_bottom_dimensions = [5.19 / 2. * inch, 42.76 * inch, 32. * inch]
 collimator_upstream_middle_dimensions = [2. * inch, 42.76 * inch, 11.6 * inch]
 collimator_upstream_top_dimensions = [5.19 * inch, 42.76 * inch, 32. * inch]
-
 collimator_upstream_base_positions = [0., -6.19 * inch, 0.]
 collimator_upstream_bottom_positions = [0., -(1. + 5.19 / 4.) * inch, 7.62 * inch]
 collimator_upstream_middle_1_positions = [296. / 2. + 67.29, 0., 7.62 * inch]
@@ -47,6 +46,8 @@ magnet_theta = -13 + 5
 
 collimator_downstream_bottom_dimensions = [8.5 * inch, 36. * inch, 30. * inch]
 collimator_downstream_middle_dimensions = [6. * inch, 36. * inch, 11. * inch]
+collimator_downstream_positions = [-1077., 0., 6188. - 9. * inch]
+collimator_downstream_theta = -3
 
 def translate(positions, deltas):
     for i in range(len(positions)):
@@ -138,7 +139,7 @@ with open('beam.py.in', 'w') as f_beam:
     f_beam.write('  place collimator_downstream_bottom rename=+_bottom z=18*$inch y=+(4.25+3)*$inch\n')
     f_beam.write('  place collimator_downstream_bottom rename=+_top z=18*$inch y=-(4.25+3)*$inch\n')
     f_beam.write('endgroup\n')
-    f_beam.write('place collimator_downstream z=6188.0-9*$inch x=-1077 rotation=y-3.0\n')
+    f_beam.write('place collimator_downstream x={} y={} z={} rotation=y{}\n'.format(collimator_downstream_positions[0], collimator_downstream_positions[1], collimator_downstream_positions[2], collimator_downstream_theta))
 
     f_beam.write('place wire_chamber rename=wire_chamber_4 x={} y={} z={} rotation=y{}\n'.format(wire_chamber_4_positions[0], wire_chamber_4_positions[1], wire_chamber_4_positions[2], wire_chamber_4_theta))
 

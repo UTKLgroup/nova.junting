@@ -46,7 +46,7 @@ group collimator_downstream
   place collimator_downstream_bottom rename=+_bottom z=18*$inch y=+(4.25+3)*$inch
   place collimator_downstream_bottom rename=+_top z=18*$inch y=-(4.25+3)*$inch
 endgroup
-place collimator_downstream z=6188.0-9*$inch x=-1077 rotation=y-3.0
+place collimator_downstream x=-1077.0 y=0.0 z=5959.4 rotation=y-3
 place wire_chamber rename=wire_chamber_4 x=-1195.0827 y=-20.4724 z=7606.4872 rotation=y-3
 virtualdetector tof_downstream height=130.0 length=50.8 width=130.0 material=LUCITE color=0.05,0.05,0.93
 place tof_downstream rename=tof_downstream x=-1186.1546 y=0.0 z=8005.9022 rotation=z90,y-3
