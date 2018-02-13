@@ -74,6 +74,9 @@ with open('beam.py.in', 'w') as f_beam:
     f_beam.write('g4ui when=4 "/vis/viewer/set/viewpointVector 0 1 0"\n')
     f_beam.write('g4ui when=4 "/vis/viewer/set/style wireframe"\n')
 
+    f_beam.write('beam gaussian particle=pi+ firstEvent=0 lastEvent=1 sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=64000.0\n')
+    f_beam.write('trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton\n')
+
     f_beam.write('box slab height={} length={} width={} material=Cu color=1,0.01,0.01\n'.format(target_slab_dimensions[0], target_slab_dimensions[1], target_slab_dimensions[2]))
     for i in range(-2, 3):
         f_beam.write('place slab rename=target_slab_{} x={} z={}\n'.format(i, i * target_delta_x, -i * target_delta_z))
@@ -96,11 +99,11 @@ with open('beam.py.in', 'w') as f_beam:
     f_beam.write('  virtualdetector Det  width=128.0  height=125.0 color=0,1,0  length=25.0\n')
     f_beam.write('  box FramS height=254.0 width=63.0  length=25.0 color=1,0,1 kill={} material=Al\n'.format(kill))
     f_beam.write('  box FramT height=63.0  width=128.0 length=25.0 color=1,0,1 kill={} material=Al\n'.format(kill))
-    f_beam.write('  place FramS rename=FrameLeft   z=12.5 x=-95.5\n')
-    f_beam.write('  place FramS rename=FrameRight  z=12.5 x=+95.5\n')
-    f_beam.write('  place FramT rename=FrameBottom z=12.5 y=-95.5\n')
-    f_beam.write('  place FramT rename=FrameTop	 z=12.5 y=+95.5\n')
-    f_beam.write('  place Det rename=Det1 z=12.5 x=0. y=0.\n')
+    f_beam.write('  place FramS rename=+FrameLeft   z=12.5 x=-95.5\n')
+    f_beam.write('  place FramS rename=+FrameRight  z=12.5 x=+95.5\n')
+    f_beam.write('  place FramT rename=+FrameBottom z=12.5 y=-95.5\n')
+    f_beam.write('  place FramT rename=+FrameTop	 z=12.5 y=+95.5\n')
+    f_beam.write('  place Det rename=+Det1 z=12.5 x=0. y=0.\n')
     f_beam.write('endgroup\n')
     f_beam.write('place wire_chamber rename=wire_chamber_1 z=1730.3369 x=-403.0472 y=0.0508 rotation=y-13\n')
     f_beam.write('place wire_chamber rename=wire_chamber_2 z=3181.9215 x=-738.0351 y=0.0762 rotation=y-13\n')
@@ -108,7 +111,7 @@ with open('beam.py.in', 'w') as f_beam:
     f_beam.write('genericbend M1 fieldHeight={} fieldLength={} fieldWidth={} kill={} ironColor=1,0,0 ironHeight={} ironLength={} ironWidth={}\n'.format(magnet_field_dimensions[0], magnet_field_dimensions[1], magnet_field_dimensions[2], kill, magnet_iron_dimensions[0], magnet_iron_dimensions[1], magnet_iron_dimensions[2]))
     f_beam.write('place M1 By={} rotation=Y-13+5 z=4228.9 x=-945.7\n'.format(magnet_by))
 
-    f_beam.write('place wire_chamber z=5167.5665 x=-1064.133 y=-2.921 rotation=y-3\n')
+    f_beam.write('place wire_chamber rename=wire_chamber_3 z=5167.5665 x=-1064.133 y=-2.921 rotation=y-3\n')
 
     f_beam.write('group collimator_downstream\n')
     f_beam.write('  box collimator_downstream_bottom height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_downstream_bottom_dimensions[0], collimator_downstream_bottom_dimensions[1], collimator_downstream_bottom_dimensions[2], kill))
@@ -120,7 +123,7 @@ with open('beam.py.in', 'w') as f_beam:
     f_beam.write('endgroup\n')
     f_beam.write('place collimator_downstream z=6188.0-9*$inch x=-1077 rotation=y-3.0\n')
 
-    f_beam.write('place wire_chamber z=7606.4872 x=-1195.0827 y=-20.4724 rotation=y-3\n')
+    f_beam.write('place wire_chamber rename=wire_chamber_4 z=7606.4872 x=-1195.0827 y=-20.4724 rotation=y-3\n')
 
     f_beam.write('virtualdetector tof_downstream height={} length={} width={} material=LUCITE color=0.05,0.05,0.93\n'.format(tof_downstream_dimensions[0], tof_downstream_dimensions[1], tof_downstream_dimensions[2]))
     f_beam.write('place tof_downstream rename=tof_downstream z=8005.9022  x=-1186.1546 rotation=z90,y-3\n')
