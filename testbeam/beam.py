@@ -20,9 +20,8 @@ collimator_upstream_middle_2_positions = [-296. / 2. - 67.29, 0., 7.62 * inch]
 collimator_upstream_top_positions = [0., (1. + 5.19 / 2.) * inch, 7.62 * inch]
 collimator_upstream_positions = [-8.315 * inch + 40., 0., (29. / 2. + 7.62) * inch]
 collimator_upstream_theta = 3               # degree, positive here means a counter-clockwise rotation in the top view
-collimator_upstream_middle_1_theta = -14.03
-collimator_upstream_middle_2_theta = -17.97
-
+collimator_upstream_middle_1_theta = collimator_upstream_theta - 14.03
+collimator_upstream_middle_2_theta = collimator_upstream_theta - 17.97
 
 tof_upstream_dimensions = [150., 50.8, 150.]
 tof_upstream_positions = [-346.54341, 0., 1423.]
@@ -122,8 +121,8 @@ def write():
     
         f_beam.write('place collimator_upstream_base rename=collimator_upstream_base x={} y={} z={} rotation=y{}\n'.format(collimator_upstream_base_positions[0], collimator_upstream_base_positions[1], collimator_upstream_base_positions[2], collimator_upstream_theta))
         f_beam.write('place collimator_upstream_bottom rename=collimator_upstream_bottom x={} y={} z={} rotation=y{}\n'.format(collimator_upstream_bottom_positions[0], collimator_upstream_bottom_positions[1], collimator_upstream_bottom_positions[2], collimator_upstream_theta))
-        f_beam.write('place collimator_upstream_middle rename=collimator_upstream_middle_1 x={} y={} z={} rotation=y{}{}\n'.format(collimator_upstream_middle_1_positions[0], collimator_upstream_middle_1_positions[1], collimator_upstream_middle_1_positions[2], collimator_upstream_theta, collimator_upstream_middle_1_theta))
-        f_beam.write('place collimator_upstream_middle rename=collimator_upstream_middle_2 x={} y={} z={} rotation=y{}{}\n'.format(collimator_upstream_middle_2_positions[0], collimator_upstream_middle_2_positions[1], collimator_upstream_middle_2_positions[2], collimator_upstream_theta, collimator_upstream_middle_2_theta))
+        f_beam.write('place collimator_upstream_middle rename=collimator_upstream_middle_1 x={} y={} z={} rotation=y{}\n'.format(collimator_upstream_middle_1_positions[0], collimator_upstream_middle_1_positions[1], collimator_upstream_middle_1_positions[2], collimator_upstream_middle_1_theta))
+        f_beam.write('place collimator_upstream_middle rename=collimator_upstream_middle_2 x={} y={} z={} rotation=y{}\n'.format(collimator_upstream_middle_2_positions[0], collimator_upstream_middle_2_positions[1], collimator_upstream_middle_2_positions[2], collimator_upstream_middle_2_theta))
         f_beam.write('place collimator_upstream_top rename=collimator_upstream_top x={} y={} z={} rotation=y{}\n'.format(collimator_upstream_top_positions[0], collimator_upstream_top_positions[1], collimator_upstream_top_positions[2], collimator_upstream_theta))
     
         f_beam.write('virtualdetector tof_upstream  height={} length={} width={} material=LUCITE color=0.05,0.05,0.93\n'.format(tof_upstream_dimensions[0], tof_upstream_dimensions[1], tof_upstream_dimensions[2]))
