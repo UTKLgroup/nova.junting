@@ -30,11 +30,11 @@ echo "PROCESS is: $PROCESS"
 echo "EVENT_COUNT_PER_JOB is: $EVENT_COUNT_PER_JOB"
 echo "FIRST = $FIRST"
 echo "LAST = $LAST"
-SUBSPILL=$((${PROCESS} + 1 ))
+JOB_COUNT=$((${PROCESS} + 1))
 EVENT_COUNT_PER_SPILL=$((${EVENT_COUNT_PER_JOB} * ${JOB_COUNT_PER_SPILL}))
 
 g4bl beam.py.in first=${FIRST} last=${LAST} momentum=${MOMENTUM}
-python merge_tree.py beam.root --subspillnumber $SUBSPILL --subspillcount $JOB_COUNT_PER_SPILL --spillsize $EVENT_COUNT_PER_SPILL
+python merge_tree.py beam.root --subspillnumber $JOB_COUNT --subspillcount $JOB_COUNT_PER_SPILL --spillsize $EVENT_COUNT_PER_SPILL
 
 # chmod 766 beam.root
 chmod 766 MergedAtstart_linebeam.root
