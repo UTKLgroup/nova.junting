@@ -16,13 +16,13 @@ box collimator_upstream_base height=131.826 length=1473.1999999999998 width=812.
 box collimator_upstream_bottom height=65.913 length=1086.1039999999998 width=812.8 material=Fe color=0,1,1 kill=1
 box collimator_upstream_middle height=50.8 length=1086.1039999999998 width=294.64 material=Fe color=0,1,1 kill=1
 box collimator_upstream_top height=131.826 length=1086.1039999999998 width=812.8 material=Fe color=0,1,1 kill=1
-place collimator_upstream_base rename=collimator_upstream_base x=-193.72753176698478 y=-157.226 z=562.3527423498904 rotation=y3
-place collimator_upstream_bottom rename=collimator_upstream_bottom x=-183.5980121080755 y=-58.356500000000004 z=755.6354915425686 rotation=y3
+place collimator_upstream_base rename=collimator_upstream_base x=-193.72753176698478 y=-157.226 z=562.3527423498904 rotation=y3.0
+place collimator_upstream_bottom rename=collimator_upstream_bottom x=-183.5980121080755 y=-58.356500000000004 z=755.6354915425686 rotation=y3.0
 place collimator_upstream_middle rename=collimator_upstream_middle_1 x=31.396940429236736 y=0.0 z=744.3680835230252 rotation=y-11.03
 place collimator_upstream_middle rename=collimator_upstream_middle_2 x=-398.5929646453877 y=0.0 z=766.902899562112 rotation=y-14.97
-place collimator_upstream_top rename=collimator_upstream_top x=-183.5980121080755 y=91.313 z=755.6354915425686 rotation=y3
+place collimator_upstream_top rename=collimator_upstream_top x=-183.5980121080755 y=91.313 z=755.6354915425686 rotation=y3.0
 virtualdetector tof_upstream  height=150.0 length=50.8 width=150.0 material=LUCITE color=0.05,0.05,0.93
-place tof_upstream rename=tof_upstream x=-346.54341 y=0.0 z=1423.0 rotation=z45,y-13
+place tof_upstream rename=tof_upstream x=-346.54341 y=0.0 z=1423.0 rotation=z45,y-13.0
 group wire_chamber
   virtualdetector wire_chamber_detector height=125.0 length=25.0 width=128.0 color=0,1,0
   box wire_chamber_frame_vertical height=254.0 length=25.0 width=63.0 color=1,0,1 kill=1 material=Al
@@ -33,11 +33,11 @@ group wire_chamber
   place wire_chamber_frame_horizontal rename=+_frame_bottom x=0.0 y=-95.5 z=12.5
   place wire_chamber_detector rename=+_detector x=0.0 y=0.0 z=12.5
 endgroup
-place wire_chamber rename=wire_chamber_1 x=-403.0472 y=0.0508 z=1730.3369 rotation=y-13
-place wire_chamber rename=wire_chamber_2 x=-738.0351 y=0.0762 z=3181.9215 rotation=y-13
+place wire_chamber rename=wire_chamber_1 x=-403.0472 y=0.0508 z=1730.3369 rotation=y-13.0
+place wire_chamber rename=wire_chamber_2 x=-738.0351 y=0.0762 z=3181.9215 rotation=y-13.0
 genericbend M1 fieldHeight=88.89999999999999 fieldLength=1066.8 fieldWidth=142.23999999999998 kill=1 ironColor=1,0,0 ironHeight=711.1999999999999 ironLength=1066.8 ironWidth=1066.8
-place M1 By=1.8 x=-945.7 y=0.0 z=4228.9 rotation=Y-8
-place wire_chamber rename=wire_chamber_3 x=-1064.133 y=-2.921 z=5167.5665 rotation=y-3
+place M1 By=1.8 x=-945.7 y=0.0 z=4228.9 rotation=Y-8.0
+place wire_chamber rename=wire_chamber_3 x=-1064.133 y=-2.921 z=5167.5665 rotation=y-3.0
 group collimator_downstream
   box collimator_downstream_bottom height=215.89999999999998 length=914.4 width=762.0 material=Fe color=0,1,1 kill=1
   box collimator_downstream_middle height=152.39999999999998 length=914.4 width=279.4 material=Fe color=0,.8,1 kill=1
@@ -46,7 +46,7 @@ group collimator_downstream
   place collimator_downstream_bottom rename=+_bottom x=0.0 y=184.14999999999998 z=457.2
   place collimator_downstream_bottom rename=+_top x=0.0 y=-184.14999999999998 z=457.2
 endgroup
-place collimator_downstream x=-1077.0 y=0.0 z=5959.4 rotation=y-3
-place wire_chamber rename=wire_chamber_4 x=-1195.0827 y=-20.4724 z=7606.4872 rotation=y-3
+place collimator_downstream x=-1077.0 y=0.0 z=5959.4 rotation=y-3.0
+place wire_chamber rename=wire_chamber_4 x=-1195.0827 y=-20.4724 z=7606.4872 rotation=y-3.0
 virtualdetector tof_downstream height=130.0 length=50.8 width=130.0 material=LUCITE color=0.05,0.05,0.93
-place tof_downstream rename=tof_downstream x=-1186.1546 y=0.0 z=8005.9022 rotation=z90,y-3
+place tof_downstream rename=tof_downstream x=-1186.1546 y=0.0 z=8005.9022 rotation=z90,y-3.0

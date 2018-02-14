@@ -1,5 +1,8 @@
 from math import cos, sin, tan, pi
 
+collimator_upstream_theta = -13. # degree
+magnet_theta_relative = 10.      # degree
+
 inch = 25.4
 kill = 1
 
@@ -19,8 +22,7 @@ collimator_upstream_middle_1_positions = [296. / 2. + 67.29, 0., 7.62 * inch]
 collimator_upstream_middle_2_positions = [-296. / 2. - 67.29, 0., 7.62 * inch]
 collimator_upstream_top_positions = [0., (1. + 5.19 / 2.) * inch, 7.62 * inch]
 collimator_upstream_positions = [0., 0., (29. / 2. + 7.62) * inch]
-collimator_upstream_base_theta = 3               # degree, positive here means a counter-clockwise rotation in the top view
-collimator_upstream_theta = -13
+collimator_upstream_base_theta = 3.               # degree, positive here means a counter-clockwise rotation in the top view
 collimator_upstream_theta_offset = 1.97
 collimator_upstream_middle_1_theta = collimator_upstream_theta + collimator_upstream_theta_offset
 collimator_upstream_middle_2_theta = collimator_upstream_theta - collimator_upstream_theta_offset
@@ -32,12 +34,18 @@ collimator_upstream_parts = [
     collimator_upstream_top_positions
 ]
 
+magnet_field_dimensions = [3.5 * inch, 42 * inch, 5.6 * inch]
+magnet_iron_dimensions = [28. * inch, 42. * inch, 42. * inch]
+magnet_by = 1.8
+magnet_positions = [-945.7, 0., 4228.9]
+magnet_theta = collimator_upstream_theta + magnet_theta_relative / 2.
+
 tof_upstream_dimensions = [150., 50.8, 150.]
 tof_upstream_positions = [-346.54341, 0., 1423.]
-tof_upstream_theta = -13
+tof_upstream_theta = collimator_upstream_theta
 tof_downstream_dimensions = [130., 50.8, 130.]
 tof_downstream_positions = [-1186.1546, 0., 8005.9022]
-tof_downstream_theta = -3
+tof_downstream_theta = collimator_upstream_theta + magnet_theta_relative
 
 wire_chamber_detector_dimensions = [125., 25., 128.]
 wire_chamber_frame_vertical_dimensions = [254., 25., 63.]
@@ -51,16 +59,10 @@ wire_chamber_1_positions = [-403.0472, 0.0508, 1730.3369]
 wire_chamber_2_positions = [-738.0351, 0.0762, 3181.9215]
 wire_chamber_3_positions = [-1064.133, -2.921, 5167.5665]
 wire_chamber_4_positions = [-1195.0827, -20.4724, 7606.4872]
-wire_chamber_1_theta = -13
-wire_chamber_2_theta = -13
-wire_chamber_3_theta = -3
-wire_chamber_4_theta = -3
-
-magnet_field_dimensions = [3.5 * inch, 42 * inch, 5.6 * inch]
-magnet_iron_dimensions = [28. * inch, 42. * inch, 42. * inch]
-magnet_by = 1.8
-magnet_positions = [-945.7, 0., 4228.9]
-magnet_theta = -13 + 5
+wire_chamber_1_theta = collimator_upstream_theta
+wire_chamber_2_theta = collimator_upstream_theta
+wire_chamber_3_theta = collimator_upstream_theta + magnet_theta_relative
+wire_chamber_4_theta = collimator_upstream_theta + magnet_theta_relative
 
 collimator_downstream_bottom_dimensions = [8.5 * inch, 36. * inch, 30. * inch]
 collimator_downstream_middle_dimensions = [6. * inch, 36. * inch, 11. * inch]
@@ -69,7 +71,7 @@ collimator_downstream_middle_2_positions = [-9. * inch, 0., 18. * inch ]
 collimator_downstream_bottom_positions = [0., (4.25 + 3.) * inch, 18. * inch]
 collimator_downstream_top_positions = [0., -(4.25 + 3.) * inch, 18. * inch]
 collimator_downstream_positions = [-1077., 0., 6188. - 9. * inch]
-collimator_downstream_theta = -3
+collimator_downstream_theta = collimator_upstream_theta + magnet_theta_relative
 
 
 def translate(positions, deltas):
