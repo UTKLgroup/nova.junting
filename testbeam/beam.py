@@ -137,14 +137,14 @@ def rotate_updownstream():
     tof_downstream_distance = get_distance(tof_downstream_positions, magnet_positions)
 
     rotate_y_absolute(start_line_positions, collimator_upstream_theta, start_line_distance, target_positions)
-    rotate_y_absolute(tof_upstream_positions, collimator_upstream_theta, tof_upstream_distance, target_positions)
-    rotate_y_absolute(wire_chamber_1_positions, collimator_upstream_theta, wire_chamber_1_distance, target_positions)
-    rotate_y_absolute(wire_chamber_2_positions, collimator_upstream_theta, wire_chamber_2_distance, target_positions)
+    rotate_y_absolute(tof_upstream_positions, tof_upstream_theta, tof_upstream_distance, target_positions)
+    rotate_y_absolute(wire_chamber_1_positions, wire_chamber_1_theta, wire_chamber_1_distance, target_positions)
+    rotate_y_absolute(wire_chamber_2_positions, wire_chamber_2_theta, wire_chamber_2_distance, target_positions)
     rotate_y_absolute(magnet_positions, collimator_upstream_theta, magnet_distance, target_positions)
 
     rotate_y_absolute(wire_chamber_3_positions, wire_chamber_3_theta, wire_chamber_3_distance, magnet_positions)
     rotate_y_absolute(collimator_downstream_positions, collimator_downstream_theta, collimator_downstream_distance, magnet_positions)
-    rotate_y_absolute(wire_chamber_4_positions, wire_chamber_3_theta, wire_chamber_4_distance, magnet_positions)
+    rotate_y_absolute(wire_chamber_4_positions, wire_chamber_4_theta, wire_chamber_4_distance, magnet_positions)
     rotate_y_absolute(tof_downstream_positions, tof_downstream_theta, tof_downstream_distance, magnet_positions)
 
 
