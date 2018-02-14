@@ -2,9 +2,10 @@ import random
 from rootalias import *
 
 
-subspillnumber = 1
-subspillcount = 1
-jobsinspill = subspillnumber%subspillcount
+subspillnumber = 1              # job number: 1, 2, ..., 30, 31, 31, ...
+subspillcount = 30              # number of jobs for a spill, e.g. for a spill of 300k events,
+                                # if i use 10k events per job, the number of jobs here is 30
+jobsinspill = (subspillnumber - 1) % subspillcount
 BatchesPerOrbit = 7
 BucketsPerBatch = 84
 BucketsPerOrbit = BatchesPerOrbit * BucketsPerBatch
