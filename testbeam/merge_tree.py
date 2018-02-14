@@ -28,7 +28,7 @@ parser.add_option ('--o', dest='outfile', type='string',
                    default = 'MergedTree_test.root',
                    help="Output filename (ends .root).  This option is ignored.")
 parser.add_option ('-T', dest='starterTree', type='string',
-                   default = 'StartLine',
+                   default = 'start_line',
                    help="The one TTree whose tracks will be iterated over. Effectively requires tracks present here.")
 parser.add_option ('--maxspill', dest='maxspill', type='int',
                    default = -1,
@@ -169,15 +169,15 @@ for name, tuple in INtuples.items():
 
 # Lists of variable names and TTree names to use in loops.
 vars = ('x','y','z','t','Px','Py','Pz','PDGid','ParentID','EventID','TrackID')
-StartLine = ('StartLine',)
-WCs = ('Det1', 'Det2', 'Det3', 'Det4')
-Scints = ('TOFus', 'TOFds') # Horz removed
+start_line = ('start_line',)
+WCs = ('wire_chamber_1_detector', 'wire_chamber_2_detector', 'wire_chamber_3_detector', 'wire_chamber_4_detector')
+Scints = ('tof_upstream', 'tof_downstream') # Horz removed
 
 ## One dictionary to rule them all. ##
 ## Unfortunately, ROOT won't process a single line defining a single struct for all these; too long.
 ## So here we integrate them by parts.
 detsysts = {}
-detsysts['StartLine'] = StartLine
+detsysts['start_line'] = start_line
 detsysts['WCs'] = WCs
 detsysts['Scints'] = Scints
 
@@ -362,8 +362,8 @@ for ds_track in INtuples[starterTree]:
                                 spilltimeoffset = spillinterval * float (spill)
                                 newtime = getattr(structs[systname],vardet)*1e-9 + RandomOffsetSeconds() + spilltimeoffset
                                 pointers[spill, vardet][0] = newtime
-                                # Special need to track entrie by tTOFds
-                                if tuplename == 'StartLine':
+                                # Special need to track entrie by tof_downstream
+                                if tuplename == 'start_line':
                                     # Make a new list if this time has never been seen before
                                     if newtime not in timeindex[spill].keys():
                                         timeindex[spill][newtime] = []
