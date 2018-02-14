@@ -37,7 +37,7 @@ collimator_upstream_parts = [
 
 magnet_field_dimensions = [3.5 * inch, 42 * inch, 17.75 * inch]
 magnet_iron_dimensions = [28. * inch, 42. * inch, 42. * inch]
-magnet_by = 1.8
+magnet_by = 1.8                 # B field, tesla
 magnet_positions = [-945.7, 0., 4228.9]
 magnet_theta = collimator_upstream_theta + magnet_theta_relative / 2.
 
@@ -146,13 +146,12 @@ def write():
         f_beam.write('physics QGSP_BIC\n')
         f_beam.write('param worldMaterial=Air\n')
         f_beam.write('param histoFile=beam.root\n')
-        f_beam.write('param inch=25.4\n')
 
         f_beam.write('g4ui when=4 "/vis/viewer/set/viewpointVector 0 1 0"\n')
         f_beam.write('g4ui when=4 "/vis/viewer/set/style wireframe"\n')
         # f_beam.write('g4ui when=4 "/vis/viewer/set/background 1 1 1"\n')
 
-        f_beam.write('beam gaussian particle=pi+ firstEvent=0 lastEvent=1 sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=64000.0\n')
+        f_beam.write('beam gaussian particle=pi+ firstEvent=$first lastEvent=$last sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=$momentum\n')
         f_beam.write('trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton\n')
 
         f_beam.write('box slab height={} length={} width={} material=Cu color=1,0.01,0.01\n'.format(target_slab_dimensions[0], target_slab_dimensions[1], target_slab_dimensions[2]))
