@@ -39,6 +39,6 @@ python merge_tree.py beam.root --subspillnumber $JOB_COUNT --subspillcount $JOB_
 # chmod 766 beam.root
 chmod 766 MergedAtstart_linebeam.root
 chmod 766 MergedAtstart_linebeam.pickle
-# ifdh cp beam.root /pnfs/nova/scratch/users/junting/g4bl/beam.${SUBSPILL}.root
-ifdh cp MergedAtstart_linebeam.root /pnfs/nova/scratch/users/junting/g4bl/MergedAtstart_linebeam.${SUBSPILL}.root
-ifdh cp MergedAtstart_linebeam.pickle /pnfs/nova/scratch/users/junting/g4bl/MergedAtstart_linebeam.${SUBSPILL}.pickle
+# ifdh cp beam.root /pnfs/nova/scratch/users/junting/g4bl/beam.${JOB_COUNT}.root
+ifdh cp MergedAtstart_linebeam.root /pnfs/nova/scratch/users/junting/g4bl/MergedAtstart_linebeam.${JOB_COUNT}.root
+ifdh cp MergedAtstart_linebeam.pickle /pnfs/nova/scratch/users/junting/g4bl/MergedAtstart_linebeam.${JOB_COUNT}.pickle
