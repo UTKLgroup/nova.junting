@@ -20,6 +20,8 @@ place collimator_upstream_bottom rename=collimator_upstream_bottom x=-183.598012
 place collimator_upstream_middle rename=collimator_upstream_middle_1 x=31.396940429236736 y=0.0 z=744.3680835230252 rotation=y-11.03
 place collimator_upstream_middle rename=collimator_upstream_middle_2 x=-398.5929646453877 y=0.0 z=766.902899562112 rotation=y-14.97
 place collimator_upstream_top rename=collimator_upstream_top x=-183.5980121080755 y=91.313 z=755.6354915425686 rotation=y3.0
+virtualdetector start_line radius=1750.0 length=1.0 material=Air color=0.9,0.9,0.7
+place start_line rotation=y-13.0 x=-319.9975887877348 y=0.0 z=1386.0618356631753
 virtualdetector tof_upstream  height=150.0 length=50.8 width=150.0 material=LUCITE color=0.05,0.05,0.93
 place tof_upstream rename=tof_upstream x=-329.4608701490734 y=0.0 z=1427.0518105713763 rotation=z45,y-13.0
 group wire_chamber

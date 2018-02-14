@@ -74,6 +74,11 @@ collimator_downstream_top_positions = [0., -(4.25 + 3.) * inch, 18. * inch]
 collimator_downstream_positions = [-1077., 0., 6188. - 9. * inch]
 collimator_downstream_theta = collimator_upstream_theta + magnet_theta_relative
 
+start_line_radius = 1750.
+start_line_length = 1.
+start_line_theta = collimator_upstream_theta
+start_line_positions = [-335. + 5.7, 0., 1400. - 26.4]
+
 
 def translate(positions, deltas):
     for i in range(len(positions)):
@@ -120,6 +125,7 @@ def move_collimator_upstream():
 
 
 def rotate_updownstream():
+    start_line_distance = get_distance(start_line_positions, target_positions) + 10.
     tof_upstream_distance = get_distance(tof_upstream_positions, target_positions)
     wire_chamber_1_distance = get_distance(wire_chamber_1_positions, target_positions)
     wire_chamber_2_distance = get_distance(wire_chamber_2_positions, target_positions)
@@ -130,6 +136,7 @@ def rotate_updownstream():
     wire_chamber_4_distance = get_distance(wire_chamber_4_positions, magnet_positions)
     tof_downstream_distance = get_distance(tof_downstream_positions, magnet_positions)
 
+    rotate_y_absolute(start_line_positions, collimator_upstream_theta, start_line_distance, target_positions)
     rotate_y_absolute(tof_upstream_positions, collimator_upstream_theta, tof_upstream_distance, target_positions)
     rotate_y_absolute(wire_chamber_1_positions, collimator_upstream_theta, wire_chamber_1_distance, target_positions)
     rotate_y_absolute(wire_chamber_2_positions, collimator_upstream_theta, wire_chamber_2_distance, target_positions)
@@ -168,6 +175,9 @@ def write():
         f_beam.write('place collimator_upstream_middle rename=collimator_upstream_middle_1 x={} y={} z={} rotation=y{}\n'.format(collimator_upstream_middle_1_positions[0], collimator_upstream_middle_1_positions[1], collimator_upstream_middle_1_positions[2], collimator_upstream_middle_1_theta))
         f_beam.write('place collimator_upstream_middle rename=collimator_upstream_middle_2 x={} y={} z={} rotation=y{}\n'.format(collimator_upstream_middle_2_positions[0], collimator_upstream_middle_2_positions[1], collimator_upstream_middle_2_positions[2], collimator_upstream_middle_2_theta))
         f_beam.write('place collimator_upstream_top rename=collimator_upstream_top x={} y={} z={} rotation=y{}\n'.format(collimator_upstream_top_positions[0], collimator_upstream_top_positions[1], collimator_upstream_top_positions[2], collimator_upstream_base_theta))
+
+        f_beam.write('virtualdetector start_line radius={} length={} material=Air color=0.9,0.9,0.7\n'.format(start_line_radius, start_line_length))
+        f_beam.write('place start_line rotation=y{} x={} y={} z={}\n'.format(start_line_theta, start_line_positions[0], start_line_positions[1], start_line_positions[2]))
 
         f_beam.write('virtualdetector tof_upstream  height={} length={} width={} material=LUCITE color=0.05,0.05,0.93\n'.format(tof_upstream_dimensions[0], tof_upstream_dimensions[1], tof_upstream_dimensions[2]))
         f_beam.write('place tof_upstream rename=tof_upstream x={} y={} z={} rotation=z45,y{}\n'.format(tof_upstream_positions[0], tof_upstream_positions[1], tof_upstream_positions[2], tof_upstream_theta))
