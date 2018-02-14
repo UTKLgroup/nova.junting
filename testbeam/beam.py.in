@@ -35,7 +35,7 @@ group wire_chamber
 endgroup
 place wire_chamber rename=wire_chamber_1 x=-399.6610388108399 y=0.0508 z=1731.1221475004966 rotation=y-13.0
 place wire_chamber rename=wire_chamber_2 x=-734.7784465119646 y=0.0762 z=3182.6751140105653 rotation=y-13.0
-genericbend M1 fieldHeight=88.89999999999999 fieldLength=1066.8 fieldWidth=142.23999999999998 kill=1 ironColor=1,0,0 ironHeight=711.1999999999999 ironLength=1066.8 ironWidth=1066.8
+genericbend M1 fieldHeight=88.89999999999999 fieldLength=1066.8 fieldWidth=450.84999999999997 kill=1 ironColor=1,0,0 ironHeight=711.1999999999999 ironLength=1066.8 ironWidth=1066.8
 place M1 By=1.8 x=-974.7922088063303 y=0.0 z=4222.288934884783 rotation=Y-8.0
 place wire_chamber rename=wire_chamber_3 x=-1024.3079345314632 y=-2.921 z=5167.105265638102 rotation=y-3.0
 group collimator_downstream

@@ -35,7 +35,7 @@ collimator_upstream_parts = [
     collimator_upstream_top_positions
 ]
 
-magnet_field_dimensions = [3.5 * inch, 42 * inch, 5.6 * inch]
+magnet_field_dimensions = [3.5 * inch, 42 * inch, 17.75 * inch]
 magnet_iron_dimensions = [28. * inch, 42. * inch, 42. * inch]
 magnet_by = 1.8
 magnet_positions = [-945.7, 0., 4228.9]
