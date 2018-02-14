@@ -1,4 +1,6 @@
+from rootalias import *
 from math import cos, sin, tan, pi
+
 
 collimator_upstream_theta = -13. # degree
 magnet_theta_relative = 10.      # degree
@@ -149,7 +151,8 @@ def rotate_updownstream():
 
 
 def write():
-    with open('beam.py.in', 'w') as f_beam:
+    # with open('beam.py.in', 'w') as f_beam:
+    with open('tmp/beam.py.theta_t_{}.theta_m_{}.in'.format(collimator_upstream_theta, magnet_theta_relative), 'w') as f_beam:
         f_beam.write('physics QGSP_BIC\n')
         f_beam.write('param worldMaterial=Air\n')
         f_beam.write('param histoFile=beam.root\n')
@@ -216,6 +219,109 @@ def write():
         f_beam.write('place tof_downstream rename=tof_downstream x={} y={} z={} rotation=z90,y{}\n'.format(tof_downstream_positions[0], tof_downstream_positions[1], tof_downstream_positions[2], tof_downstream_theta))
 
 
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180211_testbeam_high_stat/figures'
+def plot_position():
+    positionss = [
+        target_positions,
+        collimator_upstream_positions,
+        tof_upstream_positions,
+        wire_chamber_1_positions,
+        wire_chamber_2_positions,
+        magnet_positions,
+        wire_chamber_3_positions,
+        collimator_downstream_positions,
+        wire_chamber_4_positions,
+        tof_downstream_positions
+    ]
+
+    names = [
+        'target',
+        'upstream collimator',
+        'upstream TOF',
+        'wire_chamber 1',
+        'wire_chamber 2',
+        'M1 magnet',
+        'wire_chamber 3',
+        'downstream collimator',
+        'wire_chamber 4',
+        'downstream TOF'
+    ]
+
+    colors = [
+        kBlack,
+        kRed + 2,
+        kMagenta + 2,
+        kViolet + 2,
+        kBlue + 2,
+        kAzure + 2,
+        kCyan + 2,
+        kTeal + 2,
+        kYellow + 2,
+        kOrange + 2
+    ]
+
+    styles = [
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29
+    ]
+
+    c1 = TCanvas('c1', 'c1', 1200, 600)
+    set_margin()
+    gPad.SetTickx()
+    gPad.SetTicky()
+
+    gr = TGraph(2, np.array([-50., 1000.]), np.array([-1000., 1000.]))
+    set_graph_style(gr)
+    gr.SetMarkerSize(0)
+    gr.SetLineWidth(0)
+    gr.GetXaxis().SetTitle('Z (cm)')
+    gr.GetYaxis().SetTitle('X (cm)')
+    gr.Draw('AP')
+    gr.GetXaxis().SetRangeUser(-50, 1200)
+    gr.GetYaxis().SetRangeUser(-150, 50)
+    gr.GetYaxis().SetNdivisions(505, 1)
+    gr.GetXaxis().SetNdivisions(508, 1)
+
+    lg1 = TLegend(0.56, 0.38, 0.87, 0.86)
+    set_legend_style(lg1)
+    lg1.SetTextSize(22)
+    lg1.SetMargin(0.15)
+    lg1.SetBorderSize(1)
+
+    markers = []
+    # latex = TLatex()
+    # latex.SetTextFont(43)
+    # latex.SetTextSize(15)
+    for i, positions in enumerate(positionss):
+        print('positions = {}'.format(positions))
+        coordinate_x = positions[2] / 10. # cm
+        coordinate_y = positions[0] / 10. # cm
+
+        marker = TMarker(coordinate_x, coordinate_y, 24)
+        markers.append(marker)
+        markers[i].SetMarkerColor(colors[i])
+        markers[i].SetMarkerStyle(styles[i])
+        markers[i].SetMarkerSize(2.)
+        markers[i].Draw()
+
+        name = '{} ({:.0f}, {:.0f})'.format(names[i], coordinate_x, coordinate_y)
+        lg1.AddEntry(markers[i], name, 'p')
+
+    lg1.Draw()
+    c1.Update()
+    c1.SaveAs('{}/plot_position.theta_t_{}.theta_m_{}.pdf'.format(FIGURE_DIR, collimator_upstream_theta, magnet_theta_relative))
+    input('Press any key to continue.')
+
+
 move_collimator_upstream()
 rotate_updownstream()
 write()
+# plot_position()
