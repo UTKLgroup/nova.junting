@@ -16,11 +16,11 @@ box collimator_upstream_base height=131.826 length=1473.1999999999998 width=812.
 box collimator_upstream_bottom height=65.913 length=1086.1039999999998 width=812.8 material=Fe color=0,1,1 kill=1
 box collimator_upstream_middle height=50.8 length=1086.1039999999998 width=294.64 material=Fe color=0,1,1 kill=1
 box collimator_upstream_top height=131.826 length=1086.1039999999998 width=812.8 material=Fe color=0,1,1 kill=1
-place collimator_upstream_base rename=collimator_upstream_base x=-190.47633268427617 y=-157.226 z=562.3527423498904 rotation=y3
-place collimator_upstream_bottom rename=collimator_upstream_bottom x=-180.34681302536688 y=-58.356500000000004 z=755.6354915425686 rotation=y3
-place collimator_upstream_middle rename=collimator_upstream_middle_1 x=34.648139511945345 y=0.0 z=744.3680835230252 rotation=y-11.03
-place collimator_upstream_middle rename=collimator_upstream_middle_2 x=-395.34176556267914 y=0.0 z=766.902899562112 rotation=y-14.97
-place collimator_upstream_top rename=collimator_upstream_top x=-180.34681302536688 y=91.313 z=755.6354915425686 rotation=y3
+place collimator_upstream_base rename=collimator_upstream_base x=-193.72753176698478 y=-157.226 z=562.3527423498904 rotation=y3
+place collimator_upstream_bottom rename=collimator_upstream_bottom x=-183.5980121080755 y=-58.356500000000004 z=755.6354915425686 rotation=y3
+place collimator_upstream_middle rename=collimator_upstream_middle_1 x=31.396940429236736 y=0.0 z=744.3680835230252 rotation=y-11.03
+place collimator_upstream_middle rename=collimator_upstream_middle_2 x=-398.5929646453877 y=0.0 z=766.902899562112 rotation=y-14.97
+place collimator_upstream_top rename=collimator_upstream_top x=-183.5980121080755 y=91.313 z=755.6354915425686 rotation=y3
 virtualdetector tof_upstream  height=150.0 length=50.8 width=150.0 material=LUCITE color=0.05,0.05,0.93
 place tof_upstream rename=tof_upstream x=-346.54341 y=0.0 z=1423.0 rotation=z45,y-13
 group wire_chamber

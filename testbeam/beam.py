@@ -1,4 +1,4 @@
-from math import cos, sin, pi
+from math import cos, sin, tan, pi
 
 inch = 25.4
 kill = 1
@@ -18,12 +18,19 @@ collimator_upstream_bottom_positions = [0., -(1. + 5.19 / 4.) * inch, 7.62 * inc
 collimator_upstream_middle_1_positions = [296. / 2. + 67.29, 0., 7.62 * inch]
 collimator_upstream_middle_2_positions = [-296. / 2. - 67.29, 0., 7.62 * inch]
 collimator_upstream_top_positions = [0., (1. + 5.19 / 2.) * inch, 7.62 * inch]
-collimator_upstream_positions = [-8.315 * inch + 40., 0., (29. / 2. + 7.62) * inch]
+collimator_upstream_positions = [0., 0., (29. / 2. + 7.62) * inch]
 collimator_upstream_base_theta = 3               # degree, positive here means a counter-clockwise rotation in the top view
 collimator_upstream_theta = -13
 collimator_upstream_theta_offset = 1.97
 collimator_upstream_middle_1_theta = collimator_upstream_theta + collimator_upstream_theta_offset
 collimator_upstream_middle_2_theta = collimator_upstream_theta - collimator_upstream_theta_offset
+collimator_upstream_parts = [
+    collimator_upstream_base_positions,
+    collimator_upstream_bottom_positions,
+    collimator_upstream_middle_1_positions,
+    collimator_upstream_middle_2_positions,
+    collimator_upstream_top_positions
+]
 
 tof_upstream_dimensions = [150., 50.8, 150.]
 tof_upstream_positions = [-346.54341, 0., 1423.]
@@ -86,19 +93,20 @@ def rotate_y(positions, x0, z0, theta):
     positions[2] = z_rotate
 
 
-def write():
-    collimator_upstream_parts = [
-        collimator_upstream_base_positions,
-        collimator_upstream_bottom_positions,
-        collimator_upstream_middle_1_positions,
-        collimator_upstream_middle_2_positions,
-        collimator_upstream_top_positions
-       ]
-    
+def move_collimator_upstream():
+    # move z, rotate
     for collimator_upstream_part in collimator_upstream_parts:
         translate(collimator_upstream_part, collimator_upstream_positions)
         rotate_y(collimator_upstream_part, collimator_upstream_positions[0], collimator_upstream_positions[2] + 29. / 2. * inch, collimator_upstream_base_theta * pi / 180.)
-    
+
+    # move x
+    collimator_upstream_middle_z = (collimator_upstream_middle_1_positions[2] + collimator_upstream_middle_2_positions[2]) / 2.
+    offset = tan(collimator_upstream_theta * pi / 180.) * collimator_upstream_middle_z
+    for collimator_upstream_part in collimator_upstream_parts:
+        translate(collimator_upstream_part, [offset, 0., 0.])
+
+
+def write():
     with open('beam.py.in', 'w') as f_beam:
         f_beam.write('physics QGSP_BIC\n')
         f_beam.write('param worldMaterial=Air\n')
@@ -162,5 +170,7 @@ def write():
     
         f_beam.write('virtualdetector tof_downstream height={} length={} width={} material=LUCITE color=0.05,0.05,0.93\n'.format(tof_downstream_dimensions[0], tof_downstream_dimensions[1], tof_downstream_dimensions[2]))
         f_beam.write('place tof_downstream rename=tof_downstream x={} y={} z={} rotation=z90,y{}\n'.format(tof_downstream_positions[0], tof_downstream_positions[1], tof_downstream_positions[2], tof_downstream_theta))
-    
+
+
+move_collimator_upstream()
 write()
