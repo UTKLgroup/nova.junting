@@ -658,7 +658,7 @@ def plot_p_vs_angle_max_angle():
     min_momentum_gev, max_theta_degree = get_min_momentum()
     tl = TLine(max_theta_degree, 0, max_theta_degree, 15)
 
-    b_fields = [1.8, 0.9, 0.4]
+    b_fields = [1.8, 0.9, 0.45]
     colors = [kBlue + 2, kGreen + 2, kRed + 2]
     degrees = np.arange(0.1, 16., 0.1)
 
@@ -682,7 +682,8 @@ def plot_p_vs_angle_max_angle():
 
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
-    lg1 = TLegend(0.34, 0.64, 0.58, 0.86)
+    # lg1 = TLegend(0.34, 0.64, 0.58, 0.86)
+    lg1 = TLegend(0.6, 0.62, 0.83, 0.84)
     set_legend_style(lg1)
     gPad.SetGrid()
 
@@ -929,9 +930,8 @@ def print_slide_momentum_pxy_thetas():
             f_momentum.write('\n% .........................................................\n\n')
 
 
-def plot_momentum_high_stat(filename):
-    # tf1 = TFile('{}/beam.py.in.10_spill.job_1_300.10k_per_job.root'.format(DATA_DIR))
-    tf1 = TFile('{}/beam.py.in.10_spill.job_1_300.10k_per_job.b_0.45T.root'.format(DATA_DIR))
+def save_particle_to_csv(filename):
+    tf1 = TFile('{}/{}'.format(DATA_DIR, filename))
 
     pid_momentums = {}
     particles = []
@@ -974,9 +974,86 @@ def plot_momentum_high_stat(filename):
     pprint(pid_momentums)
 
 
+def plot_particle_momentum(filename, x_min, x_max):
+    pid_momentums = {}
+    with open('{}/{}'.format(DATA_DIR, filename)) as f_csv:
+        for row in csv.reader(f_csv, delimiter=','):
+            pid = int(float(row[-2]))
+            px = float(row[-5])
+            py = float(row[-4])
+            pz = float(row[-3])
+            momentum = (px**2 + py**2 + pz**2)**0.5
+
+            if pid not in pid_momentums:
+                pid_momentums[pid] = [momentum]
+            else:
+                pid_momentums[pid].append(momentum)
+
+    pid_hists = {}
+    h_all = TH1D('h_all', 'h_all', 50, x_min, x_max)
+    for pid, momentums in pid_momentums.items():
+        hist = TH1D('h_{}'.format(pid), 'h_{}'.format(pid), 50, x_min, x_max)
+        for momentum in momentums:
+            hist.Fill(momentum)
+            h_all.Fill(momentum)
+        pid_hists[pid] = hist
+
+    c1 = TCanvas('c1', 'c1', 800, 800)
+    set_margin()
+    gStyle.SetOptStat(0)
+
+    pids = pid_hists.keys()
+    colors = [
+        kBlack,
+        kRed + 2,
+        kBlue + 2,
+        kGreen + 2,
+        kMagenta + 2
+    ]
+
+    # h_stack = THStack('h_stack', 'h_stack')
+    lg1 = TLegend(0.575, 0.55, 0.84, 0.84)
+    set_legend_style(lg1)
+
+    for i, pid in enumerate(pids):
+        hist = pid_hists[pid]
+        set_h1_style(hist)
+        hist.SetLineColor(colors[i])
+        # h_stack.Add(hist)
+        # hist.SetFillColor(colors[i])
+
+        lg1.AddEntry(hist, '{} ({:.0f})'.format(PDG.GetParticle(pid).GetName(), hist.GetEntries()), 'l')
+
+        if i == 0:
+            hist.Draw()
+            hist.GetXaxis().SetTitle('Momentum (MeV)')
+            hist.GetYaxis().SetTitle('Particle Count')
+        else:
+            hist.Draw('sames')
+
+    latex = TLatex()
+    latex.SetNDC()
+    latex.SetTextFont(43)
+    latex.SetTextSize(28)
+    latex.DrawLatex(0.59, 0.44, 'mean = {:.0f} MeV'.format(h_all.GetMean()))
+    latex.DrawLatex(0.59, 0.5, 'total entry = {:.0f}'.format(h_all.GetEntries()))
+
+    lg1.Draw()
+    # set_h1_style(h_stack)
+    # h_stack.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_particle_momentum.{}.pdf'.format(FIGURE_DIR, filename))
+    input('Press any key to continue.')
+
+
+
 # 20180211_testbeam_high_stat
-# plot_momentum_high_stat('beam.py.in.10_spill.job_1_300.10k_per_job.root')
-plot_momentum_high_stat('beam.py.in.10_spill.job_1_300.10k_per_job.b_0.45T.root')
+# save_particle_to_csv('beam.py.in.10_spill.job_1_300.10k_per_job.root')
+# save_particle_to_csv('beam.py.in.10_spill.job_1_300.10k_per_job.b_0.45T.root')
+# plot_particle_momentum('beam.py.in.10_spill.job_1_300.10k_per_job.b_0.45T.root.csv', 300, 2000)
+# plot_particle_momentum('beam.py.in.10_spill.job_1_300.10k_per_job.root.csv', 2000, 6000)
+
 
 # 20180123_testbeam_cu_target
 # plot_pxy_thetas('target.64GeV.root')
@@ -994,7 +1071,7 @@ plot_momentum_high_stat('beam.py.in.10_spill.job_1_300.10k_per_job.b_0.45T.root'
 # plot_m1_upstream()
 # plot_m1_downstream()
 # plot_m1_block_momentum()
-# plot_p_vs_angle_max_angle()
+plot_p_vs_angle_max_angle()
 # plot_max_theta()
 # plot_min_b_field()
 
