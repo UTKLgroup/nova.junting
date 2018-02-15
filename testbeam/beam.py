@@ -223,7 +223,7 @@ FIGURE_DIR = '/Users/juntinghuang/beamer/20180211_testbeam_high_stat/figures'
 def plot_position():
     positionss = [
         target_positions,
-        collimator_upstream_positions,
+        collimator_upstream_base_positions,
         tof_upstream_positions,
         wire_chamber_1_positions,
         wire_chamber_2_positions,
@@ -320,8 +320,7 @@ def plot_position():
     c1.SaveAs('{}/plot_position.theta_t_{}.theta_m_{}.pdf'.format(FIGURE_DIR, collimator_upstream_theta, magnet_theta_relative))
     input('Press any key to continue.')
 
-
 move_collimator_upstream()
 rotate_updownstream()
 write()
-# plot_position()
+plot_position()
