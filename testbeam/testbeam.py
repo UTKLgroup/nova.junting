@@ -935,6 +935,26 @@ def plot_momentum_high_stat():
     keys = [key.GetName() for key in gDirectory.GetListOfKeys()]
     for key in keys:
         print('key = {}'.format(key))
+        track_count = 0
+        for track in tf1.Get(key):
+            track_count += 1
+            pass_all = track.TrackPresentstart_line and \
+                       track.TrackPresenttof_upstream and \
+                       track.TrackPresentwire_chamber_1_detector and \
+                       track.TrackPresentwire_chamber_2_detector and \
+                       track.TrackPresentwire_chamber_3_detector and \
+                       track.TrackPresentwire_chamber_4_detector and \
+                       track.TrackPresenttof_downstream
+
+            if track_count % 100000 == 0:
+                print('track_count = {}'.format(track_count))
+
+            if pass_all:
+                print('passed!')
+                momentum = (track.Pxtof_downstream**2 + track.Pytof_downstream**2 + track.Pztof_downstream**2)**0.5
+                print('track.PDGidtof_downstream = {}'.format(track.PDGidtof_downstream))
+                print('momentum = {}'.format(momentum))
+        break
 
 
 # 20180211_testbeam_high_stat
