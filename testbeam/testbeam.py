@@ -10,7 +10,7 @@ SPEED_OF_LIGHT = 3.e8              # m/s
 ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
-FIGURE_DIR = '/Users/juntinghuang/beamer/20180123_testbeam_cu_target/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180211_testbeam_high_stat/figures'
 DATA_DIR = './data'
 
 
@@ -928,13 +928,26 @@ def print_slide_momentum_pxy_thetas():
             f_momentum.write('\\end{frame}\n')
             f_momentum.write('\n% .........................................................\n\n')
 
+
+def plot_momentum_high_stat():
+    tf1 = TFile('{}/beam.py.in.10_spill.job_1_300.10k_per_job.root'.format(DATA_DIR))
+
+    keys = [key.GetName() for key in gDirectory.GetListOfKeys()]
+    for key in keys:
+        print('key = {}'.format(key))
+
+
+# 20180211_testbeam_high_stat
+plot_momentum_high_stat()
+
+
 # 20180123_testbeam_cu_target
 # plot_pxy_thetas('target.64GeV.root')
 # plot_pxy_thetas('target.32GeV.root')
 # plot_pxy_thetas('target.16GeV.root')
 # plot_pxy_thetas('target.8GeV.root')
 # plot_pxy_thetas('target.8GeV.root')
-plot_momentum_pxy_thetas()
+# plot_momentum_pxy_thetas()
 # print_slide_momentum_pxy_thetas()
 
 # 20180118_testbeam_m1_magnet
