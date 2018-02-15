@@ -703,8 +703,8 @@ def plot_p_vs_angle_max_angle():
     tl.SetLineWidth(3)
     tl.SetLineColor(kMagenta + 1)
     tl.SetLineStyle(10)
-    tl.Draw()
-    lg1.AddEntry(tl, '#theta_{max}', 'l')
+    # tl.Draw()
+    # lg1.AddEntry(tl, '#theta_{max}', 'l')
 
     lg1.Draw()
 
@@ -929,9 +929,12 @@ def print_slide_momentum_pxy_thetas():
             f_momentum.write('\n% .........................................................\n\n')
 
 
-def plot_momentum_high_stat():
-    tf1 = TFile('{}/beam.py.in.10_spill.job_1_300.10k_per_job.root'.format(DATA_DIR))
+def plot_momentum_high_stat(filename):
+    # tf1 = TFile('{}/beam.py.in.10_spill.job_1_300.10k_per_job.root'.format(DATA_DIR))
+    tf1 = TFile('{}/beam.py.in.10_spill.job_1_300.10k_per_job.b_0.45T.root'.format(DATA_DIR))
 
+    pid_momentums = {}
+    particles = []
     keys = [key.GetName() for key in gDirectory.GetListOfKeys()]
     for key in keys:
         print('key = {}'.format(key))
@@ -951,15 +954,29 @@ def plot_momentum_high_stat():
 
             if pass_all:
                 print('passed!')
+                particle = [track.EventID, track.TrackID, track.TrackPresenttof_downstream, track.xtof_downstream, track.ytof_downstream, track.ztof_downstream, track.ttof_downstream, track.Pxtof_downstream, track.Pytof_downstream, track.Pztof_downstream, track.PDGidtof_downstream, track.ParentIDtof_downstream]
+                particles.append(particle)
+
+                pid = track.PDGidtof_downstream
                 momentum = (track.Pxtof_downstream**2 + track.Pytof_downstream**2 + track.Pztof_downstream**2)**0.5
+                if pid not in pid_momentums:
+                    pid_momentums[pid] = [momentum]
+                else:
+                    pid_momentums[pid].append(momentum)
                 print('track.PDGidtof_downstream = {}'.format(track.PDGidtof_downstream))
                 print('momentum = {}'.format(momentum))
-        break
+
+    with open('{}/{}.csv'.format(DATA_DIR, filename), 'w') as f_fraction:
+        for particle in particles:
+            particle = list(map(str, particle))
+            f_fraction.write('{}\n'.format(','.join(particle)))
+
+    pprint(pid_momentums)
 
 
 # 20180211_testbeam_high_stat
-plot_momentum_high_stat()
-
+# plot_momentum_high_stat('beam.py.in.10_spill.job_1_300.10k_per_job.root')
+plot_momentum_high_stat('beam.py.in.10_spill.job_1_300.10k_per_job.b_0.45T.root')
 
 # 20180123_testbeam_cu_target
 # plot_pxy_thetas('target.64GeV.root')
