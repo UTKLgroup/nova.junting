@@ -974,7 +974,7 @@ def save_particle_to_csv(filename):
     pprint(pid_momentums)
 
 
-def plot_particle_momentum(filename, x_min, x_max):
+def plot_particle_momentum(filename, x_min, x_max, y_max):
     pid_momentums = {}
     with open('{}/{}'.format(DATA_DIR, filename)) as f_csv:
         for row in csv.reader(f_csv, delimiter=','):
@@ -1015,6 +1015,7 @@ def plot_particle_momentum(filename, x_min, x_max):
     lg1 = TLegend(0.575, 0.55, 0.84, 0.84)
     set_legend_style(lg1)
 
+    pids = sorted(pids)
     for i, pid in enumerate(pids):
         hist = pid_hists[pid]
         set_h1_style(hist)
@@ -1028,6 +1029,7 @@ def plot_particle_momentum(filename, x_min, x_max):
             hist.Draw()
             hist.GetXaxis().SetTitle('Momentum (MeV)')
             hist.GetYaxis().SetTitle('Particle Count')
+            hist.GetYaxis().SetRangeUser(0, y_max)
         else:
             hist.Draw('sames')
 
@@ -1049,10 +1051,14 @@ def plot_particle_momentum(filename, x_min, x_max):
 
 
 # 20180211_testbeam_high_stat
-# save_particle_to_csv('beam.py.in.10_spill.job_1_300.10k_per_job.root')
 # save_particle_to_csv('beam.py.in.10_spill.job_1_300.10k_per_job.b_0.45T.root')
-# plot_particle_momentum('beam.py.in.10_spill.job_1_300.10k_per_job.b_0.45T.root.csv', 300, 2000)
-plot_particle_momentum('beam.py.in.10_spill.job_1_300.10k_per_job.root.csv', 2000, 6000)
+# save_particle_to_csv('beam.py.in.10_spill.job_1_300.10k_per_job.b_1.8T.root')
+# save_particle_to_csv('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.45T.root')
+# save_particle_to_csv('beam.py.in.10_spill.job_1_300.10k_per_job.b_-1.8T.root')
+# plot_particle_momentum('beam.py.in.10_spill.job_1_300.10k_per_job.b_0.45T.root.csv', 300, 2000, 20)
+# plot_particle_momentum('beam.py.in.10_spill.job_1_300.10k_per_job.b_1.8T.root.csv', 2000, 6000, 10)
+# plot_particle_momentum('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.45T.root.csv', 300, 2000, 22)
+plot_particle_momentum('beam.py.in.10_spill.job_1_300.10k_per_job.b_-1.8T.root.csv', 2000, 6000, 10)
 
 # 20180123_testbeam_cu_target
 # plot_pxy_thetas('target.64GeV.root')
