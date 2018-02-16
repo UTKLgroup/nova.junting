@@ -290,7 +290,7 @@ def plot_position():
     gr.GetYaxis().SetNdivisions(505, 1)
     gr.GetXaxis().SetNdivisions(508, 1)
 
-    lg1 = TLegend(0.56, 0.38, 0.87, 0.86)
+    lg1 = TLegend(0.51, 0.38, 0.87, 0.86)
     set_legend_style(lg1)
     lg1.SetTextSize(22)
     lg1.SetMargin(0.15)
@@ -312,7 +312,7 @@ def plot_position():
         markers[i].SetMarkerSize(2.)
         markers[i].Draw()
 
-        name = '{} ({:.0f}, {:.0f})'.format(names[i], coordinate_x, coordinate_y)
+        name = '{} ({:.1f}, {:.1f})'.format(names[i], coordinate_x, coordinate_y)
         lg1.AddEntry(markers[i], name, 'p')
 
     lg1.Draw()
@@ -322,5 +322,5 @@ def plot_position():
 
 move_collimator_upstream()
 rotate_updownstream()
-write()
+# write()
 plot_position()

@@ -1052,8 +1052,7 @@ def plot_particle_momentum(filename, x_min, x_max):
 # save_particle_to_csv('beam.py.in.10_spill.job_1_300.10k_per_job.root')
 # save_particle_to_csv('beam.py.in.10_spill.job_1_300.10k_per_job.b_0.45T.root')
 # plot_particle_momentum('beam.py.in.10_spill.job_1_300.10k_per_job.b_0.45T.root.csv', 300, 2000)
-# plot_particle_momentum('beam.py.in.10_spill.job_1_300.10k_per_job.root.csv', 2000, 6000)
-
+plot_particle_momentum('beam.py.in.10_spill.job_1_300.10k_per_job.root.csv', 2000, 6000)
 
 # 20180123_testbeam_cu_target
 # plot_pxy_thetas('target.64GeV.root')
@@ -1071,7 +1070,7 @@ def plot_particle_momentum(filename, x_min, x_max):
 # plot_m1_upstream()
 # plot_m1_downstream()
 # plot_m1_block_momentum()
-plot_p_vs_angle_max_angle()
+# plot_p_vs_angle_max_angle()
 # plot_max_theta()
 # plot_min_b_field()
 
