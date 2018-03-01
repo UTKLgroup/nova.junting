@@ -2,7 +2,7 @@ from rootalias import *
 import math
 import numpy as np
 
-FIGURE_DIR = '/Users/juntinghuang/beamer/20180128_nnbar_ddt_offline/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180301_nnbar_track/figures'
 DATA_DIR = './data'
 
 exposure_0 = 2.45               # 1.e34 * neutron * year
@@ -313,12 +313,18 @@ def plot_daq_hit(filename):
     input('Press any key to continue.')
 
 
+def plot_track3d():
+    pass
+
+# 20180301_nnbar_track
+plot_track3d()
+
 # 20180128_nnbar_ddt_offline
-gStyle.SetOptStat(0)
+# gStyle.SetOptStat(0)
 # plot_daq_hit('neutronosc_ddt_hist.removeonedslices.root')
 # plot_daq_hit('neutronosc_ddt_hist.containedslice.root')
 # plot_daq_hit('neutronosc_ddt_hist.daqhit_count.root')
-plot_daq_hit('neutronosc_ddt_hist.xy_asymmetry.root')
+# plot_daq_hit('neutronosc_ddt_hist.xy_asymmetry.root')
 
 # 20180103_nnbar_limit.tex
 # gStyle.SetOptStat('emr')
