@@ -18,19 +18,25 @@ export G4LEVELGAMMADATA=/nova/app/users/junting/g4beamline/Geant4Data/PhotonEvap
 export G4RADIOACTIVEDATA=/nova/app/users/junting/g4beamline/Geant4Data/RadioactiveDecay5.1
 export G4REALSURFACEDATA=/nova/app/users/junting/g4beamline/Geant4Data/RealSurface1.0
 
+PROCESS_START=300
+# B_FIELD=b_1.8T
+# B_FIELD=b_-1.8T
+# B_FIELD=b_0.45T
+B_FIELD=b_-0.45T
+
 ifdh cp /pnfs/nova/persistent/users/junting/testbeam/merge_tree.py ./merge_tree.py
-ifdh cp /pnfs/nova/persistent/users/junting/testbeam/beam.py.in ./beam.py.in
+ifdh cp /pnfs/nova/persistent/users/junting/testbeam/beam.py.${B_FIELD}.in ./beam.py.in
 
 MOMENTUM=64000
 EVENT_COUNT_PER_JOB=10000
 JOB_COUNT_PER_SPILL=30
-FIRST=$((${PROCESS} * ${EVENT_COUNT_PER_JOB}))
-LAST=$(( ${FIRST} + $EVENT_COUNT_PER_JOB - 1 ))
+FIRST=$((((${PROCESS_START} + ${PROCESS}))* ${EVENT_COUNT_PER_JOB}))
+LAST=$((${FIRST} + $EVENT_COUNT_PER_JOB - 1))
 echo "PROCESS is: $PROCESS"
 echo "EVENT_COUNT_PER_JOB is: $EVENT_COUNT_PER_JOB"
 echo "FIRST = $FIRST"
 echo "LAST = $LAST"
-JOB_COUNT=$((${PROCESS} + 1))
+JOB_COUNT=$((${PROCESS_START} + ${PROCESS} + 1))
 EVENT_COUNT_PER_SPILL=$((${EVENT_COUNT_PER_JOB} * ${JOB_COUNT_PER_SPILL}))
 
 g4bl beam.py.in first=${FIRST} last=${LAST} momentum=${MOMENTUM}
@@ -40,5 +46,5 @@ python merge_tree.py beam.root --subspillnumber $JOB_COUNT --subspillcount $JOB_
 chmod 766 MergedAtstart_linebeam.root
 chmod 766 MergedAtstart_linebeam.pickle
 # ifdh cp beam.root /pnfs/nova/scratch/users/junting/g4bl/beam.${JOB_COUNT}.root
-ifdh cp MergedAtstart_linebeam.root /pnfs/nova/scratch/users/junting/g4bl/MergedAtstart_linebeam.${JOB_COUNT}.root
-ifdh cp MergedAtstart_linebeam.pickle /pnfs/nova/scratch/users/junting/g4bl/MergedAtstart_linebeam.${JOB_COUNT}.pickle
+ifdh cp MergedAtstart_linebeam.root /pnfs/nova/scratch/users/junting/g4bl.${B_FIELD}/MergedAtstart_linebeam.${JOB_COUNT}.root
+ifdh cp MergedAtstart_linebeam.pickle /pnfs/nova/scratch/users/junting/g4bl.${B_FIELD}/MergedAtstart_linebeam.${JOB_COUNT}.pickle
