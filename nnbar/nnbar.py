@@ -434,9 +434,168 @@ def plot_track(filename, **kwargs):
     input('Press any key to continue.')
 
 
+def plot_track_theta_variance():
+    tf_cosmic = TFile('{}/neutronosc_ddt_hist.cosmic.root'.format(DATA_DIR))
+    tf_clean = TFile('{}/neutronosc_ddt_hist.clean.root'.format(DATA_DIR))
+
+    h_cosmic = tf_cosmic.Get('neutronoscana/fTrackThetaVarianceXY')
+    h_clean = tf_clean.Get('neutronoscana/fTrackThetaVarianceXY')
+
+    print('h_cosmic.Integral() = {}'.format(h_cosmic.Integral(1, 1001, 1, 1001)))
+    print('h_clean.Integral() = {}'.format(h_clean.Integral(1, 1001, 1, 1001)))
+    h_clean.Scale(1. / h_clean.Integral(1, 1001, 1, 1001))
+    h_cosmic.Scale(1. / h_cosmic.Integral(1, 1001, 1, 1001))
+
+    print('1 - h_clean.Integral(1, 10, 1, 10) = {}'.format(1 - h_clean.Integral(1, 10, 1, 10)))
+    print('1 - h_cosmic.Integral(1, 10, 1, 10) = {}'.format(1 - h_cosmic.Integral(1, 10, 1, 10)))
+
+    c1 = TCanvas('c1', 'c1', 600, 600)
+    set_margin()
+    gPad.SetRightMargin(0.2)
+    gPad.SetLogx()
+    gPad.SetLogy()
+    gPad.SetLogz()
+    set_h2_color_style()
+    set_h2_style(h_cosmic)
+    h_cosmic.Draw('colz')
+    h_cosmic.GetXaxis().SetTitleOffset(1.4)
+    h_cosmic.GetYaxis().SetTitleOffset(1.6)
+    c1.Update()
+    c1.SaveAs('{}/plot_track_theta_variance.cosmic.pdf'.format(FIGURE_DIR))
+
+    c2 = TCanvas('c2', 'c2', 600, 600)
+    set_margin()
+    gPad.SetRightMargin(0.2)
+    gPad.SetLogx()
+    gPad.SetLogy()
+    gPad.SetLogz()
+    set_h2_color_style()
+    set_h2_style(h_clean)
+    h_clean.Draw('colz')
+    h_clean.GetXaxis().SetTitleOffset(1.4)
+    h_clean.GetYaxis().SetTitleOffset(1.6)
+
+    c2.Update()
+    c2.SaveAs('{}/plot_track_theta_variance.clean.pdf'.format(FIGURE_DIR))
+
+    input('Press any key to continue.')
+
+
+def plot_slice_track_count():
+    tf_cosmic = TFile('{}/neutronosc_ddt_hist.cosmic.root'.format(DATA_DIR))
+    tf_clean = TFile('{}/neutronosc_ddt_hist.clean.root'.format(DATA_DIR))
+
+    h_cosmic = tf_cosmic.Get('neutronoscana/fSliceTrackCountXY')
+    h_clean = tf_clean.Get('neutronoscana/fSliceTrackCountXY')
+    h_clean.Scale(1. / h_clean.Integral())
+    h_cosmic.Scale(1. / h_cosmic.Integral())
+
+    c1 = TCanvas('c1', 'c1', 600, 600)
+    set_margin()
+    gPad.SetRightMargin(0.2)
+    set_h2_color_style()
+    set_h2_style(h_cosmic)
+    h_cosmic.GetXaxis().SetRangeUser(0, 30)
+    h_cosmic.GetYaxis().SetRangeUser(0, 30)
+    h_cosmic.Draw('colz')
+    c1.Update()
+    c1.SaveAs('{}/plot_slice_track_count.cosmic.pdf'.format(FIGURE_DIR))
+
+    c2 = TCanvas('c2', 'c2', 600, 600)
+    set_margin()
+    gPad.SetRightMargin(0.2)
+    set_h2_color_style()
+    set_h2_style(h_clean)
+    h_clean.GetXaxis().SetRangeUser(0, 30)
+    h_clean.GetYaxis().SetRangeUser(0, 30)
+    h_clean.Draw('colz')
+
+    c2.Update()
+    c2.SaveAs('{}/plot_slice_track_count.clean.pdf'.format(FIGURE_DIR))
+
+    input('Press any key to continue.')
+
+
+def plot_1d_cut(hist_name, **kwargs):
+    x_max = kwargs.get('x_max', None)
+    y_max = kwargs.get('y_max', None)
+    rebin = kwargs.get('rebin', None)
+    x_cut = kwargs.get('x_cut', None)
+
+    tf_cosmic = TFile('{}/neutronosc_ddt_hist.cosmic.root'.format(DATA_DIR))
+    tf_clean = TFile('{}/neutronosc_ddt_hist.clean.root'.format(DATA_DIR))
+
+    h_cosmic = tf_cosmic.Get('neutronoscana/{}'.format(hist_name))
+    h_clean = tf_clean.Get('neutronoscana/{}'.format(hist_name))
+
+    print('h_clean.GetNbinsX() = {}'.format(h_clean.GetNbinsX()))
+    print('h_clean.FindBin(100) = {}'.format(h_clean.FindBin(100)))
+    print('h_clean.Integral(1, h_clean.FindBin(100)) = {}'.format(h_clean.Integral(1, h_clean.FindBin(100))))
+    print('h_clean.Integral(1, h_clean.FindBin(x_cut)) / h_clean.Integral() = {}'.format(h_clean.Integral(1, h_clean.FindBin(x_cut)) / h_clean.Integral()))
+    print('h_cosmic.Integral(1, h_cosmic.FindBin(x_cut)) / h_cosmic.Integral() = {}'.format(h_cosmic.Integral(1, h_cosmic.FindBin(x_cut)) / h_cosmic.Integral()))
+
+    if rebin:
+        h_cosmic.Rebin(rebin)
+        h_clean.Rebin(rebin)
+
+    h_clean.Scale(1. / h_clean.Integral())
+    h_cosmic.Scale(1. / h_cosmic.Integral())
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    set_h1_style(h_cosmic)
+    h_cosmic.Draw('hist')
+    if x_max:
+        h_cosmic.GetXaxis().SetRangeUser(0, x_max)
+    if y_max:
+        h_cosmic.GetYaxis().SetRangeUser(0, y_max)
+
+    set_h1_style(h_clean)
+    h_clean.SetLineColor(kRed + 2)
+    h_clean.Draw('hist,sames')
+
+    lg1 = TLegend(0.57, 0.7, 0.84, 0.85)
+    set_legend_style(lg1)
+    lg1.AddEntry(h_cosmic, 'Cosmic ray', 'l')
+    lg1.AddEntry(h_clean, 'Signal', 'l')
+    lg1.Draw()
+
+
+    c1.Update()
+    c1.SaveAs('{}/plot_1d_cut.{}.pdf'.format(FIGURE_DIR, hist_name))
+    input('Press any key to continue.')
+
+
+def plot_daq_hit_1d(filename, hist_name):
+    f1 = TFile('{}/{}'.format(DATA_DIR, filename))
+    h1 = f1.Get('neutronoscana/{}'.format(hist_name))
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetLogz()
+    gPad.SetRightMargin(0.2)
+
+    set_h2_color_style()
+    set_h2_style(h1)
+    h1.GetXaxis().SetRangeUser(300, 600)
+    h1.GetXaxis().SetTitleOffset(1.2)
+    h1.GetYaxis().SetTitleOffset(1.2)
+    h1.GetZaxis().SetTitle('ADC')
+    h1.Draw('colz')
+
+    c1.Update()
+    c1.SaveAs('{}/plot_daq_hit_1d.{}.pdf'.format(FIGURE_DIR, filename))
+    input('Press any key to continue.')
+
+
 # 20180301_nnbar_track
 gStyle.SetOptStat(0)
-plot_track('neutronosc_ddt_hist.track.root', dimension='2d', draw_track=False)
+# plot_track('neutronosc_ddt_hist.track.root', dimension='2d', draw_track=False)
+# plot_track_theta_variance()
+# plot_slice_track_count()
+# plot_1d_cut('fSliceHitCount', x_max=300, y_max=0.14, rebin=5, x_cut=100)
+# plot_1d_cut('fXyAsymmetry', x_max=2., y_max=0.15, rebin=5, x_cut=1)
+plot_daq_hit_1d('neutronosc_ddt_hist.clean.root', 'fDaqHitYView')
 
 # 20180128_nnbar_ddt_offline
 # gStyle.SetOptStat(0)
