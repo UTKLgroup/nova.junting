@@ -1,6 +1,7 @@
 from rootalias import *
 import math
 import numpy as np
+import random
 
 FIGURE_DIR = '/Users/juntinghuang/beamer/20180301_nnbar_track/figures'
 DATA_DIR = './data'
@@ -15,6 +16,21 @@ background_sigma = 23.7e-2 * background_0
 suppression_factor_sigma = 0.3 * suppression_factor_0
 event_count_observe = 24
 second_in_year = 3.16           # 1.e7 s / year
+
+colors = [
+    kRed + 2,
+    kGreen + 2,
+    kBlue + 2,
+    kYellow + 2,
+    kMagenta + 2,
+    kCyan + 2,
+    kOrange + 2,
+    kSpring + 2,
+    kTeal + 2,
+    kAzure + 2,
+    kViolet + 2,
+    kPink + 2
+]
 
 def get_gaussian(x, mu, sigma):
     return 1. / sigma / (2. * math.pi)**0.5 * math.exp(-0.5 * ((x - mu) / sigma)**2)
@@ -313,11 +329,114 @@ def plot_daq_hit(filename):
     input('Press any key to continue.')
 
 
-def plot_track3d():
-    pass
+def get_track3d(tf):
+    gr_xs = []
+    gr_ys = []
+    track_count = 0
+    for track in tf.Get('neutronoscana/fTrack3dTree'):
+        track_count += 1
+        # if (track.fTrack3dStartY == 0. and track.fTrack3dEndY == 0.) or (track.fTrack3dStartX == 0. and track.fTrack3dEndX == 0.):
+            # continue
+        gr_x = TGraph(2, np.array([track.fTrack3dStartZ, track.fTrack3dEndZ]), np.array([track.fTrack3dStartX, track.fTrack3dEndX]))
+        gr_y = TGraph(2, np.array([track.fTrack3dStartZ, track.fTrack3dEndZ]), np.array([track.fTrack3dStartY, track.fTrack3dEndY]))
+
+        color = random.choice(colors)
+        gr_x.SetLineWidth(2)
+        gr_y.SetLineWidth(2)
+        gr_x.SetLineColor(color)
+        gr_y.SetLineColor(color)
+
+        gr_xs.append(gr_x)
+        gr_ys.append(gr_y)
+
+    print('track_count = {}'.format(track_count))
+    return gr_xs, gr_ys
+
+
+def get_track2d(tf):
+    gr_xs = []
+    gr_ys = []
+    track_count = 0
+    for track in tf.Get('neutronoscana/fTrack2dTree'):
+        track_count += 1
+
+        color = random.choice(colors)
+        if track.fTrack2dView == 1:
+            gr_x = TGraph(2, np.array([track.fTrack2dStartZ, track.fTrack2dEndZ]), np.array([track.fTrack2dStartV, track.fTrack2dEndV]))
+            gr_x.SetLineWidth(2)
+            gr_x.SetLineColor(color)
+            gr_xs.append(gr_x)
+        else:
+            gr_y = TGraph(2, np.array([track.fTrack2dStartZ, track.fTrack2dEndZ]), np.array([track.fTrack2dStartV, track.fTrack2dEndV]))
+            gr_y.SetLineWidth(2)
+            gr_y.SetLineColor(color)
+            gr_ys.append(gr_y)
+
+    print('track_count = {}'.format(track_count))
+    return gr_xs, gr_ys
+
+
+def plot_track(filename, **kwargs):
+    dimension = kwargs.get('dimension', '2d')
+    draw_track = kwargs.get('draw_track', True)
+
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    h_x = tf.Get('neutronoscana/fDaqHitXView')
+    h_y = tf.Get('neutronoscana/fDaqHitYView')
+    gr_xs = None
+    gr_ys = None
+    if dimension == '2d':
+        gr_xs, gr_ys = get_track2d(tf)
+    elif dimension == '3d':
+        gr_xs, gr_ys = get_track3d(tf)
+
+    c1 = TCanvas('c1', 'c1', 1100, 800)
+    set_h2_color_style()
+
+    pad1 = TPad("pad1", "pad1", 0, 0.5, 1, 1)
+    pad1.SetLeftMargin(0.1)
+    pad1.SetRightMargin(0.05)
+    pad1.SetTopMargin(0.2)
+    pad1.SetBottomMargin(0.025)
+    pad1.Draw()
+    pad1.cd()
+
+    set_h2_style(h_x)
+    h_x.GetYaxis().SetTitle('X Cell Number')
+    h_x.GetYaxis().SetTitleOffset(1.3)
+    h_x.GetXaxis().SetLabelSize(0)
+    h_x.GetXaxis().SetTitleSize(0)
+    h_x.Draw('box')
+    if draw_track:
+        for gr_x in gr_xs:
+            gr_x.Draw('L, sames')
+
+    c1.cd()
+    pad2 = TPad('pad2', 'pad2', 0, 0, 1, 0.5)
+    pad2.SetLeftMargin(0.1)
+    pad2.SetRightMargin(0.05)
+    pad2.SetBottomMargin(0.2)
+    pad2.SetTopMargin(0.025)
+    pad2.Draw()
+    pad2.cd()
+
+    set_h2_style(h_y)
+    h_y.GetYaxis().SetTitle('Y Cell Number')
+    h_y.GetYaxis().SetTitleOffset(1.3)
+    h_y.GetXaxis().SetTitleOffset(2.2)
+    h_y.Draw('box')
+    if draw_track:
+        for gr_y in gr_ys:
+            gr_y.Draw('L, sames')
+
+    c1.Update()
+    c1.SaveAs('{}/plot_track.{}.draw_track_{}.pdf'.format(FIGURE_DIR, dimension, draw_track))
+    input('Press any key to continue.')
+
 
 # 20180301_nnbar_track
-plot_track3d()
+gStyle.SetOptStat(0)
+plot_track('neutronosc_ddt_hist.track.root', dimension='2d', draw_track=False)
 
 # 20180128_nnbar_ddt_offline
 # gStyle.SetOptStat(0)
