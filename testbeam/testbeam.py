@@ -1218,9 +1218,35 @@ def test_1d_kalman_prediction_only():
     input('Press any key to continue.')
 
 
+def test_graph_shade():
+    xs = []
+    y_1s = []
+    y_2s = []
+    for i in range(10):
+        xs.append(float(i))
+        y_1s.append(1.)
+        y_2s.append(2.)
+    gr1 = TGraph(len(xs), np.array(xs), np.array(y_1s))
+    gr2 = TGraph(len(xs), np.array(xs), np.array(y_2s))
+    gr = get_graph_shade(gr1, gr2)
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+
+    gr.SetFillStyle(3001)
+    gr.SetFillColor(16)
+    gr.SetLineWidth(0)
+    gr.Draw('AF')
+
+    c1.Update()
+    c1.SaveAs('figures/test_gr_shade.pdf')
+    input('Press any key to continue.')
+
+
 # 20180308_testbeam_kalman_filter
 # test_1d_kalman()
-test_1d_kalman_prediction_only()
+# test_1d_kalman_prediction_only()
+test_graph_shade()
 
 # 20180211_testbeam_high_stat
 # save_particle_to_csv('beam.py.in.10_spill.job_1_300.10k_per_job.b_0.45T.root')
