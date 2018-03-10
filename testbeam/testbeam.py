@@ -1170,10 +1170,7 @@ def test_1d_kalman_prediction_only():
 
     ts, zs, random_zs = get_kalman_data(velocity, z_count, z_var)
     z_count = len(zs)
-    gr_true = TGraph(z_count, np.array(ts), np.array(zs))
-    gr_data = TGraph(z_count, np.array(ts), np.array(random_zs))
 
-    predicts = []
     filters = []
     filter_pluss = []
     filter_minuss = []
@@ -1196,17 +1193,6 @@ def test_1d_kalman_prediction_only():
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
 
-    set_graph_style(gr_data)
-    gr_data.SetMarkerStyle(20)
-    gr_data.SetMarkerSize(1)
-    gr_data.SetMarkerColor(kBlack)
-    gr_data.GetYaxis().SetRangeUser(-2, len(ts) * 1.5)
-    gr_data.GetYaxis().SetNdivisions(505, 1)
-    gr_data.GetXaxis().SetNdivisions(510, 1)
-    gr_data.GetXaxis().SetTitle('Time (s)')
-    gr_data.GetYaxis().SetTitle('Position (m)')
-    # gr_data.Draw('A')
-
     set_graph_style(gr_filter)
     gr_filter.GetYaxis().SetRangeUser(-2, len(ts) * 1.5)
     gr_filter.GetYaxis().SetNdivisions(505, 1)
@@ -1220,11 +1206,9 @@ def test_1d_kalman_prediction_only():
     gr_filter_var.SetFillColor(16)
     gr_filter_var.SetLineWidth(0)
     gr_filter_var.Draw('F')
-    # gr_data.Draw('P')
 
     lg1 = TLegend(0.18, 0.67, 0.46, 0.88)
     set_legend_style(lg1)
-    # lg1.AddEntry(gr_data, 'data', 'p')
     lg1.AddEntry(gr_filter, 'prediction alone', 'l')
     lg1.AddEntry(gr_filter_var, 'variance', 'f')
     lg1.Draw()
