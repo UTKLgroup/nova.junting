@@ -10,7 +10,7 @@ SPEED_OF_LIGHT = 3.e8              # m/s
 ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
-FIGURE_DIR = '/Users/juntinghuang/beamer/20180211_testbeam_high_stat/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180308_testbeam_kalman_filter/figures'
 DATA_DIR = './data'
 
 
@@ -1049,6 +1049,194 @@ def plot_particle_momentum(filename, x_min, x_max, y_max):
     input('Press any key to continue.')
 
 
+def get_kalman_data(velocity, z_count, z_var):
+    np.random.seed(seed=1)
+    random_dzs = np.random.normal(0., z_var, z_count)
+
+    ts = []
+    zs = []
+    random_zs = []
+    for i in range(1, z_count + 1):
+        t = float(i)
+        z = velocity * t
+        ts.append(t)
+        zs.append(z)
+
+        z += random_dzs[i - 1]
+        random_zs.append(z)
+    return ts, zs, random_zs
+
+
+def test_1d_kalman():
+    velocity = 1.
+    dt = 1.
+    pos = 1.
+    pos_var = 10.
+    process_var = 1.
+    z_var = 1.
+    z_count = 10
+
+    ts, zs, random_zs = get_kalman_data(velocity, z_count, z_var)
+    z_count = len(zs)
+    gr_true = TGraph(z_count, np.array(ts), np.array(zs))
+    gr_data = TGraph(z_count, np.array(ts), np.array(random_zs))
+
+    predicts = []
+    filters = []
+    filter_pluss = []
+    filter_minuss = []
+
+    for i in range(z_count):
+        dx = velocity * dt
+        if i > 0:
+            pos += velocity * dt
+            pos_var += process_var
+        predicts.append(pos)
+
+        pos = (pos_var * random_zs[i] + z_var * pos) / (pos_var + z_var)
+        pos_var = pos_var * z_var / (pos_var + z_var)
+        filters.append(pos)
+        filter_pluss.append(pos + pos_var)
+        filter_minuss.append(pos - pos_var)
+
+    gr_predict = TGraph(z_count, np.array(ts), np.array(predicts))
+    gr_filter = TGraph(z_count, np.array(ts), np.array(filters))
+    gr_filter_var = TGraph(2 * z_count)
+    for i in range(z_count):
+        gr_filter_var.SetPoint(i, ts[i], filter_pluss[i])
+        gr_filter_var.SetPoint(z_count + i, ts[z_count - i - 1], filter_minuss[z_count -i - 1])
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+
+    set_graph_style(gr_true)
+    gr_true.GetYaxis().SetRangeUser(0, len(ts) * 1.2)
+    gr_true.GetYaxis().SetNdivisions(505, 1)
+    gr_true.GetXaxis().SetNdivisions(505, 1)
+    gr_true.SetLineStyle(7)
+    gr_true.SetLineColor(kBlue)
+    # gr_true.Draw('AL')
+
+    set_graph_style(gr_data)
+    gr_data.SetMarkerStyle(20)
+    gr_data.SetMarkerSize(1)
+    gr_data.SetMarkerColor(kBlack)
+    gr_data.GetYaxis().SetRangeUser(0, len(ts) * 1.1)
+    gr_data.GetXaxis().SetTitle('Time (s)')
+    gr_data.GetYaxis().SetTitle('Position (m)')
+    gr_data.Draw('AP')
+
+    set_graph_style(gr_predict)
+    gr_predict.SetMarkerStyle(21)
+    gr_predict.SetMarkerSize(1)
+    gr_predict.SetMarkerColor(kRed + 1)
+    gr_predict.Draw('P')
+
+    set_graph_style(gr_filter)
+    gr_filter.SetMarkerStyle(22)
+    gr_filter.SetMarkerSize(1)
+    gr_filter.SetMarkerColor(kBlue)
+    gr_filter.SetLineColor(kBlue)
+    gr_filter.Draw('L')
+
+    gr_filter_var.SetFillStyle(3001)
+    gr_filter_var.SetFillColor(16)
+    gr_filter_var.SetLineWidth(0)
+    gr_filter_var.Draw('F')
+    gr_data.Draw('P')
+    gr_predict.Draw('P')
+
+    lg1 = TLegend(0.18, 0.67, 0.46, 0.88)
+    set_legend_style(lg1)
+    lg1.AddEntry(gr_data, 'data', 'p')
+    lg1.AddEntry(gr_predict, 'prediction', 'p')
+    lg1.AddEntry(gr_filter, 'filter', 'l')
+    lg1.AddEntry(gr_filter_var, 'variance', 'f')
+    lg1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/test_1d_kalman.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
+def test_1d_kalman_prediction_only():
+    velocity = 1.
+    dt = 1.
+    pos = 1.
+    pos_var = 1.
+    process_var = 1.
+    z_var = 1.
+    z_count = 10
+
+    ts, zs, random_zs = get_kalman_data(velocity, z_count, z_var)
+    z_count = len(zs)
+    gr_true = TGraph(z_count, np.array(ts), np.array(zs))
+    gr_data = TGraph(z_count, np.array(ts), np.array(random_zs))
+
+    predicts = []
+    filters = []
+    filter_pluss = []
+    filter_minuss = []
+
+    for i in range(z_count):
+        dx = velocity * dt
+        if i > 0:
+            pos += velocity * dt
+            pos_var += process_var
+        filters.append(pos)
+        filter_pluss.append(pos + pos_var)
+        filter_minuss.append(pos - pos_var)
+
+    gr_filter = TGraph(z_count, np.array(ts), np.array(filters))
+    gr_filter_var = TGraph(2 * z_count)
+    for i in range(z_count):
+        gr_filter_var.SetPoint(i, ts[i], filter_pluss[i])
+        gr_filter_var.SetPoint(z_count + i, ts[z_count - i - 1], filter_minuss[z_count -i - 1])
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+
+    set_graph_style(gr_data)
+    gr_data.SetMarkerStyle(20)
+    gr_data.SetMarkerSize(1)
+    gr_data.SetMarkerColor(kBlack)
+    gr_data.GetYaxis().SetRangeUser(-2, len(ts) * 1.5)
+    gr_data.GetYaxis().SetNdivisions(505, 1)
+    gr_data.GetXaxis().SetNdivisions(510, 1)
+    gr_data.GetXaxis().SetTitle('Time (s)')
+    gr_data.GetYaxis().SetTitle('Position (m)')
+    # gr_data.Draw('A')
+
+    set_graph_style(gr_filter)
+    gr_filter.GetYaxis().SetRangeUser(-2, len(ts) * 1.5)
+    gr_filter.GetYaxis().SetNdivisions(505, 1)
+    gr_filter.GetXaxis().SetNdivisions(510, 1)
+    gr_filter.GetXaxis().SetTitle('Time (s)')
+    gr_filter.GetYaxis().SetTitle('Position (m)')
+    gr_filter.SetLineColor(kBlue)
+    gr_filter.Draw('AL')
+
+    gr_filter_var.SetFillStyle(3001)
+    gr_filter_var.SetFillColor(16)
+    gr_filter_var.SetLineWidth(0)
+    gr_filter_var.Draw('F')
+    # gr_data.Draw('P')
+
+    lg1 = TLegend(0.18, 0.67, 0.46, 0.88)
+    set_legend_style(lg1)
+    # lg1.AddEntry(gr_data, 'data', 'p')
+    lg1.AddEntry(gr_filter, 'prediction alone', 'l')
+    lg1.AddEntry(gr_filter_var, 'variance', 'f')
+    lg1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/test_1d_kalman_prediction_alone.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
+# 20180308_testbeam_kalman_filter
+# test_1d_kalman()
+test_1d_kalman_prediction_only()
 
 # 20180211_testbeam_high_stat
 # save_particle_to_csv('beam.py.in.10_spill.job_1_300.10k_per_job.b_0.45T.root')
@@ -1058,7 +1246,7 @@ def plot_particle_momentum(filename, x_min, x_max, y_max):
 # plot_particle_momentum('beam.py.in.10_spill.job_1_300.10k_per_job.b_0.45T.root.csv', 300, 2000, 20)
 # plot_particle_momentum('beam.py.in.10_spill.job_1_300.10k_per_job.b_1.8T.root.csv', 2000, 6000, 10)
 # plot_particle_momentum('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.45T.root.csv', 300, 2000, 22)
-plot_particle_momentum('beam.py.in.10_spill.job_1_300.10k_per_job.b_-1.8T.root.csv', 2000, 6000, 10)
+# plot_particle_momentum('beam.py.in.10_spill.job_1_300.10k_per_job.b_-1.8T.root.csv', 2000, 6000, 10)
 
 # 20180123_testbeam_cu_target
 # plot_pxy_thetas('target.64GeV.root')
