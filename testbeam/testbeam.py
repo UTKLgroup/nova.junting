@@ -1245,9 +1245,10 @@ def test_graph_shade():
 
 def plot_cherenkov_index_of_refaction():
     # names = ['proton', 'K+', 'pi+', 'mu+', 'e+']
+    # colors = [kRed + 2, kMagenta + 2, kBlue + 2, kGreen + 2, kBlack]
     names = ['pi+', 'mu+', 'e+']
+    colors = [kBlue + 2, kGreen + 2, kBlack]
     masses = list(map(lambda x: PDG.GetParticle(x).Mass(), names)) # GeV
-    colors = [kRed + 2, kMagenta + 2, kBlue + 2, kGreen + 2, kBlack]
     eta = 4.1e-4                  # atm-1
 
     momentums = np.arange(0.01, 10, 0.01)
@@ -1300,8 +1301,26 @@ def plot_cherenkov_index_of_refaction():
     input('Press any key to continue.')
 
 
+def get_cherenkov_photon_count():
+    dndx = 2. * pi * 1. / 137. * 0.25 * 0.2 * (1. / 300 - 1. / 500.) * 1.e9
+    length = 1.
+    radius = 0.1
+    dn = dndx * length
+    area = 2. * pi * radius * length
+    n_per_area = dn / area
+    pmt_area = 0.1**2
+    n_pmt = pmt_area * n_per_area
+
+    print('dndx = {}'.format(dndx))
+    print('dn = {}'.format(dn))
+    print('area = {}'.format(area))
+    print('n_per_area= {}'.format(n_per_area))
+    print('n_pmt = {}'.format(n_pmt))
+
+
 # 20180309_testbeam_cherenkov
 plot_cherenkov_index_of_refaction()
+# get_cherenkov_photon_count()
 
 # 20180308_testbeam_kalman_filter
 # test_1d_kalman()
