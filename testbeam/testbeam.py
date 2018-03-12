@@ -10,7 +10,7 @@ SPEED_OF_LIGHT = 3.e8              # m/s
 ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
-FIGURE_DIR = '/Users/juntinghuang/beamer/20180308_testbeam_kalman_filter/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180309_testbeam_cherenkov/figures'
 DATA_DIR = './data'
 
 
@@ -1243,10 +1243,70 @@ def test_graph_shade():
     input('Press any key to continue.')
 
 
+def plot_cherenkov_index_of_refaction():
+    # names = ['proton', 'K+', 'pi+', 'mu+', 'e+']
+    names = ['pi+', 'mu+', 'e+']
+    masses = list(map(lambda x: PDG.GetParticle(x).Mass(), names)) # GeV
+    colors = [kRed + 2, kMagenta + 2, kBlue + 2, kGreen + 2, kBlack]
+    eta = 4.1e-4                  # atm-1
+
+    momentums = np.arange(0.01, 10, 0.01)
+    ppressures = []
+    for i, mass in enumerate(masses):
+        pressures = []
+        for momentum in momentums:
+            # pressure = 1. / eta * ((1 + (mass / momentum)**2)**0.5 - 1.)
+            pressure = (1 + (mass / momentum)**2)**0.5
+            pressures.append(pressure)
+        ppressures.append(pressures)
+
+    grs = []
+    for i in range(len(ppressures)):
+        gr = TGraph(len(momentums), np.array(momentums), np.array(ppressures[i]))
+        set_graph_style(gr)
+        grs.append(gr)
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    # gPad.SetLogy()
+    gPad.SetGrid()
+    gPad.SetLeftMargin(0.2)
+
+    # lg1 = TLegend(0.2, 0.8, 0.88, 0.88)
+    lg1 = TLegend(0.3, 0.18, 0.8, 0.26)
+    set_legend_style(lg1)
+    lg1.SetNColumns(5)
+
+    grs[0].Draw('AL')
+    grs[0].SetLineColor(colors[0])
+    grs[0].GetXaxis().SetRangeUser(0., 3)
+    grs[0].GetYaxis().SetRangeUser(1., 1.004)
+    # grs[0].GetYaxis().SetRangeUser(0.5, 10)
+    # grs[0].GetYaxis().SetRangeUser(1.e-5, 1e6)
+    grs[0].GetYaxis().SetDecimals()
+    grs[0].GetYaxis().SetTitleOffset(2)
+
+    grs[0].GetYaxis().SetTitle('Index of Refraction')
+    grs[0].GetXaxis().SetTitle('Momentum (GeV)')
+    lg1.AddEntry(grs[0], names[0], 'l')
+    for i in range(1, len(names)):
+        grs[i].Draw('sames,L')
+        grs[i].SetLineColor(colors[i])
+        lg1.AddEntry(grs[i], names[i], 'l')
+    lg1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_cherenkov_index_of_refaction.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
+# 20180309_testbeam_cherenkov
+plot_cherenkov_index_of_refaction()
+
 # 20180308_testbeam_kalman_filter
 # test_1d_kalman()
 # test_1d_kalman_prediction_only()
-test_graph_shade()
+# test_graph_shade()
 
 # 20180211_testbeam_high_stat
 # save_particle_to_csv('beam.py.in.10_spill.job_1_300.10k_per_job.b_0.45T.root')
