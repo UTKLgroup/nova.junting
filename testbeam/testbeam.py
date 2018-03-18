@@ -1,6 +1,7 @@
 from rootalias import *
 from pprint import pprint
 import csv
+import math
 from math import pi, cos, sin, atan
 import numpy as np
 
@@ -1302,25 +1303,35 @@ def plot_cherenkov_index_of_refaction():
 
 
 def get_cherenkov_photon_count():
-    dndx = 2. * pi * 1. / 137. * 0.25 * 0.2 * (1. / 300 - 1. / 500.) * 1.e9
-    length = 1.
-    radius = 0.1
-    dn = dndx * length
-    area = 2. * pi * radius * length
-    n_per_area = dn / area
-    pmt_area = 0.1**2
-    n_pmt = pmt_area * n_per_area
+    index_of_refraction = 1.0004
+    beta = 1.
+    theta = math.acos(1. / index_of_refraction / beta) * 180. / pi
+    sin_square_theta = 1. - (1. / index_of_refraction / beta)**2.
 
+    pmt_quantum_efficiency = 0.2
+    dndx = 2. * pi * 1. / 137. * sin_square_theta * pmt_quantum_efficiency * (1. / 300 - 1. / 500.) * 1.e9
+    length = 2.
+    efficiency = 0.8
+    dn = dndx * length * efficiency
+
+    # radius = 0.1
+    # area = 2. * pi * radius * length
+    # n_per_area = dn / area
+    # pmt_area = 0.1**2
+    # n_pmt = pmt_area * n_per_area
+
+    print('theta = {} degree'.format(theta))
+    print('sin_square_theta = {}'.format(sin_square_theta))
     print('dndx = {}'.format(dndx))
     print('dn = {}'.format(dn))
-    print('area = {}'.format(area))
-    print('n_per_area= {}'.format(n_per_area))
-    print('n_pmt = {}'.format(n_pmt))
+    # print('area = {}'.format(area))
+    # print('n_per_area= {}'.format(n_per_area))
+    # print('n_pmt = {}'.format(n_pmt))
 
 
 # 20180309_testbeam_cherenkov
-plot_cherenkov_index_of_refaction()
-# get_cherenkov_photon_count()
+# plot_cherenkov_index_of_refaction()
+get_cherenkov_photon_count()
 
 # 20180308_testbeam_kalman_filter
 # test_1d_kalman()
