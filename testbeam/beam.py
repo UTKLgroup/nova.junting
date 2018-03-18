@@ -2,8 +2,8 @@ from rootalias import *
 from math import cos, sin, tan, pi
 
 
-collimator_upstream_theta = -13. # degree
-magnet_theta_relative = 10.      # degree
+collimator_upstream_theta = -16. # degree
+magnet_theta_relative = 16.      # degree
 
 inch = 25.4
 kill = 1
@@ -135,8 +135,10 @@ def rotate_updownstream():
 
     wire_chamber_3_distance = get_distance(wire_chamber_3_positions, magnet_positions)
     collimator_downstream_distance = get_distance(collimator_downstream_positions, magnet_positions)
-    wire_chamber_4_distance = get_distance(wire_chamber_4_positions, magnet_positions)
-    tof_downstream_distance = get_distance(tof_downstream_positions, magnet_positions)
+    # wire_chamber_4_distance = get_distance(wire_chamber_4_positions, magnet_positions)
+    # tof_downstream_distance = get_distance(tof_downstream_positions, magnet_positions)
+    tof_downstream_distance = 10000. - tof_downstream_dimensions[1]
+    wire_chamber_4_distance = tof_downstream_distance - 600.
 
     rotate_y_absolute(start_line_positions, collimator_upstream_theta, start_line_distance, target_positions)
     rotate_y_absolute(tof_upstream_positions, tof_upstream_theta, tof_upstream_distance, target_positions)
@@ -219,7 +221,7 @@ def write():
         f_beam.write('place tof_downstream rename=tof_downstream x={} y={} z={} rotation=z90,y{}\n'.format(tof_downstream_positions[0], tof_downstream_positions[1], tof_downstream_positions[2], tof_downstream_theta))
 
 
-FIGURE_DIR = '/Users/juntinghuang/beamer/20180211_testbeam_high_stat/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180318_testbeam_new_setup/figures'
 def plot_position():
     positionss = [
         target_positions,
@@ -278,14 +280,14 @@ def plot_position():
     gPad.SetTickx()
     gPad.SetTicky()
 
-    gr = TGraph(2, np.array([-50., 1000.]), np.array([-1000., 1000.]))
+    gr = TGraph(2, np.array([-50., 1500.]), np.array([-1000., 1500.]))
     set_graph_style(gr)
     gr.SetMarkerSize(0)
     gr.SetLineWidth(0)
     gr.GetXaxis().SetTitle('Z (cm)')
     gr.GetYaxis().SetTitle('X (cm)')
     gr.Draw('AP')
-    gr.GetXaxis().SetRangeUser(-50, 1200)
+    gr.GetXaxis().SetRangeUser(-50, 1600)
     gr.GetYaxis().SetRangeUser(-150, 50)
     gr.GetYaxis().SetNdivisions(505, 1)
     gr.GetXaxis().SetNdivisions(508, 1)
