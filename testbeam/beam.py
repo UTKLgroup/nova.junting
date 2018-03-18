@@ -127,7 +127,7 @@ def move_collimator_upstream():
 
 
 def rotate_updownstream():
-    start_line_distance = get_distance(start_line_positions, target_positions) + 10.
+    start_line_distance = get_distance(start_line_positions, target_positions) + 25.
     tof_upstream_distance = get_distance(tof_upstream_positions, target_positions)
     wire_chamber_1_distance = get_distance(wire_chamber_1_positions, target_positions)
     wire_chamber_2_distance = get_distance(wire_chamber_2_positions, target_positions)
@@ -139,6 +139,10 @@ def rotate_updownstream():
     # tof_downstream_distance = get_distance(tof_downstream_positions, magnet_positions)
     tof_downstream_distance = 10000. - tof_downstream_dimensions[1]
     wire_chamber_4_distance = tof_downstream_distance - 600.
+
+    print('magnet_distance = {}'.format(magnet_distance))
+    print('tof_downstream_distance = {}'.format(tof_downstream_distance))
+    print('magnet_distance + tof_downstream_distance = {}'.format(magnet_distance + tof_downstream_distance))
 
     rotate_y_absolute(start_line_positions, collimator_upstream_theta, start_line_distance, target_positions)
     rotate_y_absolute(tof_upstream_positions, tof_upstream_theta, tof_upstream_distance, target_positions)
@@ -324,5 +328,5 @@ def plot_position():
 
 move_collimator_upstream()
 rotate_updownstream()
-# write()
-plot_position()
+write()
+# plot_position()
