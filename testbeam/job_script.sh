@@ -18,7 +18,7 @@ export G4LEVELGAMMADATA=/nova/app/users/junting/g4beamline/Geant4Data/PhotonEvap
 export G4RADIOACTIVEDATA=/nova/app/users/junting/g4beamline/Geant4Data/RadioactiveDecay5.1
 export G4REALSURFACEDATA=/nova/app/users/junting/g4beamline/Geant4Data/RealSurface1.0
 
-PROCESS_START=300
+PROCESS_START=0
 # B_FIELD=b_1.8T
 # B_FIELD=b_-1.8T
 # B_FIELD=b_0.45T
@@ -42,9 +42,7 @@ EVENT_COUNT_PER_SPILL=$((${EVENT_COUNT_PER_JOB} * ${JOB_COUNT_PER_SPILL}))
 g4bl beam.py.in first=${FIRST} last=${LAST} momentum=${MOMENTUM}
 python merge_tree.py beam.root --subspillnumber $JOB_COUNT --subspillcount $JOB_COUNT_PER_SPILL --spillsize $EVENT_COUNT_PER_SPILL
 
-# chmod 766 beam.root
 chmod 766 MergedAtstart_linebeam.root
 chmod 766 MergedAtstart_linebeam.pickle
-# ifdh cp beam.root /pnfs/nova/scratch/users/junting/g4bl/beam.${JOB_COUNT}.root
 ifdh cp MergedAtstart_linebeam.root /pnfs/nova/scratch/users/junting/g4bl.${B_FIELD}/MergedAtstart_linebeam.${JOB_COUNT}.root
 ifdh cp MergedAtstart_linebeam.pickle /pnfs/nova/scratch/users/junting/g4bl.${B_FIELD}/MergedAtstart_linebeam.${JOB_COUNT}.pickle
