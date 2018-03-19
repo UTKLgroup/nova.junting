@@ -987,7 +987,9 @@ def save_particle_to_csv(filename):
     pprint(pid_momentums)
 
 
-def plot_particle_momentum(filename, x_min, x_max, y_max):
+def plot_particle_momentum(filename, x_min, x_max, y_max, **kwargs):
+    bin_count = kwargs.get('bin_count', 50)
+
     pid_momentums = {}
     with open('{}/{}'.format(DATA_DIR, filename)) as f_csv:
         for row in csv.reader(f_csv, delimiter=','):
@@ -1003,7 +1005,7 @@ def plot_particle_momentum(filename, x_min, x_max, y_max):
                 pid_momentums[pid].append(momentum)
 
     pid_hists = {}
-    h_all = TH1D('h_all', 'h_all', 50, x_min, x_max)
+    h_all = TH1D('h_all', 'h_all', bin_count, x_min, x_max)
     for pid, momentums in pid_momentums.items():
         hist = TH1D('h_{}'.format(pid), 'h_{}'.format(pid), 50, x_min, x_max)
         for momentum in momentums:
@@ -1025,7 +1027,7 @@ def plot_particle_momentum(filename, x_min, x_max, y_max):
     ]
 
     # h_stack = THStack('h_stack', 'h_stack')
-    lg1 = TLegend(0.575, 0.55, 0.84, 0.84)
+    lg1 = TLegend(0.575, 0.6, 0.84, 0.84)
     set_legend_style(lg1)
 
     pids = sorted(pids)
@@ -1050,8 +1052,9 @@ def plot_particle_momentum(filename, x_min, x_max, y_max):
     latex.SetNDC()
     latex.SetTextFont(43)
     latex.SetTextSize(28)
-    latex.DrawLatex(0.59, 0.44, 'mean = {:.0f} MeV'.format(h_all.GetMean()))
-    latex.DrawLatex(0.59, 0.5, 'total entry = {:.0f}'.format(h_all.GetEntries()))
+    latex.DrawLatex(0.59, 0.42, 'rms = {:.0f} MeV'.format(h_all.GetRMS()))
+    latex.DrawLatex(0.59, 0.48, 'mean = {:.0f} MeV'.format(h_all.GetMean()))
+    latex.DrawLatex(0.59, 0.54, 'total entry = {:.0f}'.format(h_all.GetEntries()))
 
     lg1.Draw()
     # set_h1_style(h_stack)
@@ -1348,12 +1351,14 @@ def plot_time_of_flight_mc(**kwargs):
 
     # simulation
     filenames = [
-        'beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.45T.10m.root.csv',
-        'beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.9T.10m.root.csv'
+        'beam.py.in.30_spill.job_1_900.10k_per_job.b_-0.45T.10m.root.csv',
+        'beam.py.in.30_spill.job_1_900.10k_per_job.b_-0.9T.10m.root.csv',
+        'beam.py.in.30_spill.job_1_900.10k_per_job.b_-1.35T.10m.root.csv',
+        'beam.py.in.30_spill.job_1_900.10k_per_job.b_-1.8T.10m.root.csv'
     ]
     pid_tof_momentums = {}
     h_tof_momentum = TH2D('h_tof_momentum', 'h_tof_momentum', 170, 30, 200, 300, 0, 3)
-    h_tof_momentum.Rebin2D(2, 2)
+    # h_tof_momentum.Rebin2D(2, 2)
 
     for filename in filenames:
         with open('{}/{}'.format(DATA_DIR, filename)) as f_csv:
@@ -1429,7 +1434,7 @@ def plot_time_of_flight_mc(**kwargs):
 
 def plot_particle_angle(filename):
     pid_momentums = {}
-    h_angle = TH2D('h_angle', 'h_angle', 100, -3, 3, 100, -3, 3)
+    h_angle = TH2D('h_angle', 'h_angle', 100, -2, 2, 100, -2, 2)
     with open('{}/{}'.format(DATA_DIR, filename)) as f_csv:
         for row in csv.reader(f_csv, delimiter=','):
             px = float(row[-5])
@@ -1461,17 +1466,25 @@ def plot_particle_angle(filename):
 # plot_time_of_flight(distance=12.8, y_min=3.e4, y_max=5.e5, canvas_height=600)
 # plot_time_of_flight_diff(distance=12.8, y_max=5e6, canvas_height=600)
 # plot_time_of_flight_mc(distance=6.075)
-# plot_time_of_flight_mc(distance=12.8)
+plot_time_of_flight_mc(distance=12.8)
 # save_particle_to_csv('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.45T.10m.root')
 # save_particle_to_csv('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.9T.10m.root')
 # plot_particle_momentum('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.45T.10m.root.csv', 300, 1000, 22)
 # plot_particle_momentum('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.9T.10m.root.csv', 800, 2000, 10)
 # plot_particle_angle('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.45T.10m.root.csv')
 # plot_particle_angle('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.9T.10m.root.csv')
-save_particle_to_csv('beam.py.in.30_spill.job_1_900.10k_per_job.b_-0.45T.10m.root')
+# save_particle_to_csv('beam.py.in.30_spill.job_1_900.10k_per_job.b_-0.45T.10m.root')
 # save_particle_to_csv('beam.py.in.30_spill.job_1_900.10k_per_job.b_-0.9T.10m.root')
 # save_particle_to_csv('beam.py.in.30_spill.job_1_900.10k_per_job.b_-1.35T.10m.root')
 # save_particle_to_csv('beam.py.in.30_spill.job_1_900.10k_per_job.b_-1.8T.10m.root')
+# plot_particle_momentum('beam.py.in.30_spill.job_1_900.10k_per_job.b_-0.45T.10m.root.csv', 350, 800, 7, bin_count=15)
+# plot_particle_angle('beam.py.in.30_spill.job_1_900.10k_per_job.b_-0.45T.10m.root.csv')
+# plot_particle_momentum('beam.py.in.30_spill.job_1_900.10k_per_job.b_-0.9T.10m.root.csv', 800, 1500, 15, bin_count=15)
+# plot_particle_angle('beam.py.in.30_spill.job_1_900.10k_per_job.b_-0.9T.10m.root.csv')
+# plot_particle_momentum('beam.py.in.30_spill.job_1_900.10k_per_job.b_-1.35T.10m.root.csv', 1200, 2200, 12, bin_count=15)
+# plot_particle_angle('beam.py.in.30_spill.job_1_900.10k_per_job.b_-1.35T.10m.root.csv')
+# plot_particle_momentum('beam.py.in.30_spill.job_1_900.10k_per_job.b_-1.8T.10m.root.csv', 1600, 3000, 8, bin_count=15)
+# plot_particle_angle('beam.py.in.30_spill.job_1_900.10k_per_job.b_-1.8T.10m.root.csv')
 
 # 20180309_testbeam_cherenkov
 # plot_cherenkov_index_of_refaction()
