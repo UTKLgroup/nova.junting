@@ -11,6 +11,7 @@ SPEED_OF_LIGHT = 3.e8              # m/s
 ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
+RADIAN_TO_DEGREE = 180. / 3.14
 FIGURE_DIR = '/Users/juntinghuang/beamer/20180318_testbeam_new_setup/figures'
 DATA_DIR = './data'
 
@@ -1426,6 +1427,36 @@ def plot_time_of_flight_mc(**kwargs):
     input('Press any key to continue.')
 
 
+def plot_particle_angle(filename):
+    pid_momentums = {}
+    h_angle = TH2D('h_angle', 'h_angle', 100, -3, 3, 100, -3, 3)
+    with open('{}/{}'.format(DATA_DIR, filename)) as f_csv:
+        for row in csv.reader(f_csv, delimiter=','):
+            px = float(row[-5])
+            py = float(row[-4])
+            pz = float(row[-3])
+            angle_x = atan(px / pz) * RADIAN_TO_DEGREE
+            angle_y = atan(py / pz) * RADIAN_TO_DEGREE
+            h_angle.Fill(angle_x, angle_y)
+
+    c1 = TCanvas('c1', 'c1', 800, 800)
+    set_margin()
+    gPad.SetRightMargin(0.15)
+    gStyle.SetOptStat(0)
+
+    set_h2_color_style()
+    set_h2_style(h_angle)
+    h_angle.Draw('colz')
+    h_angle.GetXaxis().SetTitle('Horizontal Angle (P_{x} / P_{z}, degree)')
+    h_angle.GetYaxis().SetTitle('Vertical Angle (P_{y} / P_{z}, degree)')
+    h_angle.GetXaxis().SetTitleOffset(1.4)
+    h_angle.GetYaxis().SetTitleOffset(1.4)
+
+    c1.Update()
+    c1.SaveAs('{}/plot_particle_angle.{}.pdf'.format(FIGURE_DIR, filename))
+    input('Press any key to continue.')
+
+
 # 20180318_testbeam_new_setup
 # plot_time_of_flight(distance=12.8, y_min=3.e4, y_max=5.e5, canvas_height=600)
 # plot_time_of_flight_diff(distance=12.8, y_max=5e6, canvas_height=600)
@@ -1433,8 +1464,14 @@ def plot_time_of_flight_mc(**kwargs):
 # plot_time_of_flight_mc(distance=12.8)
 # save_particle_to_csv('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.45T.10m.root')
 # save_particle_to_csv('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.9T.10m.root')
-plot_particle_momentum('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.45T.10m.root.csv', 300, 1000, 22)
+# plot_particle_momentum('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.45T.10m.root.csv', 300, 1000, 22)
 # plot_particle_momentum('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.9T.10m.root.csv', 800, 2000, 10)
+# plot_particle_angle('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.45T.10m.root.csv')
+# plot_particle_angle('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.9T.10m.root.csv')
+save_particle_to_csv('beam.py.in.30_spill.job_1_900.10k_per_job.b_-0.45T.10m.root')
+# save_particle_to_csv('beam.py.in.30_spill.job_1_900.10k_per_job.b_-0.9T.10m.root')
+# save_particle_to_csv('beam.py.in.30_spill.job_1_900.10k_per_job.b_-1.35T.10m.root')
+# save_particle_to_csv('beam.py.in.30_spill.job_1_900.10k_per_job.b_-1.8T.10m.root')
 
 # 20180309_testbeam_cherenkov
 # plot_cherenkov_index_of_refaction()
