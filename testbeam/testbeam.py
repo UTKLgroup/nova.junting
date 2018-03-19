@@ -1340,9 +1340,64 @@ def get_cherenkov_photon_count():
     # print('n_pmt = {}'.format(n_pmt))
 
 
+def plot_time_of_flight_mc(**kwargs):
+    distance = kwargs.get('distance', 12.8) # m
+    y_min = kwargs.get('y_min', 9.9e3)
+    y_max = kwargs.get('y_max', 2.e5)
+
+    names = ['proton', 'K+', 'pi+', 'mu+', 'e+']
+    masses = list(map(lambda x: PDG.GetParticle(x).Mass(), names)) # GeV
+    colors = [kRed + 2, kMagenta + 2, kBlue + 2, kGreen + 2, kBlack]
+
+    momentums = np.arange(0.001, 10, 0.001)
+    ttofs = []
+    for i in range(len(names)):
+        tofs= []
+        for momentum in momentums:
+            tof = distance / SPEED_OF_LIGHT * (1. + (masses[i] / momentum)**2)**0.5 * 1.e9
+            tofs.append(tof)
+        ttofs.append(tofs)
+
+    grs = []
+    for i in range(len(ttofs)):
+        gr = TGraph(len(momentums), np.array(ttofs[i]), np.array(momentums))
+        gr.SetLineColor(colors[i])
+        grs.append(gr)
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    # gPad.SetLogy()
+    gPad.SetGrid()
+
+    lg1 = TLegend(0.65, 0.5, 0.9, 0.85)
+    set_legend_style(lg1)
+
+    set_graph_style(grs[0])
+    grs[0].Draw('AL')
+    grs[0].GetXaxis().SetRangeUser(30, 200)
+    grs[0].GetYaxis().SetRangeUser(0, 3.)
+    # grs[0].GetXaxis().SetRangeUser(19, 52)
+    # grs[0].GetYaxis().SetRangeUser(0, 3.)
+    grs[0].GetYaxis().SetTitle('Momentum (GeV)')
+    grs[0].GetXaxis().SetTitle('Time of Flight (ns)')
+    lg1.AddEntry(grs[0], names[0], 'l')
+
+    for i in range(1, len(names)):
+        set_graph_style(grs[i])
+        grs[i].Draw('sames,L')
+        lg1.AddEntry(grs[i], names[i], 'l')
+    lg1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_time_of_flight_mc.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
 # 20180318_testbeam_new_setup
 # plot_time_of_flight(distance=12.8, y_min=3.e4, y_max=5.e5, canvas_height=600)
-plot_time_of_flight_diff(distance=12.8, y_max=5e6, canvas_height=600)
+# plot_time_of_flight_diff(distance=12.8, y_max=5e6, canvas_height=600)
+# plot_time_of_flight_mc(distance=6.075)
+plot_time_of_flight_mc(distance=12.8)
 
 # 20180309_testbeam_cherenkov
 # plot_cherenkov_index_of_refaction()
