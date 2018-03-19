@@ -298,7 +298,7 @@ def plot_position():
     gr.GetYaxis().SetNdivisions(505, 1)
     gr.GetXaxis().SetNdivisions(508, 1)
 
-    lg1 = TLegend(0.51, 0.38, 0.87, 0.86)
+    lg1 = TLegend(0.49, 0.34, 0.87, 0.86)
     set_legend_style(lg1)
     lg1.SetTextSize(22)
     lg1.SetMargin(0.15)
@@ -323,6 +323,15 @@ def plot_position():
         name = '{} ({:.1f}, {:.1f})'.format(names[i], coordinate_x, coordinate_y)
         lg1.AddEntry(markers[i], name, 'p')
 
+    testbeam_detector_x = (positionss[-1][2] + tof_downstream_dimensions[1]) / 10.
+    testbeam_detector_y = positionss[-1][0] / 10.
+    length = 10.
+    testbeam_detector_line = TLine(testbeam_detector_x, testbeam_detector_y - length, testbeam_detector_x, testbeam_detector_y + length)
+    testbeam_detector_line.SetLineStyle(2)
+    testbeam_detector_line.SetLineWidth(2)
+    testbeam_detector_line.Draw()
+    lg1.AddEntry(testbeam_detector_line, 'test beam detector front ({:.1f}, {:.1f})'.format(testbeam_detector_x, testbeam_detector_y), 'l')
+
     lg1.Draw()
     c1.Update()
     c1.SaveAs('{}/plot_position.theta_t_{}.theta_m_{}.pdf'.format(FIGURE_DIR, collimator_upstream_theta, magnet_theta_relative))
@@ -330,5 +339,5 @@ def plot_position():
 
 move_collimator_upstream()
 rotate_updownstream()
-write()
-# plot_position()
+# write()
+plot_position()
