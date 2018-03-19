@@ -1397,7 +1397,10 @@ def plot_time_of_flight_mc(**kwargs):
 # plot_time_of_flight(distance=12.8, y_min=3.e4, y_max=5.e5, canvas_height=600)
 # plot_time_of_flight_diff(distance=12.8, y_max=5e6, canvas_height=600)
 # plot_time_of_flight_mc(distance=6.075)
-plot_time_of_flight_mc(distance=12.8)
+# plot_time_of_flight_mc(distance=12.8)
+# save_particle_to_csv('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.45T.10m.root')
+save_particle_to_csv('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.9T.10m.root')
+# plot_particle_momentum('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.45T.10m.root.csv', 300, 2000, 22)
 
 # 20180309_testbeam_cherenkov
 # plot_cherenkov_index_of_refaction()
