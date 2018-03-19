@@ -966,7 +966,7 @@ def save_particle_to_csv(filename):
 
             if pass_all:
                 print('passed!')
-                particle = [track.EventID, track.TrackID, track.TrackPresenttof_downstream, track.xtof_downstream, track.ytof_downstream, track.ztof_downstream, track.ttof_downstream, track.Pxtof_downstream, track.Pytof_downstream, track.Pztof_downstream, track.PDGidtof_downstream, track.ParentIDtof_downstream]
+                particle = [track.EventID, track.TrackID, track.ttof_upstream, track.TrackPresenttof_downstream, track.xtof_downstream, track.ytof_downstream, track.ztof_downstream, track.ttof_downstream, track.Pxtof_downstream, track.Pytof_downstream, track.Pztof_downstream, track.PDGidtof_downstream, track.ParentIDtof_downstream]
                 particles.append(particle)
 
                 pid = track.PDGidtof_downstream
@@ -1345,6 +1345,40 @@ def plot_time_of_flight_mc(**kwargs):
     y_min = kwargs.get('y_min', 9.9e3)
     y_max = kwargs.get('y_max', 2.e5)
 
+    # simulation
+    filenames = [
+        'beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.45T.10m.root.csv',
+        'beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.9T.10m.root.csv'
+    ]
+    pid_tof_momentums = {}
+    h_tof_momentum = TH2D('h_tof_momentum', 'h_tof_momentum', 170, 30, 200, 300, 0, 3)
+    h_tof_momentum.Rebin2D(2, 2)
+
+    for filename in filenames:
+        with open('{}/{}'.format(DATA_DIR, filename)) as f_csv:
+            for row in csv.reader(f_csv, delimiter=','):
+                pid = int(float(row[-2]))
+                tof = (float(row[7]) - float(row[2])) * 1.e9
+                px = float(row[-5])
+                py = float(row[-4])
+                pz = float(row[-3])
+                momentum = (px**2 + py**2 + pz**2)**0.5 / 1.e3
+                tof_momentum = (tof, momentum)
+
+                h_tof_momentum.Fill(tof, momentum)
+                if pid not in pid_tof_momentums:
+                    pid_tof_momentums[pid] = [tof_momentum]
+                else:
+                    pid_tof_momentums[pid].append(tof_momentum)
+
+    # pid_graphs = {}
+    # for pid, tof_momentums in pid_tof_momentums.items():
+    #     tofs = [tof_momentum[0] for tof_momentum in tof_momentums]
+    #     momentums = [tof_momentum[1] for tof_momentum in tof_momentums]
+    #     gr = TGraph(len(tofs), np.array(tofs), np.array(momentums))
+    #     pid_graphs[pid] = gr
+
+    # calculation
     names = ['proton', 'K+', 'pi+', 'mu+', 'e+']
     masses = list(map(lambda x: PDG.GetParticle(x).Mass(), names)) # GeV
     colors = [kRed + 2, kMagenta + 2, kBlue + 2, kGreen + 2, kBlack]
@@ -1365,28 +1399,27 @@ def plot_time_of_flight_mc(**kwargs):
         grs.append(gr)
 
     c1 = TCanvas('c1', 'c1', 800, 600)
+    gStyle.SetOptStat(0)
     set_margin()
-    # gPad.SetLogy()
     gPad.SetGrid()
+
+    set_h2_color_style()
+    set_h2_style(h_tof_momentum)
+    h_tof_momentum.Draw('colz')
+    h_tof_momentum.GetYaxis().SetTitle('Momentum (GeV)')
+    h_tof_momentum.GetXaxis().SetTitle('Time of Flight (ns)')
 
     lg1 = TLegend(0.65, 0.5, 0.9, 0.85)
     set_legend_style(lg1)
 
-    set_graph_style(grs[0])
-    grs[0].Draw('AL')
-    grs[0].GetXaxis().SetRangeUser(30, 200)
-    grs[0].GetYaxis().SetRangeUser(0, 3.)
-    # grs[0].GetXaxis().SetRangeUser(19, 52)
-    # grs[0].GetYaxis().SetRangeUser(0, 3.)
-    grs[0].GetYaxis().SetTitle('Momentum (GeV)')
-    grs[0].GetXaxis().SetTitle('Time of Flight (ns)')
-    lg1.AddEntry(grs[0], names[0], 'l')
-
-    for i in range(1, len(names)):
+    for i in range(0, len(names)):
         set_graph_style(grs[i])
+        grs[i].SetLineStyle(7)
+        grs[i].SetLineWidth(1)
         grs[i].Draw('sames,L')
         lg1.AddEntry(grs[i], names[i], 'l')
     lg1.Draw()
+    h_tof_momentum.Draw('colz,sames')
 
     c1.Update()
     c1.SaveAs('{}/plot_time_of_flight_mc.pdf'.format(FIGURE_DIR))
@@ -1399,8 +1432,9 @@ def plot_time_of_flight_mc(**kwargs):
 # plot_time_of_flight_mc(distance=6.075)
 # plot_time_of_flight_mc(distance=12.8)
 # save_particle_to_csv('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.45T.10m.root')
-save_particle_to_csv('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.9T.10m.root')
-# plot_particle_momentum('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.45T.10m.root.csv', 300, 2000, 22)
+# save_particle_to_csv('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.9T.10m.root')
+plot_particle_momentum('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.45T.10m.root.csv', 300, 1000, 22)
+# plot_particle_momentum('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.9T.10m.root.csv', 800, 2000, 10)
 
 # 20180309_testbeam_cherenkov
 # plot_cherenkov_index_of_refaction()
