@@ -11,7 +11,7 @@ SPEED_OF_LIGHT = 3.e8              # m/s
 ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
-FIGURE_DIR = '/Users/juntinghuang/beamer/20180309_testbeam_cherenkov/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180318_testbeam_new_setup/figures'
 DATA_DIR = './data'
 
 
@@ -336,8 +336,13 @@ def plot_cherenkov():
     input('Press any key to continue.')
 
 
-def plot_time_of_flight():
-    distance = 6.075            # m
+def plot_time_of_flight(**kwargs):
+    # distance = 6.075            # m
+    distance = kwargs.get('distance', 6.075) # m
+    y_min = kwargs.get('y_min', 9.9e3)
+    y_max = kwargs.get('y_max', 2.e5)
+    canvas_height = kwargs.get('canvas_height', 800)
+
     names = ['proton', 'K+', 'pi+', 'mu+', 'e+']
     masses = list(map(lambda x: PDG.GetParticle(x).Mass(), names)) # GeV
     colors = [kRed + 2, kMagenta + 2, kBlue + 2, kGreen + 2, kBlack]
@@ -357,7 +362,7 @@ def plot_time_of_flight():
         gr.SetLineColor(colors[i])
         grs.append(gr)
 
-    c1 = TCanvas('c1', 'c1', 800, 800)
+    c1 = TCanvas('c1', 'c1', 800, canvas_height)
     set_margin()
     # gPad.SetLogx()
     gPad.SetLogy()
@@ -371,9 +376,9 @@ def plot_time_of_flight():
     grs[0].GetXaxis().SetRangeUser(0, 3)
     grs[0].GetXaxis().SetTitle('Momentum (GeV)')
     grs[0].GetYaxis().SetTitle('Time of Flight (ps)')
-    grs[0].GetYaxis().SetRangeUser(9.9e3, 2.e5)
+    grs[0].GetYaxis().SetRangeUser(y_min, y_max)
     grs[0].GetXaxis().SetRangeUser(1.e-1, 3.)
-    grs[0].GetYaxis().SetTitleOffset(1.8)
+    # grs[0].GetYaxis().SetTitleOffset(1.8)
     lg1.AddEntry(grs[0], names[0], 'l')
 
     for i in range(1, len(names)):
@@ -383,14 +388,19 @@ def plot_time_of_flight():
     lg1.Draw()
 
     c1.Update()
-    c1.SaveAs('{}/plot_time_of_flight.pdf'.format(figure_dir))
+    c1.SaveAs('{}/plot_time_of_flight.pdf'.format(FIGURE_DIR))
     input('Press any key to continue.')
 
 
-def plot_time_of_flight_diff():
-    distance = 6.075            # m
+def plot_time_of_flight_diff(**kwargs):
+    # distance = 6.075          # m
     # distance = 9.1            # m
     # distance = 12.            # m
+    distance = kwargs.get('distance', 6.075) # m
+    y_min = kwargs.get('y_min', 10.)
+    y_max = kwargs.get('y_max', 1.e6)
+    canvas_height = kwargs.get('canvas_height', 800)
+
     names = ['proton', 'K+', 'pi+', 'mu+', 'e+']
     masses = list(map(lambda x: PDG.GetParticle(x).Mass(), names)) # GeV
     colors = [kRed + 2, kMagenta + 2, kBlue + 2, kGreen + 2, kBlack]
@@ -420,21 +430,22 @@ def plot_time_of_flight_diff():
         gr.SetLineColor(colors[i])
         grs.append(gr)
 
-    c1 = TCanvas('c1', 'c1', 800, 800)
+    c1 = TCanvas('c1', 'c1', 800, canvas_height)
     set_margin()
     gPad.SetLogy()
     gPad.SetGrid()
 
-    lg1 = TLegend(0.5, 0.6, 0.85, 0.9)
+    # lg1 = TLegend(0.5, 0.6, 0.85, 0.9)
+    lg1 = TLegend(0.5, 0.56, 0.85, 0.86)
     set_legend_style(lg1)
 
     set_graph_style(grs[0])
     grs[0].Draw('AL')
     grs[0].GetXaxis().SetTitle('Momentum (GeV)')
     grs[0].GetYaxis().SetTitle('Time of Flight (ps)')
-    grs[0].GetYaxis().SetRangeUser(10, 1.e6)
+    grs[0].GetYaxis().SetRangeUser(y_min, y_max)
     grs[0].GetXaxis().SetRangeUser(0., 3.)
-    grs[0].GetYaxis().SetTitleOffset(1.8)
+    # grs[0].GetYaxis().SetTitleOffset(1.8)
     lg1.AddEntry(grs[0], name_diffs[0], 'l')
 
     for i in range(1, len(grs)):
@@ -450,7 +461,7 @@ def plot_time_of_flight_diff():
     lg1.Draw()
 
     c1.Update()
-    c1.SaveAs('{}/plot_time_of_flight_diff.pdf'.format(figure_dir))
+    c1.SaveAs('{}/plot_time_of_flight_diff.pdf'.format(FIGURE_DIR))
     input('Press any key to continue.')
 
 
@@ -1329,9 +1340,13 @@ def get_cherenkov_photon_count():
     # print('n_pmt = {}'.format(n_pmt))
 
 
+# 20180318_testbeam_new_setup
+# plot_time_of_flight(distance=12.8, y_min=3.e4, y_max=5.e5, canvas_height=600)
+plot_time_of_flight_diff(distance=12.8, y_max=5e6, canvas_height=600)
+
 # 20180309_testbeam_cherenkov
 # plot_cherenkov_index_of_refaction()
-get_cherenkov_photon_count()
+# get_cherenkov_photon_count()
 
 # 20180308_testbeam_kalman_filter
 # test_1d_kalman()
