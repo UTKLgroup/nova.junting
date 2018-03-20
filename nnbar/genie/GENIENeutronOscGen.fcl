@@ -6,6 +6,10 @@ standard_nosc:
    Target: 1000060120
    AnnihilationMode: 0
    RandomVertexPosition: true
+   VertexX: 0.          # m
+   VertexY: 0.          # m
+   VertexZ: 30.         # m
+   VertexT: 225.e-6     # s
 }
 
 END_PROLOG

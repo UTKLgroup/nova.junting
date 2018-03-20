@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////
 /// \brief  GENIE neutron oscillation event generator
 /// \author junting@utexas.edu
-/// \date
+/// \date   2018/03/20
 ////////////////////////////////////////////////////////////////////////
 
 #include <cassert>
@@ -83,6 +83,10 @@ namespace evgen {
     int target;                            ///< pdg code of the target
     genie::NeutronOscMode_t gOptDecayMode; ///< neutron oscillation mode
     bool randomVertexPosition;
+    double vertexX;             // m
+    double vertexY;             // m
+    double vertexZ;             // m
+    double vertexT;             // s
     const genie::EventRecordVisitorI* mcgen;
   };
 };
@@ -94,6 +98,10 @@ namespace evgen {
     : fCycle(pset.get<int>("Cycle", 0))
     , target(pset.get<int>("Target", 1000060120))
     , randomVertexPosition(pset.get<bool>("RandomVertexPosition", false))
+    , vertexX(pset.get<double>("vertexX", 0.))
+    , vertexY(pset.get<double>("vertexY", 0.))
+    , vertexZ(pset.get<double>("vertexZ", 30.))
+    , vertexT(pset.get<double>("vertexT", 225.e-6))
   {
     fStopwatch.Start();
 
@@ -162,7 +170,7 @@ namespace evgen {
     mcgen->ProcessEventRecord(event);
     // mf::LogInfo("GENIENeutronOscGen") << "Generated event: " << *event;
 
-    event->SetVertex(0., 0., 30., 225.e-6); // in si unit, m and s
+    event->SetVertex(vertexX, vertexY, vertexZ, vertexT); // in si unit, m and s
     if (randomVertexPosition) {
       setRandomEventVertexPosition(event);
     }
