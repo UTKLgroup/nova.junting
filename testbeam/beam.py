@@ -140,8 +140,6 @@ def rotate_updownstream():
     tof_downstream_distance = 10000. - tof_downstream_dimensions[1]
     wire_chamber_4_distance = tof_downstream_distance - 600.
 
-    # print('magnet_distance = {}'.format(magnet_distance))
-    # print('magnet_distance + tof_downstream_distance = {}'.format(magnet_distance + tof_downstream_distance))
     print('magnet_distance - tof_upstream_distance = {}'.format(magnet_distance - tof_upstream_distance))
     print('tof_downstream_distance = {}'.format(tof_downstream_distance))
     print('magnet_distance - tof_upstream_distance + tof_downstream_distance = {}'.format(magnet_distance - tof_upstream_distance + tof_downstream_distance))
