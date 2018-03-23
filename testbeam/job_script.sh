@@ -18,11 +18,14 @@ export G4LEVELGAMMADATA=/nova/app/users/junting/g4beamline/Geant4Data/PhotonEvap
 export G4RADIOACTIVEDATA=/nova/app/users/junting/g4beamline/Geant4Data/RadioactiveDecay5.1
 export G4REALSURFACEDATA=/nova/app/users/junting/g4beamline/Geant4Data/RealSurface1.0
 
-PROCESS_START=0
+PROCESS_START=300
 # B_FIELD=b_1.8T
 # B_FIELD=b_-1.8T
 # B_FIELD=b_0.45T
-B_FIELD=b_-0.45T
+# B_FIELD=b_-0.45T
+# B_FIELD=b_-0.9T
+# B_FIELD=b_-1.35T
+B_FIELD=b_-1.8T
 
 ifdh cp /pnfs/nova/persistent/users/junting/testbeam/merge_tree.py ./merge_tree.py
 ifdh cp /pnfs/nova/persistent/users/junting/testbeam/beam.py.${B_FIELD}.in ./beam.py.in

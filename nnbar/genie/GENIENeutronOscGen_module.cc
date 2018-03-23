@@ -1,7 +1,12 @@
 ////////////////////////////////////////////////////////////////////////
-/// \brief  GENIE neutron oscillation event generator
+/// \brief  GENIE neutron oscillation event generator.
+///         Please ignore the warnings of 'hides overloaded virtual
+///         function [-Woverloaded-virtual]', as it is harmless and
+///         has been fixed in more recent releases of GENIE. It will
+///         disappear when NOvA progresses to use more recent versions
+///         of GENIE in the future.
 /// \author junting@utexas.edu
-/// \date
+/// \date   2018/01/26
 ////////////////////////////////////////////////////////////////////////
 
 #include <cassert>
@@ -14,9 +19,14 @@
 
 // ROOT includes
 #include "TStopwatch.h"
-#include "TVector3.h"
-#include "TLorentzVector.h"
-#include "TSystem.h"
+
+// GENIE includes
+#include "EVGCore/EventRecord.h"
+#include "EVGCore/EventRecordVisitorI.h"
+#include "Algorithm/AlgFactory.h"
+#include "Numerical/RandomGen.h"
+#include "GHEP/GHepParticle.h"
+#include "NeutronOsc/NeutronOscUtils.h"
 
 // Framework includes
 #include "art/Framework/Core/EDProducer.h"
@@ -29,12 +39,7 @@
 #include "messagefacility/MessageLogger/MessageLogger.h"
 
 // NOvA includes
-// #include "EventGeneratorBase/GENIE/GENIEHelper.h"
-#include "nutools/EventGeneratorBase/GENIE/GENIEHelper.h"
 #include "Geometry/Geometry.h"
-// #include "SimulationBase/GTruth.h"
-// #include "SimulationBase/MCFlux.h"
-// #include "SimulationBase/MCTruth.h"
 #include "nusimdata/SimulationBase/GTruth.h"
 #include "nusimdata/SimulationBase/MCFlux.h"
 #include "nusimdata/SimulationBase/MCTruth.h"
@@ -44,19 +49,6 @@
 #include "SummaryData/SubRunData.h"
 #include "Utilities/AssociationUtil.h"
 
-#include "dk2nu/tree/dk2nu.h"
-#include "dk2nu/tree/NuChoice.h"
-#include "dk2nu/genie/GDk2NuFlux.h"
-
-#include "EVGCore/EventRecord.h"
-#include "EVGCore/EventRecordVisitorI.h"
-#include "Algorithm/AlgFactory.h"
-#include "Numerical/RandomGen.h"
-#include "Ntuple/NtpWriter.h"
-#include "Messenger/Messenger.h"
-#include "GHEP/GHepParticle.h"
-#include "NeutronOsc/NeutronOscMode.h"
-#include "NeutronOsc/NeutronOscUtils.h"
 
 namespace evgen {
 
@@ -83,9 +75,13 @@ namespace evgen {
     int target;                            ///< pdg code of the target
     genie::NeutronOscMode_t gOptDecayMode; ///< neutron oscillation mode
     bool randomVertexPosition;
+    double vertexX;             // m
+    double vertexY;             // m
+    double vertexZ;             // m
+    double vertexT;             // s
     const genie::EventRecordVisitorI* mcgen;
   };
-};
+}
 
 namespace evgen {
 
@@ -94,6 +90,10 @@ namespace evgen {
     : fCycle(pset.get<int>("Cycle", 0))
     , target(pset.get<int>("Target", 1000060120))
     , randomVertexPosition(pset.get<bool>("RandomVertexPosition", false))
+    , vertexX(pset.get<double>("vertexX", 0.))
+    , vertexY(pset.get<double>("vertexY", 0.))
+    , vertexZ(pset.get<double>("vertexZ", 30.))
+    , vertexT(pset.get<double>("vertexT", 225.e-6))
   {
     fStopwatch.Start();
 
@@ -114,7 +114,7 @@ namespace evgen {
   //___________________________________________________________________________
   GENIENeutronOscGen::~GENIENeutronOscGen()
   {
-    delete mcgen;
+    // delete mcgen;
 
     fStopwatch.Stop();
     mf::LogInfo("GENIENeutronOscGen") << "real time to produce file: "
@@ -162,7 +162,7 @@ namespace evgen {
     mcgen->ProcessEventRecord(event);
     // mf::LogInfo("GENIENeutronOscGen") << "Generated event: " << *event;
 
-    event->SetVertex(0., 0., 30., 225.e-6); // in si unit, m and s
+    event->SetVertex(vertexX, vertexY, vertexZ, vertexT); // in si unit, m and s
     if (randomVertexPosition) {
       setRandomEventVertexPosition(event);
     }
@@ -202,7 +202,7 @@ namespace evgen {
 
     if (!mcgen) {
       mf::LogError("GENIENeutronOscGen") << "Couldn't instantiate the neutron oscillation generator";
-      genie::gAbortingInErr = true;
+      // genie::gAbortingInErr = true;
       exit(1);
     }
 
@@ -218,7 +218,7 @@ namespace evgen {
       std::string pdg_string = std::to_string(static_cast<long long>(pdg_code));
       if (pdg_string.size() != 10) {
         mf::LogError("GENIENeutronOscGen") << "Expecting PDG code to be a 10-digit integer; instead, it's the following: " << pdg_string;
-        genie::gAbortingInErr = true;
+        // genie::gAbortingInErr = true;
         exit(1);
       }
 
@@ -256,7 +256,7 @@ namespace evgen {
 
       mf::LogError("GENIENeutronOscGen") << "Random selection of final state failed!";
 
-      genie::gAbortingInErr = true;
+      // genie::gAbortingInErr = true;
       exit(1);
     }
 
@@ -269,7 +269,6 @@ namespace evgen {
   //___________________________________________________________________________
   void GENIENeutronOscGen::fillMCTruth(const genie::EventRecord* record, simb::MCTruth &truth)
   {
-    TLorentzVector* vertex = record->Vertex();
     TIter partitr(record);
     genie::GHepParticle* part = 0;
     int trackid = 0;
@@ -305,4 +304,4 @@ namespace evgen {
 
 }
 
-namespace evgen { DEFINE_ART_MODULE(GENIENeutronOscGen); }
+namespace evgen { DEFINE_ART_MODULE(GENIENeutronOscGen) }
