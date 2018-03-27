@@ -3,7 +3,7 @@ import math
 import numpy as np
 import random
 
-FIGURE_DIR = '/Users/juntinghuang/beamer/20180301_nnbar_track/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180326_nnbar_top_containment/figures'
 DATA_DIR = './data'
 
 exposure_0 = 2.45               # 1.e34 * neutron * year
@@ -588,14 +588,20 @@ def plot_daq_hit_1d(filename, hist_name):
     input('Press any key to continue.')
 
 
-# 20180301_nnbar_track
+# 20180326_nnbar_top_containment
 gStyle.SetOptStat(0)
+# plot_daq_hit('neutronosc_ddt_hist.root')
+plot_track('neutronosc_ddt_hist.root')
+
+
+# 20180301_nnbar_track
+# gStyle.SetOptStat(0)
 # plot_track('neutronosc_ddt_hist.track.root', dimension='2d', draw_track=False)
 # plot_track_theta_variance()
 # plot_slice_track_count()
 # plot_1d_cut('fSliceHitCount', x_max=300, y_max=0.14, rebin=5, x_cut=100)
 # plot_1d_cut('fXyAsymmetry', x_max=2., y_max=0.15, rebin=5, x_cut=1)
-plot_daq_hit_1d('neutronosc_ddt_hist.clean.root', 'fDaqHitYView')
+# plot_daq_hit_1d('neutronosc_ddt_hist.clean.root', 'fDaqHitYView')
 
 # 20180128_nnbar_ddt_offline
 # gStyle.SetOptStat(0)
