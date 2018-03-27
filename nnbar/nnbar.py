@@ -517,13 +517,17 @@ def plot_slice_track_count():
 
 
 def plot_1d_cut(hist_name, **kwargs):
+    cosmic_filename = kwargs.get('cosmic_filename', 'neutronosc_ddt_hist.cosmic.root')
+    signal_filename = kwargs.get('signal_filename', 'neutronosc_ddt_hist.clean.root')
     x_max = kwargs.get('x_max', None)
     y_max = kwargs.get('y_max', None)
     rebin = kwargs.get('rebin', None)
     x_cut = kwargs.get('x_cut', None)
+    log_x = kwargs.get('log_x', False)
+    log_y = kwargs.get('log_y', False)
 
-    tf_cosmic = TFile('{}/neutronosc_ddt_hist.cosmic.root'.format(DATA_DIR))
-    tf_clean = TFile('{}/neutronosc_ddt_hist.clean.root'.format(DATA_DIR))
+    tf_cosmic = TFile('{}/{}'.format(DATA_DIR, cosmic_filename))
+    tf_clean = TFile('{}/{}'.format(DATA_DIR, signal_filename))
 
     h_cosmic = tf_cosmic.Get('neutronoscana/{}'.format(hist_name))
     h_clean = tf_clean.Get('neutronoscana/{}'.format(hist_name))
@@ -542,7 +546,14 @@ def plot_1d_cut(hist_name, **kwargs):
     h_cosmic.Scale(1. / h_cosmic.Integral())
 
     c1 = TCanvas('c1', 'c1', 800, 600)
+    c1.SetTitle(hist_name)
+
     set_margin()
+    if log_x:
+        gPad.SetLogx()
+    if log_y:
+        gPad.SetLogy()
+
     set_h1_style(h_cosmic)
     h_cosmic.Draw('hist')
     if x_max:
@@ -591,8 +602,32 @@ def plot_daq_hit_1d(filename, hist_name):
 # 20180326_nnbar_top_containment
 gStyle.SetOptStat(0)
 # plot_daq_hit('neutronosc_ddt_hist.root')
-plot_track('neutronosc_ddt_hist.root')
-
+# plot_track('neutronosc_ddt_hist.root')
+# plot_1d_cut('fMaxTrackLength',
+#             cosmic_filename='neutronosc_ddt_hist.track_length.cosmic.root',
+#             signal_filename='neutronosc_ddt_hist.track_length.clean.root',
+#             x_max=2000,
+#             y_max=0.13,
+#             rebin=5,
+#             x_cut=500)
+# plot_1d_cut('fTrackThetaVarianceX',
+#             cosmic_filename='neutronosc_ddt_hist.track_length.cosmic.root',
+#             signal_filename='neutronosc_ddt_hist.track_length.clean.root',
+#             # x_max=2000,
+#             # y_max=0.13,
+#             # rebin=5,
+#             log_x=True,
+#             log_y=True,
+#             x_cut=0.01)
+plot_1d_cut('fTrackThetaVarianceY',
+            cosmic_filename='neutronosc_ddt_hist.track_length.cosmic.root',
+            signal_filename='neutronosc_ddt_hist.track_length.clean.root',
+            # x_max=2000,
+            # y_max=0.13,
+            # rebin=5,
+            log_x=True,
+            log_y=True,
+            x_cut=0.01)
 
 # 20180301_nnbar_track
 # gStyle.SetOptStat(0)
