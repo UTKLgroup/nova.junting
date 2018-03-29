@@ -430,7 +430,7 @@ def plot_track(filename, **kwargs):
             gr_y.Draw('L, sames')
 
     c1.Update()
-    c1.SaveAs('{}/plot_track.{}.draw_track_{}.pdf'.format(FIGURE_DIR, dimension, draw_track))
+    c1.SaveAs('{}/plot_track.{}.draw_track_{}.pdf'.format(FIGURE_DIR, filename, draw_track))
     input('Press any key to continue.')
 
 
@@ -525,6 +525,7 @@ def plot_1d_cut(hist_name, **kwargs):
     x_cut = kwargs.get('x_cut', None)
     log_x = kwargs.get('log_x', False)
     log_y = kwargs.get('log_y', False)
+    legend_left = kwargs.get('legend_left', False)
 
     tf_cosmic = TFile('{}/{}'.format(DATA_DIR, cosmic_filename))
     tf_clean = TFile('{}/{}'.format(DATA_DIR, signal_filename))
@@ -565,7 +566,11 @@ def plot_1d_cut(hist_name, **kwargs):
     h_clean.SetLineColor(kRed + 2)
     h_clean.Draw('hist,sames')
 
-    lg1 = TLegend(0.57, 0.7, 0.84, 0.85)
+    lg1 = None
+    if legend_left:
+        lg1 = TLegend(0.21, 0.7, 0.48, 0.85)
+    else:
+        lg1 = TLegend(0.57, 0.7, 0.84, 0.85)
     set_legend_style(lg1)
     lg1.AddEntry(h_cosmic, 'Cosmic ray', 'l')
     lg1.AddEntry(h_clean, 'Signal', 'l')
@@ -574,6 +579,75 @@ def plot_1d_cut(hist_name, **kwargs):
 
     c1.Update()
     c1.SaveAs('{}/plot_1d_cut.{}.pdf'.format(FIGURE_DIR, hist_name))
+    input('Press any key to continue.')
+
+
+def plot_2d_cuts(histname, **kwargs):
+    cosmic_filename = kwargs.get('cosmic_filename', 'neutronosc_ddt_hist.cosmic.root')
+    signal_filename = kwargs.get('signal_filename', 'neutronosc_ddt_hist.clean.root')
+    log_x = kwargs.get('log_x', True)
+    log_y = kwargs.get('log_y', True)
+    log_z = kwargs.get('log_z', True)
+
+    tf_cosmic = TFile('{}/{}'.format(DATA_DIR, cosmic_filename))
+    tf_clean = TFile('{}/{}'.format(DATA_DIR, signal_filename))
+
+    h_cosmic = tf_cosmic.Get('neutronoscana/{}'.format(histname))
+    h_clean = tf_clean.Get('neutronoscana/{}'.format(histname))
+
+    print('h_cosmic.Integral() = {}'.format(h_cosmic.Integral()))
+    print('h_clean.Integral() = {}'.format(h_clean.Integral()))
+    # print('h_cosmic.Integral() = {}'.format(h_cosmic.Integral(1, 1001, 1, 1001)))
+    # print('h_clean.Integral() = {}'.format(h_clean.Integral(1, 1001, 1, 1001)))
+    # h_clean.Scale(1. / h_clean.Integral(1, 1001, 1, 1001))
+    # h_cosmic.Scale(1. / h_cosmic.Integral(1, 1001, 1, 1001))
+    # print('1 - h_clean.Integral(1, 10, 1, 10) = {}'.format(1 - h_clean.Integral(1, 10, 1, 10)))
+    # print('1 - h_cosmic.Integral(1, 10, 1, 10) = {}'.format(1 - h_cosmic.Integral(1, 10, 1, 10)))
+
+    ellipse_a = 0.4
+    ellipse_b = 0.08
+    # tf1 = TF1('ecllipse', '{0} * sqrt(1. - x * x / {1} / {1})'.format(ellipse_b, ellipse_a), 0, ellipse_a)
+    tf1 = TF1('ecllipse', '{} * (1 - x / {})'.format(ellipse_b, ellipse_a), 0, ellipse_a)
+
+    tf1.SetLineWidth(2)
+    tf1.SetLineColor(kRed)
+
+    c1 = TCanvas('c1', 'c1', 600, 600)
+    set_margin()
+    gPad.SetRightMargin(0.2)
+    if log_x:
+        gPad.SetLogx()
+    if log_y:
+        gPad.SetLogy()
+    if log_z:
+        gPad.SetLogz()
+    set_h2_color_style()
+    set_h2_style(h_cosmic)
+    h_cosmic.Draw('colz')
+    h_cosmic.GetXaxis().SetTitleOffset(1.4)
+    h_cosmic.GetYaxis().SetTitleOffset(1.6)
+    tf1.Draw('sames')
+    c1.Update()
+    c1.SaveAs('{}/plot_2d_cuts.{}.cosmic.pdf'.format(FIGURE_DIR, histname))
+
+    c2 = TCanvas('c2', 'c2', 600, 600)
+    set_margin()
+    gPad.SetRightMargin(0.2)
+    if log_x:
+        gPad.SetLogx()
+    if log_y:
+        gPad.SetLogy()
+    if log_z:
+        gPad.SetLogz()
+    set_h2_color_style()
+    set_h2_style(h_clean)
+    h_clean.Draw('colz')
+    h_clean.GetXaxis().SetTitleOffset(1.4)
+    h_clean.GetYaxis().SetTitleOffset(1.6)
+    tf1.Draw('sames')
+    c2.Update()
+    c2.SaveAs('{}/plot_2d_cuts.{}.clean.pdf'.format(FIGURE_DIR, histname))
+
     input('Press any key to continue.')
 
 
@@ -603,6 +677,8 @@ def plot_daq_hit_1d(filename, hist_name):
 gStyle.SetOptStat(0)
 # plot_daq_hit('neutronosc_ddt_hist.root')
 # plot_track('neutronosc_ddt_hist.root')
+# plot_track('theta_mean_y_cosmic.small.root')
+# plot_daq_hit('theta_mean_y_cosmic.small.root')
 # plot_1d_cut('fMaxTrackLength',
 #             cosmic_filename='neutronosc_ddt_hist.track_length.cosmic.root',
 #             signal_filename='neutronosc_ddt_hist.track_length.clean.root',
@@ -619,15 +695,35 @@ gStyle.SetOptStat(0)
 #             log_x=True,
 #             log_y=True,
 #             x_cut=0.01)
-plot_1d_cut('fTrackThetaVarianceY',
-            cosmic_filename='neutronosc_ddt_hist.track_length.cosmic.root',
-            signal_filename='neutronosc_ddt_hist.track_length.clean.root',
-            # x_max=2000,
-            # y_max=0.13,
-            # rebin=5,
-            log_x=True,
-            log_y=True,
-            x_cut=0.01)
+# plot_1d_cut('fTrackThetaVarianceY',
+#             cosmic_filename='neutronosc_ddt_hist.track_length.cosmic.root',
+#             signal_filename='neutronosc_ddt_hist.track_length.clean.root',
+#             # x_max=2000,
+#             # y_max=0.13,
+#             # rebin=5,
+#             log_x=True,
+#             log_y=True,
+#             x_cut=0.01)
+# plot_1d_cut('fTrackThetaMeanY',
+#             cosmic_filename='theta_mean_y_cosmic.root',
+#             signal_filename='theta_mean_y_clean.root',
+#             # y_max=0.13,
+#             rebin=5,
+#             legend_left=True,
+#             x_cut=1.2)
+# plot_1d_cut('fTrackWidthToLengthRatioX', cosmic_filename='track_widh_to_length_ratio.cosmic.root', signal_filename='track_widh_to_length_ratio.clean.root', x_max=1., log_y=True, x_cut=0.1)
+# plot_1d_cut('fTrackWidthToLengthRatioY', cosmic_filename='track_widh_to_length_ratio.cosmic.root', signal_filename='track_widh_to_length_ratio.clean.root', x_max=1., log_y=True, x_cut=0.1)
+# plot_2d_cuts('fTrackWidthToLengthRatioXY', cosmic_filename='track_widh_to_length_ratio.cosmic.root', signal_filename='track_widh_to_length_ratio.clean.root', log_x=False, log_y=False)
+# plot_2d_cuts('fTrackWidthToLengthRatioXY', cosmic_filename='track_widh_to_length_ratio.cosmic.root', signal_filename='track_widh_to_length_ratio.clean.root', log_x=True, log_y=True)
+# plot_2d_cuts('fTrackWidthToLengthRatioXY', cosmic_filename='track_widh_to_length_ratio.cosmic.root', signal_filename='track_widh_to_length_ratio.clean.root', log_x=True, log_y=True)
+# plot_track('track_widh_to_length_ratio.cosmic.trigger.ellipse.root')
+# plot_track('track_widh_to_length_ratio.cosmic.trigger.line.root')
+# plot_daq_hit('track_widh_to_length_ratio.cosmic.trigger.ellipse.root')
+# plot_track('test_line_cosmic.root')
+# plot_daq_hit('test_line_cosmic.root')
+plot_2d_cuts('fTrackWidthToLengthRatioXY', cosmic_filename='test_line_cosmic.small.root', signal_filename='test_line_clean.small.root', log_x=False, log_y=False)
+# plot_daq_hit('test_line_clean.root')
+# plot_track('test_line_cosmic.small.root')
 
 # 20180301_nnbar_track
 # gStyle.SetOptStat(0)
