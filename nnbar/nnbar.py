@@ -578,7 +578,7 @@ def plot_1d_cut(hist_name, **kwargs):
 
 
     c1.Update()
-    c1.SaveAs('{}/plot_1d_cut.{}.pdf'.format(FIGURE_DIR, hist_name))
+    c1.SaveAs('{}/plot_1d_cut.{}.{}.pdf'.format(FIGURE_DIR, cosmic_filename, hist_name))
     input('Press any key to continue.')
 
 
@@ -588,6 +588,10 @@ def plot_2d_cuts(histname, **kwargs):
     log_x = kwargs.get('log_x', True)
     log_y = kwargs.get('log_y', True)
     log_z = kwargs.get('log_z', True)
+    x_max = kwargs.get('x_max', None)
+    y_max = kwargs.get('y_max', None)
+    cosmic_only = kwargs.get('cosmic_only', False)
+    signal_only = kwargs.get('signal_only', False)
 
     tf_cosmic = TFile('{}/{}'.format(DATA_DIR, cosmic_filename))
     tf_clean = TFile('{}/{}'.format(DATA_DIR, signal_filename))
@@ -604,49 +608,66 @@ def plot_2d_cuts(histname, **kwargs):
     # print('1 - h_clean.Integral(1, 10, 1, 10) = {}'.format(1 - h_clean.Integral(1, 10, 1, 10)))
     # print('1 - h_cosmic.Integral(1, 10, 1, 10) = {}'.format(1 - h_cosmic.Integral(1, 10, 1, 10)))
 
-    ellipse_a = 0.4
-    ellipse_b = 0.08
+    # ellipse_a = 0.4
+    # ellipse_b = 0.09
     # tf1 = TF1('ecllipse', '{0} * sqrt(1. - x * x / {1} / {1})'.format(ellipse_b, ellipse_a), 0, ellipse_a)
-    tf1 = TF1('ecllipse', '{} * (1 - x / {})'.format(ellipse_b, ellipse_a), 0, ellipse_a)
+    # tf1 = TF1('ecllipse', '{} * (1 - x / {})'.format(ellipse_b, ellipse_a), 0, ellipse_a)
+
+    x0 = 0.4
+    y0 = 0.12
+    # tf1 = TF1('ecllipse', '{} * pow(x - {}, 2)'.format(y0 / x0**2, x0), 0, x0)
+    equation = '{} * pow(x - {}, 3)'.format(-y0 / x0**3, x0)
+    print('equation = {}'.format(equation))
+    tf1 = TF1('tf1', equation, 0, x0)
 
     tf1.SetLineWidth(2)
     tf1.SetLineColor(kRed)
 
-    c1 = TCanvas('c1', 'c1', 600, 600)
-    set_margin()
-    gPad.SetRightMargin(0.2)
-    if log_x:
-        gPad.SetLogx()
-    if log_y:
-        gPad.SetLogy()
-    if log_z:
-        gPad.SetLogz()
-    set_h2_color_style()
-    set_h2_style(h_cosmic)
-    h_cosmic.Draw('colz')
-    h_cosmic.GetXaxis().SetTitleOffset(1.4)
-    h_cosmic.GetYaxis().SetTitleOffset(1.6)
-    tf1.Draw('sames')
-    c1.Update()
-    c1.SaveAs('{}/plot_2d_cuts.{}.cosmic.pdf'.format(FIGURE_DIR, histname))
+    if not signal_only:
+        c1 = TCanvas('c1', 'c1', 600, 600)
+        set_margin()
+        gPad.SetRightMargin(0.2)
+        if log_x:
+            gPad.SetLogx()
+        if log_y:
+            gPad.SetLogy()
+        if log_z:
+            gPad.SetLogz()
+        set_h2_color_style()
+        set_h2_style(h_cosmic)
+        h_cosmic.Draw('colz')
+        h_cosmic.GetXaxis().SetTitleOffset(1.4)
+        h_cosmic.GetYaxis().SetTitleOffset(1.6)
+        if x_max:
+            h_cosmic.GetXaxis().SetRangeUser(0., x_max)
+        if y_max:
+            h_cosmic.GetYaxis().SetRangeUser(0., y_max)
+        tf1.Draw('sames')
+        c1.Update()
+        c1.SaveAs('{}/plot_2d_cuts.{}.{}.cosmic.pdf'.format(FIGURE_DIR, cosmic_filename, histname))
 
-    c2 = TCanvas('c2', 'c2', 600, 600)
-    set_margin()
-    gPad.SetRightMargin(0.2)
-    if log_x:
-        gPad.SetLogx()
-    if log_y:
-        gPad.SetLogy()
-    if log_z:
-        gPad.SetLogz()
-    set_h2_color_style()
-    set_h2_style(h_clean)
-    h_clean.Draw('colz')
-    h_clean.GetXaxis().SetTitleOffset(1.4)
-    h_clean.GetYaxis().SetTitleOffset(1.6)
-    tf1.Draw('sames')
-    c2.Update()
-    c2.SaveAs('{}/plot_2d_cuts.{}.clean.pdf'.format(FIGURE_DIR, histname))
+    if not cosmic_only:
+        c2 = TCanvas('c2', 'c2', 600, 600)
+        set_margin()
+        gPad.SetRightMargin(0.2)
+        if log_x:
+            gPad.SetLogx()
+        if log_y:
+            gPad.SetLogy()
+        if log_z:
+            gPad.SetLogz()
+        set_h2_color_style()
+        set_h2_style(h_clean)
+        h_clean.Draw('colz')
+        h_clean.GetXaxis().SetTitleOffset(1.4)
+        h_clean.GetYaxis().SetTitleOffset(1.6)
+        if x_max:
+            h_clean.GetXaxis().SetRangeUser(0., x_max)
+        if y_max:
+            h_clean.GetYaxis().SetRangeUser(0., y_max)
+        tf1.Draw('sames')
+        c2.Update()
+        c2.SaveAs('{}/plot_2d_cuts.{}.{}.clean.pdf'.format(FIGURE_DIR, signal_filename, histname))
 
     input('Press any key to continue.')
 
@@ -715,15 +736,20 @@ gStyle.SetOptStat(0)
 # plot_1d_cut('fTrackWidthToLengthRatioY', cosmic_filename='track_widh_to_length_ratio.cosmic.root', signal_filename='track_widh_to_length_ratio.clean.root', x_max=1., log_y=True, x_cut=0.1)
 # plot_2d_cuts('fTrackWidthToLengthRatioXY', cosmic_filename='track_widh_to_length_ratio.cosmic.root', signal_filename='track_widh_to_length_ratio.clean.root', log_x=False, log_y=False)
 # plot_2d_cuts('fTrackWidthToLengthRatioXY', cosmic_filename='track_widh_to_length_ratio.cosmic.root', signal_filename='track_widh_to_length_ratio.clean.root', log_x=True, log_y=True)
-# plot_2d_cuts('fTrackWidthToLengthRatioXY', cosmic_filename='track_widh_to_length_ratio.cosmic.root', signal_filename='track_widh_to_length_ratio.clean.root', log_x=True, log_y=True)
+# plot_2d_cuts('fTrackWidthToLengthRatioXY', cosmic_filename='track_widh_to_length_ratio.cosmic.root', signal_filename='track_widh_to_length_ratio.clean.root', log_x=False, log_y=False)
 # plot_track('track_widh_to_length_ratio.cosmic.trigger.ellipse.root')
 # plot_track('track_widh_to_length_ratio.cosmic.trigger.line.root')
 # plot_daq_hit('track_widh_to_length_ratio.cosmic.trigger.ellipse.root')
 # plot_track('test_line_cosmic.root')
 # plot_daq_hit('test_line_cosmic.root')
-plot_2d_cuts('fTrackWidthToLengthRatioXY', cosmic_filename='test_line_cosmic.small.root', signal_filename='test_line_clean.small.root', log_x=False, log_y=False)
+# plot_2d_cuts('fTrackWidthToLengthRatioXY', cosmic_filename='track_length_ratio_trigger_cosmic.root', signal_filename='track_length_ratio_trigger_clean.root', log_x=False, log_y=False, x_max=1, y_max=1)
+# plot_2d_cuts('fTrackWidthToLengthRatioXY', cosmic_filename='check_linear_cut_cosmic.root', signal_filename='track_length_ratio_trigger_clean.root', log_x=False, log_y=False, x_max=0.5, y_max=0.5, cosmic_only=False)
+# plot_2d_cuts('fTrackWidthToLengthRatioXY', cosmic_filename='track_length_ratio_trigger_cosmic.root', signal_filename='track_length_ratio_trigger_clean.root', log_x=False, log_y=False, x_max=0.5, y_max=0.5, cosmic_only=False)
 # plot_daq_hit('test_line_clean.root')
-# plot_track('test_line_cosmic.small.root')
+# plot_track('test_line_clean.small.root')
+plot_1d_cut('fMaxHitExtentCell', cosmic_filename='plane_cell_extent_cosmic.root', signal_filename='plane_cell_extent_clean.root', x_cut=140, y_max=0.05, rebin=2)
+# plot_1d_cut('fMinHitExtentPlane', cosmic_filename='plane_cell_extent_cosmic.root', signal_filename='plane_cell_extent_clean.root', log_y=True, x_cut=4, rebin=2)
+
 
 # 20180301_nnbar_track
 # gStyle.SetOptStat(0)
@@ -741,7 +767,7 @@ plot_2d_cuts('fTrackWidthToLengthRatioXY', cosmic_filename='test_line_cosmic.sma
 # plot_daq_hit('neutronosc_ddt_hist.daqhit_count.root')
 # plot_daq_hit('neutronosc_ddt_hist.xy_asymmetry.root')
 
-# 20180103_nnbar_limit.tex
+# 20180103_nnbar_limit
 # gStyle.SetOptStat('emr')
 # plot(root_filename='nnbar_hist.root', hist_name='fSliceCount', x_min=-0.5, x_max=4.5, log_y=True)
 # plot(root_filename='nnbar_hist.root', hist_name='fRecoHitGeV', x_min=-0.5, x_max=2.5, square_canvas=True, rebin=2)
