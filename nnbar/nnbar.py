@@ -694,44 +694,48 @@ def plot_daq_hit_1d(filename, hist_name):
     input('Press any key to continue.')
 
 
+def calculate_trigger_rate():
+    event_count = 1636.
+    event_duration = 0.55e-3    # s
+    exposure = event_count * event_duration
+
+    cut_names = ['pre-containment', 'containment', 'width-length ratio', 'max track length', 'cell hit count', 'XY view asymmetry', 'hit extent']
+    slice_counts = [106904, 12212., 185., 101., 79., 65., 61.]
+
+    fractions = [slice_count / slice_counts[0] for slice_count in slice_counts]
+    rates = [slice_count / exposure for slice_count in slice_counts]
+    for i, fraction in enumerate(fractions):
+        rate = '{:.0f}'.format(rates[i])
+        print('{} & {:.0f} & \SI{{{}}}{{}} & \SI{{{}}}{{}} \\\\'.format(cut_names[i], slice_counts[i], '{:.1E}'.format(fractions[i]), rate))
+
+
+def calculate_efficiency():
+    event_count = 1636.
+    event_duration = 0.55e-3    # s
+    exposure = event_count * event_duration
+
+    cut_names = ['pre-containment', 'containment', 'width-length ratio', 'max track length', 'cell hit count', 'XY view asymmetry', 'hit extent']
+    slice_counts = [5157., 5157., 4589., 4588., 4573., 4562., 4539.]
+
+    fractions = [slice_count / slice_counts[0] for slice_count in slice_counts]
+    rates = [slice_count / exposure for slice_count in slice_counts]
+    for i, fraction in enumerate(fractions):
+        fraction = fractions[i] * 100.
+        print('{} & {:.0f} & {:.0f}\\% \\\\'.format(cut_names[i], slice_counts[i], fraction))
+
+
 # 20180326_nnbar_top_containment
 gStyle.SetOptStat(0)
+calculate_trigger_rate()
+# calculate_efficiency()
 # plot_daq_hit('neutronosc_ddt_hist.root')
 # plot_track('neutronosc_ddt_hist.root')
 # plot_track('theta_mean_y_cosmic.small.root')
 # plot_daq_hit('theta_mean_y_cosmic.small.root')
-# plot_1d_cut('fMaxTrackLength',
-#             cosmic_filename='neutronosc_ddt_hist.track_length.cosmic.root',
-#             signal_filename='neutronosc_ddt_hist.track_length.clean.root',
-#             x_max=2000,
-#             y_max=0.13,
-#             rebin=5,
-#             x_cut=500)
-# plot_1d_cut('fTrackThetaVarianceX',
-#             cosmic_filename='neutronosc_ddt_hist.track_length.cosmic.root',
-#             signal_filename='neutronosc_ddt_hist.track_length.clean.root',
-#             # x_max=2000,
-#             # y_max=0.13,
-#             # rebin=5,
-#             log_x=True,
-#             log_y=True,
-#             x_cut=0.01)
-# plot_1d_cut('fTrackThetaVarianceY',
-#             cosmic_filename='neutronosc_ddt_hist.track_length.cosmic.root',
-#             signal_filename='neutronosc_ddt_hist.track_length.clean.root',
-#             # x_max=2000,
-#             # y_max=0.13,
-#             # rebin=5,
-#             log_x=True,
-#             log_y=True,
-#             x_cut=0.01)
-# plot_1d_cut('fTrackThetaMeanY',
-#             cosmic_filename='theta_mean_y_cosmic.root',
-#             signal_filename='theta_mean_y_clean.root',
-#             # y_max=0.13,
-#             rebin=5,
-#             legend_left=True,
-#             x_cut=1.2)
+# plot_1d_cut('fMaxTrackLength', cosmic_filename='neutronosc_ddt_hist.track_length.cosmic.root', signal_filename='neutronosc_ddt_hist.track_length.clean.root', x_max=2000, y_max=0.13, rebin=5, x_cut=500)
+# plot_1d_cut('fTrackThetaVarianceX', cosmic_filename='neutronosc_ddt_hist.track_length.cosmic.root', signal_filename='neutronosc_ddt_hist.track_length.clean.root', log_x=True, log_y=True, x_cut=0.01)
+# plot_1d_cut('fTrackThetaVarianceY', cosmic_filename='neutronosc_ddt_hist.track_length.cosmic.root', signal_filename='neutronosc_ddt_hist.track_length.clean.root', log_x=True, log_y=True, x_cut=0.01)
+# plot_1d_cut('fTrackThetaMeanY', cosmic_filename='theta_mean_y_cosmic.root', signal_filename='theta_mean_y_clean.root', rebin=5, legend_left=True, x_cut=1.2)
 # plot_1d_cut('fTrackWidthToLengthRatioX', cosmic_filename='track_widh_to_length_ratio.cosmic.root', signal_filename='track_widh_to_length_ratio.clean.root', x_max=1., log_y=True, x_cut=0.1)
 # plot_1d_cut('fTrackWidthToLengthRatioY', cosmic_filename='track_widh_to_length_ratio.cosmic.root', signal_filename='track_widh_to_length_ratio.clean.root', x_max=1., log_y=True, x_cut=0.1)
 # plot_2d_cuts('fTrackWidthToLengthRatioXY', cosmic_filename='track_widh_to_length_ratio.cosmic.root', signal_filename='track_widh_to_length_ratio.clean.root', log_x=False, log_y=False)
@@ -747,9 +751,8 @@ gStyle.SetOptStat(0)
 # plot_2d_cuts('fTrackWidthToLengthRatioXY', cosmic_filename='track_length_ratio_trigger_cosmic.root', signal_filename='track_length_ratio_trigger_clean.root', log_x=False, log_y=False, x_max=0.5, y_max=0.5, cosmic_only=False)
 # plot_daq_hit('test_line_clean.root')
 # plot_track('test_line_clean.small.root')
-plot_1d_cut('fMaxHitExtentCell', cosmic_filename='plane_cell_extent_cosmic.root', signal_filename='plane_cell_extent_clean.root', x_cut=140, y_max=0.05, rebin=2)
+# plot_1d_cut('fMaxHitExtentCell', cosmic_filename='plane_cell_extent_cosmic.root', signal_filename='plane_cell_extent_clean.root', x_cut=140, y_max=0.05, rebin=2)
 # plot_1d_cut('fMinHitExtentPlane', cosmic_filename='plane_cell_extent_cosmic.root', signal_filename='plane_cell_extent_clean.root', log_y=True, x_cut=4, rebin=2)
-
 
 # 20180301_nnbar_track
 # gStyle.SetOptStat(0)
