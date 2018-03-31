@@ -1,0 +1,222 @@
+#  MC6 - MC7 simulation
+#  lengths are in mm, fields is Tesla !  Momentum in MeV
+#______________________________________________________________________
+
+physics QGSP_BIC
+
+param worldMaterial=AIR
+param histoFile=LAPPD_MC_1g.root
+param inch=25.4
+param ft=304.8
+param p=64 #selected momentum in momentum
+
+g4ui when=4 "/vis/viewer/set/background 1 1 1"
+g4ui when=4 "vis/scene/add/axes 0 0 -1500 100000 mm"
+
+# Quadrupole currents
+param mc6q1i=-10.6906317
+param mc6q2i=-666.9531341
+param mc6q3i=70.78712183
+param mc6q4i=-43.38851909
+param mc6q5i=694.3136975
+param mc6q6i=-307.4620677
+
+# Transfer functions [(T/m)/A]
+param xfer_3Q120=0.18570791858
+param xfer_4Q120=0.01842553191
+
+# Quadrupole gradients [T/m]
+param mc6Q1g=$mc6q1i*$xfer_3Q120
+param mc6Q2g=$mc6q1i*$xfer_4Q120
+param mc6Q3g=$mc6q1i*$xfer_3Q120
+param mc6Q4g=$mc6q1i*$xfer_3Q120
+param mc6Q5g=$mc6q1i*$xfer_4Q120
+param mc6Q6g=$mc6q1i*$xfer_3Q120
+
+#  Nominal maximum beam intensity is 300K particles/spill
+
+beam gaussian particle=proton nEvents=100000 z=-200 sigmaX=2.0 sigmaY=2.0 y=-8 rotation=x-1.31 meanMomentum=120000.0 #sigmaP=0.0
+
+trackcuts keep=proton,mu+,pi+,pi0,kaon+
+
+virtualdetector Det width=200 height=200 length=8 color=1,1,0
+
+#place Det rename=Det2 z=36000 y=583
+
+#------------Target&Cage,Absorber,Collimator----------------------
+box Target  width=5 height=5 length=200 material=Cu color=1,0,0
+place Target rename=MC6T1 z=100 rotation=x-1.31
+
+
+#---do not touch-------
+box CageV height=450 width=100  length=2133.6 color=0.6,0.6,0.6  material=STAINLESS-STEEL
+place CageV z=1016.5 x=-150 y=24.1 rotation=x-1.31
+place CageV z=1016.5 x=+150 y=24.1 rotation=x-1.31
+
+box CageH height=100  width=400 length=2133.6 color=0.6,0.6,0.6  material=STAINLESS-STEEL
+place CageH z=1016.5 y=-251.1 rotation=x-1.31
+place CageH z=1016.5 y=+299.1 rotation=x-1.31
+
+box AbsV height=450 width=87.3 length=5.188*$ft color=1,0,0  material=CONCRETE
+place AbsV z=1293.9 x=56.35 y=29.6 rotation=x-1.31
+place AbsV z=1293.9 x=-56.35 y=29.6 rotation=x-1.31
+
+box AbsH height=212.3 width=$inch length=5.1888*$ft color=1,0,0  material=CONCRETE
+place AbsH z=1293.9 y=148.45 rotation=x-1.31
+place AbsH z=1293.9 y=-89.25 rotation=x-1.31
+#-----------------------------------
+
+
+box Coll_All height=31.75 width=431.8 length=1828.8 color=1,0,1 material=Al
+box Coll_Concr height=914.4 width=914.4 length=1828.8 color=0,1,0 material=CONCRETE
+place Coll_All z=3148 x=241.3 y=71.95 rotation=x-0.99
+place Coll_All z=3148 x=-241.3 y=71.95 rotation=x-0.99
+place Coll_Concr z=3148 y=545.025 rotation=x-0.99
+place Coll_Concr z=3148 y=-401.125 rotation=x-0.99
+
+
+
+#------------------------------------------------------------
+
+#----Quad Q1-----
+
+
+genericquad Q1 fieldLength=3047 fieldMaterial=Vacuum\
+	ironLength=3047 fringe=0 apertureRadius=38.1 ironRadius=305  ironColor=1,0,0
+
+place Q1 rename=Q1_1 z=6432.19 y=147.5 rotation=x-1.31 gradient=$mc6Q1g
+
+place Q1 rename=Q1_2 z=9884.08 y=224.3 rotation=x-1.31 gradient=$mc6Q1g
+
+#-------------------------------------
+
+#dipole D1
+
+genericbend MC6D1 fieldHeight=35.6 fieldWidth=124.5 fieldLength=3047 fieldMaterial=Vacuum\
+	ironColor=1,1,0 ironWidth=281.5 ironHeight=281.5 ironLength=3047
+
+
+place MC6D1 z=13359.7144 y=299.6 By=$p*282.7*0.0008886256/40 rotation=z90,x-1.15
+
+#Quad Q2
+
+genericquad Q2 fieldLength=3047 fieldMaterial=Vacuum\
+	ironLength=3047 fringe=0 apertureRadius=50.8 ironRadius=438  ironColor=0,1,1
+
+place Q2 z=16711.9 y=361.8 rotation=x-0.99 gradient=$mc6Q2g
+
+#Dipole D2
+
+genericbend MC6D2 fieldHeight=35.6 fieldWidth=124.5 fieldLength=3047 fieldMaterial=Vacuum\
+	ironColor=1,1,0 ironWidth=281.5 ironHeight=281.5 ironLength=3047
+
+
+place MC6D2 z=20064.4 y=414.8328 By=$p*282.7*0.0008886256/40  rotation=z90,x-0.8194
+
+#Vacuum
+
+genericquad Vac gradient=0 fringe=0 apertureRadius=120 ironRadius=121 fieldMaterial=Vacuum ironColor=0.5,0.5,0.5 \
+
+place Vac fieldLength=141.29 ironLength=141.29 z=4908.69  y=112.66 rotation=x-1.31
+
+place Vac fieldLength=404.89 ironLength=404.89 z=8158.135  y=189.461 rotation=x-1.31
+
+place Vac fieldLength=428.634 ironLength=428.634 z=11621.8995  y=269.0173 rotation=x-1.22
+
+place Vac fieldLength=305.186 ironLength=305.186 z=15035.807  y=335.47 rotation=x-1.1
+
+place Vac fieldLength=305.5 ironLength=305.5 z=18388.15  y=393.051 rotation=x-0.95
+
+#---Scraper1----aperture 5*3in
+box Scrap_Steel height=127 width=457.2 length=997 color=1,0,1 material=Al
+place Scrap_Steel z=22393.072 x=266.7 y=445.9224 rotation=x-0.65
+place Scrap_Steel z=22393.072 x=-266.7 y=445.9224 rotation=x-0.65
+box Scrap_ConcrUp height=914.4 width=914.4 length=997 color=0,1,0 material=CONCRETE
+place Scrap_ConcrUp z=22393.072 y=966.6224 rotation=x-0.65
+box Scrap_ConcrDown height=1828.8 width=914.4 length=997 color=0,1,0 material=CONCRETE
+place Scrap_ConcrDown z=22393.072 y=-531.9776 rotation=x-0.65
+#----------------
+
+#Quad Q3
+
+genericquad Q3 fieldLength=3047   fieldMaterial=AIR\
+	ironLength=3047 fringe=0 apertureRadius=38.1 ironRadius=305  ironColor=1,0,0
+
+place Q3 z=24721.744 y=472.745 rotation=x-0.653 gradient=$mc6Q3g
+
+#Trim__Vernier_Dipole
+
+genericbend Trim fieldHeight=101.6 fieldWidth=101.6 fieldLength=762  fieldMaterial=AIR\
+	ironLength=762 ironHeight=295 ironWidth=397 ironColor=1,0,1  fringe=0
+
+place Trim rename=VT z=26931.24 y=499.871 By=0 rotation=z90,x-0.917
+place Trim rename=HT z=27998.04 y=515.417 rotation=x-0.917 By=0
+
+#Collimator (variable height, no field)
+
+genericbend Mom_Coll fieldHeight=20.35 fieldWidth=127 fieldLength=1676.4  fieldMaterial=AIR\
+	ironLength=1676.4 ironHeight=295 ironWidth=397 ironColor=0,1,0 By=0 fringe=0
+
+place Mom_Coll z=33049.7944 y=568.15 rotation=x-0.656
+
+#---Scraper2----
+box Scrap2_Steel height=50.8 width=457.2 length=1003.40 color=1,0,1 material=Al
+place Scrap2_Steel z=34402.4968 x=254 y=583.692 rotation=x-0.66
+place Scrap2_Steel z=34402.4968 x=-254 y=583.692 rotation=x-0.66
+box Scrap2_ConcrUp height=914.4 width=914.4 length=997 color=0,1,0 material=CONCRETE
+place Scrap2_ConcrUp z=34402.4968 y=1066.292 rotation=x-0.66
+box Scrap2_ConcrDown height=1828.8 width=914.4 length=997 color=0,1,0 material=CONCRETE
+place Scrap2_ConcrDown z=34402.4968 y=-356.108 rotation=x-0.66
+#----------------
+
+
+#Trim2
+
+place Trim rename=VT_2 z=36831.7784 y=610.2096 By=0 rotation=z90,x-0.664
+place Trim rename=HT_2 z=37798.5784 y=622.7064 rotation=x-0.665 By=0
+
+
+#Quad Q4
+
+place Q3 rename=Q4 z=40008.38 y=648.0048 rotation=x-0.659 gradient=$mc6Q4g
+
+#Dipole D3
+
+place MC6D2 rename=MC6D3 z=43360.88 y=681.8376 By=$p*282.7*0.0008886256/40 rotation=z90,x-0.4927
+
+#Quad Q5
+
+place Q2 rename=Q5 z=46713.67 y=705.612 rotation=x-0.327 gradient=$mc6Q5g
+
+
+#Dipole D4
+
+place MC6D2 rename=MC6D4 z=50066.48 y=720.5472 By=$p*282.7*0.0008886256/40 rotation=z90,x-0.166
+
+#Quad Q6
+
+place Q2 rename=Q6 z=53419.28 y=724.8144 gradient=$mc6Q6g
+
+#place Det rename=Det1 z=56000 y=775 #END OF MC6
+
+#printf z=56000 file=Det1.txt require=abs(x)<500&&(y)<1275&&(y)>275 \
+  " %10.3lf %10.3lf  %7.1f  %10.4f %10.4f %10.2f  \
+  %10.4f %10.4f %12.4f %12.4f " \
+  EventID TrackID PDGid x y z Px Py Pz t
+
+
+box CollV height=4572 width=1800 length=1800 color=0,1,0  material=CONCRETE
+place CollV z=58000 x=1204.8 y=724.8
+place CollV z=58000 x=-1204.8 y=724.8
+
+box CollH height=1800 width=609.6 length=1800 color=0,1,0  material=CONCRETE
+place CollH z=58000 y=1929.6
+place CollH z=58000 y=-480
+
+#----------------------MC7-----------------------------------------
+place Det rename=Det2 z=104000 y=775 #NOvA target
+
+printf z=104000 file=Det2.txt require=abs(x)<500&&(y)<1275&&(y)>275 \
+  " %10.3lf %10.3lf  %7.1f  %10.4f %10.4f %10.2f  \
+  %10.4f %10.4f %12.4f %12.4f " \
+  EventID TrackID PDGid x y z Px Py Pz t
