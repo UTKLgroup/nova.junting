@@ -9,7 +9,12 @@ param histoFile=LAPPD_MC_1g.root
 param inch=25.4
 param ft=304.8
 param p=64 #selected momentum in momentum
-
+param quadrupoleColor=0.79,0.38,0.14
+param dipoleColor=0,0,1
+param trimColor=0.31,0.55,0.2
+param vacuumColor=0.5,0.5,0.5
+param collimatorColor=0.0,0.8,0.8
+param scraperColor=0.8,0,0
 g4ui when=4 "/vis/viewer/set/background 1 1 1"
 g4ui when=4 "vis/scene/add/axes 0 0 -1500 100000 mm"
 
@@ -80,9 +85,7 @@ place Coll_Concr z=3148 y=-401.125 rotation=x-0.99
 
 #----Quad Q1-----
 
-
-genericquad Q1 fieldLength=3047 fieldMaterial=Vacuum\
-	ironLength=3047 fringe=0 apertureRadius=38.1 ironRadius=305  ironColor=1,0,0
+genericquad Q1 fieldLength=3047 fieldMaterial=Vacuum ironLength=3047 fringe=0 apertureRadius=38.1 ironRadius=305 ironColor=$quadrupoleColor
 
 place Q1 rename=Q1_1 z=6432.19 y=147.5 rotation=x-1.31 gradient=$mc6Q1g
 
@@ -92,30 +95,25 @@ place Q1 rename=Q1_2 z=9884.08 y=224.3 rotation=x-1.31 gradient=$mc6Q1g
 
 #dipole D1
 
-genericbend MC6D1 fieldHeight=35.6 fieldWidth=124.5 fieldLength=3047 fieldMaterial=Vacuum\
-	ironColor=1,1,0 ironWidth=281.5 ironHeight=281.5 ironLength=3047
-
+genericbend MC6D1 fieldHeight=35.6 fieldWidth=124.5 fieldLength=3047 fieldMaterial=Vacuum ironColor=$dipoleColor ironWidth=281.5 ironHeight=281.5 ironLength=3047
 
 place MC6D1 z=13359.7144 y=299.6 By=$p*282.7*0.0008886256/40 rotation=z90,x-1.15
 
 #Quad Q2
 
-genericquad Q2 fieldLength=3047 fieldMaterial=Vacuum\
-	ironLength=3047 fringe=0 apertureRadius=50.8 ironRadius=438  ironColor=0,1,1
+genericquad Q2 fieldLength=3047 fieldMaterial=Vacuum ironLength=3047 fringe=0 apertureRadius=50.8 ironRadius=438  ironColor=$quadrupoleColor
 
 place Q2 z=16711.9 y=361.8 rotation=x-0.99 gradient=$mc6Q2g
 
 #Dipole D2
 
-genericbend MC6D2 fieldHeight=35.6 fieldWidth=124.5 fieldLength=3047 fieldMaterial=Vacuum\
-	ironColor=1,1,0 ironWidth=281.5 ironHeight=281.5 ironLength=3047
-
+genericbend MC6D2 fieldHeight=35.6 fieldWidth=124.5 fieldLength=3047 fieldMaterial=Vacuum ironColor=$dipoleColor ironWidth=281.5 ironHeight=281.5 ironLength=3047
 
 place MC6D2 z=20064.4 y=414.8328 By=$p*282.7*0.0008886256/40  rotation=z90,x-0.8194
 
 #Vacuum
 
-genericquad Vac gradient=0 fringe=0 apertureRadius=120 ironRadius=121 fieldMaterial=Vacuum ironColor=0.5,0.5,0.5 \
+genericquad Vac gradient=0 fringe=0 apertureRadius=120 ironRadius=121 fieldMaterial=Vacuum ironColor=$vacuumColor
 
 place Vac fieldLength=141.29 ironLength=141.29 z=4908.69  y=112.66 rotation=x-1.31
 
@@ -128,44 +126,41 @@ place Vac fieldLength=305.186 ironLength=305.186 z=15035.807  y=335.47 rotation=
 place Vac fieldLength=305.5 ironLength=305.5 z=18388.15  y=393.051 rotation=x-0.95
 
 #---Scraper1----aperture 5*3in
-box Scrap_Steel height=127 width=457.2 length=997 color=1,0,1 material=Al
+box Scrap_Steel height=127 width=457.2 length=997 color=$scraperColor material=Al
 place Scrap_Steel z=22393.072 x=266.7 y=445.9224 rotation=x-0.65
 place Scrap_Steel z=22393.072 x=-266.7 y=445.9224 rotation=x-0.65
-box Scrap_ConcrUp height=914.4 width=914.4 length=997 color=0,1,0 material=CONCRETE
+box Scrap_ConcrUp height=914.4 width=914.4 length=997 color=$scraperColor material=CONCRETE
 place Scrap_ConcrUp z=22393.072 y=966.6224 rotation=x-0.65
-box Scrap_ConcrDown height=1828.8 width=914.4 length=997 color=0,1,0 material=CONCRETE
+box Scrap_ConcrDown height=1828.8 width=914.4 length=997 color=$scraperColor material=CONCRETE
 place Scrap_ConcrDown z=22393.072 y=-531.9776 rotation=x-0.65
 #----------------
 
 #Quad Q3
 
-genericquad Q3 fieldLength=3047   fieldMaterial=AIR\
-	ironLength=3047 fringe=0 apertureRadius=38.1 ironRadius=305  ironColor=1,0,0
+genericquad Q3 fieldLength=3047 fieldMaterial=AIR ironLength=3047 fringe=0 apertureRadius=38.1 ironRadius=305 ironColor=$quadrupoleColor
 
 place Q3 z=24721.744 y=472.745 rotation=x-0.653 gradient=$mc6Q3g
 
 #Trim__Vernier_Dipole
 
-genericbend Trim fieldHeight=101.6 fieldWidth=101.6 fieldLength=762  fieldMaterial=AIR\
-	ironLength=762 ironHeight=295 ironWidth=397 ironColor=1,0,1  fringe=0
+genericbend Trim fieldHeight=101.6 fieldWidth=101.6 fieldLength=762 fieldMaterial=AIR ironLength=762 ironHeight=295 ironWidth=397 ironColor=$trimColor fringe=0
 
 place Trim rename=VT z=26931.24 y=499.871 By=0 rotation=z90,x-0.917
 place Trim rename=HT z=27998.04 y=515.417 rotation=x-0.917 By=0
 
 #Collimator (variable height, no field)
 
-genericbend Mom_Coll fieldHeight=20.35 fieldWidth=127 fieldLength=1676.4  fieldMaterial=AIR\
-	ironLength=1676.4 ironHeight=295 ironWidth=397 ironColor=0,1,0 By=0 fringe=0
+genericbend Mom_Coll fieldHeight=20.35 fieldWidth=127 fieldLength=1676.4 fieldMaterial=AIR ironLength=1676.4 ironHeight=295 ironWidth=397 ironColor=$collimatorColor By=0 fringe=0
 
 place Mom_Coll z=33049.7944 y=568.15 rotation=x-0.656
 
 #---Scraper2----
-box Scrap2_Steel height=50.8 width=457.2 length=1003.40 color=1,0,1 material=Al
+box Scrap2_Steel height=50.8 width=457.2 length=1003.40 color=$scraperColor material=Al
 place Scrap2_Steel z=34402.4968 x=254 y=583.692 rotation=x-0.66
 place Scrap2_Steel z=34402.4968 x=-254 y=583.692 rotation=x-0.66
-box Scrap2_ConcrUp height=914.4 width=914.4 length=997 color=0,1,0 material=CONCRETE
+box Scrap2_ConcrUp height=914.4 width=914.4 length=997 color=$scraperColor material=CONCRETE
 place Scrap2_ConcrUp z=34402.4968 y=1066.292 rotation=x-0.66
-box Scrap2_ConcrDown height=1828.8 width=914.4 length=997 color=0,1,0 material=CONCRETE
+box Scrap2_ConcrDown height=1828.8 width=914.4 length=997 color=$scraperColor material=CONCRETE
 place Scrap2_ConcrDown z=34402.4968 y=-356.108 rotation=x-0.66
 #----------------
 
