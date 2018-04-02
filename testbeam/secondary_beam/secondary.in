@@ -115,15 +115,15 @@ place MC6D2 z=20064.4 y=414.8328 By=$p*282.7*0.0008886256/40  rotation=z90,x-0.8
 
 genericquad Vac gradient=0 fringe=0 apertureRadius=120 ironRadius=121 fieldMaterial=Vacuum ironColor=$vacuumColor
 
-place Vac fieldLength=141.29 ironLength=141.29 z=4908.69  y=112.66 rotation=x-1.31
+place Vac fieldLength=141.29 ironLength=141.29 z=4838.045  y=112.66 rotation=x-1.31
 
 place Vac fieldLength=404.89 ironLength=404.89 z=8158.135  y=189.461 rotation=x-1.31
 
 place Vac fieldLength=428.634 ironLength=428.634 z=11621.8995  y=269.0173 rotation=x-1.22
 
-place Vac fieldLength=305.186 ironLength=305.186 z=15035.807  y=335.47 rotation=x-1.1
+place Vac fieldLength=305 ironLength=305 z=15035.807  y=335.47 rotation=x-1.1
 
-place Vac fieldLength=305.5 ironLength=305.5 z=18388.15  y=393.051 rotation=x-0.95
+place Vac fieldLength=305 ironLength=305 z=18388.15  y=393.051 rotation=x-0.95
 
 #---Scraper1----aperture 5*3in
 box Scrap_Steel height=127 width=457.2 length=997 color=$scraperColor material=Al
