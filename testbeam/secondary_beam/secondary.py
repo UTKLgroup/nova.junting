@@ -3,7 +3,7 @@ import math
 from math import cos, pi
 
 
-FIGURE_DIR = 'figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180331_secondary_beam/figures'
 
 
 def convert_rgb_color(rgbs):
@@ -41,35 +41,49 @@ def calculate_component_position():
 
 
 def plot_particle_position():
-    tf = TFile('LAPPD_MC_1g.root')
+    tf = TFile('LAPPD_MC_1g.1m.root')
 
-    detectors = ['CollUpstream', 'Scraper1', 'Scraper2', 'CollDownstream', 'NovaTarget']
-    h_xy = TH2D('h_xy', 'h_xy', 120, -3, 3, 120, -2, 4)
-    h_pxpy = TH2D('h_pxpy', 'h_pxpy', 40, -4, 4, 40, -4, 4)
+    detectors = ['CollUpstream', 'Scraper1', 'Scraper2', 'D3', 'CollDownstream', 'NovaTarget']
+    h_xys = []
 
-    for particle in tf.Get('VirtualDetector/{}'.format(detectors[4])):
-        # print(int(particle.PDGid))
-        # if int(particle.PDGid) == 2212 or 211:
-        # if int(particle.PDGid) == 211:
-        # if int(particle.PDGid) == 2212:
-        # if int(particle.PDGid) == -13:
-        h_xy.Fill(particle.x / 1000., particle.y / 1000.)
-        h_pxpy.Fill(particle.Px / 1000., particle.Py / 1000.)
+    for detector in detectors:
+        print('detector = {}'.format(detector))
+        h_xy = TH2D('h_{}'.format(detector), 'h_{}'.format(detector), 120, -3, 3, 120, -2, 4)
+        set_h2_style(h_xy)
+        h_xys.append(h_xy)
+        for particle in tf.Get('VirtualDetector/{}'.format(detector)):
+            h_xy.Fill(particle.x / 1000., particle.y / 1000.)
 
-    c1 = TCanvas('c1', 'c1', 800, 600)
+    c1 = TCanvas('c1', 'c1', 600, 600)
     set_margin()
-    gPad.SetRightMargin(0.15)
+    gPad.SetRightMargin(0.18)
     gPad.SetLogz()
-
     set_h2_color_style()
-    # set_h2_style(h_xy)
-    # h_xy.Draw('colz')
 
-    set_h2_style(h_pxpy)
-    h_pxpy.Draw('colz')
+    label_title_size = 32
+    tex = TLatex()
+    tex.SetTextFont(63)
+    tex.SetTextSize(30)
+    tex.SetTextAlign(33)
+    tex.SetTextColor(kRed)
 
-    c1.Update()
-    c1.SaveAs('{}/plot_particle_position.pdf'.format(FIGURE_DIR))
+    for i, h_xy in enumerate(h_xys):
+        h_xy.GetXaxis().SetTitle('X (m)')
+        h_xy.GetYaxis().SetTitle('Y (m)')
+        h_xy.GetXaxis().SetLabelSize(label_title_size)
+        h_xy.GetYaxis().SetLabelSize(label_title_size)
+        h_xy.GetZaxis().SetLabelSize(label_title_size)
+        h_xy.GetXaxis().SetTitleSize(label_title_size)
+        h_xy.GetYaxis().SetTitleSize(label_title_size)
+        h_xy.GetZaxis().SetTitleSize(label_title_size)
+        h_xy.Draw('colz')
+
+        tex.DrawLatex(2.7, 3.7, 'Detector {}'.format(i + 1))
+
+        c1.Update()
+        c1.SaveAs('{}/plot_particle_position.{}.pdf'.format(FIGURE_DIR, detectors[i]))
+
+
     input('Press any key to continue.')
 
 
