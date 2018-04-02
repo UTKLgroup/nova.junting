@@ -1,6 +1,6 @@
 from rootalias import *
 import math
-from math import cos, pi
+from math import cos, pi, sqrt
 
 
 FIGURE_DIR = '/Users/juntinghuang/beamer/20180331_secondary_beam/figures'
@@ -129,9 +129,56 @@ def plot_pxpy(**kwargs):
     input('Press any key to continue.')
 
 
+def plot_p(**kwargs):
+    tf = TFile('LAPPD_MC_1g.1m.root')
+    # tf = TFile('LAPPD_MC_1g.root')
+    detectors = ['CollUpstream', 'Scraper1', 'Scraper2', 'D3', 'CollDownstream', 'NovaTarget']
+    h_ps = []
+
+    for detector in detectors:
+        print('detector = {}'.format(detector))
+        h_p = TH1D('h_p', 'h_p', 140, 0, 140)
+        set_h1_style(h_p)
+        h_ps.append(h_p)
+        for particle in tf.Get('VirtualDetector/{}'.format(detector)):
+            px = particle.Px / 1000.
+            py = particle.Py / 1000.
+            pz = particle.Pz / 1000.
+            h_p.Fill(sqrt(px**2 + py**2 + pz**2))
+
+    c1 = TCanvas('c1', 'c1', 600, 600)
+    set_margin()
+    gPad.SetLogy()
+    set_h2_color_style()
+
+    label_title_size = 32
+    tex = TLatex()
+    tex.SetTextFont(63)
+    tex.SetTextSize(30)
+    tex.SetTextAlign(33)
+    tex.SetTextColor(kRed)
+    tex.SetNDC()
+
+    for i, h_p in enumerate(h_ps):
+        h_p.GetXaxis().SetTitle('Total Momentum (GeV)')
+        h_p.GetYaxis().SetTitle('Particle Count')
+        h_p.GetXaxis().SetLabelSize(label_title_size)
+        h_p.GetYaxis().SetLabelSize(label_title_size)
+        h_p.GetXaxis().SetTitleSize(label_title_size)
+        h_p.GetYaxis().SetTitleSize(label_title_size)
+        h_p.Draw()
+        tex.DrawLatex(0.42, 0.86, 'Detector {}'.format(i + 1))
+
+        c1.Update()
+        c1.SaveAs('{}/plot_p.{}.pdf'.format(FIGURE_DIR, detectors[i]))
+
+    input('Press any key to continue.')
+
+
 # 20180331_secondary_beam
 gStyle.SetOptStat(0)
-plot_pxpy()
+plot_p()
+# plot_pxpy()
 # plot_xy()
 # calculate_component_position()
 # convert_rgb_color([201, 96, 35]) # quadrupole, color based on native values from mac color meter
