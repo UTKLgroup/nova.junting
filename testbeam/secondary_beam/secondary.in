@@ -71,7 +71,7 @@ place AbsH z=1293.9 y=148.45 rotation=x-1.31
 place AbsH z=1293.9 y=-89.25 rotation=x-1.31
 #-----------------------------------
 
-box Coll_All height=31.75 width=431.8 length=1828.8 color=1,0,1 material=Al
+box Coll_All height=31.75 width=431.8 length=1828.8 color=0,1,0 material=Al
 box Coll_Concr height=914.4 width=914.4 length=1828.8 color=0,1,0 material=CONCRETE
 place Coll_All z=3148 x=241.3 y=71.95 rotation=x-0.99
 place Coll_All z=3148 x=-241.3 y=71.95 rotation=x-0.99
