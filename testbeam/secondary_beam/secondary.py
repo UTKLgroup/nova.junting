@@ -26,8 +26,14 @@ def calculate_component_position():
     # print(4908.69 - 141.29 / 2.)
 
     # Coll_All, upstream
-    print(71.95 + (31.75 / 2. + 914.4 / 2.) / cos(0.99 * pi / 180.))
-    print(71.95 - (31.75 / 2. + 914.4 / 2.) / cos(0.99 * pi / 180.))
+    # print(71.95 + (31.75 / 2. + 914.4 / 2.) / cos(0.99 * pi / 180.))
+    # print(71.95 - (31.75 / 2. + 914.4 / 2.) / cos(0.99 * pi / 180.))
+
+    # cage
+    print(24.1 + (450. / 2. + 100. / 2.) / cos(1.31 * pi / 180.))
+    print(24.1 - (450. / 2. + 100. / 2.) / cos(1.31 * pi / 180.))
+    print(450. * (1. - 1. / cos(1.31 * pi / 180.)))
+
 
 # 20180331_secondary_beam
 calculate_component_position()
