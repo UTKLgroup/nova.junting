@@ -175,9 +175,52 @@ def plot_p(**kwargs):
     input('Press any key to continue.')
 
 
+def plot_pid(**kwargs):
+    tf = TFile('LAPPD_MC_1g.1m.root')
+    # tf = TFile('LAPPD_MC_1g.root')
+    detectors = ['CollUpstream', 'Scraper1', 'Scraper2', 'D3', 'CollDownstream', 'NovaTarget']
+    h_ps = []
+
+    for detector in detectors:
+        print('detector = {}'.format(detector))
+        h_p = TH1D('h_p', 'h_p', 3000, -500, 2500)
+        set_h1_style(h_p)
+        h_ps.append(h_p)
+        for particle in tf.Get('VirtualDetector/{}'.format(detector)):
+            h_p.Fill(particle.PDGid)
+
+    c1 = TCanvas('c1', 'c1', 600, 600)
+    set_margin()
+    gPad.SetLogy()
+
+    label_title_size = 32
+    tex = TLatex()
+    tex.SetTextFont(63)
+    tex.SetTextSize(30)
+    tex.SetTextAlign(33)
+    tex.SetTextColor(kRed)
+    tex.SetNDC()
+
+    for i, h_p in enumerate(h_ps):
+        h_p.GetXaxis().SetTitle('Particle ID')
+        h_p.GetYaxis().SetTitle('Particle Count')
+        h_p.GetXaxis().SetLabelSize(label_title_size)
+        h_p.GetYaxis().SetLabelSize(label_title_size)
+        h_p.GetXaxis().SetTitleSize(label_title_size)
+        h_p.GetYaxis().SetTitleSize(label_title_size)
+        h_p.Draw()
+        tex.DrawLatex(0.42, 0.86, 'Detector {}'.format(i + 1))
+
+        c1.Update()
+        c1.SaveAs('{}/plot_pid.{}.pdf'.format(FIGURE_DIR, detectors[i]))
+
+    input('Press any key to continue.')
+
+
 # 20180331_secondary_beam
 gStyle.SetOptStat(0)
-plot_p()
+plot_pid()
+# plot_p()
 # plot_pxpy()
 # plot_xy()
 # calculate_component_position()
