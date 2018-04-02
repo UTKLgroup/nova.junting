@@ -217,9 +217,66 @@ def plot_pid(**kwargs):
     input('Press any key to continue.')
 
 
+def plot_x_or_y(**kwargs):
+    xy = kwargs.get('xy', 'x')
+
+    tf = TFile('LAPPD_MC_1g.1m.root')
+    # tf = TFile('LAPPD_MC_1g.root')
+    detectors = ['CollUpstream', 'Scraper1', 'Scraper2', 'D3', 'CollDownstream', 'NovaTarget']
+    h_ps = []
+
+    for detector in detectors:
+        print('detector = {}'.format(detector))
+        h_p = None
+        if xy == 'x':
+            h_p = TH1D('h_p', 'h_p', 120, -3, 3)
+        elif xy == 'y':
+            h_p = TH1D('h_p', 'h_p', 120, -2, 4)
+        set_h1_style(h_p)
+        h_ps.append(h_p)
+        for particle in tf.Get('VirtualDetector/{}'.format(detector)):
+            if xy == 'x':
+                h_p.Fill(particle.x / 1000.)
+            elif xy == 'y':
+                h_p.Fill(particle.y / 1000.)
+
+    c1 = TCanvas('c1', 'c1', 600, 600)
+    set_margin()
+    gPad.SetLogy()
+    set_h2_color_style()
+
+    label_title_size = 32
+    tex = TLatex()
+    tex.SetTextFont(63)
+    tex.SetTextSize(30)
+    tex.SetTextAlign(33)
+    tex.SetTextColor(kRed)
+    tex.SetNDC()
+
+    for i, h_p in enumerate(h_ps):
+        h_p.GetXaxis().SetTitle('X (m)')
+        h_p.GetYaxis().SetTitle('Particle Count')
+        h_p.GetXaxis().SetLabelSize(label_title_size)
+        h_p.GetYaxis().SetLabelSize(label_title_size)
+        h_p.GetXaxis().SetTitleSize(label_title_size)
+        h_p.GetYaxis().SetTitleSize(label_title_size)
+        h_p.GetYaxis().SetTitleOffset(1.45)
+        h_p.Draw()
+        c1.Update()
+        draw_statbox(h_p, x1=0.6, y1=0.78)
+        tex.DrawLatex(0.42, 0.86, 'Detector {}'.format(i + 1))
+
+        c1.Update()
+        c1.SaveAs('{}/plot_x_or_y.{}.{}.pdf'.format(FIGURE_DIR, xy, detectors[i]))
+
+    input('Press any key to continue.')
+
+
 # 20180331_secondary_beam
-gStyle.SetOptStat(0)
-plot_pid()
+gStyle.SetOptStat('emr')
+# plot_x_or_y(xy='y')
+plot_x_or_y(xy='x')
+# plot_pid()
 # plot_p()
 # plot_pxpy()
 # plot_xy()
