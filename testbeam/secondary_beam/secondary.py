@@ -23,8 +23,11 @@ def calculate_component_position():
     # print((20064.4 - 3047. / 2.) - (16711.9 + 3047. / 2.))
 
     # vacuum
-    print(4908.69 - 141.29 / 2.)
+    # print(4908.69 - 141.29 / 2.)
 
+    # Coll_All, upstream
+    print(71.95 + (31.75 / 2. + 914.4 / 2.) / cos(0.99 * pi / 180.))
+    print(71.95 - (31.75 / 2. + 914.4 / 2.) / cos(0.99 * pi / 180.))
 
 # 20180331_secondary_beam
 calculate_component_position()
