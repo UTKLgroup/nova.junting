@@ -130,9 +130,9 @@ box Scrap_Steel height=127 width=457.2 length=997 color=$scraperColor material=A
 place Scrap_Steel z=22393.072 x=266.7 y=445.9224 rotation=x-0.65
 place Scrap_Steel z=22393.072 x=-266.7 y=445.9224 rotation=x-0.65
 box Scrap_ConcrUp height=914.4 width=914.4 length=997 color=$scraperColor material=CONCRETE
-place Scrap_ConcrUp z=22393.072 y=966.6224 rotation=x-0.65
+place Scrap_ConcrUp z=22393.072 y=966.7224 rotation=x-0.65
 box Scrap_ConcrDown height=1828.8 width=914.4 length=997 color=$scraperColor material=CONCRETE
-place Scrap_ConcrDown z=22393.072 y=-531.9776 rotation=x-0.65
+place Scrap_ConcrDown z=22393.072 y=-532.0776 rotation=x-0.65
 #----------------
 
 #Quad Q3
@@ -159,9 +159,9 @@ box Scrap2_Steel height=50.8 width=457.2 length=1003.40 color=$scraperColor mate
 place Scrap2_Steel z=34402.4968 x=254 y=583.692 rotation=x-0.66
 place Scrap2_Steel z=34402.4968 x=-254 y=583.692 rotation=x-0.66
 box Scrap2_ConcrUp height=914.4 width=914.4 length=997 color=$scraperColor material=CONCRETE
-place Scrap2_ConcrUp z=34402.4968 y=1066.292 rotation=x-0.66
+place Scrap2_ConcrUp z=34402.4968 y=1066.3240 rotation=x-0.66
 box Scrap2_ConcrDown height=1828.8 width=914.4 length=997 color=$scraperColor material=CONCRETE
-place Scrap2_ConcrDown z=34402.4968 y=-356.108 rotation=x-0.66
+place Scrap2_ConcrDown z=34402.4968 y=-356.1704 rotation=x-0.66
 #----------------
 
 
