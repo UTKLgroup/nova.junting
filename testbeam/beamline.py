@@ -26,6 +26,10 @@ class Beamline:
 
     def __init__(self):
         self.figure_dir = None
+        self.upstream_theta = -16.   # degree
+        self.downstream_theta = 16.  # degree
+        self.f_out = open('beamline.py.in', 'w')
+        self.screen_shot = False
 
         self.target = Detector('target')
         self.collimator_us = Detector('upstream collimator')
@@ -60,6 +64,9 @@ class Beamline:
         self.get_magnet_dimension()
         self.get_collimator_us_dimension()
         self.get_collimator_ds_dimension()
+
+    def __del__(self):
+        self.f_out.close()
 
     @staticmethod
     def get_average(points):
@@ -225,7 +232,32 @@ class Beamline:
         c1.SaveAs('{}/plot_position.pdf'.format(self.figure_dir))
         input('Press any key to continue.')
 
+    def write_target(self):
+        target_slab_dimensions = [31.75, 209.55, 6.35]  # [height, length, width]
+        target_slab_count = 5.
+        target_delta_x = target_slab_dimensions[0] / target_slab_count
+        target_delta_z = 22.145
+        self.f_out.write('box slab height={} length={} width={} material=Cu color=1,0.01,0.01\n'.format(target_slab_dimensions[0], target_slab_dimensions[1], target_slab_dimensions[2]))
+        for i in range(-2, 3):
+            self.f_out.write('place slab rename=target_slab_{} x={} y={} z={}\n'.format(i, self.target.x + i * target_delta_x, self.target.y, self.target.z - i * target_delta_z))
+
+    def write(self):
+        self.f_out.write('physics QGSP_BIC\n')
+        self.f_out.write('param worldMaterial=Air\n')
+        self.f_out.write('param histoFile=beam.root\n')
+
+        self.f_out.write('g4ui when=4 "/vis/viewer/set/viewpointVector 0 1 0"\n')
+        self.f_out.write('g4ui when=4 "/vis/viewer/set/style wireframe"\n')
+        if self.screen_shot:
+            self.f_out.write('g4ui when=4 "/vis/viewer/set/background 1 1 1"\n')
+
+        self.f_out.write('beam gaussian particle=pi+ firstEvent=$first lastEvent=$last sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=$momentum\n')
+        self.f_out.write('trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton\n')
+
+        self.write_target()
+
 
 beamline = Beamline()
 beamline.figure_dir = 'figures'
-beamline.plot_position()
+# beamline.plot_position()
+beamline.write()

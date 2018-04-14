@@ -1,0 +1,13 @@
+physics QGSP_BIC
+param worldMaterial=Air
+param histoFile=beam.root
+g4ui when=4 "/vis/viewer/set/viewpointVector 0 1 0"
+g4ui when=4 "/vis/viewer/set/style wireframe"
+beam gaussian particle=pi+ firstEvent=$first lastEvent=$last sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=$momentum
+trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton
+box slab height=31.75 length=209.55 width=6.35 material=Cu color=1,0.01,0.01
+place slab rename=target_slab_-2 x=-12.7 y=0.0 z=44.29
+place slab rename=target_slab_-1 x=-6.35 y=0.0 z=22.145
+place slab rename=target_slab_0 x=0.0 y=0.0 z=0.0
+place slab rename=target_slab_1 x=6.35 y=0.0 z=-22.145
+place slab rename=target_slab_2 x=12.7 y=0.0 z=-44.29
