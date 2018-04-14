@@ -1,5 +1,6 @@
 import csv
 from rootalias import *
+from math import pi
 
 
 class Detector:
@@ -12,6 +13,7 @@ class Detector:
         self.length = 10.
         self.width = 10.
         self.height = 10.
+        self.theta = 1.
         self.aperture_width = 1.
         self.aperture_height = 1.
         self.color = kBlack
@@ -23,6 +25,8 @@ class Detector:
 
 
 class Beamline:
+    INCH = 25.4
+    RADIAN_PER_DEGREE = pi / 180.
 
     def __init__(self):
         self.figure_dir = None
@@ -30,6 +34,7 @@ class Beamline:
         self.downstream_theta = 16.  # degree
         self.f_out = open('beamline.py.in', 'w')
         self.screen_shot = False
+        self.kill = 1
 
         self.target = Detector('target')
         self.collimator_us = Detector('upstream collimator')
@@ -241,6 +246,35 @@ class Beamline:
         for i in range(-2, 3):
             self.f_out.write('place slab rename=target_slab_{} x={} y={} z={}\n'.format(i, self.target.x + i * target_delta_x, self.target.y, self.target.z - i * target_delta_z))
 
+    def write_wc(self):
+        wire_chamber_detector_dimensions = [125., 25., 128.]
+        wire_chamber_frame_vertical_dimensions = [254., 25., 63.]
+        wire_chamber_frame_horizontal_dimensions = [63., 25., 128.]
+        wire_chamber_detector_positions = [0., 0., 12.5]
+        wire_chamber_frame_vertical_left_positions = [-95.5, 0., 12.5]
+        wire_chamber_frame_vertical_right_positions = [95.5, 0., 12.5]
+        wire_chamber_frame_horizontal_top_positions = [0., 95.5, 12.5]
+        wire_chamber_frame_horizontal_bottom_positions = [0., -95.5, 12.5]
+        self.wc_1.theta = self.upstream_theta
+        self.wc_2.theta = self.upstream_theta
+        self.wc_3.theta = self.upstream_theta + self.downstream_theta
+        self.wc_4.theta = self.upstream_theta + self.downstream_theta
+
+        self.f_out.write('group wire_chamber\n')
+        self.f_out.write('  virtualdetector wire_chamber_detector height={} length={} width={} color=0,1,0\n'.format(wire_chamber_detector_dimensions[0], wire_chamber_detector_dimensions[1], wire_chamber_detector_dimensions[2]))
+        self.f_out.write('  box wire_chamber_frame_vertical height={} length={} width={} color=1,0,1 kill={} material=Al\n'.format(wire_chamber_frame_vertical_dimensions[0], wire_chamber_frame_vertical_dimensions[1], wire_chamber_frame_vertical_dimensions[2], self.kill))
+        self.f_out.write('  box wire_chamber_frame_horizontal height={} length={} width={} color=1,0,1 kill={} material=Al\n'.format(wire_chamber_frame_horizontal_dimensions[0], wire_chamber_frame_horizontal_dimensions[1], wire_chamber_frame_horizontal_dimensions[2], self.kill))
+        self.f_out.write('  place wire_chamber_frame_vertical rename=+_frame_left x={} y={} z={}\n'.format(wire_chamber_frame_vertical_left_positions[0], wire_chamber_frame_vertical_left_positions[1], wire_chamber_frame_vertical_left_positions[2]))
+        self.f_out.write('  place wire_chamber_frame_vertical rename=+_frame_right x={} y={} z={}\n'.format(wire_chamber_frame_vertical_right_positions[0], wire_chamber_frame_vertical_right_positions[1], wire_chamber_frame_vertical_right_positions[2]))
+        self.f_out.write('  place wire_chamber_frame_horizontal rename=+_frame_top x={} y={} z={}\n'.format(wire_chamber_frame_horizontal_top_positions[0], wire_chamber_frame_horizontal_top_positions[1], wire_chamber_frame_horizontal_top_positions[2]))
+        self.f_out.write('  place wire_chamber_frame_horizontal rename=+_frame_bottom x={} y={} z={}\n'.format(wire_chamber_frame_horizontal_bottom_positions[0], wire_chamber_frame_horizontal_bottom_positions[1], wire_chamber_frame_horizontal_bottom_positions[2]))
+        self.f_out.write('  place wire_chamber_detector rename=+_detector x={} y={} z={}\n'.format(wire_chamber_detector_positions[0], wire_chamber_detector_positions[1], wire_chamber_detector_positions[2]))
+        self.f_out.write('endgroup\n')
+        self.f_out.write('place wire_chamber rename=wire_chamber_1 x={} y={} z={} rotation=y{}\n'.format(self.wc_1.x, self.wc_1.y, self.wc_1.z, self.wc_1.theta))
+        self.f_out.write('place wire_chamber rename=wire_chamber_2 x={} y={} z={} rotation=y{}\n'.format(self.wc_2.x, self.wc_2.y, self.wc_2.z, self.wc_2.theta))
+        self.f_out.write('place wire_chamber rename=wire_chamber_3 x={} y={} z={} rotation=y{}\n'.format(self.wc_3.x, self.wc_3.y, self.wc_3.z, self.wc_3.theta))
+        self.f_out.write('place wire_chamber rename=wire_chamber_4 x={} y={} z={} rotation=y{}\n'.format(self.wc_4.x, self.wc_4.y, self.wc_4.z, self.wc_4.theta))
+
     def write(self):
         self.f_out.write('physics QGSP_BIC\n')
         self.f_out.write('param worldMaterial=Air\n')
@@ -255,6 +289,7 @@ class Beamline:
         self.f_out.write('trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton\n')
 
         self.write_target()
+        self.write_wc()
 
 
 beamline = Beamline()
