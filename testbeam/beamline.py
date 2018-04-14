@@ -4,6 +4,7 @@ from rootalias import *
 
 class Detector:
     def __init__(self, name):
+        # all length in mm
         self.name = name
         self.x = 0.
         self.y = 0.
@@ -84,7 +85,7 @@ class Beamline:
             csv_reader = csv.reader(f_csv, delimiter=',')
             next(csv_reader, None)
             for row in csv_reader:
-                rows.append(list(map(float, row)))
+                rows.append(list(map(lambda x: float(x) * 10., row)))
         return rows
 
     def get_position(self):
@@ -110,13 +111,13 @@ class Beamline:
 
     def get_nova_dimension(self):
         top_points = Beamline.get_csv('digitize/nova.csv')
-        self.nova.length = (Beamline.get_distance(top_points[0], top_points[1]) + Beamline.get_distance(top_points[2], top_points[3])) / 2.
+        self.nova.length = np.average([Beamline.get_distance(top_points[0], top_points[1]), Beamline.get_distance(top_points[2], top_points[3])])
         self.nova.width = Beamline.get_distance(top_points[1], top_points[2])
         self.nova.height = self.nova.width
 
     def get_magnet_dimension(self):
         top_points = Beamline.get_csv('digitize/magnet.csv')
-        self.magnet.length = (Beamline.get_distance(top_points[0], top_points[1]) + Beamline.get_distance(top_points[2], top_points[3])) / 2.
+        self.magnet.length = np.average([Beamline.get_distance(top_points[0], top_points[1]), Beamline.get_distance(top_points[2], top_points[3])])
         self.magnet.width = Beamline.get_distance(top_points[1], top_points[2])
         self.magnet.aperture_width = Beamline.get_distance(top_points[4], top_points[5])
 
