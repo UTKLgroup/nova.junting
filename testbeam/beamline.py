@@ -27,17 +27,17 @@ class Beamline:
         self.figure_dir = None
 
         self.target = Detector('target')
-        self.collimator_us = Detector('collimator_us')
-        self.tof_us = Detector('tof_us')
-        self.wc_1 = Detector('wc_1')
-        self.wc_2 = Detector('wc_2')
+        self.collimator_us = Detector('upstream collimator')
+        self.tof_us = Detector('upstream TOF')
+        self.wc_1 = Detector('wire chamber 1')
+        self.wc_2 = Detector('wire chamber 2')
         self.magnet = Detector('magnet')
-        self.wc_3 = Detector('wc_3')
-        self.collimator_ds = Detector('collimator_ds')
-        self.wc_4 = Detector('wc_4')
-        self.cherenkov = Detector('cherenkov')
-        self.tof_ds = Detector('tof_ds')
-        self.nova = Detector('nova')
+        self.wc_3 = Detector('wire chamber 3')
+        self.collimator_ds = Detector('downstream collimator')
+        self.wc_4 = Detector('wire chamber 4')
+        self.cherenkov = Detector('cherenkov counter')
+        self.tof_ds = Detector('downstream TOF')
+        self.nova = Detector('nova detector')
         
         self.detectors = [
             self.target,
@@ -57,6 +57,7 @@ class Beamline:
         self.get_position()
         self.get_nova_dimension()
         self.get_magnet_dimension()
+        self.get_collimator_us_dimension()
         self.get_collimator_ds_dimension()
 
     @staticmethod
@@ -87,26 +88,25 @@ class Beamline:
         return rows
 
     def get_position(self):
-        with open('digitize/ftbf_drawing_digitize.csv') as f_csv:
-            csv_reader = csv.reader(f_csv, delimiter=',')
-            next(csv_reader, None)
-            rows = []
-            for row in csv_reader:
-                rows.append(list(map(float, row)))
-            origin = rows[0]
-            rows = [[row[0] - origin[0], row[1] - origin[1]] for row in rows]
+        rows = Beamline.get_csv('digitize/ftbf_drawing_digitize.csv')
+        origin = rows[0]
+        rows = [[row[0] - origin[0], row[1] - origin[1]] for row in rows]
 
-            self.target.set_zx(rows[0])
-            self.tof_us.set_zx(rows[1])
-            self.wc_1.set_zx(Beamline.get_average([rows[2], rows[3]]))
-            self.wc_2.set_zx(Beamline.get_average([rows[4], rows[5]]))
-            self.magnet.set_zx(Beamline.get_average([rows[6], rows[9]]))
-            self.wc_3.set_zx(Beamline.get_average([rows[10], rows[11]]))
-            self.collimator_ds.set_zx(Beamline.get_average([rows[12], rows[13]]))
-            self.wc_4.set_zx(Beamline.get_average([14, 15]))
-            self.cherenkov.set_zx(Beamline.get_average([16, 17]))
-            self.tof_ds.set_zx(rows[18])
-            self.nova.set_zx(rows[19])
+        self.target.set_zx(rows[0])
+        self.tof_us.set_zx(rows[1])
+        self.wc_1.set_zx(Beamline.get_average([rows[2], rows[3]]))
+        self.wc_2.set_zx(Beamline.get_average([rows[4], rows[5]]))
+        self.magnet.set_zx(Beamline.get_average([rows[6], rows[9]]))
+        self.wc_3.set_zx(Beamline.get_average([rows[10], rows[11]]))
+        self.collimator_ds.set_zx(Beamline.get_average([rows[12], rows[13]]))
+        self.wc_4.set_zx(Beamline.get_average([rows[14], rows[15]]))
+        self.cherenkov.set_zx(Beamline.get_average([rows[16], rows[17]]))
+        self.tof_ds.set_zx(rows[18])
+        self.nova.set_zx(rows[19])
+
+        collimator_us_points = Beamline.get_csv('digitize/collimator_us.csv')
+        collimator_us_position = Beamline.get_average([collimator_us_points[0], collimator_us_points[2], collimator_us_points[3], collimator_us_points[5]])
+        self.collimator_us.set_zx([collimator_us_position[0] - origin[0], collimator_us_position[1] - origin[1]])
 
     def get_nova_dimension(self):
         top_points = Beamline.get_csv('digitize/nova.csv')
@@ -130,9 +130,18 @@ class Beamline:
         self.collimator_ds.width = Beamline.get_distance(top_points[1], top_points[2])
         self.collimator_ds.aperture_width = Beamline.get_distance(top_points[4], top_points[5])
 
-        side_points = Beamline.get_csv('digitize/collimator.side.csv')
+        side_points = Beamline.get_csv('digitize/collimator_ds.side.csv')
         self.collimator_ds.height = Beamline.get_distance(side_points[1], side_points[2])
         self.collimator_ds.aperture_height = Beamline.get_distance(side_points[4], side_points[5])
+
+    def get_collimator_us_dimension(self):
+        top_points = Beamline.get_csv('digitize/collimator_us.csv')
+        self.collimator_ds.length = np.average([Beamline.get_distance(top_points[0], top_points[2]), Beamline.get_distance(top_points[3], top_points[5])])
+        self.collimator_ds.width = np.average([Beamline.get_distance(top_points[2], top_points[3]), Beamline.get_distance(top_points[1], top_points[4])])
+
+        side_points = Beamline.get_csv('digitize/collimator_us.side.csv')
+        self.collimator_ds.height = np.average([Beamline.get_distance(side_points[0], side_points[5]), Beamline.get_distance(side_points[1], side_points[4])])
+        self.collimator_ds.aperture_height = np.average([Beamline.get_distance(side_points[2], side_points[3]), Beamline.get_distance(side_points[6], side_points[7])])
 
     def plot_position(self):
 
@@ -183,7 +192,7 @@ class Beamline:
         gr.GetYaxis().SetNdivisions(505, 1)
         gr.GetXaxis().SetNdivisions(508, 1)
 
-        lg1 = TLegend(0.49, 0.34, 0.87, 0.86)
+        lg1 = TLegend(0.52, 0.33, 0.87, 0.86)
         set_legend_style(lg1)
         lg1.SetTextSize(22)
         lg1.SetMargin(0.15)
@@ -191,6 +200,8 @@ class Beamline:
 
         markers = []
         for i, detector in enumerate(self.detectors):
+            if i == len(self.detectors) - 1:
+                continue
             marker = TMarker(detector.z, detector.x, 24)
             markers.append(marker)
             markers[i].SetMarkerColor(colors[i])
@@ -206,7 +217,7 @@ class Beamline:
         nova_detector_line.SetLineStyle(2)
         nova_detector_line.SetLineWidth(2)
         nova_detector_line.Draw()
-        lg1.AddEntry(nova_detector_line, 'test beam detector front ({:.1f}, {:.1f})'.format(self.nova.z, self.nova.x), 'l')
+        lg1.AddEntry(nova_detector_line, 'NOvA detector front ({:.1f}, {:.1f})'.format(self.nova.z, self.nova.x), 'l')
 
         lg1.Draw()
         c1.Update()
