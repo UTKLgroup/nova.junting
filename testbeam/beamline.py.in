@@ -3,6 +3,7 @@ param worldMaterial=Air
 param histoFile=beam.root
 g4ui when=4 "/vis/viewer/set/viewpointVector 0 1 0"
 g4ui when=4 "/vis/viewer/set/style wireframe"
+g4ui when=4 "/vis/viewer/set/background 1 1 1"
 beam gaussian particle=pi+ firstEvent=$first lastEvent=$last sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=$momentum
 trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton
 box slab height=31.75 length=209.55 width=6.35 material=Cu color=1,0.01,0.01
@@ -20,8 +21,6 @@ place collimator_us_bottom rename=collimator_us_bottom x=-216.60631742066045 y=-
 place collimator_us_middle rename=collimator_us_middle_1 x=-1.3163174206604253 y=0.0 z=755.396 rotation=y-14.03
 place collimator_us_middle rename=collimator_us_middle_2 x=-431.89631742066047 y=0.0 z=755.396 rotation=y-17.97
 place collimator_us_top rename=collimator_us_top x=-216.60631742066045 y=91.313 z=755.396
-virtualdetector start_line radius=1750.0 length=1.0 material=Air color=0.9,0.9,0.7
-place start_line rotation=y-16.0 x=-399.6741659346488 y=0.0 z=1393.8294591105623
 group wire_chamber
   virtualdetector wire_chamber_detector height=125.0 length=25.0 width=128.0 color=0,1,0
   box wire_chamber_frame_vertical height=254.0 length=25.0 width=63.0 color=1,0,1 kill=1 material=Al
@@ -51,7 +50,7 @@ virtualdetector tof_us  height=150.0 length=50.8 width=150.0 material=LUCITE col
 place tof_us rename=tof_us x=-418.27532259729037 y=0.0 z=1458.699401528006 rotation=z45,y-16.0
 virtualdetector tof_ds height=130.0 length=50.8 width=130.0 material=LUCITE color=0.05,0.05,0.93
 place tof_ds rename=tof_ds x=-1354.35596 y=0.0 z=14424.79831 rotation=z90,y0.0
-virtualdetector cherenkov radius=100 length=2007.386152531812 color=0.9,0.9,0.7
+virtualdetector cherenkov radius=100 length=2007.386152531812 color=0.74,0.34,0.09
 place cherenkov rename=cherenkov x=-1354.35596 y=0.0 z=11712.219835 rotation=y0.0
-virtualdetector nova height=2606.1905036738476 length=10.0 width=2606.1905036738476 color=0.9,0.9,0.7
+virtualdetector nova height=2606.1905036738476 length=10.0 width=2606.1905036738476 color=0,0,0
 place nova rename=nova x=-1354.35596 y=0.0 z=14648.66998 rotation=y0.0

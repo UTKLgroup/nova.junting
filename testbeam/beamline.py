@@ -362,12 +362,12 @@ class Beamline:
     def write_nova(self):
         self.nova.theta = self.us_theta + self.ds_theta
         self.nova.length = 10.
-        self.f_out.write('virtualdetector nova height={} length={} width={} color=0.9,0.9,0.7\n'.format(self.nova.height, self.nova.length, self.nova.width))
+        self.f_out.write('virtualdetector nova height={} length={} width={} color=0,0,0\n'.format(self.nova.height, self.nova.length, self.nova.width))
         self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y{}\n'.format(self.nova.x, self.nova.y, self.nova.z, self.nova.theta))
 
     def write_cherenkov(self):
         self.cherenkov.theta = self.us_theta + self.ds_theta
-        self.f_out.write('virtualdetector cherenkov radius={} length={} color=0.9,0.9,0.7\n'.format(100, self.cherenkov.length))
+        self.f_out.write('virtualdetector cherenkov radius={} length={} color=0.74,0.34,0.09\n'.format(100, self.cherenkov.length))
         self.f_out.write('place cherenkov rename=cherenkov x={} y={} z={} rotation=y{}\n'.format(self.cherenkov.x, self.cherenkov.y, self.cherenkov.z, self.cherenkov.theta))
 
     def write_collimator_ds(self):
@@ -442,4 +442,5 @@ class Beamline:
 beamline = Beamline()
 beamline.figure_dir = 'figures'
 # beamline.plot_position()
+beamline.screen_shot = True
 beamline.write()
