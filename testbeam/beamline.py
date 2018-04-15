@@ -1,6 +1,6 @@
 import csv
 from rootalias import *
-from math import pi, tan
+from math import pi, tan, sin, cos
 
 
 class Detector:
@@ -22,6 +22,9 @@ class Detector:
     def set_zx(self, zx):
         self.z = zx[0]
         self.x = zx[1]
+
+    def get_r(self):
+        return (self.z**2 + self.x**2)**0.5
 
 
 class Beamline:
@@ -351,7 +354,7 @@ class Beamline:
     def write_cherenkov(self):
         self.cherenkov.theta = self.us_theta + self.ds_theta
         self.f_out.write('virtualdetector cherenkov radius={} length={} color=0.9,0.9,0.7\n'.format(100, self.cherenkov.length))
-        self.f_out.write('place nova rename=cherenkov x={} y={} z={} rotation=y{}\n'.format(self.cherenkov.x, self.cherenkov.y, self.cherenkov.z, self.cherenkov.theta))
+        self.f_out.write('place cherenkov rename=cherenkov x={} y={} z={} rotation=y{}\n'.format(self.cherenkov.x, self.cherenkov.y, self.cherenkov.z, self.cherenkov.theta))
 
     def write_collimator_ds(self):
         collimator_ds_bottom_dimensions = [8.5 * Beamline.INCH, 36. * Beamline.INCH, 30. * Beamline.INCH]
@@ -372,6 +375,32 @@ class Beamline:
         self.f_out.write('endgroup\n')
         self.f_out.write('place collimator_ds x={} y={} z={} rotation=y{}\n'.format(self.collimator_ds.x, self.collimator_ds.y, self.collimator_ds.z, self.collimator_ds.theta))
 
+    def correct_position(self):
+        us_detectors = [
+            self.tof_us,
+            self.wc_1,
+            self.wc_2
+        ]
+        for us_detector in us_detectors:
+            distance = us_detector.get_r()
+            us_detector.x = sin(self.us_theta * Beamline.RADIAN_PER_DEGREE) * distance
+            us_detector.z = cos(self.us_theta * Beamline.RADIAN_PER_DEGREE) * distance
+
+        ds_detectors = [
+            self.wc_3,
+            self.collimator_ds,
+            self.wc_4,
+            self.cherenkov,
+            self.tof_ds,
+            self.nova
+        ]
+        ds_detector_average_x = np.average([ds_detector.x for ds_detector in ds_detectors])
+        for ds_detector in ds_detectors:
+            ds_detector.x = ds_detector_average_x
+
+        self.magnet.x = ds_detector_average_x
+        self.magnet.z = ds_detector_average_x / tan(self.us_theta * Beamline.RADIAN_PER_DEGREE)
+
     def write(self):
         self.f_out.write('physics QGSP_BIC\n')
         self.f_out.write('param worldMaterial=Air\n')
@@ -385,6 +414,7 @@ class Beamline:
         self.f_out.write('beam gaussian particle=pi+ firstEvent=$first lastEvent=$last sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=$momentum\n')
         self.f_out.write('trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton\n')
 
+        self.correct_position()
         self.write_target()
         self.write_collimator_us()
         self.write_wc()
