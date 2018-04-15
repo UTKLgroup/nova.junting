@@ -297,6 +297,18 @@ class Beamline:
         self.f_out.write('place collimator_us_middle rename=collimator_us_middle_2 x={} y={} z={} rotation=y{}\n'.format(collimator_us_middle_2_positions[0], collimator_us_middle_2_positions[1], collimator_us_middle_2_positions[2], collimator_us_middle_2_theta))
         self.f_out.write('place collimator_us_top rename=collimator_us_top x={} y={} z={}\n'.format(collimator_us_top_positions[0], collimator_us_top_positions[1], collimator_us_top_positions[2]))
 
+    def write_virtual_disk(self):
+        start_line_radius = 1750.
+        start_line_length = 1.
+        start_line_r = 1450.
+        start_line_positions = [
+            start_line_r * sin(self.us_theta * Beamline.RADIAN_PER_DEGREE),
+            0.,
+            start_line_r * cos(self.us_theta * Beamline.RADIAN_PER_DEGREE)
+        ]
+        self.f_out.write('virtualdetector start_line radius={} length={} material=Air color=0.9,0.9,0.7\n'.format(start_line_radius, start_line_length))
+        self.f_out.write('place start_line rotation=y{} x={} y={} z={}\n'.format(self.us_theta, start_line_positions[0], start_line_positions[1], start_line_positions[2]))
+
     def write_wc(self):
         wire_chamber_detector_dimensions = [125., 25., 128.]
         wire_chamber_frame_vertical_dimensions = [254., 25., 63.]
@@ -418,6 +430,8 @@ class Beamline:
 
         self.write_target()
         self.write_collimator_us()
+        if not self.screen_shot:
+            self.write_virtual_disk()
         self.write_wc()
         self.write_magnet()
         self.write_collimator_ds()

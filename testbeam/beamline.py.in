@@ -20,6 +20,8 @@ place collimator_us_bottom rename=collimator_us_bottom x=-216.60631742066045 y=-
 place collimator_us_middle rename=collimator_us_middle_1 x=-1.3163174206604253 y=0.0 z=755.396 rotation=y-14.03
 place collimator_us_middle rename=collimator_us_middle_2 x=-431.89631742066047 y=0.0 z=755.396 rotation=y-17.97
 place collimator_us_top rename=collimator_us_top x=-216.60631742066045 y=91.313 z=755.396
+virtualdetector start_line radius=1750.0 length=1.0 material=Air color=0.9,0.9,0.7
+place start_line rotation=y-16.0 x=-399.6741659346488 y=0.0 z=1393.8294591105623
 group wire_chamber
   virtualdetector wire_chamber_detector height=125.0 length=25.0 width=128.0 color=0,1,0
   box wire_chamber_frame_vertical height=254.0 length=25.0 width=63.0 color=1,0,1 kill=1 material=Al
