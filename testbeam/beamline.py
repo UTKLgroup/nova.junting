@@ -200,6 +200,8 @@ class Beamline:
 
         c1 = TCanvas('c1', 'c1', 1200, 600)
         set_margin()
+        gPad.SetLeftMargin(0.1)
+        gPad.SetRightMargin(0.1)
         gPad.SetTickx()
         gPad.SetTicky()
 
@@ -209,13 +211,14 @@ class Beamline:
         gr.SetLineWidth(0)
         gr.GetXaxis().SetTitle('Z (cm)')
         gr.GetYaxis().SetTitle('X (cm)')
+        gr.GetYaxis().SetTitleOffset(1.)
         gr.Draw('AP')
         gr.GetXaxis().SetRangeUser(-50, 1600)
-        gr.GetYaxis().SetRangeUser(-150, 50)
+        gr.GetYaxis().SetRangeUser(-160, 50)
         gr.GetYaxis().SetNdivisions(505, 1)
         gr.GetXaxis().SetNdivisions(508, 1)
 
-        lg1 = TLegend(0.52, 0.33, 0.87, 0.86)
+        lg1 = TLegend(0.48, 0.33, 0.87, 0.86)
         set_legend_style(lg1)
         lg1.SetTextSize(22)
         lg1.SetMargin(0.15)
@@ -225,7 +228,7 @@ class Beamline:
         for i, detector in enumerate(self.detectors):
             if i == len(self.detectors) - 1:
                 continue
-            marker = TMarker(detector.z, detector.x, 24)
+            marker = TMarker(detector.z / 10., detector.x / 10., 24)
             markers.append(marker)
             markers[i].SetMarkerColor(colors[i])
             markers[i].SetMarkerStyle(styles[i])
@@ -236,7 +239,7 @@ class Beamline:
             lg1.AddEntry(markers[i], name, 'p')
 
         length = 10.
-        nova_detector_line = TLine(self.nova.z, self.nova.x - length, self.nova.z, self.nova.x + length)
+        nova_detector_line = TLine(self.nova.z / 10., self.nova.x / 10. - length, self.nova.z / 10., self.nova.x / 10. + length)
         nova_detector_line.SetLineStyle(2)
         nova_detector_line.SetLineWidth(2)
         nova_detector_line.Draw()
@@ -362,7 +365,7 @@ class Beamline:
     def write_nova(self):
         self.nova.theta = self.us_theta + self.ds_theta
         self.nova.length = 10.
-        self.f_out.write('virtualdetector nova height={} length={} width={} color=0,0,0\n'.format(self.nova.height, self.nova.length, self.nova.width))
+        self.f_out.write('virtualdetector nova height={} length={} width={} color=0.39,0.39,0.39\n'.format(self.nova.height, self.nova.length, self.nova.width))
         self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y{}\n'.format(self.nova.x, self.nova.y, self.nova.z, self.nova.theta))
 
     def write_cherenkov(self):
@@ -440,7 +443,7 @@ class Beamline:
         self.write_nova()
 
 beamline = Beamline()
-beamline.figure_dir = 'figures'
+beamline.figure_dir = '/Users/juntinghuang/beamer/20180413_testbeam_120gev/figures'
 # beamline.plot_position()
-beamline.screen_shot = True
+# beamline.screen_shot = True
 beamline.write()
