@@ -30,8 +30,8 @@ class Beamline:
 
     def __init__(self):
         self.figure_dir = None
-        self.upstream_theta = -16.   # degree
-        self.downstream_theta = 16.  # degree
+        self.us_theta = -16.   # degree
+        self.ds_theta = 16.  # degree
         self.f_out = open('beamline.py.in', 'w')
         self.screen_shot = False
         self.kill = 1
@@ -48,7 +48,7 @@ class Beamline:
         self.cherenkov = Detector('cherenkov counter')
         self.tof_ds = Detector('downstream TOF')
         self.nova = Detector('nova detector')
-        
+
         self.detectors = [
             self.target,
             self.collimator_us,
@@ -64,11 +64,12 @@ class Beamline:
             self.nova
         ]
 
-        self.get_position()
-        self.get_nova_dimension()
-        self.get_magnet_dimension()
-        self.get_collimator_us_dimension()
-        self.get_collimator_ds_dimension()
+        self.read_position()
+        self.read_nova_dimension()
+        self.read_magnet_dimension()
+        self.read_collimator_us_dimension()
+        self.read_collimator_ds_dimension()
+        self.read_cherenkov_dimension()
 
     def __del__(self):
         self.f_out.close()
@@ -100,7 +101,7 @@ class Beamline:
                 rows.append(list(map(lambda x: float(x) * 10., row)))
         return rows
 
-    def get_position(self):
+    def read_position(self):
         rows = Beamline.get_csv('digitize/ftbf_drawing_digitize.csv')
         origin = rows[0]
         rows = [[row[0] - origin[0], row[1] - origin[1]] for row in rows]
@@ -121,13 +122,13 @@ class Beamline:
         collimator_us_position = Beamline.get_average([collimator_us_points[0], collimator_us_points[2], collimator_us_points[3], collimator_us_points[5]])
         self.collimator_us.set_zx([collimator_us_position[0] - origin[0], collimator_us_position[1] - origin[1]])
 
-    def get_nova_dimension(self):
+    def read_nova_dimension(self):
         top_points = Beamline.get_csv('digitize/nova.csv')
         self.nova.length = np.average([Beamline.get_distance(top_points[0], top_points[1]), Beamline.get_distance(top_points[2], top_points[3])])
         self.nova.width = Beamline.get_distance(top_points[1], top_points[2])
         self.nova.height = self.nova.width
 
-    def get_magnet_dimension(self):
+    def read_magnet_dimension(self):
         top_points = Beamline.get_csv('digitize/magnet.csv')
         self.magnet.length = np.average([Beamline.get_distance(top_points[0], top_points[1]), Beamline.get_distance(top_points[2], top_points[3])])
         self.magnet.width = Beamline.get_distance(top_points[1], top_points[2])
@@ -137,7 +138,7 @@ class Beamline:
         self.magnet.height = Beamline.get_distance(side_points[1], side_points[2])
         self.magnet.aperture_height = Beamline.get_distance(side_points[4], side_points[5])
 
-    def get_collimator_ds_dimension(self):
+    def read_collimator_ds_dimension(self):
         top_points = Beamline.get_csv('digitize/collimator_ds.csv')
         self.collimator_ds.length = (Beamline.get_distance(top_points[0], top_points[1]) + Beamline.get_distance(top_points[2], top_points[3])) / 2.
         self.collimator_ds.width = Beamline.get_distance(top_points[1], top_points[2])
@@ -147,7 +148,7 @@ class Beamline:
         self.collimator_ds.height = Beamline.get_distance(side_points[1], side_points[2])
         self.collimator_ds.aperture_height = Beamline.get_distance(side_points[4], side_points[5])
 
-    def get_collimator_us_dimension(self):
+    def read_collimator_us_dimension(self):
         top_points = Beamline.get_csv('digitize/collimator_us.csv')
         self.collimator_ds.length = np.average([Beamline.get_distance(top_points[0], top_points[2]), Beamline.get_distance(top_points[3], top_points[5])])
         self.collimator_ds.width = np.average([Beamline.get_distance(top_points[2], top_points[3]), Beamline.get_distance(top_points[1], top_points[4])])
@@ -155,6 +156,10 @@ class Beamline:
         side_points = Beamline.get_csv('digitize/collimator_us.side.csv')
         self.collimator_ds.height = np.average([Beamline.get_distance(side_points[0], side_points[5]), Beamline.get_distance(side_points[1], side_points[4])])
         self.collimator_ds.aperture_height = np.average([Beamline.get_distance(side_points[2], side_points[3]), Beamline.get_distance(side_points[6], side_points[7])])
+
+    def read_cherenkov_dimension(self):
+        top_points = Beamline.get_csv('digitize/ftbf_drawing_digitize.csv')
+        self.cherenkov.length = self.get_distance(top_points[16], top_points[17])
 
     def plot_position(self):
 
@@ -255,10 +260,10 @@ class Beamline:
         wire_chamber_frame_vertical_right_positions = [95.5, 0., 12.5]
         wire_chamber_frame_horizontal_top_positions = [0., 95.5, 12.5]
         wire_chamber_frame_horizontal_bottom_positions = [0., -95.5, 12.5]
-        self.wc_1.theta = self.upstream_theta
-        self.wc_2.theta = self.upstream_theta
-        self.wc_3.theta = self.upstream_theta + self.downstream_theta
-        self.wc_4.theta = self.upstream_theta + self.downstream_theta
+        self.wc_1.theta = self.us_theta
+        self.wc_2.theta = self.us_theta
+        self.wc_3.theta = self.us_theta + self.ds_theta
+        self.wc_4.theta = self.us_theta + self.ds_theta
 
         self.f_out.write('group wire_chamber\n')
         self.f_out.write('  virtualdetector wire_chamber_detector height={} length={} width={} color=0,1,0\n'.format(wire_chamber_detector_dimensions[0], wire_chamber_detector_dimensions[1], wire_chamber_detector_dimensions[2]))
@@ -275,6 +280,57 @@ class Beamline:
         self.f_out.write('place wire_chamber rename=wire_chamber_3 x={} y={} z={} rotation=y{}\n'.format(self.wc_3.x, self.wc_3.y, self.wc_3.z, self.wc_3.theta))
         self.f_out.write('place wire_chamber rename=wire_chamber_4 x={} y={} z={} rotation=y{}\n'.format(self.wc_4.x, self.wc_4.y, self.wc_4.z, self.wc_4.theta))
 
+    def write_magnet(self):
+        magnet_field_dimensions = [3.5 * Beamline.INCH, 42 * Beamline.INCH, 17.75 * Beamline.INCH]
+        magnet_iron_dimensions = [self.magnet.height, 42 * Beamline.INCH, 42 * Beamline.INCH]
+
+        magnet_by = 1.8  # B field in tesla
+        self.magnet.theta = self.us_theta + self.ds_theta / 2.
+
+        self.f_out.write('genericbend M1 fieldHeight={} fieldLength={} fieldWidth={} kill={} ironColor=1,0,0 ironHeight={} ironLength={} ironWidth={}\n'.format(magnet_field_dimensions[0], magnet_field_dimensions[1], magnet_field_dimensions[2], self.kill, magnet_iron_dimensions[0], magnet_iron_dimensions[1], magnet_iron_dimensions[2]))
+        self.f_out.write('place M1 By={} x={} y={} z={} rotation=Y{}\n'.format(magnet_by, self.magnet.x, self.magnet.y, self.magnet.z, self.magnet.theta))
+
+    def write_tof(self):
+        tof_us_dimensions = [150., 50.8, 150.]
+        self.tof_us.theta = self.us_theta
+        tof_ds_dimensions = [130., 50.8, 130.]
+        self.tof_ds.theta = self.us_theta + self.ds_theta
+
+        self.f_out.write('virtualdetector tof_us  height={} length={} width={} material=LUCITE color=0.05,0.05,0.93\n'.format(tof_us_dimensions[0], tof_us_dimensions[1], tof_us_dimensions[2]))
+        self.f_out.write('place tof_us rename=tof_us x={} y={} z={} rotation=z45,y{}\n'.format(self.tof_us.x, self.tof_us.y, self.tof_us.z, self.tof_us.theta))
+        self.f_out.write('virtualdetector tof_ds height={} length={} width={} material=LUCITE color=0.05,0.05,0.93\n'.format(tof_ds_dimensions[0], tof_ds_dimensions[1], tof_ds_dimensions[2]))
+        self.f_out.write('place tof_ds rename=tof_ds x={} y={} z={} rotation=z90,y{}\n'.format(self.tof_ds.x, self.tof_ds.y, self.tof_ds.z, self.tof_ds.theta))
+
+    def write_nova(self):
+        self.nova.theta = self.us_theta + self.ds_theta
+        self.nova.length = 10.
+        self.f_out.write('virtualdetector nova height={} length={} width={} color=0.9,0.9,0.7\n'.format(self.nova.height, self.nova.length, self.nova.width))
+        self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y{}\n'.format(self.nova.x, self.nova.y, self.nova.z, self.nova.theta))
+
+    def write_cherenkov(self):
+        self.cherenkov.theta = self.us_theta + self.ds_theta
+        self.f_out.write('virtualdetector nova radius={} length={} color=0.9,0.9,0.7\n'.format(100, self.cherenkov.length))
+        self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y{}\n'.format(self.cherenkov.x, self.cherenkov.y, self.cherenkov.z, self.cherenkov.theta))
+
+    def write_collimator_ds(self):
+        collimator_ds_bottom_dimensions = [8.5 * Beamline.INCH, 36. * Beamline.INCH, 30. * Beamline.INCH]
+        collimator_ds_middle_dimensions = [6. * Beamline.INCH, 36. * Beamline.INCH, 11. * Beamline.INCH]
+        collimator_ds_middle_1_positions = [9. * Beamline.INCH, 0., 18. * Beamline.INCH]
+        collimator_ds_middle_2_positions = [-9. * Beamline.INCH, 0., 18. * Beamline.INCH]
+        collimator_ds_bottom_positions = [0., (4.25 + 3.) * Beamline.INCH, 18. * Beamline.INCH]
+        collimator_ds_top_positions = [0., -(4.25 + 3.) * Beamline.INCH, 18. * Beamline.INCH]
+        self.collimator_ds.theta = self.us_theta + self.ds_theta
+
+        self.f_out.write('group collimator_ds\n')
+        self.f_out.write('  box collimator_ds_bottom height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_ds_bottom_dimensions[0], collimator_ds_bottom_dimensions[1], collimator_ds_bottom_dimensions[2], self.kill))
+        self.f_out.write('  box collimator_ds_middle height={} length={} width={} material=Fe color=0,.8,1 kill={}\n'.format(collimator_ds_middle_dimensions[0], collimator_ds_middle_dimensions[1], collimator_ds_middle_dimensions[2], self.kill))
+        self.f_out.write('  place collimator_ds_middle rename=+_middle_1 x={} y={} z={}\n'.format(collimator_ds_middle_1_positions[0], collimator_ds_middle_1_positions[1], collimator_ds_middle_1_positions[2]))
+        self.f_out.write('  place collimator_ds_middle rename=+_middle_2 x={} y={} z={}\n'.format(collimator_ds_middle_2_positions[0], collimator_ds_middle_2_positions[1], collimator_ds_middle_2_positions[2]))
+        self.f_out.write('  place collimator_ds_bottom rename=+_bottom x={} y={} z={}\n'.format(collimator_ds_bottom_positions[0], collimator_ds_bottom_positions[1], collimator_ds_bottom_positions[2]))
+        self.f_out.write('  place collimator_ds_bottom rename=+_top x={} y={} z={}\n'.format(collimator_ds_top_positions[0], collimator_ds_top_positions[1], collimator_ds_top_positions[2]))
+        self.f_out.write('endgroup\n')
+        self.f_out.write('place collimator_ds x={} y={} z={} rotation=y{}\n'.format(self.collimator_ds.x, self.collimator_ds.y, self.collimator_ds.z, self.collimator_ds.theta))
+
     def write(self):
         self.f_out.write('physics QGSP_BIC\n')
         self.f_out.write('param worldMaterial=Air\n')
@@ -290,7 +346,11 @@ class Beamline:
 
         self.write_target()
         self.write_wc()
-
+        self.write_magnet()
+        self.write_collimator_ds()
+        self.write_tof()
+        self.write_cherenkov()
+        self.write_nova()
 
 beamline = Beamline()
 beamline.figure_dir = 'figures'
