@@ -1,6 +1,6 @@
 import csv
 from rootalias import *
-from math import pi
+from math import pi, tan
 
 
 class Detector:
@@ -31,7 +31,7 @@ class Beamline:
     def __init__(self):
         self.figure_dir = None
         self.us_theta = -16.   # degree
-        self.ds_theta = 16.  # degree
+        self.ds_theta = 16.    # degree
         self.f_out = open('beamline.py.in', 'w')
         self.screen_shot = False
         self.kill = 1
@@ -251,6 +251,47 @@ class Beamline:
         for i in range(-2, 3):
             self.f_out.write('place slab rename=target_slab_{} x={} y={} z={}\n'.format(i, self.target.x + i * target_delta_x, self.target.y, self.target.z - i * target_delta_z))
 
+    def write_collimator_us(self):
+        collimator_us_base_dimensions = [5.19 * Beamline.INCH, 58. * Beamline.INCH, 32. * Beamline.INCH]
+        collimator_us_bottom_dimensions = [5.19 / 2. * Beamline.INCH, 42.76 * Beamline.INCH, 32. * Beamline.INCH]
+        collimator_us_middle_dimensions = [2. * Beamline.INCH, 42.76 * Beamline.INCH, 11.6 * Beamline.INCH]
+        collimator_us_top_dimensions = [5.19 * Beamline.INCH, 42.76 * Beamline.INCH, 32. * Beamline.INCH]
+
+        collimator_us_base_positions = [0., -6.19 * Beamline.INCH, 0.]
+        collimator_us_bottom_positions = [0., -(1. + 5.19 / 4.) * Beamline.INCH, 7.62 * Beamline.INCH]
+        collimator_us_middle_1_positions = [296. / 2. + 67.29, 0., 7.62 * Beamline.INCH]
+        collimator_us_middle_2_positions = [-296. / 2. - 67.29, 0., 7.62 * Beamline.INCH]
+        collimator_us_top_positions = [0., (1. + 5.19 / 2.) * Beamline.INCH, 7.62 * Beamline.INCH]
+
+        collimator_us_z_offset = (29. / 2. + 7.62) * Beamline.INCH
+        collimator_us_theta_offset = 1.97
+        collimator_us_middle_1_theta = self.us_theta + collimator_us_theta_offset
+        collimator_us_middle_2_theta = self.us_theta - collimator_us_theta_offset
+
+        collimator_us_parts = [
+            collimator_us_base_positions,
+            collimator_us_bottom_positions,
+            collimator_us_middle_1_positions,
+            collimator_us_middle_2_positions,
+            collimator_us_top_positions
+        ]
+        for collimator_us_part in collimator_us_parts:
+            collimator_us_part[2] += collimator_us_z_offset
+        x_offset = tan(self.us_theta * pi / 180.) * collimator_us_middle_1_positions[2]
+        for collimator_us_part in collimator_us_parts:
+            collimator_us_part[0] += x_offset
+
+        self.f_out.write('box collimator_us_base height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_us_base_dimensions[0], collimator_us_base_dimensions[1], collimator_us_base_dimensions[2], self.kill))
+        self.f_out.write('box collimator_us_bottom height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_us_bottom_dimensions[0], collimator_us_bottom_dimensions[1], collimator_us_bottom_dimensions[2], self.kill))
+        self.f_out.write('box collimator_us_middle height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_us_middle_dimensions[0], collimator_us_middle_dimensions[1], collimator_us_middle_dimensions[2], self.kill))
+        self.f_out.write('box collimator_us_top height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_us_top_dimensions[0], collimator_us_top_dimensions[1], collimator_us_top_dimensions[2], self.kill))
+
+        self.f_out.write('place collimator_us_base rename=collimator_us_base x={} y={} z={}\n'.format(collimator_us_base_positions[0], collimator_us_base_positions[1], collimator_us_base_positions[2]))
+        self.f_out.write('place collimator_us_bottom rename=collimator_us_bottom x={} y={} z={}\n'.format(collimator_us_bottom_positions[0], collimator_us_bottom_positions[1], collimator_us_bottom_positions[2]))
+        self.f_out.write('place collimator_us_middle rename=collimator_us_middle_1 x={} y={} z={} rotation=y{}\n'.format(collimator_us_middle_1_positions[0], collimator_us_middle_1_positions[1], collimator_us_middle_1_positions[2], collimator_us_middle_1_theta))
+        self.f_out.write('place collimator_us_middle rename=collimator_us_middle_2 x={} y={} z={} rotation=y{}\n'.format(collimator_us_middle_2_positions[0], collimator_us_middle_2_positions[1], collimator_us_middle_2_positions[2], collimator_us_middle_2_theta))
+        self.f_out.write('place collimator_us_top rename=collimator_us_top x={} y={} z={}\n'.format(collimator_us_top_positions[0], collimator_us_top_positions[1], collimator_us_top_positions[2]))
+
     def write_wc(self):
         wire_chamber_detector_dimensions = [125., 25., 128.]
         wire_chamber_frame_vertical_dimensions = [254., 25., 63.]
@@ -309,8 +350,8 @@ class Beamline:
 
     def write_cherenkov(self):
         self.cherenkov.theta = self.us_theta + self.ds_theta
-        self.f_out.write('virtualdetector nova radius={} length={} color=0.9,0.9,0.7\n'.format(100, self.cherenkov.length))
-        self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y{}\n'.format(self.cherenkov.x, self.cherenkov.y, self.cherenkov.z, self.cherenkov.theta))
+        self.f_out.write('virtualdetector cherenkov radius={} length={} color=0.9,0.9,0.7\n'.format(100, self.cherenkov.length))
+        self.f_out.write('place nova rename=cherenkov x={} y={} z={} rotation=y{}\n'.format(self.cherenkov.x, self.cherenkov.y, self.cherenkov.z, self.cherenkov.theta))
 
     def write_collimator_ds(self):
         collimator_ds_bottom_dimensions = [8.5 * Beamline.INCH, 36. * Beamline.INCH, 30. * Beamline.INCH]
@@ -345,6 +386,7 @@ class Beamline:
         self.f_out.write('trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton\n')
 
         self.write_target()
+        self.write_collimator_us()
         self.write_wc()
         self.write_magnet()
         self.write_collimator_ds()
