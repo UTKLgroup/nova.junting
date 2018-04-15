@@ -33,11 +33,12 @@ class Beamline:
 
     def __init__(self):
         self.figure_dir = None
-        self.us_theta = -16.   # degree
-        self.ds_theta = 16.    # degree
+        self.us_theta = -16.    # degree
+        self.ds_theta = 16.     # degree
         self.f_out = open('beamline.py.in', 'w')
         self.screen_shot = False
         self.kill = 1
+        self.magnet_by = 0.9    # B field in tesla
 
         self.target = Detector('target')
         self.collimator_us = Detector('upstream collimator')
@@ -344,12 +345,10 @@ class Beamline:
     def write_magnet(self):
         magnet_field_dimensions = [3.5 * Beamline.INCH, 42 * Beamline.INCH, 17.75 * Beamline.INCH]
         magnet_iron_dimensions = [self.magnet.height, 42 * Beamline.INCH, 42 * Beamline.INCH]
-
-        magnet_by = 1.8  # B field in tesla
         self.magnet.theta = self.us_theta + self.ds_theta / 2.
 
         self.f_out.write('genericbend M1 fieldHeight={} fieldLength={} fieldWidth={} kill={} ironColor=1,0,0 ironHeight={} ironLength={} ironWidth={}\n'.format(magnet_field_dimensions[0], magnet_field_dimensions[1], magnet_field_dimensions[2], self.kill, magnet_iron_dimensions[0], magnet_iron_dimensions[1], magnet_iron_dimensions[2]))
-        self.f_out.write('place M1 By={} x={} y={} z={} rotation=Y{}\n'.format(magnet_by, self.magnet.x, self.magnet.y, self.magnet.z, self.magnet.theta))
+        self.f_out.write('place M1 By={} x={} y={} z={} rotation=Y{}\n'.format(self.magnet_by, self.magnet.x, self.magnet.y, self.magnet.z, self.magnet.theta))
 
     def write_tof(self):
         tof_us_dimensions = [150., 50.8, 150.]
