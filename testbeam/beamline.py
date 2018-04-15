@@ -68,10 +68,12 @@ class Beamline:
         ]
 
         self.read_position()
+        self.correct_position()
+
         self.read_nova_dimension()
         self.read_magnet_dimension()
-        self.read_collimator_us_dimension()
-        self.read_collimator_ds_dimension()
+        # self.read_collimator_us_dimension()
+        # self.read_collimator_ds_dimension()
         self.read_cherenkov_dimension()
 
     def __del__(self):
@@ -414,7 +416,6 @@ class Beamline:
         self.f_out.write('beam gaussian particle=pi+ firstEvent=$first lastEvent=$last sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=$momentum\n')
         self.f_out.write('trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton\n')
 
-        self.correct_position()
         self.write_target()
         self.write_collimator_us()
         self.write_wc()
