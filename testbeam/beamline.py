@@ -38,7 +38,7 @@ class Beamline:
         self.f_out = open('beamline.py.in', 'w')
         self.screen_shot = False
         self.kill = 1
-        self.magnet_by = 0.9    # B field in tesla
+        self.magnet_by = -0.9    # B field in tesla
 
         self.target = Detector('target')
         self.collimator_us = Detector('upstream collimator')
