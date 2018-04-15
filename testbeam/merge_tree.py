@@ -171,7 +171,7 @@ for name, tuple in INtuples.items():
 vars = ('x','y','z','t','Px','Py','Pz','PDGid','ParentID','EventID','TrackID')
 start_line = ('start_line',)
 WCs = ('wire_chamber_1_detector', 'wire_chamber_2_detector', 'wire_chamber_3_detector', 'wire_chamber_4_detector')
-Scints = ('tof_upstream', 'tof_downstream') # Horz removed
+Scints = ('tof_us', 'tof_ds', 'cherenkov', 'nova') # Horz removed
 
 ## One dictionary to rule them all. ##
 ## Unfortunately, ROOT won't process a single line defining a single struct for all these; too long.
