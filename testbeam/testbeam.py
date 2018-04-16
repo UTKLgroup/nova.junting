@@ -12,7 +12,7 @@ ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
-FIGURE_DIR = '/Users/juntinghuang/beamer/20180318_testbeam_new_setup/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180413_testbeam_120gev/figures'
 DATA_DIR = './data'
 
 
@@ -948,6 +948,8 @@ def save_particle_to_csv(filename):
 
     pid_momentums = {}
     particles = []
+    noise_particles = []
+
     keys = [key.GetName() for key in gDirectory.GetListOfKeys()]
     for key in keys:
         print('key = {}'.format(key))
@@ -955,44 +957,64 @@ def save_particle_to_csv(filename):
         for track in tf1.Get(key):
             track_count += 1
             pass_all = track.TrackPresentstart_line and \
-                       track.TrackPresenttof_upstream and \
+                       track.TrackPresenttof_us and \
                        track.TrackPresentwire_chamber_1_detector and \
                        track.TrackPresentwire_chamber_2_detector and \
                        track.TrackPresentwire_chamber_3_detector and \
                        track.TrackPresentwire_chamber_4_detector and \
-                       track.TrackPresenttof_downstream
+                       track.TrackPresenttof_ds and \
+                       track.TrackPresentcherenkov and \
+                       track.TrackPresentnova
 
             if track_count % 100000 == 0:
                 print('track_count = {}'.format(track_count))
 
-            if pass_all:
-                print('passed!')
-                particle = [track.EventID, track.TrackID, track.ttof_upstream, track.TrackPresenttof_downstream, track.xtof_downstream, track.ytof_downstream, track.ztof_downstream, track.ttof_downstream, track.Pxtof_downstream, track.Pytof_downstream, track.Pztof_downstream, track.PDGidtof_downstream, track.ParentIDtof_downstream]
-                particles.append(particle)
+            if track.TrackPresentnova:
+                particle = [
+                    track.EventID, track.TrackID,
+                    track.ttof_us, track.ttof_ds,
+                    track.xnova, track.ynova, track.znova, track.tnova, track.Pxnova, track.Pynova, track.Pznova, track.PDGidnova, track.ParentIDnova
+                ]
 
-                pid = track.PDGidtof_downstream
-                momentum = (track.Pxtof_downstream**2 + track.Pytof_downstream**2 + track.Pztof_downstream**2)**0.5
-                if pid not in pid_momentums:
-                    pid_momentums[pid] = [momentum]
+                if pass_all:
+                    print('passed!')
+                    particles.append(particle)
+
+                    pid = track.PDGidtof_ds
+                    momentum = (track.Pxtof_ds**2 + track.Pytof_ds**2 + track.Pztof_ds**2)**0.5
+                    if pid not in pid_momentums:
+                        pid_momentums[pid] = [momentum]
+                    else:
+                        pid_momentums[pid].append(momentum)
+                    print('track.PDGidtof_ds = {}'.format(track.PDGidtof_ds))
+                    print('momentum = {}'.format(momentum))
                 else:
-                    pid_momentums[pid].append(momentum)
-                print('track.PDGidtof_downstream = {}'.format(track.PDGidtof_downstream))
-                print('momentum = {}'.format(momentum))
+                    noise_particles.append(particle)
 
     with open('{}/{}.csv'.format(DATA_DIR, filename), 'w') as f_fraction:
         for particle in particles:
-            particle = list(map(str, particle))
-            f_fraction.write('{}\n'.format(','.join(particle)))
+            f_fraction.write('0,{}\n'.format(','.join(list(map(str, particle)))))
+        for noise_particle in noise_particles:
+            f_fraction.write('1,{}\n'.format(','.join(list(map(str, noise_particle)))))
 
     pprint(pid_momentums)
 
 
-def plot_particle_momentum(filename, x_min, x_max, y_max, **kwargs):
+def plot_particle_momentum(filename, x_min, x_max, **kwargs):
     bin_count = kwargs.get('bin_count', 50)
+    y_max =kwargs.get('y_max', 0)
+    log_y = kwargs.get('log_y', False)
+    plot_noise = kwargs.get('plot_noise', False)
 
     pid_momentums = {}
     with open('{}/{}'.format(DATA_DIR, filename)) as f_csv:
         for row in csv.reader(f_csv, delimiter=','):
+            is_noise = int(row[0])
+            if plot_noise and not is_noise:
+                continue
+            if not plot_noise and is_noise:
+                continue
+
             pid = int(float(row[-2]))
             px = float(row[-5])
             py = float(row[-4])
@@ -1004,9 +1026,11 @@ def plot_particle_momentum(filename, x_min, x_max, y_max, **kwargs):
             else:
                 pid_momentums[pid].append(momentum)
 
+    pid_counts = []
     pid_hists = {}
     h_all = TH1D('h_all', 'h_all', bin_count, x_min, x_max)
     for pid, momentums in pid_momentums.items():
+        pid_counts.append([pid, len(momentums)])
         hist = TH1D('h_{}'.format(pid), 'h_{}'.format(pid), 50, x_min, x_max)
         for momentum in momentums:
             hist.Fill(momentum)
@@ -1016,35 +1040,49 @@ def plot_particle_momentum(filename, x_min, x_max, y_max, **kwargs):
     c1 = TCanvas('c1', 'c1', 800, 800)
     set_margin()
     gStyle.SetOptStat(0)
+    if log_y:
+        gPad.SetLogy()
 
-    pids = pid_hists.keys()
     colors = [
         kBlack,
         kRed + 2,
+        kMagenta + 2,
+        kViolet + 2,
         kBlue + 2,
+        kAzure + 2,
+        kCyan + 2,
+        kTeal + 2,
         kGreen + 2,
-        kMagenta + 2
+        kSpring + 2,
+        kYellow + 2,
+        kOrange + 2
     ]
 
-    # h_stack = THStack('h_stack', 'h_stack')
-    lg1 = TLegend(0.575, 0.6, 0.84, 0.84)
+    lg1 = None
+    if plot_noise:
+        lg1 = TLegend(0.4, 0.5, 0.7, 0.87)
+    else:
+        lg1 = TLegend(0.575, 0.6, 0.84, 0.84)
     set_legend_style(lg1)
 
-    pids = sorted(pids)
+    pid_counts = sorted(pid_counts, key=lambda x: x[1], reverse=True)
+    pids = [pid_count[0] for pid_count in pid_counts]
     for i, pid in enumerate(pids):
         hist = pid_hists[pid]
         set_h1_style(hist)
         hist.SetLineColor(colors[i])
-        # h_stack.Add(hist)
-        # hist.SetFillColor(colors[i])
 
-        lg1.AddEntry(hist, '{} ({:.0f})'.format(PDG.GetParticle(pid).GetName(), hist.GetEntries()), 'l')
+        if plot_noise:
+            lg1.AddEntry(hist, '{} ({:.0f}, {:.0f} MeV)'.format(PDG.GetParticle(pid).GetName(), hist.GetEntries(), hist.GetMean()), 'l')
+        else:
+            lg1.AddEntry(hist, '{} ({:.0f})'.format(PDG.GetParticle(pid).GetName(), hist.GetEntries()), 'l')
 
         if i == 0:
             hist.Draw()
             hist.GetXaxis().SetTitle('Momentum (MeV)')
             hist.GetYaxis().SetTitle('Particle Count')
-            hist.GetYaxis().SetRangeUser(0, y_max)
+            if y_max:
+                hist.GetYaxis().SetRangeUser(0, y_max)
         else:
             hist.Draw('sames')
 
@@ -1052,16 +1090,14 @@ def plot_particle_momentum(filename, x_min, x_max, y_max, **kwargs):
     latex.SetNDC()
     latex.SetTextFont(43)
     latex.SetTextSize(28)
-    latex.DrawLatex(0.59, 0.42, 'rms = {:.0f} MeV'.format(h_all.GetRMS()))
-    latex.DrawLatex(0.59, 0.48, 'mean = {:.0f} MeV'.format(h_all.GetMean()))
-    latex.DrawLatex(0.59, 0.54, 'total entry = {:.0f}'.format(h_all.GetEntries()))
-
+    if not plot_noise:
+        latex.DrawLatex(0.59, 0.42, 'rms = {:.0f} MeV'.format(h_all.GetRMS()))
+        latex.DrawLatex(0.59, 0.48, 'mean = {:.0f} MeV'.format(h_all.GetMean()))
+        latex.DrawLatex(0.59, 0.54, 'total entry = {:.0f}'.format(h_all.GetEntries()))
     lg1.Draw()
-    # set_h1_style(h_stack)
-    # h_stack.Draw()
 
     c1.Update()
-    c1.SaveAs('{}/plot_particle_momentum.{}.pdf'.format(FIGURE_DIR, filename))
+    c1.SaveAs('{}/plot_particle_momentum.{}.plot_noise_{}.pdf'.format(FIGURE_DIR, filename, plot_noise))
     input('Press any key to continue.')
 
 
@@ -1462,11 +1498,16 @@ def plot_particle_angle(filename):
     input('Press any key to continue.')
 
 
+# 20180413_testbeam_120gev
+# save_particle_to_csv('beamline.py.in.job_1_100.10k_per_job.b_-0.9T.cherenkov.root')
+# plot_particle_momentum('beamline.py.in.job_1_100.10k_per_job.b_-0.9T.cherenkov.root.csv', 800, 2000)
+plot_particle_momentum('beamline.py.in.job_1_100.10k_per_job.b_-0.9T.cherenkov.root.csv', 0, 3000, log_y=True, plot_noise=True)
+
 # 20180318_testbeam_new_setup
 # plot_time_of_flight(distance=12.8, y_min=3.e4, y_max=5.e5, canvas_height=600)
 # plot_time_of_flight_diff(distance=12.8, y_max=5e6, canvas_height=600)
 # plot_time_of_flight_mc(distance=6.075)
-plot_time_of_flight_mc(distance=12.8)
+# plot_time_of_flight_mc(distance=12.8)
 # save_particle_to_csv('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.45T.10m.root')
 # save_particle_to_csv('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.9T.10m.root')
 # plot_particle_momentum('beam.py.in.10_spill.job_1_300.10k_per_job.b_-0.45T.10m.root.csv', 300, 1000, 22)
