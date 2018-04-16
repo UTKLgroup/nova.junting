@@ -1082,7 +1082,7 @@ def plot_particle_momentum(filename, x_min, x_max, **kwargs):
             hist.GetXaxis().SetTitle('Momentum (MeV)')
             hist.GetYaxis().SetTitle('Particle Count')
             if y_max:
-                hist.GetYaxis().SetRangeUser(0, y_max)
+                hist.GetYaxis().SetRangeUser(0 if not log_y else 0.5, y_max)
         else:
             hist.Draw('sames')
 
@@ -1498,7 +1498,7 @@ def plot_particle_angle(filename):
     input('Press any key to continue.')
 
 
-def plot_noise_particle_xy(filename, **kwargs):
+def plot_noise_particle(filename, **kwargs):
     log_y = kwargs.get('log_y', False)
 
     width = 2606.2 / 10.       # cm
@@ -1545,26 +1545,40 @@ def plot_noise_particle_xy(filename, **kwargs):
         h1.GetXaxis().SetTitleOffset(1.8)
         h1.GetYaxis().SetTitleOffset(2.)
         c1.Update()
-        c1.SaveAs('{}/plot_noise_particle_y_x.pid_{}.pdf'.format(FIGURE_DIR, pid))
+        c1.SaveAs('{}/plot_noise_particle_y_x.{}.pid_{}.pdf'.format(FIGURE_DIR, filename, PDG.GetParticle(pid).GetName()))
 
-    # for pid, h1 in pid_momentums_x_hists.items():
-    #     set_h2_style(h1)
-    #     h1.Draw('colz')
-    #     h1.GetXaxis().SetTitle('X (cm)')
-    #     h1.GetYaxis().SetTitle('Y (cm)')
-    #     h1.GetXaxis().SetTitleOffset(1.8)
-    #     h1.GetYaxis().SetTitleOffset(2.)
-    #     c1.Update()
-    #     c1.SaveAs('{}/plot_noise_particle_y_x.pid_{}.pdf'.format(FIGURE_DIR, pid))
+    for pid, h1 in pid_momentum_x_hists.items():
+        set_h2_style(h1)
+        h1.Draw('colz')
+        h1.GetXaxis().SetTitle('X (cm)')
+        h1.GetYaxis().SetTitle('Momentum (MeV)')
+        h1.GetXaxis().SetTitleOffset(1.8)
+        h1.GetYaxis().SetTitleOffset(2.)
+        c1.Update()
+        c1.SaveAs('{}/plot_noise_particle_momentum_x.{}.pid_{}.pdf'.format(FIGURE_DIR, filename, PDG.GetParticle(pid).GetName()))
     input('Press any key to continue.')
 
 
+def compare_particle_count():
+    protons = [26479, 2223, 2317, 2239, 1992, 187, 74, 45, 35]
+    pis = [16287, 1328, 1287, 1263, 1123, 100, 51, 24, 22]
+    for i in range(len(protons)):
+        print('(protons[i] - pis[i]) / pis[i] = {:.1f}'.format((protons[i] - pis[i]) / pis[i] * 100.))
+    print('sum(protons) = {}'.format(sum(protons)))
+    print('sum(pis) = {}'.format(sum(pis)))
+    print('(sum(protons) - sum(pis)) / sum(pis) = {}'.format((sum(protons) - sum(pis)) / sum(pis)))
+
 # 20180413_testbeam_120gev
-# save_particle_to_csv('beamline.py.in.job_1_100.10k_per_job.b_-0.9T.cherenkov.root')
-# plot_particle_momentum('beamline.py.in.job_1_100.10k_per_job.b_-0.9T.cherenkov.root.csv', 800, 2000)
-# plot_particle_momentum('beamline.py.in.job_1_100.10k_per_job.b_-0.9T.cherenkov.root.csv', 0, 3000, log_y=True, plot_noise=True)
-gStyle.SetOptStat(0)
-plot_noise_particle_xy('beamline.py.in.job_1_100.10k_per_job.b_-0.9T.cherenkov.root.csv')
+# save_particle_to_csv('beamline.py.in.job_1_900.10k_per_job.b_-0.9T.proton.root')
+# save_particle_to_csv('beamline.py.in.job_1_900.10k_per_job.b_-0.9T.pi+.root')
+# plot_particle_momentum('beamline.py.in.job_1_900.10k_per_job.b_-0.9T.proton.root.csv', 800, 1500, y_max=25)
+# plot_particle_momentum('beamline.py.in.job_1_900.10k_per_job.b_-0.9T.pi+.root.csv', 800, 1500, y_max=15)
+# plot_particle_momentum('beamline.py.in.job_1_900.10k_per_job.b_-0.9T.proton.root.csv', 0, 3000, log_y=True, y_max=500000, plot_noise=True)
+# plot_particle_momentum('beamline.py.in.job_1_900.10k_per_job.b_-0.9T.pi+.root.csv', 0, 3000, log_y=True, y_max=500000, plot_noise=True)
+# gStyle.SetOptStat(0)
+# plot_noise_particle('beamline.py.in.job_1_900.10k_per_job.b_-0.9T.proton.root.csv')
+# plot_noise_particle('beamline.py.in.job_1_900.10k_per_job.b_-0.9T.pi+.root.csv')
+compare_particle_count()
 
 # 20180318_testbeam_new_setup
 # plot_time_of_flight(distance=12.8, y_min=3.e4, y_max=5.e5, canvas_height=600)
