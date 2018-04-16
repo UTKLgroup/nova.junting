@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////
 /// \brief  GENIE neutron oscillation event generator.
 ///         Please ignore the warnings of 'hides overloaded virtual
-///         function [-Woverloaded-virtual]', as it is harmless and
-///         has been fixed in more recent releases of GENIE. It will
-///         disappear when NOvA progresses to use more recent versions
-///         of GENIE in the future.
+///         function [-Woverloaded-virtual]' when compiling, as it is
+///         harmless has been fixed in more recent releases of GENIE.
+///         It will disappear when NOvA progresses to use more recent
+///         versions of GENIE in the future.
 /// \author junting@utexas.edu
 /// \date   2018/01/26
 ////////////////////////////////////////////////////////////////////////

@@ -46,10 +46,10 @@ physics:
  }
 
  # simulate: [ generator, geantgen, photrans, daq, rns ]
- # simulate: [ generator ]
+ simulate: [ generator ]
  # simulate: [ generator, geantgen ]
  # simulate: [ generator, geantgen, photrans, daq ]
- simulate: [ generator, geantgen, photrans, daq, calhit, slicer ]
+ # simulate: [ generator, geantgen, photrans, daq, calhit, slicer ]
  stream1:  [ metadata, out1 ]
 
  trigger_paths: [ simulate ] 
@@ -62,7 +62,8 @@ outputs:
  {
    module_type: RootOutput
    fileName:    "genie_noscgen.root"
-   SelectEvents:{ SelectEvents: [ simulate ] }
+   # SelectEvents:{ SelectEvents: [ simulate ] }
+   SelectEvents:[ simulate ]
  }
 }
 
