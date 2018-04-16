@@ -219,7 +219,7 @@ class Beamline:
         gr.GetYaxis().SetNdivisions(505, 1)
         gr.GetXaxis().SetNdivisions(508, 1)
 
-        lg1 = TLegend(0.48, 0.33, 0.87, 0.86)
+        lg1 = TLegend(0.5, 0.33, 0.87, 0.86)
         set_legend_style(lg1)
         lg1.SetTextSize(22)
         lg1.SetMargin(0.15)
@@ -236,7 +236,7 @@ class Beamline:
             markers[i].SetMarkerSize(2.)
             markers[i].Draw()
 
-            name = '{} ({:.1f}, {:.1f})'.format(detector.name, detector.z, detector.x)
+            name = '{} ({:.1f}, {:.1f})'.format(detector.name, detector.z / 10., detector.x / 10.)
             lg1.AddEntry(markers[i], name, 'p')
 
         length = 10.
@@ -244,7 +244,7 @@ class Beamline:
         nova_detector_line.SetLineStyle(2)
         nova_detector_line.SetLineWidth(2)
         nova_detector_line.Draw()
-        lg1.AddEntry(nova_detector_line, 'NOvA detector front ({:.1f}, {:.1f})'.format(self.nova.z, self.nova.x), 'l')
+        lg1.AddEntry(nova_detector_line, 'NOvA detector front ({:.1f}, {:.1f})'.format(self.nova.z / 10., self.nova.x / 10.), 'l')
 
         lg1.Draw()
         c1.Update()
@@ -443,6 +443,6 @@ class Beamline:
 
 beamline = Beamline()
 beamline.figure_dir = '/Users/juntinghuang/beamer/20180413_testbeam_120gev/figures'
-# beamline.plot_position()
+beamline.plot_position()
 # beamline.screen_shot = True
-beamline.write()
+# beamline.write()
