@@ -1559,6 +1559,48 @@ def plot_noise_particle(filename, **kwargs):
     input('Press any key to continue.')
 
 
+def plot_trigger_particle(filename):
+    width = 2606.2 / 10.       # cm
+    half_width = width / 2.    # cm
+    x0 = -1354.4 / 10.         # cm
+    y0 = 0.
+    margin = 20.
+    h1 = TH2D('h1', 'h1', 200, x0 - half_width - margin, x0 + half_width + margin, 200, y0 - half_width - margin, y0 + half_width + margin)
+    with open('{}/{}'.format(DATA_DIR, filename)) as f_csv:
+        for row in csv.reader(f_csv, delimiter=','):
+            is_noise = int(row[0])
+            if is_noise:
+                continue
+
+            pid = int(float(row[-2]))
+            px = float(row[-5])
+            py = float(row[-4])
+            pz = float(row[-3])
+            momentum = (px**2 + py**2 + pz**2)**0.5
+            x = float(row[-9])
+            y = float(row[-8])
+            z = float(row[-7])
+
+            h1.Fill(x / 10., y / 10.)
+
+    c1 = TCanvas('c1', 'c1', 800, 800)
+    set_margin()
+    set_h2_color_style()
+    gPad.SetRightMargin(0.15)
+
+    set_h2_style(h1)
+    h1.Draw('colz')
+    h1.GetXaxis().SetRangeUser(-215, -65)
+    h1.GetYaxis().SetRangeUser(-75, 75)
+    h1.GetXaxis().SetTitle('X (cm)')
+    h1.GetYaxis().SetTitle('Y (cm)')
+    h1.GetXaxis().SetTitleOffset(1.8)
+    h1.GetYaxis().SetTitleOffset(2.)
+    c1.Update()
+    c1.SaveAs('{}/plot_trigger_particle.{}.pdf'.format(FIGURE_DIR, filename))
+    input('Press any key to continue.')
+
+
 def compare_particle_count():
     protons = [26479, 2223, 2317, 2239, 1992, 187, 74, 45, 35]
     pis = [16287, 1328, 1287, 1263, 1123, 100, 51, 24, 22]
@@ -1567,6 +1609,7 @@ def compare_particle_count():
     print('sum(protons) = {}'.format(sum(protons)))
     print('sum(pis) = {}'.format(sum(pis)))
     print('(sum(protons) - sum(pis)) / sum(pis) = {}'.format((sum(protons) - sum(pis)) / sum(pis)))
+
 
 # 20180413_testbeam_120gev
 # save_particle_to_csv('beamline.py.in.job_1_900.10k_per_job.b_-0.9T.proton.root')
@@ -1578,7 +1621,9 @@ def compare_particle_count():
 # gStyle.SetOptStat(0)
 # plot_noise_particle('beamline.py.in.job_1_900.10k_per_job.b_-0.9T.proton.root.csv')
 # plot_noise_particle('beamline.py.in.job_1_900.10k_per_job.b_-0.9T.pi+.root.csv')
-compare_particle_count()
+# compare_particle_count()
+# plot_trigger_particle('beamline.py.in.job_1_900.10k_per_job.b_-0.9T.proton.root.csv')
+plot_trigger_particle('beamline.py.in.job_1_900.10k_per_job.b_-0.9T.pi+.root.csv')
 
 # 20180318_testbeam_new_setup
 # plot_time_of_flight(distance=12.8, y_min=3.e4, y_max=5.e5, canvas_height=600)
