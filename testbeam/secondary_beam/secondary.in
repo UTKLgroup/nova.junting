@@ -124,13 +124,16 @@ place Vac fieldLength=305 ironLength=305 z=15035.807  y=335.47 rotation=x-1.1
 place Vac fieldLength=305 ironLength=305 z=18388.15  y=393.051 rotation=x-0.95
 
 #---Scraper1----aperture 5*3in
-box Scrap_Steel height=127 width=457.2 length=997 color=$scraperColor material=Al
-place Scrap_Steel z=22393.072 x=266.7 y=445.9224 rotation=x-0.65
-place Scrap_Steel z=22393.072 x=-266.7 y=445.9224 rotation=x-0.65
-box Scrap_ConcrUp height=914.4 width=914.4 length=997 color=$scraperColor material=CONCRETE
-place Scrap_ConcrUp z=22393.072 y=966.7224 rotation=x-0.65
-box Scrap_ConcrDown height=1828.8 width=914.4 length=997 color=$scraperColor material=CONCRETE
-place Scrap_ConcrDown z=22393.072 y=-532.0776 rotation=x-0.65
+group Scraper1
+  box Scrap_Steel height=127 width=457.2 length=997 color=$scraperColor material=Al
+  box Scrap_ConcrUp height=914.4 width=914.4 length=997 color=$scraperColor material=CONCRETE
+  box Scrap_ConcrDown height=1828.8 width=914.4 length=997 color=$scraperColor material=CONCRETE
+  place Scrap_Steel rename=+_steel_left x=266.7 z=498.5
+  place Scrap_Steel rename=+_steel_right x=-266.7 z=498.5
+  place Scrap_ConcrUp rename=+_concrete_up y=520.7 z=498.5
+  place Scrap_ConcrDown rename=+_concrete_down y=-977.9 z=498.5
+endgroup
+place Scraper1 rename=Scraper1 y=445.9224 z=22393.072 rotation=x-0.65
 #----------------
 
 # place Det rename=Scraper1 z=23050 y=775
