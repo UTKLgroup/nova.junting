@@ -6,7 +6,7 @@
 physics QGSP_BIC
 
 param worldMaterial=AIR
-param histoFile=LAPPD_MC_1g.root
+#param histoFile=LAPPD_MC_1g.root
 param inch=25.4
 param ft=304.8
 param p=64 #selected momentum in momentum
@@ -20,12 +20,12 @@ g4ui when=4 "/vis/viewer/set/background 1 1 1"
 g4ui when=4 "vis/scene/add/axes 0 0 -1500 100000 mm"
 
 # Quadrupole currents
-param mc6q1i=-10.6906317
-param mc6q2i=-666.9531341
-param mc6q3i=70.78712183
-param mc6q4i=-43.38851909
-param mc6q5i=694.3136975
-param mc6q6i=-307.4620677
+param mc6q1i=30.12536321
+param mc6q2i=-618.9565028
+param mc6q3i=30.61281031
+param mc6q4i=-39.96599562
+param mc6q5i=577.1444699
+param mc6q6i=-41.72889491
 
 # Transfer functions [(T/m)/A]
 param xfer_3Q120=0.18570791858
@@ -38,8 +38,6 @@ param mc6Q3g=$mc6q1i*$xfer_3Q120
 param mc6Q4g=$mc6q1i*$xfer_3Q120
 param mc6Q5g=$mc6q1i*$xfer_4Q120
 param mc6Q6g=$mc6q1i*$xfer_3Q120
-
-#  Nominal maximum beam intensity is 300K particles/spill
 
 beam gaussian particle=proton nEvents=100000 z=-200 sigmaX=2.0 sigmaY=2.0 y=-8 rotation=x-1.31 meanMomentum=120000.0 #sigmaP=0.0
 
@@ -214,7 +212,7 @@ place CollH z=58000 y=1929.6
 place CollH z=58000 y=-480
 
 #----------------------MC7-----------------------------------------
-place Det rename=NovaTarget z=104000 y=775 #NOvA target
+place Det rename=NovaTarget z=108960 y=775 #NOvA target
 
 printf z=104000 file=Det2.txt require=abs(x)<500&&(y)<1275&&(y)>275 \
   " %10.3lf %10.3lf  %7.1f  %10.4f %10.4f %10.2f  \
