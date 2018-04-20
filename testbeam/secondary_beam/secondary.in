@@ -154,14 +154,14 @@ genericbend Mom_Coll fieldHeight=20.35 fieldWidth=127 fieldLength=1676.4 fieldMa
 
 place Mom_Coll z=33049.7944 y=568.15 rotation=x-0.656
 
-#---Scraper2----
-box Scrap2_Steel height=50.8 width=457.2 length=1003.40 color=$scraperColor material=Al
-place Scrap2_Steel z=34402.4968 x=254 y=583.692 rotation=x-0.66
-place Scrap2_Steel z=34402.4968 x=-254 y=583.692 rotation=x-0.66
-box Scrap2_ConcrUp height=914.4 width=914.4 length=997 color=$scraperColor material=CONCRETE
-place Scrap2_ConcrUp z=34402.4968 y=1066.3240 rotation=x-0.66
-box Scrap2_ConcrDown height=1828.8 width=914.4 length=997 color=$scraperColor material=CONCRETE
-place Scrap2_ConcrDown z=34402.4968 y=-356.1704 rotation=x-0.66
+#---Scraper3----
+box Scrap3_Steel height=50.8 width=457.2 length=1003.40 color=$scraperColor material=Al
+place Scrap3_Steel z=34402.4968 x=254 y=583.692 rotation=x-0.66
+place Scrap3_Steel z=34402.4968 x=-254 y=583.692 rotation=x-0.66
+box Scrap3_ConcrUp height=914.4 width=914.4 length=997 color=$scraperColor material=CONCRETE
+place Scrap3_ConcrUp z=34402.4968 y=1066.3240 rotation=x-0.66
+box Scrap3_ConcrDown height=1828.8 width=914.4 length=997 color=$scraperColor material=CONCRETE
+place Scrap3_ConcrDown z=34402.4968 y=-356.1704 rotation=x-0.66
 #----------------
 
 place Det rename=Scraper2 z=36000 y=583
