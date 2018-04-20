@@ -77,7 +77,7 @@ place Coll_All z=3148 x=-241.3 y=71.95 rotation=x-0.99
 place Coll_Concr z=3148 y=545.096 rotation=x-0.99
 place Coll_Concr z=3148 y=-401.196 rotation=x-0.99
 
-place Det rename=CollUpstream z=4500 y=775
+# place Det rename=CollUpstream z=4500 y=775
 
 #------------------------------------------------------------
 
@@ -133,7 +133,7 @@ box Scrap_ConcrDown height=1828.8 width=914.4 length=997 color=$scraperColor mat
 place Scrap_ConcrDown z=22393.072 y=-532.0776 rotation=x-0.65
 #----------------
 
-place Det rename=Scraper1 z=23050 y=775
+# place Det rename=Scraper1 z=23050 y=775
 
 #Quad Q3
 
@@ -164,7 +164,7 @@ box Scrap3_ConcrDown height=1828.8 width=914.4 length=997 color=$scraperColor ma
 place Scrap3_ConcrDown z=34402.4968 y=-356.1704 rotation=x-0.66
 #----------------
 
-place Det rename=Scraper2 z=36000 y=583
+# place Det rename=Scraper2 z=36000 y=583
 
 #Trim2
 
@@ -180,7 +180,7 @@ place Q3 rename=Q4 z=40008.38 y=648.0048 rotation=x-0.659 gradient=$mc6Q4g
 
 place MC6D2 rename=MC6D3 z=43360.88 y=681.8376 By=$p*282.7*0.0008886256/40 rotation=z90,x-0.4927
 
-place Det rename=D3 z=45000 y=583
+# place Det rename=D3 z=45000 y=583
 
 #Quad Q5
 
@@ -195,7 +195,7 @@ place MC6D2 rename=MC6D4 z=50066.48 y=720.5472 By=$p*282.7*0.0008886256/40 rotat
 
 place Q2 rename=Q6 z=53419.28 y=724.8144 gradient=$mc6Q6g
 
-place Det rename=CollDownstream z=56000 y=775
+# place Det rename=CollDownstream z=56000 y=775
 
 #printf z=56000 file=Det1.txt require=abs(x)<500&&(y)<1275&&(y)>275 \
   " %10.3lf %10.3lf  %7.1f  %10.4f %10.4f %10.2f  \
@@ -212,7 +212,7 @@ place CollH z=58000 y=1929.6
 place CollH z=58000 y=-480
 
 #----------------------MC7-----------------------------------------
-place Det rename=NovaTarget z=108960 y=775 #NOvA target
+# place Det rename=NovaTarget z=108960 y=775 #NOvA target
 
 printf z=104000 file=Det2.txt require=abs(x)<500&&(y)<1275&&(y)>275 \
   " %10.3lf %10.3lf  %7.1f  %10.4f %10.4f %10.2f  \
