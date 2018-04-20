@@ -148,6 +148,19 @@ genericbend Trim fieldHeight=101.6 fieldWidth=101.6 fieldLength=762 fieldMateria
 place Trim rename=VT z=26931.24 y=499.871 By=0 rotation=z90,x-0.917
 place Trim rename=HT z=27998.04 y=515.417 rotation=x-0.917 By=0
 
+#---Scraper2----
+group Scraper2
+  box Scrap2_Steel height=101.6 width=457.2 length=1003.4 color=$scraperColor material=Al
+  box Scrap2_ConcrUp height=914.4 width=914.4 length=1003.4 color=$scraperColor material=CONCRETE
+  box Scrap2_ConcrDown height=1828.8 width=914.4 length=1003.4 color=$scraperColor material=CONCRETE
+  place Scrap2_Steel rename=+_steel_left x=279.4 z=501.7
+  place Scrap2_Steel rename=+_steel_right x=-279.4 z=501.7
+  place Scrap2_ConcrUp rename=+_concrete_up y=508. z=501.7
+  place Scrap2_ConcrDown rename=+_concrete_down y=-965.2 z=501.7
+endgroup
+place Scraper2 rename=Scraper2 y=524.3838 z=29232.5828 rotation=x-0.66
+#----------------
+
 #Collimator (variable height, no field)
 
 genericbend Mom_Coll fieldHeight=20.35 fieldWidth=127 fieldLength=1676.4 fieldMaterial=AIR ironLength=1676.4 ironHeight=295 ironWidth=397 ironColor=$collimatorColor By=0 fringe=0
