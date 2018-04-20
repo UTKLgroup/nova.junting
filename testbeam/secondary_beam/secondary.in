@@ -161,7 +161,7 @@ group Scraper2
   place Scrap2_ConcrUp rename=+_concrete_up y=508. z=501.7
   place Scrap2_ConcrDown rename=+_concrete_down y=-965.2 z=501.7
 endgroup
-place Scraper2 rename=Scraper2 y=524.3838 z=29232.5828 rotation=x-0.66
+place Scraper2 rename=Scraper2 y=529.6234 z=29236.4166 rotation=x-0.66
 #----------------
 
 #Collimator (variable height, no field)
