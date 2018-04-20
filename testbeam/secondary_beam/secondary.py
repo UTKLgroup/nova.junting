@@ -275,15 +275,16 @@ def plot_x_or_y(**kwargs):
 
 def compute_component_height():
     scraper_1 = [22393.072, 445.9224]
+    trim_horizontal = [27998.04, 515.417]
     scraper_3 = [34402.4968, 583.692]
     slope = (scraper_3[1] - scraper_1[1]) / (scraper_3[0] - scraper_1[0])
 
     rows = get_csv('digitize/scraper.csv')
-    distance = (rows[2][0] + rows[3][0]) / 2. - (rows[0][0] + rows[1][0]) / 2.
+    distance = (rows[4][0] + rows[5][0]) / 2. - (rows[2][0] + rows[3][0]) / 2.
     height = distance * slope
 
-    z = scraper_1[0] + distance
-    y = scraper_1[1] + height
+    z = trim_horizontal[0] + distance
+    y = trim_horizontal[1] + height
 
     print('z = {}'.format(z))
     print('y = {}'.format(y))
