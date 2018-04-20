@@ -1,4 +1,5 @@
 from rootalias import *
+from util import *
 import math
 from math import cos, pi, sqrt
 
@@ -272,10 +273,28 @@ def plot_x_or_y(**kwargs):
     input('Press any key to continue.')
 
 
+def compute_component_height():
+    scraper_1 = [22393.072, 445.9224]
+    scraper_3 = [34402.4968, 583.692]
+    slope = (scraper_3[1] - scraper_1[1]) / (scraper_3[0] - scraper_1[0])
+
+    rows = get_csv('digitize/scraper.csv')
+    distance = (rows[2][0] + rows[3][0]) / 2. - (rows[0][0] + rows[1][0]) / 2.
+    height = distance * slope
+
+    z = scraper_1[0] + distance
+    y = scraper_1[1] + height
+
+    print('z = {}'.format(z))
+    print('y = {}'.format(y))
+
+# add a scraper after MC6HT1 trim
+compute_component_height()
+
 # 20180331_secondary_beam
-gStyle.SetOptStat('emr')
+# gStyle.SetOptStat('emr')
 # plot_x_or_y(xy='y')
-plot_x_or_y(xy='x')
+# plot_x_or_y(xy='x')
 # plot_pid()
 # plot_p()
 # plot_pxpy()
