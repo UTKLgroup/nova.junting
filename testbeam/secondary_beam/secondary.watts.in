@@ -106,28 +106,48 @@ place EPB rename=MC6D2 z=20064.4 y=414.8328 By=$mc6db rotation=z90,x-0.8194
 #place Vac fieldLength=305 ironLength=305 z=18388.15  y=393.051 rotation=x-0.95
 
 #---Scraper1----aperture 5*3in
-box Scrap_Steel height=127 width=457.2 length=997 color=$scraperColor material=Al kill=$kill_aperture
-place Scrap_Steel z=22393.072 x=266.7 y=445.9224 rotation=x-0.65
-place Scrap_Steel z=22393.072 x=-266.7 y=445.9224 rotation=x-0.65
-box Scrap_ConcrUp height=914.4 width=914.4 length=997 color=$scraperColor material=CONCRETE kill=$kill_aperture
-place Scrap_ConcrUp z=22393.072 y=966.7224 rotation=x-0.65
-box Scrap_ConcrDown height=1828.8 width=914.4 length=997 color=$scraperColor material=CONCRETE kill=$kill_aperture
-place Scrap_ConcrDown z=22393.072 y=-532.0776 rotation=x-0.65
+group Scraper1
+  box Scrap_Steel height=127 width=457.2 length=997 color=$scraperColor material=Al
+  box Scrap_ConcrUp height=914.4 width=914.4 length=997 color=$scraperColor material=CONCRETE
+  box Scrap_ConcrDown height=1828.8 width=914.4 length=997 color=$scraperColor material=CONCRETE
+  place Scrap_Steel rename=+_steel_left x=266.7 z=498.5
+  place Scrap_Steel rename=+_steel_right x=-266.7 z=498.5
+  place Scrap_ConcrUp rename=+_concrete_up y=520.7 z=498.5
+  place Scrap_ConcrDown rename=+_concrete_down y=-977.9 z=498.5
+endgroup
+place Scraper1 rename=Scraper1 y=445.9224 z=22393.072 rotation=x-0.65
 #----------------
 
 place 3Q120 rename=Q3 z=24721.744 y=472.745 rotation=x-0.653 gradient=$mc6Q3g
 place 4430 rename=VT1 z=26931.24 y=499.871 By=0 rotation=z90,x-0.917
 place 4430 rename=HT1 z=27998.04 y=515.417 rotation=x-0.917 By=0
-place Mom_Coll z=33049.7944 y=568.15 rotation=x-0.656
 
 #---Scraper2----
-box Scrap2_Steel height=50.8 width=457.2 length=1003.40 color=$scraperColor material=Al kill=$kill_aperture
-place Scrap2_Steel z=34402.4968 x=254 y=583.692 rotation=x-0.66
-place Scrap2_Steel z=34402.4968 x=-254 y=583.692 rotation=x-0.66
-box Scrap2_ConcrUp height=914.4 width=914.4 length=997 color=$scraperColor material=CONCRETE kill=$kill_aperture
-place Scrap2_ConcrUp z=34402.4968 y=1066.3240 rotation=x-0.66
-box Scrap2_ConcrDown height=1828.8 width=914.4 length=997 color=$scraperColor material=CONCRETE kill=$kill_aperture
-place Scrap2_ConcrDown z=34402.4968 y=-356.1704 rotation=x-0.66
+group Scraper2
+  box Scrap2_Steel height=101.6 width=457.2 length=1003.4 color=$scraperColor material=Al
+  box Scrap2_ConcrUp height=914.4 width=914.4 length=1003.4 color=$scraperColor material=CONCRETE
+  box Scrap2_ConcrDown height=1828.8 width=914.4 length=1003.4 color=$scraperColor material=CONCRETE
+  place Scrap2_Steel rename=+_steel_left x=279.4 z=501.7
+  place Scrap2_Steel rename=+_steel_right x=-279.4 z=501.7
+  place Scrap2_ConcrUp rename=+_concrete_up y=508. z=501.7
+  place Scrap2_ConcrDown rename=+_concrete_down y=-965.2 z=501.7
+endgroup
+place Scraper2 rename=Scraper2 y=529.6234 z=29236.4166 rotation=x-0.66
+#----------------
+
+place Mom_Coll z=33049.7944 y=568.15 rotation=x-0.656
+
+#---Scraper3----
+group Scraper3
+  box Scrap3_Steel height=50.8 width=457.2 length=1003.4 color=$scraperColor material=Al
+  box Scrap3_ConcrUp height=914.4 width=914.4 length=1003.4 color=$scraperColor material=CONCRETE
+  box Scrap3_ConcrDown height=1828.8 width=914.4 length=1003.4 color=$scraperColor material=CONCRETE
+  place Scrap3_Steel rename=+_steel_left x=254 z=501.7
+  place Scrap3_Steel rename=+_steel_right x=-254 z=501.7
+  place Scrap3_ConcrUp rename=+_concrete_up y=482.6 z=501.7
+  place Scrap3_ConcrDown rename=+_concrete_down y=-939.8 z=501.7
+endgroup
+place Scraper3 rename=Scraper3 y=583.692 z=34402.4968 rotation=x-0.66
 #----------------
 
 place 4430 rename=VT2 z=36831.7784 y=610.2096 By=0 rotation=z90,x-0.664 kill=$kill_aperture
