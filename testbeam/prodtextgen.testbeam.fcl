@@ -1,0 +1,106 @@
+#include "services.fcl"
+#include "TextFileGen.fcl"
+#include "G4Gen.fcl"
+#include "ReadoutSim.fcl"
+#include "ImprovedTransport.fcl"
+#include "OccupiedSpillFilter.fcl"
+#include "Metadata.fcl"
+
+#include "CalHit.fcl"
+#include "Slicer4D.fcl"
+#include "BackTracker.fcl"
+#include "MultiHoughT.fcl"
+#include "ElasticArmsHS.fcl"
+#include "FuzzyKVertex.fcl"
+
+process_name: TextGen
+services:
+{
+   TFileService: { fileName: "text_hist.root" closeFileFast: false }
+   TimeTracker: {}
+   RandomNumberGenerator: {}
+   # @table::standard_services
+
+   Geometry:        @local::standard_geo
+   Calibrator:      @local::standard_calibrator
+   CMap:            @local::standard_cmap
+   BadChanList:     @local::standard_bad
+   # HoughCalc:       @local::hough
+   RunHistory:      @local::standard_runhistory
+   Detector:        @local::standard_detector
+   # LiveGeometry:    @local::standard_livegeo
+   FiberBrightness: @local::standard_fiberbrightness
+   MagneticField:   @local::no_mag
+   # IFDH:            @local::standard_ifdh
+}
+
+# services.Geometry: @local::nd_geo
+services.Geometry.GDML:      "/Geometry/gdml/neardet-2x2-2block-xtru-vacuum.gdml"
+# services.Geometry.GDML:      "/Geometry/gdml/testbeam-2x2-2block-xtru-vacuum.gdml"
+# services.Geometry.GDML:      "/Geometry/gdml/neardet-3x3-8block-xtru-vacuum-stagger.gdml"
+
+source:
+{
+   module_type: EmptyEvent
+   maxEvents:   10000
+   # firstRun:    1000001
+   # maxEvents:   1
+   firstRun:    1000101
+   firstSubRun: 1
+   firstEvent:  1
+}
+
+physics:
+{
+   producers:
+   {
+      generator: @local::standard_textfilegen
+      geantgen:  @local::standard_geant4
+      photrans:  @local::standard_photrans
+      daq:       @local::standard_rsim
+
+      calhit:        @local::standard_calhit
+      slicer:        @local::standard_slicer4d
+      multihough:    @local::standard_multihough
+      elasticarmshs: @local::standard_elasticarmshs
+      fuzzykvertex:  @local::standard_fuzzykvertex
+
+      rns:       { module_type: "RandomNumberSaver" }
+   }
+
+   filters:
+   {
+      occupied:  @local::standard_occupiedspillfilter
+   }
+
+   analyzers:
+   {
+      metadata: @local::standard_metadata
+   }
+
+   # simulate: [ generator, geantgen, photrans, daq, occupied, rns, calhit, slicer, multihough, elasticarmshs, fuzzykvertex ]
+   # simulate: [ generator, geantgen, photrans, daq, occupied, rns, calhit]
+   simulate: [ generator, geantgen, photrans, daq, calhit, slicer]
+   # simulate: [ generator, geantgen, photrans, daq, calhit]
+   # simulate: [ generator, geantgen, photrans, daq]
+   # simulate: [ generator, geantgen, photrans]
+   # simulate: [ generator, geantgen ]
+   # simulate: [ generator ]
+   # stream1:  [ metadata, out1 ]
+   stream1:  [ out1 ]
+
+   trigger_paths: [ simulate ]
+   end_paths:     [ stream1 ]
+}
+
+outputs:
+{
+   out1:
+   {
+      module_type: RootOutput
+      fileName: "text_gen.root"
+      SelectEvents: { SelectEvents: [ simulate ] }
+   }
+}
+
+# physics.producers.daq.nd.ForceGain: 100
