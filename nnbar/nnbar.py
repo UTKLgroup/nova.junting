@@ -812,11 +812,36 @@ def test_integral():
     print('h1.Integral(1, 3) = {}'.format(h1.Integral(1, 3)))
 
 
+def check_dungs_topology_cut():
+    countXWithSingleHit = 0
+    # cellNumbers = [10, 5, 10, 5, 5, 6, 10, 10]
+    # cellNumbers = [10, 5, 10, 5, 5, 6, 10]
+    cellNumbers = [10, 5, 10, 5, 5, 6, 10, 10, 10]
+    len_cellNumbers = len(cellNumbers)
+
+    for j in range(len_cellNumbers):
+        test = 0
+        for k in range(j + 1, len_cellNumbers):
+            if cellNumbers[k] == cellNumbers[j]:
+                k = len_cellNumbers
+            test = k
+            if k == len_cellNumbers:
+                break
+        if test == len_cellNumbers:
+            countXWithSingleHit += 1
+
+    print('countXWithSingleHit = {}'.format(countXWithSingleHit))
+    print('len_cellNumbers = {}'.format(len_cellNumbers))
+    print('countXWithSingleHit / len_cellNumbers = {}'.format(countXWithSingleHit / len_cellNumbers))
+
+# 20180506_nnbar_containment
+check_dungs_topology_cut()
+
 # 20180326_nnbar_width_length_ratio
-gStyle.SetOptStat(0)
+# gStyle.SetOptStat(0)
 # calculate_efficiency()
 # plot_daq_hit_colz('random_vertex_clean.2.root')
-plot_daq_hit('trigger_cube_cut_cosmic.root')
+# plot_daq_hit('trigger_cube_cut_cosmic.root')
 # plot_1d_cut('fMaxHitExtentCell', cosmic_filename='cube_cut_cosmic.root', signal_filename='cube_cut_clean.root', y_max=0.12, rebin=5, x_cut=140)
 # plot_1d_cut('fMinHitExtentPlane', cosmic_filename='cube_cut_cosmic.root', signal_filename='cube_cut_clean.root', y_max=0.15, x_max=80, rebin=1, x_cut=4)
 # plot_1d_cut('fXyAsymmetry', cosmic_filename='cube_cut_cosmic.root', signal_filename='cube_cut_clean.root', y_max=0.14, x_max=2., rebin=4, x_cut=1.)
