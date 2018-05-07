@@ -3,7 +3,7 @@ import math
 import numpy as np
 import random
 
-FIGURE_DIR = '/Users/juntinghuang/beamer/20180326_nnbar_width_length_ratio/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180506_nnbar_containment/figures'
 DATA_DIR = './data'
 
 exposure_0 = 2.45               # 1.e34 * neutron * year
@@ -835,7 +835,9 @@ def check_dungs_topology_cut():
     print('countXWithSingleHit / len_cellNumbers = {}'.format(countXWithSingleHit / len_cellNumbers))
 
 # 20180506_nnbar_containment
-check_dungs_topology_cut()
+# check_dungs_topology_cut()
+plot_1d_cut('fHitCosmicTopology', cosmic_filename='neutronosc_ddt_hist.multiple_cell_count.cosmic.root', signal_filename='neutronosc_ddt_hist.multiple_cell_count.signal.root', x_cut=0.1)
+
 
 # 20180326_nnbar_width_length_ratio
 # gStyle.SetOptStat(0)
