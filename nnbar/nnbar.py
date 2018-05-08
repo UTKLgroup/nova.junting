@@ -655,6 +655,8 @@ def plot_2d_cuts(histname, **kwargs):
     log_z = kwargs.get('log_z', True)
     x_max = kwargs.get('x_max', None)
     y_max = kwargs.get('y_max', None)
+    x_cut = kwargs.get('x_cut', 0.)
+    y_cut = kwargs.get('y_cut', 0.)
     cosmic_only = kwargs.get('cosmic_only', False)
     signal_only = kwargs.get('signal_only', False)
 
@@ -664,21 +666,35 @@ def plot_2d_cuts(histname, **kwargs):
     h_cosmic = tf_cosmic.Get('neutronoscana/{}'.format(histname))
     h_clean = tf_clean.Get('neutronoscana/{}'.format(histname))
 
-    print('h_cosmic.Integral() = {}'.format(h_cosmic.Integral()))
-    print('h_clean.Integral() = {}'.format(h_clean.Integral()))
+    if x_cut > 0. and y_cut > 0.:
+        x_cut_bin = h_cosmic.GetXaxis().FindBin(x_cut)
+        y_cut_bin = h_cosmic.GetYaxis().FindBin(y_cut)
+        print('x_cut_bin = {}'.format(x_cut_bin))
+        print('y_cut_bin = {}'.format(y_cut_bin))
+        print('h_cosmic.Integral() = {}'.format(h_cosmic.Integral()))
+        print('h_clean.Integral() = {}'.format(h_clean.Integral()))
+        print('1 - h_cosmic.Integral(1, x_cut_bin, 1, y_cut_bin) / h_cosmic.Integral() = {}'.format(1 - h_cosmic.Integral(1, x_cut_bin, 1, y_cut_bin) / h_cosmic.Integral()))
+        print('1 - h_clean.Integral(1, x_cut_bin, 1, y_cut_bin) / h_clean.Integral() = {}'.format(1 - h_clean.Integral(1, x_cut_bin, 1, y_cut_bin) / h_clean.Integral()))
+
     h_clean.Scale(1. / h_clean.Integral())
     h_cosmic.Scale(1. / h_cosmic.Integral())
 
-    # ellipse_a = 0.4
-    # ellipse_b = 0.09
-    # tf1 = TF1('ecllipse', '{0} * sqrt(1. - x * x / {1} / {1})'.format(ellipse_b, ellipse_a), 0, ellipse_a)
-    # tf1 = TF1('ecllipse', '{} * (1 - x / {})'.format(ellipse_b, ellipse_a), 0, ellipse_a)
-    x0 = 0.4
-    y0 = 0.12
-    # tf1 = TF1('ecllipse', '{} * pow(x - {}, 2)'.format(y0 / x0**2, x0), 0, x0)
-    equation = '{} * pow(x - {}, 3)'.format(-y0 / x0**3, x0)
+    # for width-length ratio
+    # x0 = 0.4
+    # y0 = 0.12
+    # equation = '{} * pow(x - {}, 3)'.format(-y0 / x0**3, x0)
+    # # -1.875 * pow(x - 0.4, 3)
+    # print('equation = {}'.format(equation))
+    # tf1 = TF1('tf1', equation, 0, x0)
+
+    # for multiple cell fraction
+    # equation = '0.05 * exp(-x / 0.05) + 0.05 * exp(-x / 0.2)'
+    # equation = '0.08 * exp(-x / 0.03) + 0.01'
+    # equation = '0.1 * exp(-x / 0.05) + 0.01'
+    equation = '0.1 * exp(-x / 0.05) + 0.02'
+    # equation = '0.11 * exp(-x / 0.05) + 0.02'
     print('equation = {}'.format(equation))
-    tf1 = TF1('tf1', equation, 0, x0)
+    tf1 = TF1('tf1', equation, 0, 1)
 
     tf1.SetLineWidth(3)
     tf1.SetLineColor(kRed)
@@ -835,9 +851,27 @@ def check_dungs_topology_cut():
     print('countXWithSingleHit / len_cellNumbers = {}'.format(countXWithSingleHit / len_cellNumbers))
 
 # 20180506_nnbar_containment
+gStyle.SetOptStat(0)
 # check_dungs_topology_cut()
-plot_1d_cut('fHitCosmicTopology', cosmic_filename='neutronosc_ddt_hist.multiple_cell_count.cosmic.root', signal_filename='neutronosc_ddt_hist.multiple_cell_count.signal.root', x_cut=0.1)
-
+# plot_1d_cut('fMultipleCellFractionY',
+#             cosmic_filename='MultipleCellFraction_occurrences_size_cosmic.root',
+#             signal_filename='MultipleCellFraction_occurrences_size_clean.root',
+#             x_cut=0.1)
+# plot_1d_cut('fMultipleCellFractionAverage',
+#             cosmic_filename='MultipleCellFraction_occurrences_size_cosmic.root',
+#             signal_filename='MultipleCellFraction_occurrences_size_clean.root',
+#             x_cut=0.05)
+# plot_1d_cut('fMultipleCellFractionX',
+#             cosmic_filename='MultipleCellFraction_occurrences_size_cosmic.root',
+#             signal_filename='MultipleCellFraction_occurrences_size_clean.root',
+#             x_cut=0.1)
+plot_2d_cuts('fMultipleCellFractionXY',
+             cosmic_filename='MultipleCellFraction_occurrences_size_cosmic.root',
+             signal_filename='MultipleCellFraction_occurrences_size_clean.root',
+             log_x=True, log_y=True, log_z=True,
+             x_max=1., y_max=1.,
+             x_cut=0.05, y_cut=0.05,
+             cosmic_only=False)
 
 # 20180326_nnbar_width_length_ratio
 # gStyle.SetOptStat(0)
