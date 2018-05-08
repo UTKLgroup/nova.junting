@@ -2,6 +2,7 @@ from rootalias import *
 import math
 import numpy as np
 import random
+import re
 
 FIGURE_DIR = '/Users/juntinghuang/beamer/20180506_nnbar_containment/figures'
 DATA_DIR = './data'
@@ -286,7 +287,9 @@ def plot(**kwargs):
     input('Press any key to continue.')
 
 
-def plot_daq_hit(filename):
+def plot_daq_hit(filename, **kwargs):
+    draw_containment = kwargs.get('draw_containment', False)
+
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
     h_x = tf.Get('neutronoscana/fDaqHitXView')
     h_y = tf.Get('neutronoscana/fDaqHitYView')
@@ -309,6 +312,17 @@ def plot_daq_hit(filename):
     h_x.GetXaxis().SetTitleSize(0)
     h_x.Draw('box')
 
+    if draw_containment:
+        lx_b = TLine(3, 3, 891, 3)
+        lx_t = TLine(3, 380, 891, 380)
+        lx_l = TLine(3, 3, 3, 380)
+        lx_r = TLine(891, 3, 891, 380)
+        lxs = [lx_b, lx_t, lx_l, lx_r]
+        for lx in lxs:
+            lx.SetLineWidth(1)
+            lx.SetLineColor(kRed)
+            lx.Draw('sames')
+
     c1.cd()
     pad2 = TPad('pad2', 'pad2', 0, 0, 1, 0.5)
     pad2.SetLeftMargin(0.1)
@@ -323,6 +337,19 @@ def plot_daq_hit(filename):
     h_y.GetYaxis().SetTitleOffset(1.3)
     h_y.GetXaxis().SetTitleOffset(2.2)
     h_y.Draw('box')
+
+    if draw_containment:
+        # top = 375
+        top = 347
+        ly_b = TLine(3, 3, 891, 3)
+        ly_t = TLine(3, top, 891, top)
+        ly_l = TLine(3, 3, 3, top)
+        ly_r = TLine(891, 3, 891, top)
+        lys = [ly_b, ly_t, ly_l, ly_r]
+        for ly in lys:
+            ly.SetLineWidth(1)
+            ly.SetLineColor(kRed)
+            ly.Draw('sames')
 
     c1.Update()
     c1.SaveAs('{}/plot_daq_hit.{}.pdf'.format(FIGURE_DIR, filename))
@@ -775,8 +802,8 @@ def calculate_trigger_rate():
     event_duration = 0.55e-3    # s
     exposure = event_count * event_duration
 
-    cut_names = ['pre-containment', 'containment', 'width-length ratio', 'max track length', 'cell hit count', 'XY view asymmetry', 'hit extent']
-    slice_counts = [106904, 12212., 185., 101., 79., 65., 61.]
+    cut_names = ['pre-containment', 'containment', 'width-length ratio', 'max track length', 'cell hit count', 'XY view asymmetry', 'hit extent', 'cell number multiplicity']
+    slice_counts = [106904, 12212., 185., 101., 79., 65., 61., 36.]
 
     fractions = [slice_count / slice_counts[0] for slice_count in slice_counts]
     rates = [slice_count / exposure for slice_count in slice_counts]
@@ -790,9 +817,31 @@ def calculate_efficiency():
     event_duration = 0.55e-3    # s
     exposure = event_count * event_duration
 
-    cut_names = ['pre-containment', 'containment', 'width-length ratio', 'max track length', 'cell hit count', 'XY view asymmetry', 'hit extent']
+    cut_names = ['pre-containment', 'containment', 'width-length ratio', 'max track length', 'cell hit count', 'XY view asymmetry', 'hit extent', 'cell number multiplicity']
     # slice_counts = [5157., 5157., 4589., 4588., 4573., 4562., 4539.]
-    slice_counts = [2673., 2108., 1872., 1870., 1855., 1849., 1844.]
+    # slice_counts = [2673., 2108., 1872., 1870., 1855., 1849., 1844.]
+    # slice_counts = [
+    #     5048., 3701.,
+    #     # 3398,
+    #     3279,
+    #     3278,
+    #     3259,
+    #     3254,
+    #     # 3251,
+    #     3244,
+    #     3175
+    # ]
+    slice_counts = [
+        5048, 3898,
+        # 3576,
+        3455,
+        3453,
+        3431,
+        3424,
+        3421,
+        # 3414,
+        3341
+    ]
 
     fractions = [slice_count / slice_counts[0] for slice_count in slice_counts]
     rates = [slice_count / exposure for slice_count in slice_counts]
@@ -850,8 +899,94 @@ def check_dungs_topology_cut():
     print('len_cellNumbers = {}'.format(len_cellNumbers))
     print('countXWithSingleHit / len_cellNumbers = {}'.format(countXWithSingleHit / len_cellNumbers))
 
+
+def plot_containment_effect():
+    event_count = 1636.
+    event_duration = 0.55e-3    # s
+    exposure = event_count * event_duration
+
+    vetos = []
+    cosmic_ray_rates = []
+    signal_efficiencies = []
+    cosmic_ray_cut_rates = []
+    signal_cut_efficiencies = []
+
+    ymaxs = [375., 371., 367., 363., 359., 355., 351., 347., 343.]
+    for ymax in ymaxs:
+        cosmic_total, cosmic_containment, cosmic_cut = get_event_count('y_max_{}_cosmic.log'.format(int(ymax)))
+        clean_total, clean_containment, clean_cut = get_event_count('y_max_{}_clean.log'.format(int(ymax)))
+        cosmic_ray_rates.append(cosmic_containment / exposure)
+        signal_efficiencies.append(clean_containment / clean_total)
+        cosmic_ray_cut_rates.append(cosmic_cut / exposure)
+        signal_cut_efficiencies.append(clean_cut / clean_total)
+        vetos.append(384 - ymax)
+
+    gr_cosmic_rate = TGraph(len(vetos), np.array(vetos), np.array(cosmic_ray_rates))
+    gr_signal_efficiency = TGraph(len(vetos), np.array(vetos), np.array(signal_efficiencies))
+    gr_cosmic_cut_rate = TGraph(len(vetos), np.array(vetos), np.array(cosmic_ray_cut_rates))
+    gr_signal_cut_efficiency = TGraph(len(vetos), np.array(vetos), np.array(signal_cut_efficiencies))
+
+    grs = [
+        gr_cosmic_rate,
+        gr_cosmic_cut_rate,
+        gr_signal_efficiency,
+        gr_signal_cut_efficiency
+    ]
+
+    gr_names = [
+        'gr_cosmic_rate',
+        'gr_cosmic_cut_rate',
+        'gr_signal_efficiency',
+        'gr_signal_cut_efficiency'
+    ]
+
+    for i, gr in enumerate(grs):
+        set_graph_style(gr)
+        gr.GetXaxis().SetTitle('Top Containment Cell Count')
+        gr.GetYaxis().SetTitleOffset(2.)
+        if i < 2:
+            gr.GetYaxis().SetTitle('Trigger Rate (Hz)')
+        else:
+            gr.GetYaxis().SetTitle('Signal Efficiency')
+
+    c1 = TCanvas('c1', 'c1', 600, 600)
+    set_margin()
+    gPad.SetGrid()
+    gPad.SetLeftMargin(0.2)
+
+    # gr_cosmic_rate.Draw('AL')
+    # c1.Update()
+
+    for i, gr in enumerate(grs):
+        gr.Draw('AL')
+        c1.Update()
+        c1.SaveAs('{}/plot_containment_effect.{}.pdf'.format(FIGURE_DIR, gr_names[i]))
+
+    input('Press any key to continue.')
+
+
+def get_event_count(filename):
+    with open('{}/{}'.format(DATA_DIR, filename)) as f_log:
+        number_of_slices = []
+        remain_slices = []
+        for line in f_log:
+            if re.match(".*Number of remained slices:.*", line):
+                remain_slices.append(int(line.split(':')[1].strip()))
+            if re.match(".*Number of slices:.*", line):
+                number_of_slices.append(int(line.split(':')[1].strip()))
+
+        # print('number_of_slices = {}'.format(number_of_slices))
+        # print('remain_slices = {}'.format(remain_slices))
+        return number_of_slices[0], number_of_slices[1], remain_slices[0]
+
 # 20180506_nnbar_containment
 gStyle.SetOptStat(0)
+plot_daq_hit('fill_tree_ymax_375_cosmic.root')
+# plot_daq_hit('fill_tree_ymax_347_cosmic.root', draw_containment=True)
+# calculate_efficiency()
+# calculate_trigger_rate()
+# plot_containment_effect()
+# get_event_count('y_max_375_cosmic.log')
 # check_dungs_topology_cut()
 # plot_1d_cut('fMultipleCellFractionY',
 #             cosmic_filename='MultipleCellFraction_occurrences_size_cosmic.root',
@@ -865,13 +1000,13 @@ gStyle.SetOptStat(0)
 #             cosmic_filename='MultipleCellFraction_occurrences_size_cosmic.root',
 #             signal_filename='MultipleCellFraction_occurrences_size_clean.root',
 #             x_cut=0.1)
-plot_2d_cuts('fMultipleCellFractionXY',
-             cosmic_filename='MultipleCellFraction_occurrences_size_cosmic.root',
-             signal_filename='MultipleCellFraction_occurrences_size_clean.root',
-             log_x=True, log_y=True, log_z=True,
-             x_max=1., y_max=1.,
-             x_cut=0.05, y_cut=0.05,
-             cosmic_only=False)
+# plot_2d_cuts('fMultipleCellFractionXY',
+#              cosmic_filename='MultipleCellFraction_occurrences_size_cosmic.root',
+#              signal_filename='MultipleCellFraction_occurrences_size_clean.root',
+#              log_x=True, log_y=True, log_z=True,
+#              x_max=1., y_max=1.,
+#              x_cut=0.05, y_cut=0.05,
+#              cosmic_only=False)
 
 # 20180326_nnbar_width_length_ratio
 # gStyle.SetOptStat(0)
