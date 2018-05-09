@@ -30,10 +30,10 @@ B_FIELD=b_-0.9T
 ifdh cp /pnfs/nova/persistent/users/junting/testbeam/merge_tree.py ./merge_tree.py
 ifdh cp /pnfs/nova/persistent/users/junting/testbeam/beam.py.${B_FIELD}.in ./beam.py.in
 
-PARTICLE=proton
-MOMENTUM=120000
-# PARTICLE=pi+
-# MOMENTUM=64000
+# PARTICLE=proton
+# MOMENTUM=120000
+PARTICLE=pi+
+MOMENTUM=64000
 EVENT_COUNT_PER_JOB=10000
 JOB_COUNT_PER_SPILL=30
 FIRST=$((((${PROCESS_START} + ${PROCESS}))* ${EVENT_COUNT_PER_JOB}))
@@ -50,5 +50,5 @@ python merge_tree.py beam.root --subspillnumber $JOB_COUNT --subspillcount $JOB_
 
 chmod 766 MergedAtstart_linebeam.root
 chmod 766 MergedAtstart_linebeam.pickle
-ifdh cp MergedAtstart_linebeam.root /pnfs/nova/scratch/users/junting/g4bl.${B_FIELD}.${PARTICLE}/MergedAtstart_linebeam.${JOB_COUNT}.root
-ifdh cp MergedAtstart_linebeam.pickle /pnfs/nova/scratch/users/junting/g4bl.${B_FIELD}.${PARTICLE}/MergedAtstart_linebeam.${JOB_COUNT}.pickle
+ifdh cp MergedAtstart_linebeam.root /pnfs/nova/scratch/users/junting/g4bl.${B_FIELD}.${PARTICLE}.${MOMENTUM}/MergedAtstart_linebeam.${JOB_COUNT}.root
+ifdh cp MergedAtstart_linebeam.pickle /pnfs/nova/scratch/users/junting/g4bl.${B_FIELD}.${PARTICLE}.${MOMENTUM}/MergedAtstart_linebeam.${JOB_COUNT}.pickle
