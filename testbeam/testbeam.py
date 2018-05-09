@@ -12,7 +12,7 @@ ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
-FIGURE_DIR = '/Users/juntinghuang/beamer/20180413_testbeam_120gev/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180509_testbeam_64_32_16_8GeV/figures'
 DATA_DIR = './data'
 
 
@@ -1500,6 +1500,7 @@ def plot_particle_angle(filename):
 
 def plot_noise_particle(filename, **kwargs):
     log_y = kwargs.get('log_y', False)
+    show_boundary = kwargs.get('show_boundary', False)
 
     width = 2606.2 / 10.       # cm
     half_width = width / 2.    # cm
@@ -1540,6 +1541,18 @@ def plot_noise_particle(filename, **kwargs):
     for pid, h1 in pid_y_x_hists.items():
         set_h2_style(h1)
         h1.Draw('colz')
+
+        if show_boundary:
+            tl_left = TLine(x0 - half_width, y0 - half_width, x0 - half_width, y0 + half_width)
+            tl_right = TLine(x0 + half_width, y0 - half_width, x0 + half_width, y0 + half_width)
+            tl_top = TLine(x0 - half_width, y0 + half_width, x0 + half_width, y0 + half_width)
+            tl_bottom = TLine(x0 - half_width, y0 - half_width, x0 + half_width, y0 - half_width)
+            tls = [tl_left, tl_right, tl_top, tl_bottom]
+            for tl in tls:
+                tl.SetLineColor(kRed)
+                tl.SetLineWidth(3)
+                tl.Draw()
+
         h1.GetXaxis().SetTitle('X (cm)')
         h1.GetYaxis().SetTitle('Y (cm)')
         h1.GetXaxis().SetTitleOffset(1.8)
@@ -1559,7 +1572,9 @@ def plot_noise_particle(filename, **kwargs):
     input('Press any key to continue.')
 
 
-def plot_trigger_particle(filename):
+def plot_trigger_particle(filename, **kwargs):
+    show_boundary = kwargs.get('show_boundary', False)
+
     width = 2606.2 / 10.       # cm
     half_width = width / 2.    # cm
     x0 = -1354.4 / 10.         # cm
@@ -1590,8 +1605,20 @@ def plot_trigger_particle(filename):
 
     set_h2_style(h1)
     h1.Draw('colz')
-    h1.GetXaxis().SetRangeUser(-215, -65)
-    h1.GetYaxis().SetRangeUser(-75, 75)
+    if show_boundary:
+        tl_left = TLine(x0 - half_width, y0 - half_width, x0 - half_width, y0 + half_width)
+        tl_right = TLine(x0 + half_width, y0 - half_width, x0 + half_width, y0 + half_width)
+        tl_top = TLine(x0 - half_width, y0 + half_width, x0 + half_width, y0 + half_width)
+        tl_bottom = TLine(x0 - half_width, y0 - half_width, x0 + half_width, y0 - half_width)
+        tls = [tl_left, tl_right, tl_top, tl_bottom]
+        for tl in tls:
+            tl.SetLineColor(kRed)
+            tl.SetLineWidth(3)
+            tl.Draw()
+    else:
+        h1.GetXaxis().SetRangeUser(-215, -65)
+        h1.GetYaxis().SetRangeUser(-75, 75)
+
     h1.GetXaxis().SetTitle('X (cm)')
     h1.GetYaxis().SetTitle('Y (cm)')
     h1.GetXaxis().SetTitleOffset(1.8)
@@ -1611,6 +1638,11 @@ def compare_particle_count():
     print('(sum(protons) - sum(pis)) / sum(pis) = {}'.format((sum(protons) - sum(pis)) / sum(pis)))
 
 
+# 20180509_testbeam_64_32_16_8GeV
+gStyle.SetOptStat(0)
+plot_trigger_particle('beamline.py.in.job_1_900.10k_per_job.b_-0.9T.pi+.root.csv', show_boundary=True)
+# plot_noise_particle('beamline.py.in.job_1_900.10k_per_job.b_-0.9T.pi+.root.csv', show_boundary=True)
+
 # 20180413_testbeam_120gev
 # save_particle_to_csv('beamline.py.in.job_1_900.10k_per_job.b_-0.9T.proton.root')
 # save_particle_to_csv('beamline.py.in.job_1_900.10k_per_job.b_-0.9T.pi+.root')
@@ -1623,7 +1655,7 @@ def compare_particle_count():
 # plot_noise_particle('beamline.py.in.job_1_900.10k_per_job.b_-0.9T.pi+.root.csv')
 # compare_particle_count()
 # plot_trigger_particle('beamline.py.in.job_1_900.10k_per_job.b_-0.9T.proton.root.csv')
-plot_trigger_particle('beamline.py.in.job_1_900.10k_per_job.b_-0.9T.pi+.root.csv')
+# plot_trigger_particle('beamline.py.in.job_1_900.10k_per_job.b_-0.9T.pi+.root.csv')
 
 # 20180318_testbeam_new_setup
 # plot_time_of_flight(distance=12.8, y_min=3.e4, y_max=5.e5, canvas_height=600)
