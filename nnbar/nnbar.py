@@ -803,7 +803,18 @@ def calculate_trigger_rate():
     exposure = event_count * event_duration
 
     cut_names = ['pre-containment', 'containment', 'width-length ratio', 'max track length', 'cell hit count', 'XY view asymmetry', 'hit extent', 'cell number multiplicity']
-    slice_counts = [106904, 12212., 185., 101., 79., 65., 61., 36.]
+    # slice_counts = [106904, 12212., 185., 101., 79., 65., 61., 36.]
+    slice_counts = [
+        106904, 3951,
+        # 80,
+        60,
+        37,
+        21,
+        15,
+        # 13,
+        13,
+        4
+    ]
 
     fractions = [slice_count / slice_counts[0] for slice_count in slice_counts]
     rates = [slice_count / exposure for slice_count in slice_counts]
@@ -818,31 +829,28 @@ def calculate_efficiency():
     exposure = event_count * event_duration
 
     cut_names = ['pre-containment', 'containment', 'width-length ratio', 'max track length', 'cell hit count', 'XY view asymmetry', 'hit extent', 'cell number multiplicity']
-    # slice_counts = [5157., 5157., 4589., 4588., 4573., 4562., 4539.]
-    # slice_counts = [2673., 2108., 1872., 1870., 1855., 1849., 1844.]
     # slice_counts = [
-    #     5048., 3701.,
-    #     # 3398,
-    #     3279,
-    #     3278,
-    #     3259,
-    #     3254,
-    #     # 3251,
-    #     3244,
-    #     3175
+    #     5048, 3898,
+    #     # 3576,
+    #     3455,
+    #     3453,
+    #     3431,
+    #     3424,
+    #     # 3421,
+    #     3414,
+    #     3341
     # ]
     slice_counts = [
-        5048, 3898,
-        # 3576,
-        3455,
-        3453,
-        3431,
-        3424,
-        3421,
-        # 3414,
-        3341
+        5048, 3570,
+        # 3274,
+        3156,
+        3155,
+        3138,
+        3133,
+        # 3130,
+        3123,
+        3058
     ]
-
     fractions = [slice_count / slice_counts[0] for slice_count in slice_counts]
     rates = [slice_count / exposure for slice_count in slice_counts]
     for i, fraction in enumerate(fractions):
@@ -981,9 +989,9 @@ def get_event_count(filename):
 
 # 20180506_nnbar_containment
 gStyle.SetOptStat(0)
-plot_daq_hit('fill_tree_ymax_375_cosmic.root')
+# plot_daq_hit('fill_tree_ymax_375_cosmic.root')
 # plot_daq_hit('fill_tree_ymax_347_cosmic.root', draw_containment=True)
-# calculate_efficiency()
+calculate_efficiency()
 # calculate_trigger_rate()
 # plot_containment_effect()
 # get_event_count('y_max_375_cosmic.log')
