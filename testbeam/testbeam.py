@@ -12,7 +12,8 @@ ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
-FIGURE_DIR = '/Users/juntinghuang/beamer/20180509_testbeam_64_32_16_8GeV/figures'
+# FIGURE_DIR = '/Users/juntinghuang/beamer/20180509_testbeam_64_32_16_8GeV/figures'
+FIGURE_DIR = './figures'
 DATA_DIR = './data'
 
 
@@ -1007,10 +1008,15 @@ def plot_particle_momentum(filename, x_min, x_max, **kwargs):
     log_y = kwargs.get('log_y', False)
     plot_noise = kwargs.get('plot_noise', False)
     normalization_factor = kwargs.get('normalization_factor', 1.)
+    y_title_offset = kwargs.get('y_title_offset', 1.8)
+
+    count_precision = 0 if normalization_factor == 1. else 1
 
     pid_momentums = {}
     with open('{}/{}'.format(DATA_DIR, filename)) as f_csv:
         for row in csv.reader(f_csv, delimiter=','):
+            # row.insert(0, 0)
+
             is_noise = int(row[0])
             if plot_noise and not is_noise:
                 continue
@@ -1045,7 +1051,8 @@ def plot_particle_momentum(filename, x_min, x_max, **kwargs):
         pid_hists[pid] = hist
     h_all.Scale(1. / normalization_factor)
 
-    c1 = TCanvas('c1', 'c1', 800, 800)
+    # c1 = TCanvas('c1', 'c1', 800, 800)
+    c1 = TCanvas('c1', 'c1', 600, 600)
     set_margin()
     gStyle.SetOptStat(0)
     if log_y:
@@ -1053,10 +1060,10 @@ def plot_particle_momentum(filename, x_min, x_max, **kwargs):
 
     colors = [
         kBlack,
-        kRed + 2,
+        kRed,
+        kBlue,
         kMagenta + 2,
         kViolet + 2,
-        kBlue + 2,
         kAzure + 2,
         kCyan + 2,
         kTeal + 2,
@@ -1070,7 +1077,9 @@ def plot_particle_momentum(filename, x_min, x_max, **kwargs):
     if plot_noise:
         lg1 = TLegend(0.4, 0.5, 0.7, 0.87)
     else:
-        lg1 = TLegend(0.575, 0.6, 0.84, 0.84)
+        # lg1 = TLegend(0.575, 0.6, 0.84, 0.84)
+        # lg1 = TLegend(0.545, 0.6, 0.84, 0.84)
+        lg1 = TLegend(0.51, 0.6, 0.84, 0.84)
     set_legend_style(lg1)
 
     pid_counts = sorted(pid_counts, key=lambda x: x[1], reverse=True)
@@ -1083,13 +1092,13 @@ def plot_particle_momentum(filename, x_min, x_max, **kwargs):
         if plot_noise:
             lg1.AddEntry(hist, '{} ({:.0f}, {:.0f} MeV)'.format(PDG.GetParticle(pid).GetName(), hist.Integral(), hist.GetMean()), 'l')
         else:
-            lg1.AddEntry(hist, '{} ({:.1f})'.format(PDG.GetParticle(pid).GetName(), hist.Integral()), 'l')
+            lg1.AddEntry(hist, '{1} ({2:.{0}f})'.format(count_precision, PDG.GetParticle(pid).GetName(), hist.Integral()), 'l')
 
         if i == 0:
             hist.Draw('hist')
             hist.GetXaxis().SetTitle('Momentum (MeV)')
             hist.GetYaxis().SetTitle(y_title)
-            hist.GetYaxis().SetTitleOffset(1.8)
+            hist.GetYaxis().SetTitleOffset(y_title_offset)
             if y_max:
                 hist.GetYaxis().SetRangeUser(0 if not log_y else 0.5, y_max)
         else:
@@ -1099,10 +1108,11 @@ def plot_particle_momentum(filename, x_min, x_max, **kwargs):
     latex.SetNDC()
     latex.SetTextFont(43)
     latex.SetTextSize(28)
+    x_latex = 0.53
     if not plot_noise:
-        latex.DrawLatex(0.59, 0.42, 'rms = {:.0f} MeV'.format(h_all.GetRMS()))
-        latex.DrawLatex(0.59, 0.48, 'mean = {:.0f} MeV'.format(h_all.GetMean()))
-        latex.DrawLatex(0.59, 0.54, 'total count = {:.1f}'.format(h_all.Integral()))
+        latex.DrawLatex(x_latex, 0.42, 'rms = {:.0f} MeV'.format(h_all.GetRMS()))
+        latex.DrawLatex(x_latex, 0.48, 'mean = {:.0f} MeV'.format(h_all.GetMean()))
+        latex.DrawLatex(x_latex, 0.54, 'total count = {1:.{0}f}'.format(count_precision, h_all.Integral()))
     lg1.Draw()
 
     c1.Update()
@@ -1741,17 +1751,26 @@ def plot_particle_count_vs_secondary_beam_energy():
     input('Press any key to continue.')
 
 
+# test_beam_neutrino_2018, poster
+# plot_particle_momentum('beam.py.in.30_spill.job_1_900.10k_per_job.b_-0.45T.10m.root.csv', 350, 800, y_max=0.8, bin_count=15, y_title_offset=1.4, normalization_factor=9, y_title='Particle Count per 1M Beam Particles')
+# plot_particle_momentum('beam.py.in.30_spill.job_1_900.10k_per_job.b_-0.9T.10m.root.csv', 800, 1500, y_max=1.5, bin_count=15, y_title_offset=1.4, normalization_factor=9, y_title='Particle Count per 1M Beam Particles')
+# plot_particle_momentum('beam.py.in.30_spill.job_1_900.10k_per_job.b_-1.35T.10m.root.csv', 1200, 2400, y_max=1.2, bin_count=15, y_title_offset=1.4, normalization_factor=9, y_title='Particle Count per 1M Beam Particles')
+# plot_particle_momentum('beam.py.in.30_spill.job_1_900.10k_per_job.b_-1.8T.10m.root.csv', 1600, 3000, y_max=0.8, bin_count=15, y_title_offset=1.4, normalization_factor=9, y_title='Particle Count per 1M Beam Particles')
+# plot_particle_momentum('beam.py.in.30_spill.job_1_900.10k_per_job.b_-0.45T.10m.root.csv', 350, 800, y_max=7, bin_count=15, y_title_offset=1.4, normalization_factor=1., y_title='Particle Count')
+# plot_particle_momentum('beam.py.in.30_spill.job_1_900.10k_per_job.b_-0.9T.10m.root.csv', 800, 1500, y_max=15, bin_count=15, y_title_offset=1.4, normalization_factor=1., y_title='Particle Count')
+# plot_particle_momentum('beam.py.in.30_spill.job_1_900.10k_per_job.b_-1.35T.10m.root.csv', 1200, 2400, y_max=10, bin_count=15, y_title_offset=1.4, normalization_factor=1., y_title='Particle Count')
+plot_particle_momentum('beam.py.in.30_spill.job_1_900.10k_per_job.b_-1.8T.10m.root.csv', 1600, 3200, y_max=8, bin_count=15, y_title_offset=1.4, normalization_factor=1., y_title='Particle Count')
+
 # 20180509_testbeam_64_32_16_8GeV
-gStyle.SetOptStat(0)
+# gStyle.SetOptStat(0)
 # plot_trigger_particle('beamline.py.in.job_1_900.10k_per_job.b_-0.9T.pi+.root.csv', show_boundary=True)
 # plot_noise_particle('beamline.py.in.job_1_900.10k_per_job.b_-0.9T.pi+.root.csv', show_boundary=True)
 # save_particle_to_csv('beamline.py.in.job_1_900.90m.b_-0.9T.pi+_8gev.root')
-plot_particle_momentum('beamline.py.in.job_1_1800.18m.b_-0.9T.pi+_64gev.root.csv', 800, 1500, y_max=15, normalization_factor=1.8, y_title='Particle Count per 10M Secondary Beam Particles')
-plot_particle_momentum('beamline.py.in.job_1_1800.27m.b_-0.9T.pi+_32gev.root.csv', 800, 1500, y_max=10, normalization_factor=2.7, y_title='Particle Count per 10M Secondary Beam Particles')
-plot_particle_momentum('beamline.py.in.job_1_900.45m.b_-0.9T.pi+_16gev.root.csv', 800, 1500, y_max=6, normalization_factor=4.5, y_title='Particle Count per 10M Secondary Beam Particles')
-plot_particle_momentum('beamline.py.in.job_1_900.90m.b_-0.9T.pi+_8gev.root.csv', 800, 1500, y_max=5, normalization_factor=9., y_title='Particle Count per 10M Secondary Beam Particles')
+# plot_particle_momentum('beamline.py.in.job_1_1800.18m.b_-0.9T.pi+_64gev.root.csv', 800, 1500, y_max=15, normalization_factor=1.8, y_title='Particle Count per 10M Secondary Beam Particles')
+# plot_particle_momentum('beamline.py.in.job_1_1800.27m.b_-0.9T.pi+_32gev.root.csv', 800, 1500, y_max=10, normalization_factor=2.7, y_title='Particle Count per 10M Secondary Beam Particles')
+# plot_particle_momentum('beamline.py.in.job_1_900.45m.b_-0.9T.pi+_16gev.root.csv', 800, 1500, y_max=6, normalization_factor=4.5, y_title='Particle Count per 10M Secondary Beam Particles')
+# plot_particle_momentum('beamline.py.in.job_1_900.90m.b_-0.9T.pi+_8gev.root.csv', 800, 1500, y_max=5, normalization_factor=9., y_title='Particle Count per 10M Secondary Beam Particles')
 # plot_particle_count_vs_secondary_beam_energy()
-
 
 # 20180413_testbeam_120gev
 # save_particle_to_csv('beamline.py.in.job_1_900.10k_per_job.b_-0.9T.proton.root')
