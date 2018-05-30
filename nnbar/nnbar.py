@@ -224,14 +224,40 @@ def print_evd():
         16: 'n + \\bar{n} \\rightarrow 2\\pi^{+} + 2\\pi^{-} + 2\\pi^{0}'
     }
 
+    filenames = {
+        1: 'pnbar_pi+_pi0',
+        2: 'pnbar_pi+_2pi0',
+        3: 'pnbar_pi+_3pi0',
+        4: 'pnbar_2pi+_pi-_pi0',
+        5: 'pnbar_2pi+_pi-_2pi0',
+        6: 'pnbar_2pi+_pi-_2omega0',
+        7: 'pnbar_3pi+_2pi-_pi0',
+        8: 'nnbar_pi+_pi-',
+        9: 'nnbar_2pi0',
+        10: 'nnbar_pi+_pi-_pi0',
+        11: 'nnbar_pi+_pi-_2pi0',
+        12: 'nnbar_pi+_pi-_3pi0',
+        13: 'nnbar_2pi+_2pi-',
+        14: 'nnbar_2pi+_2pi-_pi0',
+        15: 'nnbar_pi+_pi-_omega0',
+        16: 'nnbar_2pi+_2pi-_2pi0'
+    }
+
+    # for i in range(1, 17):
+    #     with open('{}.txt'.format(filenames[i]), 'w') as f_caption:
+    #         f_caption.write('A simulated event of ${}$ in the far detector.'.format(events[i]))
+
     with open('print_evd.tex', 'w') as f_evd:
         for i in range(1, 17):
             reaction = events[i]
             f_evd.write('\\begin{frame}\n')
-            f_evd.write('  \\frametitle{{Example of ${}$}}\n'.format(reaction))
+            # f_evd.write('  \\frametitle{{Example of ${}$}}\n'.format(reaction))
+            f_evd.write('  \\frametitle{{${}$}}\n'.format(reaction))
             f_evd.write('  \\begin{figure}\n')
-            f_evd.write('    \\includegraphics[scale = 0.25]{{figures/{{nnbar.{}}}.png}}\n'.format(i))
-            f_evd.write('    \\caption{{An example event of ${}$.}}\n'.format(reaction))
+            # f_evd.write('    \\includegraphics[scale = 0.25]{{figures/{{nnbar.{}}}.png}}\n'.format(i))
+            # f_evd.write('    \\caption{{An example event of ${}$.}}\n'.format(reaction))
+            f_evd.write('    \\includegraphics[scale = 0.25]{{figures/{{{}}}.png}}\n'.format(filenames[i]))
+            f_evd.write('    \\caption{{A simulated event of ${}$.}}\n'.format(reaction))
             f_evd.write('  \\end{figure}\n')
             f_evd.write('\\end{frame}\n\n')
             f_evd.write('% .........................................................\n\n')
@@ -987,11 +1013,14 @@ def get_event_count(filename):
         # print('remain_slices = {}'.format(remain_slices))
         return number_of_slices[0], number_of_slices[1], remain_slices[0]
 
+# blessed plots
+print_evd()
+
 # 20180506_nnbar_containment
-gStyle.SetOptStat(0)
+# gStyle.SetOptStat(0)
 # plot_daq_hit('fill_tree_ymax_375_cosmic.root')
 # plot_daq_hit('fill_tree_ymax_347_cosmic.root', draw_containment=True)
-calculate_efficiency()
+# calculate_efficiency()
 # calculate_trigger_rate()
 # plot_containment_effect()
 # get_event_count('y_max_375_cosmic.log')
