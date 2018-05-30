@@ -53,5 +53,5 @@ virtualdetector tof_ds height=130.0 length=50.8 width=130.0 material=LUCITE colo
 place tof_ds rename=tof_ds x=-1354.35596 y=0.0 z=14424.79831 rotation=z90,y0.0
 virtualdetector cherenkov radius=100 length=2007.386152531812 color=0.74,0.34,0.09
 place cherenkov rename=cherenkov x=-1354.35596 y=0.0 z=11712.219835 rotation=y0.0
-virtualdetector nova height=2606.1905036738476 length=10.0 width=2606.1905036738476 color=0.39,0.39,0.39
-place nova rename=nova x=-1354.35596 y=0.0 z=14648.66998 rotation=y0.0
+virtualdetector nova height=2606.1905036738476 length=3900.0 width=2606.1905036738476 material=POLYSTYRENE color=0.39,0.39,0.39
+place nova rename=nova x=-1354.35596 y=0.0 z=16598.66998 rotation=y0.0
