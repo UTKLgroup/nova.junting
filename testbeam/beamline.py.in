@@ -55,3 +55,8 @@ virtualdetector cherenkov radius=100 length=2007.386152531812 color=0.74,0.34,0.
 place cherenkov rename=cherenkov x=-1354.35596 y=0.0 z=11712.219835 rotation=y0.0
 virtualdetector nova height=2606.1905036738476 length=3900.0 width=2606.1905036738476 material=POLYSTYRENE color=0.39,0.39,0.39
 place nova rename=nova x=-1354.35596 y=0.0 z=16598.66998 rotation=y0.0
+virtualdetector wall innerRadius=3000.0 radius=3010.0 length=22000.0 color=1,1,1
+virtualdetector cap innerRadius=0 radius=3010.0 length=10.0 color=1,1,1
+place wall x=0 y=0 z=9000.0
+place cap rename=cap_start x=0 y=0 z=-2005.0
+place cap rename=cap_end x=0 y=0 z=20005.0

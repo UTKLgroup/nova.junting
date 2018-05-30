@@ -397,6 +397,18 @@ class Beamline:
         self.f_out.write('endgroup\n')
         self.f_out.write('place collimator_ds x={} y={} z={} rotation=y{}\n'.format(self.collimator_ds.x, self.collimator_ds.y, self.collimator_ds.z, self.collimator_ds.theta))
 
+    def write_housing(self):
+        thickness = 10.
+        radius = 3000.
+        length = 22000.
+        shift = 2000.
+
+        self.f_out.write('virtualdetector wall innerRadius={} radius={} length={} color=1,1,1\n'.format(radius, radius + thickness, length))
+        self.f_out.write('virtualdetector cap innerRadius={} radius={} length={} color=1,1,1\n'.format(0, radius + thickness, thickness))
+        self.f_out.write('place wall x={} y={} z={}\n'.format(0, 0, length / 2. - shift))
+        self.f_out.write('place cap rename=cap_start x={} y={} z={}\n'.format(0, 0, -shift - thickness / 2.))
+        self.f_out.write('place cap rename=cap_end x={} y={} z={}\n'.format(0, 0, length - shift + thickness / 2.))
+
     def correct_position(self):
         us_detectors = [
             self.tof_us,
@@ -446,6 +458,7 @@ class Beamline:
         self.write_tof()
         self.write_cherenkov()
         self.write_nova()
+        self.write_housing()
 
 beamline = Beamline()
 beamline.figure_dir = '/Users/juntinghuang/beamer/20180413_testbeam_120gev/figures'
