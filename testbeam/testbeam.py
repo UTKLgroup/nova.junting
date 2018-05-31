@@ -12,8 +12,7 @@ ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
-# FIGURE_DIR = '/Users/juntinghuang/beamer/20180509_testbeam_64_32_16_8GeV/figures'
-FIGURE_DIR = './figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180530_testbeam_radiation_dosage/figures'
 DATA_DIR = './data'
 
 
@@ -1751,6 +1750,39 @@ def plot_particle_count_vs_secondary_beam_energy():
     input('Press any key to continue.')
 
 
+def plot_radiation(filename):
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+
+    h_wall = TH2D('h1', 'h1', 100, -1, 20, 100, 0, 360)
+    for event in tf.Get('VirtualDetector/wall'):
+        theta = atan(event.y / event.x)
+        if event.x < 0.:
+            theta += pi
+        if theta < 0:
+            theta += 2. * pi
+        theta = theta * 180. / pi
+        h_wall.Fill(event.z / 1000, theta)
+
+    h_cap_start = TH2D('h1', 'h1', 100, -4, 4, 100, -4, 4)
+    for event in tf.Get('VirtualDetector/cap_start'):
+        h_cap_start.Fill(event.x / 1000., event.y / 1000.)
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    set_h2_color_style()
+    set_h2_style(h_cap_start)
+
+    h_cap_start.Draw('colz')
+
+    c1.Update()
+    c1.SaveAs('{}/plot_radiation.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
+# 20180530_testbeam_radiation_dosage
+gStyle.SetOptStat(0)
+plot_radiation('radiation.1000.root')
+
 # test_beam_neutrino_2018, poster
 # plot_particle_momentum('beam.py.in.30_spill.job_1_900.10k_per_job.b_-0.45T.10m.root.csv', 350, 800, y_max=0.8, bin_count=15, y_title_offset=1.4, normalization_factor=9, y_title='Particle Count per 1M Beam Particles')
 # plot_particle_momentum('beam.py.in.30_spill.job_1_900.10k_per_job.b_-0.9T.10m.root.csv', 800, 1500, y_max=1.5, bin_count=15, y_title_offset=1.4, normalization_factor=9, y_title='Particle Count per 1M Beam Particles')
@@ -1759,7 +1791,7 @@ def plot_particle_count_vs_secondary_beam_energy():
 # plot_particle_momentum('beam.py.in.30_spill.job_1_900.10k_per_job.b_-0.45T.10m.root.csv', 350, 800, y_max=7, bin_count=15, y_title_offset=1.4, normalization_factor=1., y_title='Particle Count')
 # plot_particle_momentum('beam.py.in.30_spill.job_1_900.10k_per_job.b_-0.9T.10m.root.csv', 800, 1500, y_max=15, bin_count=15, y_title_offset=1.4, normalization_factor=1., y_title='Particle Count')
 # plot_particle_momentum('beam.py.in.30_spill.job_1_900.10k_per_job.b_-1.35T.10m.root.csv', 1200, 2400, y_max=10, bin_count=15, y_title_offset=1.4, normalization_factor=1., y_title='Particle Count')
-plot_particle_momentum('beam.py.in.30_spill.job_1_900.10k_per_job.b_-1.8T.10m.root.csv', 1600, 3200, y_max=8, bin_count=15, y_title_offset=1.4, normalization_factor=1., y_title='Particle Count')
+# plot_particle_momentum('beam.py.in.30_spill.job_1_900.10k_per_job.b_-1.8T.10m.root.csv', 1600, 3200, y_max=8, bin_count=15, y_title_offset=1.4, normalization_factor=1., y_title='Particle Count')
 
 # 20180509_testbeam_64_32_16_8GeV
 # gStyle.SetOptStat(0)
