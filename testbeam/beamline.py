@@ -37,7 +37,8 @@ class Beamline:
         self.ds_theta = 16.     # degree
         self.f_out = open('beamline.py.in', 'w')
         self.screen_shot = False
-        self.kill = 1
+        # self.kill = 1
+        self.kill = 0
         self.magnet_by = -0.9    # B field in tesla
 
         self.target = Detector('target')
@@ -400,8 +401,8 @@ class Beamline:
     def write_housing(self):
         thickness = 10.
         radius = 3000.
-        length = 22000.
-        shift = 2000.
+        shift = 1000.
+        length = 20000. + shift
 
         self.f_out.write('virtualdetector wall innerRadius={} radius={} length={} color=1,1,1\n'.format(radius, radius + thickness, length))
         self.f_out.write('virtualdetector cap innerRadius={} radius={} length={} color=1,1,1\n'.format(0, radius + thickness, thickness))
@@ -446,12 +447,13 @@ class Beamline:
             self.f_out.write('g4ui when=4 "/vis/viewer/set/background 1 1 1"\n')
 
         self.f_out.write('beam gaussian particle=$particle firstEvent=$first lastEvent=$last sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=$momentum\n')
-        self.f_out.write('trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton\n')
+        # self.f_out.write('trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton\n')
+        self.f_out.write('trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton,neutron,anti_neutron\n')
 
         self.write_target()
         self.write_collimator_us()
-        if not self.screen_shot:
-            self.write_virtual_disk()
+        # if not self.screen_shot:
+        #     self.write_virtual_disk()
         self.write_wc()
         self.write_magnet()
         self.write_collimator_ds()
