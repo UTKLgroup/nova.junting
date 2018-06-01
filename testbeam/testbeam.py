@@ -1755,24 +1755,78 @@ def plot_radiation(filename):
 
     h_wall = TH2D('h1', 'h1', 100, -1, 20, 100, 0, 360)
     for event in tf.Get('VirtualDetector/wall'):
+        if event.PDGid != 2112:
+            continue
+
         theta = atan(event.y / event.x)
         if event.x < 0.:
             theta += pi
         if theta < 0:
             theta += 2. * pi
+
+        theta += pi / 2.
+        if theta > 2. * pi:
+            theta -= 2. * pi
+
         theta = theta * 180. / pi
         h_wall.Fill(event.z / 1000, theta)
 
-    h_cap_start = TH2D('h1', 'h1', 100, -4, 4, 100, -4, 4)
+    h_cap_start = TH2D('h_cap_start', 'h_cap_start', 100, -3, 3, 100, -3, 3)
     for event in tf.Get('VirtualDetector/cap_start'):
-        h_cap_start.Fill(event.x / 1000., event.y / 1000.)
+        h_cap_start.Fill(event.y / 1000., event.x / 1000.)
 
-    c1 = TCanvas('c1', 'c1', 800, 600)
+    h_cap_end = TH2D('h_cap_end', 'h_cap_end', 100, -3, 3, 100, -3, 3)
+    for event in tf.Get('VirtualDetector/cap_end'):
+        h_cap_end.Fill(event.y / 1000., event.x / 1000.)
+
+    set_h2_style(h_wall)
+    set_h2_style(h_cap_start)
+    set_h2_style(h_cap_end)
+
+    c1 = TCanvas('c1', 'c1', 1500, 800)
     set_margin()
     set_h2_color_style()
-    set_h2_style(h_cap_start)
+    gPad.SetBottomMargin(0.15)
+    gPad.SetLeftMargin(0.15)
 
+    c1.cd()
+    pad1 = TPad("pad1", "pad1", 0, 0, 0.25, 1)
+    pad1.SetTopMargin(0.36)
+    pad1.SetBottomMargin(0.36)
+    pad1.SetLeftMargin(0.2)
+    pad1.SetRightMargin(0.2)
+    pad1.Draw()
+    pad1.cd()
     h_cap_start.Draw('colz')
+    h_cap_start.GetXaxis().SetTitle('Y (m)')
+    h_cap_start.GetYaxis().SetTitle('X (m)')
+    h_cap_start.GetYaxis().SetTitleOffset(2.2)
+
+    c1.cd()
+    pad2 = TPad("pad2", "pad2", 0.25, 0, 0.75, 1)
+    pad2.SetTopMargin(0.1)
+    pad2.SetBottomMargin(0.1)
+    pad2.SetLeftMargin(0.15)
+    pad2.SetRightMargin(0.12)
+    pad2.Draw()
+    pad2.cd()
+    h_wall.Draw('colz')
+    h_wall.GetXaxis().SetTitle('Z (m)')
+    h_wall.GetYaxis().SetTitle('Zenith Angle (degree)')
+    h_wall.GetYaxis().SetTitleOffset(1.8)
+
+    c1.cd()
+    pad3 = TPad("pad3", "pad3", 0.75, 0, 1, 1)
+    pad3.SetTopMargin(0.36)
+    pad3.SetBottomMargin(0.36)
+    pad3.SetLeftMargin(0.2)
+    pad3.SetRightMargin(0.2)
+    pad3.Draw()
+    pad3.cd()
+    h_cap_end.Draw('colz')
+    h_cap_end.GetXaxis().SetTitle('Y (m)')
+    h_cap_end.GetYaxis().SetTitle('X (m)')
+    h_cap_end.GetYaxis().SetTitleOffset(2.2)
 
     c1.Update()
     c1.SaveAs('{}/plot_radiation.pdf'.format(FIGURE_DIR))
