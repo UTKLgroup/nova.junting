@@ -1752,82 +1752,127 @@ def plot_particle_count_vs_secondary_beam_energy():
 
 def plot_radiation(filename):
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    pid_hs = {
+        'wall': {},
+        'cap_start': {},
+        'cap_end': {}
+    }
 
-    h_wall = TH2D('h1', 'h1', 100, -1, 20, 100, -180, 180)
     for event in tf.Get('VirtualDetector/wall'):
-        if event.PDGid != 2112:
-            continue
+        pdg_id = int(event.PDGid)
+        pdg_name = PDG.GetParticle(pdg_id).GetName()
+        th2d_name = 'h_wall_{}'.format(pdg_name)
 
         theta = atan(event.y / event.x)
         if event.x >= 0.:
             theta = pi / 2. - theta
         if event.x < 0:
             theta = -(pi / 2. + theta)
-
         theta = theta * 180. / pi
-        h_wall.Fill(event.z / 1000, theta)
+        z = event.z / 1000
 
-    h_cap_start = TH2D('h_cap_start', 'h_cap_start', 100, -3, 3, 100, -3, 3)
+        if pdg_id not in pid_hs['wall']:
+            pid_hs['wall'][pdg_id] = TH2D(th2d_name, th2d_name, 100, -1, 20, 100, -180, 180)
+            set_h2_style(pid_hs['wall'][pdg_id])
+            pid_hs['wall'][pdg_id].Fill(z, theta)
+        else:
+            pid_hs['wall'][pdg_id].Fill(z, theta)
+
     for event in tf.Get('VirtualDetector/cap_start'):
-        h_cap_start.Fill(event.y / 1000., event.x / 1000.)
+        pdg_id = int(event.PDGid)
+        pdg_name = PDG.GetParticle(pdg_id).GetName()
+        th2d_name = 'h_cap_start_{}'.format(pdg_name)
+        y = event.y / 1000.
+        x = event.x / 1000.
+        if pdg_id not in pid_hs['cap_start']:
+            pid_hs['cap_start'][pdg_id] = TH2D(th2d_name, th2d_name, 100, -3, 3, 100, -3, 3)
+            set_h2_style(pid_hs['cap_start'][pdg_id])
+            pid_hs['cap_start'][pdg_id].Fill(y, x)
+        else:
+            pid_hs['cap_start'][pdg_id].Fill(y, x)
 
-    h_cap_end = TH2D('h_cap_end', 'h_cap_end', 100, -3, 3, 100, -3, 3)
     for event in tf.Get('VirtualDetector/cap_end'):
-        h_cap_end.Fill(event.y / 1000., event.x / 1000.)
+        pdg_id = int(event.PDGid)
+        pdg_name = PDG.GetParticle(pdg_id).GetName()
+        th2d_name = 'h_cap_end_{}'.format(pdg_name)
+        y = event.y / 1000.
+        x = event.x / 1000.
+        if pdg_id not in pid_hs['cap_end']:
+            pid_hs['cap_end'][pdg_id] = TH2D(th2d_name, th2d_name, 100, -3, 3, 100, -3, 3)
+            set_h2_style(pid_hs['cap_end'][pdg_id])
+            pid_hs['cap_end'][pdg_id].Fill(y, x)
+        else:
+            pid_hs['cap_end'][pdg_id].Fill(y, x)
 
-    set_h2_style(h_wall)
-    set_h2_style(h_cap_start)
-    set_h2_style(h_cap_end)
+    pids = pid_hs['wall'].keys()
+    for pid in pids:
+        pdg_name = PDG.GetParticle(pid).GetName()
+        h_wall = pid_hs['wall'][pid]
+        try:
+            h_cap_start = pid_hs['cap_start'][pid]
+        except KeyError as e:
+            # th2d_name = 'h_cap_start_{}'.format(pdg_name)
+            # h_cap_start = TH2D(th2d_name, th2d_name, 100, -3, 3, 100, -3, 3)
+            continue
+        try:
+            h_cap_end = pid_hs['cap_end'][pid]
+        except KeyError as e:
+            # th2d_name = 'h_cap_end_{}'.format(pdg_name)
+            # h_cap_end = TH2D(th2d_name, th2d_name, 100, -3, 3, 100, -3, 3)
+            continue
 
-    c1 = TCanvas('c1', 'c1', 1500, 800)
-    set_margin()
-    set_h2_color_style()
-    gPad.SetBottomMargin(0.15)
-    gPad.SetLeftMargin(0.15)
+        # print('pid = {}'.format(pid))
+        # print('pdg_name = {}'.format(pdg_name))
+        # print('h_wall.Integral() = {}'.format(h_wall.Integral()))
 
-    c1.cd()
-    pad1 = TPad("pad1", "pad1", 0, 0, 0.25, 1)
-    pad1.SetTopMargin(0.36)
-    pad1.SetBottomMargin(0.36)
-    pad1.SetLeftMargin(0.2)
-    pad1.SetRightMargin(0.2)
-    pad1.Draw()
-    pad1.cd()
-    h_cap_start.Draw('colz')
-    h_cap_start.GetXaxis().SetTitle('Y (m)')
-    h_cap_start.GetYaxis().SetTitle('X (m)')
-    h_cap_start.GetYaxis().SetTitleOffset(2.2)
+        c1 = TCanvas('c1', 'c1', 1500, 800)
+        set_margin()
+        set_h2_color_style()
+        gPad.SetBottomMargin(0.15)
+        gPad.SetLeftMargin(0.15)
 
-    c1.cd()
-    pad2 = TPad("pad2", "pad2", 0.25, 0, 0.75, 1)
-    pad2.SetTopMargin(0.1)
-    pad2.SetBottomMargin(0.1)
-    pad2.SetLeftMargin(0.15)
-    pad2.SetRightMargin(0.12)
-    pad2.Draw()
-    pad2.cd()
-    h_wall.Draw('colz')
-    h_wall.GetXaxis().SetTitle('Z (m)')
-    h_wall.GetYaxis().SetTitle('Angle from +Y-Axis (degree)')
-    h_wall.GetYaxis().SetTitleOffset(1.8)
+        c1.cd()
+        pad1 = TPad("pad1", "pad1", 0, 0, 0.25, 1)
+        pad1.SetTopMargin(0.36)
+        pad1.SetBottomMargin(0.36)
+        pad1.SetLeftMargin(0.2)
+        pad1.SetRightMargin(0.2)
+        pad1.Draw()
+        pad1.cd()
+        h_cap_start.Draw('colz')
+        h_cap_start.GetXaxis().SetTitle('Y (m)')
+        h_cap_start.GetYaxis().SetTitle('X (m)')
+        h_cap_start.GetYaxis().SetTitleOffset(2.2)
 
-    c1.cd()
-    pad3 = TPad("pad3", "pad3", 0.75, 0, 1, 1)
-    pad3.SetTopMargin(0.36)
-    pad3.SetBottomMargin(0.36)
-    pad3.SetLeftMargin(0.2)
-    pad3.SetRightMargin(0.2)
-    pad3.Draw()
-    pad3.cd()
-    h_cap_end.Draw('colz')
-    h_cap_end.GetXaxis().SetTitle('Y (m)')
-    h_cap_end.GetYaxis().SetTitle('X (m)')
-    h_cap_end.GetYaxis().SetTitleOffset(2.2)
+        c1.cd()
+        pad2 = TPad("pad2", "pad2", 0.25, 0, 0.75, 1)
+        pad2.SetTopMargin(0.1)
+        pad2.SetBottomMargin(0.1)
+        pad2.SetLeftMargin(0.15)
+        pad2.SetRightMargin(0.12)
+        pad2.Draw()
+        pad2.cd()
+        h_wall.Draw('colz')
+        h_wall.GetXaxis().SetTitle('Z (m)')
+        h_wall.GetYaxis().SetTitle('Angle from +Y-Axis (degree)')
+        h_wall.GetYaxis().SetTitleOffset(1.8)
 
-    c1.Update()
-    c1.SaveAs('{}/plot_radiation.pdf'.format(FIGURE_DIR))
-    input('Press any key to continue.')
+        c1.cd()
+        pad3 = TPad("pad3", "pad3", 0.75, 0, 1, 1)
+        pad3.SetTopMargin(0.36)
+        pad3.SetBottomMargin(0.36)
+        pad3.SetLeftMargin(0.2)
+        pad3.SetRightMargin(0.2)
+        pad3.Draw()
+        pad3.cd()
+        h_cap_end.Draw('colz')
+        h_cap_end.GetXaxis().SetTitle('Y (m)')
+        h_cap_end.GetYaxis().SetTitle('X (m)')
+        h_cap_end.GetYaxis().SetTitleOffset(2.2)
 
+        c1.Update()
+        c1.SaveAs('{}/plot_radiation.{}.pdf'.format(FIGURE_DIR, pdg_name))
+        # input('Press any key to continue.')
 
 # 20180530_testbeam_radiation_dosage
 gStyle.SetOptStat(0)
