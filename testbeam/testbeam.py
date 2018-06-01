@@ -1750,7 +1750,7 @@ def plot_particle_count_vs_secondary_beam_energy():
     input('Press any key to continue.')
 
 
-def plot_radiation(filename):
+def plot_radiation_position(filename):
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
     pid_hs = {
         'wall': {},
@@ -1877,13 +1877,139 @@ def plot_radiation(filename):
         el_cap_end.Draw()
 
         c1.Update()
-        c1.SaveAs('{}/plot_radiation.{}.pdf'.format(FIGURE_DIR, pdg_name))
+        c1.SaveAs('{}/plot_radiation_position.{}.pdf'.format(FIGURE_DIR, pdg_name))
         # input('Press any key to continue.')
         # break
 
+
+def plot_radiation_momentum(filename):
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    pid_hs = {
+        'wall': {},
+        'cap_start': {},
+        'cap_end': {}
+    }
+
+    x_max = 3
+
+    for event in tf.Get('VirtualDetector/wall'):
+        pdg_id = int(event.PDGid)
+        pdg_name = PDG.GetParticle(pdg_id).GetName()
+        h_name = 'h_wall_{}'.format(pdg_name)
+        momentum = (event.Px**2 + event.Py**2 + event.Pz**2)**0.5 / 1000.
+
+        if pdg_id not in pid_hs['wall']:
+            pid_hs['wall'][pdg_id] = TH1D(h_name, h_name, 100, 0, x_max)
+            set_h1_style(pid_hs['wall'][pdg_id])
+            pid_hs['wall'][pdg_id].Fill(momentum)
+        else:
+            pid_hs['wall'][pdg_id].Fill(momentum)
+
+    for event in tf.Get('VirtualDetector/cap_start'):
+        pdg_id = int(event.PDGid)
+        pdg_name = PDG.GetParticle(pdg_id).GetName()
+        h_name = 'h_cap_start_{}'.format(pdg_name)
+        momentum = (event.Px**2 + event.Py**2 + event.Pz**2)**0.5 / 1000.
+        if pdg_id not in pid_hs['cap_start']:
+            pid_hs['cap_start'][pdg_id] = TH1D(h_name, h_name, 100, 0, x_max)
+            set_h1_style(pid_hs['cap_start'][pdg_id])
+            pid_hs['cap_start'][pdg_id].Fill(momentum)
+        else:
+            pid_hs['cap_start'][pdg_id].Fill(momentum)
+
+    for event in tf.Get('VirtualDetector/cap_end'):
+        pdg_id = int(event.PDGid)
+        pdg_name = PDG.GetParticle(pdg_id).GetName()
+        h_name = 'h_cap_end_{}'.format(pdg_name)
+        momentum = (event.Px**2 + event.Py**2 + event.Pz**2)**0.5 / 1000.
+        if pdg_id not in pid_hs['cap_end']:
+            pid_hs['cap_end'][pdg_id] = TH1D(h_name, h_name, 100, 0, x_max)
+            set_h1_style(pid_hs['cap_end'][pdg_id])
+            pid_hs['cap_end'][pdg_id].Fill(momentum)
+        else:
+            pid_hs['cap_end'][pdg_id].Fill(momentum)
+
+    pids = pid_hs['wall'].keys()
+    for pid in pids:
+        pdg_name = PDG.GetParticle(pid).GetName()
+        h_wall = pid_hs['wall'][pid]
+        try:
+            h_cap_start = pid_hs['cap_start'][pid]
+        except KeyError:
+            continue
+        try:
+            h_cap_end = pid_hs['cap_end'][pid]
+        except KeyError:
+            continue
+
+        c1 = TCanvas('c1', 'c1', 1500, 300)
+        set_margin()
+        gPad.SetBottomMargin(0.15)
+        gPad.SetLeftMargin(0.15)
+
+        c1.cd()
+        pad1 = TPad("pad1", "pad1", 0, 0, 0.25, 1)
+        pad1.SetTopMargin(0.1)
+        pad1.SetBottomMargin(0.25)
+        pad1.SetLeftMargin(0.2)
+        pad1.SetRightMargin(0.1)
+        pad1.Draw()
+        pad1.cd()
+        h_cap_start.Draw('colz')
+        h_cap_start.GetXaxis().SetTitle('Momentum (GeV)')
+        h_cap_start.GetYaxis().SetTitle('Particle Count')
+        h_cap_start.GetYaxis().SetTitleOffset(1.)
+        pad1.Update()
+
+        draw_statbox(h_cap_start, x1=0.45, y1=0.67, x2=0.95, y2=1.)
+        if pdg_name == 'neutron':
+            gPad.SetLogy()
+
+        c1.cd()
+        pad2 = TPad("pad2", "pad2", 0.25, 0, 0.75, 1)
+        pad2.SetTopMargin(0.1)
+        pad2.SetBottomMargin(0.25)
+        pad2.SetLeftMargin(0.15)
+        pad2.SetRightMargin(0.1)
+        pad2.Draw()
+        pad2.cd()
+        h_wall.Draw('colz')
+        h_wall.GetXaxis().SetTitle('Momentum (GeV)')
+        h_wall.GetYaxis().SetTitle('Particle Count')
+        h_wall.GetYaxis().SetTitleOffset(0.6)
+        pad2.Update()
+        draw_statbox(h_wall, x1=0.7, y1=0.67, x2=0.95, y2=1.)
+        if pdg_name == 'neutron':
+            gPad.SetLogy()
+
+        c1.cd()
+        pad3 = TPad("pad3", "pad3", 0.75, 0, 1, 1)
+        pad3.SetTopMargin(0.1)
+        pad3.SetBottomMargin(0.25)
+        pad3.SetLeftMargin(0.2)
+        pad3.SetRightMargin(0.1)
+        pad3.Draw()
+        pad3.cd()
+        h_cap_end.Draw('colz')
+        h_cap_end.GetXaxis().SetTitle('Momentum (GeV)')
+        h_cap_end.GetYaxis().SetTitle('Particle Count')
+        h_cap_end.GetYaxis().SetTitleOffset(1.)
+        pad1.Update()
+        draw_statbox(h_cap_end, x1=0.45, y1=0.67, x2=0.95, y2=1.)
+        if pdg_name == 'neutron':
+            gPad.SetLogy()
+
+        c1.Update()
+        c1.SaveAs('{}/plot_radiation_momentum.{}.pdf'.format(FIGURE_DIR, pdg_name))
+        # input('Press any key to continue.')
+        # break
+
+
 # 20180530_testbeam_radiation_dosage
-gStyle.SetOptStat(0)
-plot_radiation('radiation.1000.root')
+# gStyle.SetOptStat(0)
+# plot_radiation_position('radiation.1000.root')
+gStyle.SetOptStat('emr')
+plot_radiation_momentum('radiation.1000.root')
 
 # test_beam_neutrino_2018, poster
 # plot_particle_momentum('beam.py.in.30_spill.job_1_900.10k_per_job.b_-0.45T.10m.root.csv', 350, 800, y_max=0.8, bin_count=15, y_title_offset=1.4, normalization_factor=9, y_title='Particle Count per 1M Beam Particles')
