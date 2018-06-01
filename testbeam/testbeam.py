@@ -2150,15 +2150,40 @@ def plot_radiation_count(filename):
         # break
 
 
+def print_tex_radiation():
+    pdg_names = ['neutron', 'mu-', 'mu+', 'pi-', 'pi+', 'proton']
+
+    for pdg_name in pdg_names:
+        print('\n% .........................................................\n')
+        print('\\begin{frame}')
+        print('  \\frametitle{{Position and Momentum Distributions for {}}}'.format(pdg_name))
+        print('  \\vspace{-3mm}')
+        print('  \\begin{figure}')
+        print('    \\includegraphics[width = \linewidth]{{figures/{{plot_radiation_position.{}}}.pdf}} \\\\'.format(pdg_name))
+        print('    \\includegraphics[width = \linewidth]{{figures/{{plot_radiation_momentum.{}}}.pdf}} \\\\'.format(pdg_name))
+        # print('    \\caption{{Position and momentum distributions for {}.}}'.format(pdg_name))
+        print('  \\end{figure}')
+        print('\\end{frame}')
+        print('\n% .........................................................\n')
+        print('\\begin{frame}')
+        print('  \\frametitle{{Particle Count by Region for {}}}'.format(pdg_name))
+        print('  \\begin{figure}')
+        print('    \\includegraphics[width = \linewidth]{{figures/{{plot_radiation_count.{}}}.pdf}} \\\\'.format(pdg_name))
+        # print('    \\caption{{Particle count by region for {}.}}'.format(pdg_name))
+        print('  \\end{figure}')
+        print('\\end{frame}')
+
 # 20180530_testbeam_radiation_dosage
 # gStyle.SetOptStat(0)
 # plot_radiation_position('radiation.1000.root')
 # gStyle.SetOptStat('emr')
 # plot_radiation_momentum('radiation.1000.root')
-gStyle.SetOptStat(0)
+# gStyle.SetOptStat(0)
 # gStyle.SetPalette(51)
 # TGaxis.SetMaxDigits(2)
-plot_radiation_count('radiation.1000.root')
+# plot_radiation_count('radiation.1000.root')
+print_tex_radiation()
+
 
 # test_beam_neutrino_2018, poster
 # plot_particle_momentum('beam.py.in.30_spill.job_1_900.10k_per_job.b_-0.45T.10m.root.csv', 350, 800, y_max=0.8, bin_count=15, y_title_offset=1.4, normalization_factor=9, y_title='Particle Count per 1M Beam Particles')
