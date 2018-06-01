@@ -1753,20 +1753,16 @@ def plot_particle_count_vs_secondary_beam_energy():
 def plot_radiation(filename):
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
 
-    h_wall = TH2D('h1', 'h1', 100, -1, 20, 100, 0, 360)
+    h_wall = TH2D('h1', 'h1', 100, -1, 20, 100, -180, 180)
     for event in tf.Get('VirtualDetector/wall'):
         if event.PDGid != 2112:
             continue
 
         theta = atan(event.y / event.x)
-        if event.x < 0.:
-            theta += pi
-        if theta < 0:
-            theta += 2. * pi
-
-        theta += pi / 2.
-        if theta > 2. * pi:
-            theta -= 2. * pi
+        if event.x >= 0.:
+            theta = pi / 2. - theta
+        if event.x < 0:
+            theta = -(pi / 2. + theta)
 
         theta = theta * 180. / pi
         h_wall.Fill(event.z / 1000, theta)
@@ -1812,7 +1808,7 @@ def plot_radiation(filename):
     pad2.cd()
     h_wall.Draw('colz')
     h_wall.GetXaxis().SetTitle('Z (m)')
-    h_wall.GetYaxis().SetTitle('Zenith Angle (degree)')
+    h_wall.GetYaxis().SetTitle('Angle from +Y-Axis (degree)')
     h_wall.GetYaxis().SetTitleOffset(1.8)
 
     c1.cd()
