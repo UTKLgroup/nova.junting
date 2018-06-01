@@ -1843,6 +1843,9 @@ def plot_radiation(filename):
         h_cap_start.GetXaxis().SetTitle('Y (m)')
         h_cap_start.GetYaxis().SetTitle('X (m)')
         h_cap_start.GetYaxis().SetTitleOffset(2.2)
+        el_cap_start = TEllipse(0, 0, 3)
+        el_cap_start.SetFillStyle(0)
+        el_cap_start.Draw()
 
         c1.cd()
         pad2 = TPad("pad2", "pad2", 0.25, 0, 0.75, 1)
@@ -1869,10 +1872,14 @@ def plot_radiation(filename):
         h_cap_end.GetXaxis().SetTitle('Y (m)')
         h_cap_end.GetYaxis().SetTitle('X (m)')
         h_cap_end.GetYaxis().SetTitleOffset(2.2)
+        el_cap_end = TEllipse(0, 0, 3)
+        el_cap_end.SetFillStyle(0)
+        el_cap_end.Draw()
 
         c1.Update()
         c1.SaveAs('{}/plot_radiation.{}.pdf'.format(FIGURE_DIR, pdg_name))
         # input('Press any key to continue.')
+        # break
 
 # 20180530_testbeam_radiation_dosage
 gStyle.SetOptStat(0)
