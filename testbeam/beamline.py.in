@@ -1,7 +1,8 @@
 physics QGSP_BIC
 param worldMaterial=Air
 param histoFile=beam.root
-g4ui when=4 "/vis/viewer/set/viewpointVector 0 1 0"
+g4ui when=4 "/vis/viewer/set/viewpointVector -1 1 1"
+g4ui when=4 "/vis/viewer/zoom 1.5"
 g4ui when=4 "/vis/viewer/set/style wireframe"
 beam gaussian particle=$particle firstEvent=$first lastEvent=$last sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=$momentum
 trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,proton,anti_proton,neutron,anti_neutron

@@ -441,7 +441,9 @@ class Beamline:
         self.f_out.write('param worldMaterial=Air\n')
         self.f_out.write('param histoFile=beam.root\n')
 
-        self.f_out.write('g4ui when=4 "/vis/viewer/set/viewpointVector 0 1 0"\n')
+        # self.f_out.write('g4ui when=4 "/vis/viewer/set/viewpointVector 0 1 0"\n')
+        self.f_out.write('g4ui when=4 "/vis/viewer/set/viewpointVector -1 1 1"\n')
+        self.f_out.write('g4ui when=4 "/vis/viewer/zoom 1.5"\n')
         self.f_out.write('g4ui when=4 "/vis/viewer/set/style wireframe"\n')
         if self.screen_shot:
             self.f_out.write('g4ui when=4 "/vis/viewer/set/background 1 1 1"\n')
