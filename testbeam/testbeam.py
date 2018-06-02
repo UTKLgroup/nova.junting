@@ -1877,7 +1877,7 @@ def plot_radiation_position(filename):
         el_cap_end.Draw()
 
         c1.Update()
-        c1.SaveAs('{}/plot_radiation_position.{}.pdf'.format(FIGURE_DIR, pdg_name))
+        c1.SaveAs('{}/plot_radiation_position.{}.{}.pdf'.format(FIGURE_DIR, filename, pdg_name))
         # input('Press any key to continue.')
         # break
 
@@ -2000,7 +2000,7 @@ def plot_radiation_momentum(filename):
             gPad.SetLogy()
 
         c1.Update()
-        c1.SaveAs('{}/plot_radiation_momentum.{}.pdf'.format(FIGURE_DIR, pdg_name))
+        c1.SaveAs('{}/plot_radiation_momentum.{}.{}.pdf'.format(FIGURE_DIR, filename, pdg_name))
         # input('Press any key to continue.')
         # break
 
@@ -2145,7 +2145,7 @@ def plot_radiation_count(filename):
         p_cap_end.SetX2NDC(1.2)
 
         c1.Update()
-        c1.SaveAs('{}/plot_radiation_count.{}.pdf'.format(FIGURE_DIR, pdg_name))
+        c1.SaveAs('{}/plot_radiation_count.{}.{}.pdf'.format(FIGURE_DIR, filename, pdg_name))
         # input('Press any key to continue.')
         # break
 
@@ -2174,15 +2174,15 @@ def print_tex_radiation():
         print('\\end{frame}')
 
 # 20180530_testbeam_radiation_dosage
-# gStyle.SetOptStat(0)
-# plot_radiation_position('radiation.1000.root')
+gStyle.SetOptStat(0)
+plot_radiation_position('radiation.1000.root')
 # gStyle.SetOptStat('emr')
 # plot_radiation_momentum('radiation.1000.root')
 # gStyle.SetOptStat(0)
 # gStyle.SetPalette(51)
 # TGaxis.SetMaxDigits(2)
 # plot_radiation_count('radiation.1000.root')
-print_tex_radiation()
+# print_tex_radiation()
 
 
 # test_beam_neutrino_2018, poster
