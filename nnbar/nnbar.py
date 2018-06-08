@@ -206,22 +206,22 @@ def plot_life_time_free():
 
 def print_evd():
     events = {
-        1: 'p + \\bar{n} \\rightarrow \\pi^{+} + \\pi^{0}',
-        2: 'p + \\bar{n} \\rightarrow \\pi^{+} + 2\\pi^{0}',
-        3: 'p + \\bar{n} \\rightarrow \\pi^{+} + 3\\pi^{0}',
-        4: 'p + \\bar{n} \\rightarrow 2\\pi^{+} + \\pi^{-} + \\pi^{0}',
-        5: 'p + \\bar{n} \\rightarrow 2\\pi^{+} + \\pi^{-} + 2\\pi^{0}',
-        6: 'p + \\bar{n} \\rightarrow 2\\pi^{+} + \\pi^{-} + 2\\omega^{0}',
-        7: 'p + \\bar{n} \\rightarrow 3\\pi^{+} + 2\\pi^{-} + \\pi^{0}',
-        8: 'n + \\bar{n} \\rightarrow \\pi^{+} + \\pi^{-}',
-        9: 'n + \\bar{n} \\rightarrow 2\\pi^{0}',
-        10: 'n + \\bar{n} \\rightarrow \\pi^{+} + \\pi^{-} + \\pi^{0}',
-        11: 'n + \\bar{n} \\rightarrow \\pi^{+} + \\pi^{-} + 2\\pi^{0}',
-        12: 'n + \\bar{n} \\rightarrow \\pi^{+} + \\pi^{-} + 3\\pi^{0}',
-        13: 'n + \\bar{n} \\rightarrow 2\\pi^{+} + 2\\pi^{-}',
-        14: 'n + \\bar{n} \\rightarrow 2\\pi^{+} + 2\\pi^{-} + \\pi^{0}',
-        15: 'n + \\bar{n} \\rightarrow \\pi^{+} + \\pi^{-} + \\omega^{0}',
-        16: 'n + \\bar{n} \\rightarrow 2\\pi^{+} + 2\\pi^{-} + 2\\pi^{0}'
+        1: '\\bar{n} + p \\rightarrow \\pi^{+} + \\pi^{0}',
+        2: '\\bar{n} + p \\rightarrow \\pi^{+} + 2\\pi^{0}',
+        3: '\\bar{n} + p \\rightarrow \\pi^{+} + 3\\pi^{0}',
+        4: '\\bar{n} + p \\rightarrow 2\\pi^{+} + \\pi^{-} + \\pi^{0}',
+        5: '\\bar{n} + p \\rightarrow 2\\pi^{+} + \\pi^{-} + 2\\pi^{0}',
+        6: '\\bar{n} + p \\rightarrow 2\\pi^{+} + \\pi^{-} + 2\\omega^{0}',
+        7: '\\bar{n} + p \\rightarrow 3\\pi^{+} + 2\\pi^{-} + \\pi^{0}',
+        8: '\\bar{n} + n \\rightarrow \\pi^{+} + \\pi^{-}',
+        9: '\\bar{n} + n \\rightarrow 2\\pi^{0}',
+        10: '\\bar{n} + n \\rightarrow \\pi^{+} + \\pi^{-} + \\pi^{0}',
+        11: '\\bar{n} + n \\rightarrow \\pi^{+} + \\pi^{-} + 2\\pi^{0}',
+        12: '\\bar{n} + n \\rightarrow \\pi^{+} + \\pi^{-} + 3\\pi^{0}',
+        13: '\\bar{n} + n \\rightarrow 2\\pi^{+} + 2\\pi^{-}',
+        14: '\\bar{n} + n \\rightarrow 2\\pi^{+} + 2\\pi^{-} + \\pi^{0}',
+        15: '\\bar{n} + n \\rightarrow \\pi^{+} + \\pi^{-} + \\omega^{0}',
+        16: '\\bar{n} + n \\rightarrow 2\\pi^{+} + 2\\pi^{-} + 2\\pi^{0}'
     }
 
     filenames = {
