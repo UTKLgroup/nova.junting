@@ -225,27 +225,27 @@ def print_evd():
     }
 
     filenames = {
-        1: 'pnbar_pi+_pi0',
-        2: 'pnbar_pi+_2pi0',
-        3: 'pnbar_pi+_3pi0',
-        4: 'pnbar_2pi+_pi-_pi0',
-        5: 'pnbar_2pi+_pi-_2pi0',
-        6: 'pnbar_2pi+_pi-_2omega0',
-        7: 'pnbar_3pi+_2pi-_pi0',
-        8: 'nnbar_pi+_pi-',
-        9: 'nnbar_2pi0',
-        10: 'nnbar_pi+_pi-_pi0',
-        11: 'nnbar_pi+_pi-_2pi0',
-        12: 'nnbar_pi+_pi-_3pi0',
-        13: 'nnbar_2pi+_2pi-',
-        14: 'nnbar_2pi+_2pi-_pi0',
-        15: 'nnbar_pi+_pi-_omega0',
-        16: 'nnbar_2pi+_2pi-_2pi0'
+        1: 'nbarp_pi+_pi0',
+        2: 'nbarp_pi+_2pi0',
+        3: 'nbarp_pi+_3pi0',
+        4: 'nbarp_2pi+_pi-_pi0',
+        5: 'nbarp_2pi+_pi-_2pi0',
+        6: 'nbarp_2pi+_pi-_2omega0',
+        7: 'nbarp_3pi+_2pi-_pi0',
+        8: 'nbarn_pi+_pi-',
+        9: 'nbarn_2pi0',
+        10: 'nbarn_pi+_pi-_pi0',
+        11: 'nbarn_pi+_pi-_2pi0',
+        12: 'nbarn_pi+_pi-_3pi0',
+        13: 'nbarn_2pi+_2pi-',
+        14: 'nbarn_2pi+_2pi-_pi0',
+        15: 'nbarn_pi+_pi-_omega0',
+        16: 'nbarn_2pi+_2pi-_2pi0'
     }
 
-    # for i in range(1, 17):
-    #     with open('{}.txt'.format(filenames[i]), 'w') as f_caption:
-    #         f_caption.write('A simulated event of ${}$ in the far detector.'.format(events[i]))
+    for i in range(1, 17):
+        with open('{}.txt'.format(filenames[i]), 'w') as f_caption:
+            f_caption.write('A simulated event of ${}$ in the far detector.'.format(events[i]))
 
     with open('print_evd.tex', 'w') as f_evd:
         for i in range(1, 17):
