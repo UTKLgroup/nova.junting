@@ -4,7 +4,7 @@ import numpy as np
 import random
 import re
 
-FIGURE_DIR = '/Users/juntinghuang/beamer/20180506_nnbar_containment/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180621_nnbar_topology/figures'
 DATA_DIR = './data'
 
 exposure_0 = 2.45               # 1.e34 * neutron * year
@@ -338,11 +338,23 @@ def plot_daq_hit(filename, **kwargs):
     h_x.GetXaxis().SetTitleSize(0)
     h_x.Draw('box')
 
+    # x_min = 3
+    # x_max = 380
+    # y_min = 3
+    # y_max = 347
+    # z_min = 3
+    # z_max = 891
+    x_min = 4
+    x_max = 377
+    y_min = 6
+    y_max = 347
+    z_min = 3
+    z_max = 891
     if draw_containment:
-        lx_b = TLine(3, 3, 891, 3)
-        lx_t = TLine(3, 380, 891, 380)
-        lx_l = TLine(3, 3, 3, 380)
-        lx_r = TLine(891, 3, 891, 380)
+        lx_b = TLine(z_min, x_min, z_max, x_min)
+        lx_t = TLine(z_min, x_max, z_max, x_max)
+        lx_l = TLine(z_min, x_min, z_min, x_max)
+        lx_r = TLine(z_max, x_min, z_max, x_max)
         lxs = [lx_b, lx_t, lx_l, lx_r]
         for lx in lxs:
             lx.SetLineWidth(1)
@@ -365,12 +377,10 @@ def plot_daq_hit(filename, **kwargs):
     h_y.Draw('box')
 
     if draw_containment:
-        # top = 375
-        top = 347
-        ly_b = TLine(3, 3, 891, 3)
-        ly_t = TLine(3, top, 891, top)
-        ly_l = TLine(3, 3, 3, top)
-        ly_r = TLine(891, 3, 891, top)
+        ly_b = TLine(z_min, y_min, z_max, y_min)
+        ly_t = TLine(z_min, y_max, z_max, y_max)
+        ly_l = TLine(z_min, y_min, z_min, y_max)
+        ly_r = TLine(z_max, y_min, z_max, y_max)
         lys = [ly_b, ly_t, ly_l, ly_r]
         for ly in lys:
             ly.SetLineWidth(1)
@@ -382,7 +392,9 @@ def plot_daq_hit(filename, **kwargs):
     input('Press any key to continue.')
 
 
-def plot_daq_hit_colz(filename):
+def plot_daq_hit_colz(filename, **kwargs):
+    draw_containment = kwargs.get('draw_containment', True)
+
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
     h_x = tf.Get('neutronoscana/fDaqHitXView')
     h_y = tf.Get('neutronoscana/fDaqHitYView')
@@ -406,15 +418,22 @@ def plot_daq_hit_colz(filename):
     h_x.GetXaxis().SetTitleSize(0)
     h_x.Draw('colz')
 
-    lx_b = TLine(3, 3, 891, 3)
-    lx_t = TLine(3, 380, 891, 380)
-    lx_l = TLine(3, 3, 3, 380)
-    lx_r = TLine(891, 3, 891, 380)
-    lxs = [lx_b, lx_t, lx_l, lx_r]
-    for lx in lxs:
-        lx.SetLineWidth(1)
-        lx.SetLineColor(kRed)
-        lx.Draw('sames')
+    x_min = 4
+    x_max = 377
+    y_min = 6
+    y_max = 347
+    z_min = 3
+    z_max = 891
+    if draw_containment:
+        lx_b = TLine(z_min, x_min, z_max, x_min)
+        lx_t = TLine(z_min, x_max, z_max, x_max)
+        lx_l = TLine(z_min, x_min, z_min, x_max)
+        lx_r = TLine(z_max, x_min, z_max, x_max)
+        lxs = [lx_b, lx_t, lx_l, lx_r]
+        for lx in lxs:
+            lx.SetLineWidth(1)
+            lx.SetLineColor(kRed)
+            lx.Draw('sames')
 
     c1.cd()
     pad2 = TPad('pad2', 'pad2', 0, 0, 1, 0.5)
@@ -432,15 +451,16 @@ def plot_daq_hit_colz(filename):
     h_y.GetXaxis().SetTitleOffset(2.2)
     h_y.Draw('colz')
 
-    ly_b = TLine(3, 3, 891, 3)
-    ly_t = TLine(3, 375, 891, 375)
-    ly_l = TLine(3, 3, 3, 375)
-    ly_r = TLine(891, 3, 891, 375)
-    lys = [ly_b, ly_t, ly_l, ly_r]
-    for ly in lys:
-        ly.SetLineWidth(1)
-        ly.SetLineColor(kRed)
-        ly.Draw('sames')
+    if draw_containment:
+        ly_b = TLine(z_min, y_min, z_max, y_min)
+        ly_t = TLine(z_min, y_max, z_max, y_max)
+        ly_l = TLine(z_min, y_min, z_min, y_max)
+        ly_r = TLine(z_max, y_min, z_max, y_max)
+        lys = [ly_b, ly_t, ly_l, ly_r]
+        for ly in lys:
+            ly.SetLineWidth(1)
+            ly.SetLineColor(kRed)
+            ly.Draw('sames')
 
     c1.Update()
     # c1.SaveAs('{}/plot_daq_hit.{}.pdf'.format(FIGURE_DIR, filename))
@@ -700,6 +720,17 @@ def plot_1d_cut(hist_name, **kwargs):
     input('Press any key to continue.')
 
 
+def get_integral_under_curve(tf1, h1):
+    integral = 0.
+    for i in range(1, h1.GetNbinsX() + 1):
+        for j in range(1, h1.GetNbinsY() + 1):
+            x = h1.GetXaxis().GetBinCenter(i)
+            y = h1.GetYaxis().GetBinCenter(j)
+            if y < tf1.Eval(x):
+                integral += h1.GetBinContent(i, j)
+    return integral
+
+
 def plot_2d_cuts(histname, **kwargs):
     cosmic_filename = kwargs.get('cosmic_filename', 'neutronosc_ddt_hist.cosmic.root')
     signal_filename = kwargs.get('signal_filename', 'neutronosc_ddt_hist.clean.root')
@@ -712,6 +743,9 @@ def plot_2d_cuts(histname, **kwargs):
     y_cut = kwargs.get('y_cut', 0.)
     cosmic_only = kwargs.get('cosmic_only', False)
     signal_only = kwargs.get('signal_only', False)
+    rebin = kwargs.get('rebin', None)
+    grid = kwargs.get('grid', False)
+    equation = kwargs.get('equation', None)
 
     tf_cosmic = TFile('{}/{}'.format(DATA_DIR, cosmic_filename))
     tf_clean = TFile('{}/{}'.format(DATA_DIR, signal_filename))
@@ -729,33 +763,39 @@ def plot_2d_cuts(histname, **kwargs):
         print('1 - h_cosmic.Integral(1, x_cut_bin, 1, y_cut_bin) / h_cosmic.Integral() = {}'.format(1 - h_cosmic.Integral(1, x_cut_bin, 1, y_cut_bin) / h_cosmic.Integral()))
         print('1 - h_clean.Integral(1, x_cut_bin, 1, y_cut_bin) / h_clean.Integral() = {}'.format(1 - h_clean.Integral(1, x_cut_bin, 1, y_cut_bin) / h_clean.Integral()))
 
+    if rebin:
+        h_cosmic.Rebin2D(rebin, rebin)
+        h_clean.Rebin2D(rebin, rebin)
+
     h_clean.Scale(1. / h_clean.Integral())
     h_cosmic.Scale(1. / h_cosmic.Integral())
 
     # for width-length ratio
-    # x0 = 0.4
-    # y0 = 0.12
-    # equation = '{} * pow(x - {}, 3)'.format(-y0 / x0**3, x0)
-    # # -1.875 * pow(x - 0.4, 3)
-    # print('equation = {}'.format(equation))
-    # tf1 = TF1('tf1', equation, 0, x0)
+    # equation = '-3.125 * pow(x - 0.4, 3)'
 
     # for multiple cell fraction
-    # equation = '0.05 * exp(-x / 0.05) + 0.05 * exp(-x / 0.2)'
-    # equation = '0.08 * exp(-x / 0.03) + 0.01'
-    # equation = '0.1 * exp(-x / 0.05) + 0.01'
-    equation = '0.1 * exp(-x / 0.05) + 0.02'
-    # equation = '0.11 * exp(-x / 0.05) + 0.02'
-    print('equation = {}'.format(equation))
-    tf1 = TF1('tf1', equation, 0, 1)
+    # equation = '0.1 * exp(-x / 0.05) + 0.02'
 
-    tf1.SetLineWidth(3)
-    tf1.SetLineColor(kRed)
+    # for plane cell asymmetry
+    # equation = '-0.6*x + 0.6'
+
+    tf1 = None
+    if equation:
+        tf1 = TF1('tf1', equation, 0, 1)
+        tf1.SetLineWidth(3)
+        tf1.SetLineColor(kRed)
+
+    if tf1:
+        print('integral under equation:')
+        print('signal: {}'.format(get_integral_under_curve(tf1, h_clean)))
+        print('cosmic: {}'.format(get_integral_under_curve(tf1, h_cosmic)))
 
     if not signal_only:
         c1 = TCanvas('c1', 'c1', 600, 600)
         set_margin()
         gPad.SetRightMargin(0.2)
+        if grid:
+            gPad.SetGrid()
         if log_x:
             gPad.SetLogx()
         if log_y:
@@ -771,7 +811,8 @@ def plot_2d_cuts(histname, **kwargs):
             h_cosmic.GetXaxis().SetRangeUser(0., x_max)
         if y_max:
             h_cosmic.GetYaxis().SetRangeUser(0., y_max)
-        tf1.Draw('sames')
+        if tf1:
+            tf1.Draw('sames')
         c1.Update()
         c1.SaveAs('{}/plot_2d_cuts.{}.{}.cosmic.pdf'.format(FIGURE_DIR, cosmic_filename, histname))
 
@@ -779,6 +820,8 @@ def plot_2d_cuts(histname, **kwargs):
         c2 = TCanvas('c2', 'c2', 600, 600)
         set_margin()
         gPad.SetRightMargin(0.2)
+        if grid:
+            gPad.SetGrid()
         if log_x:
             gPad.SetLogx()
         if log_y:
@@ -794,7 +837,8 @@ def plot_2d_cuts(histname, **kwargs):
             h_clean.GetXaxis().SetRangeUser(0., x_max)
         if y_max:
             h_clean.GetYaxis().SetRangeUser(0., y_max)
-        tf1.Draw('sames')
+        if tf1:
+            tf1.Draw('sames')
         c2.Update()
         c2.SaveAs('{}/plot_2d_cuts.{}.{}.clean.pdf'.format(FIGURE_DIR, signal_filename, histname))
 
@@ -824,22 +868,18 @@ def plot_daq_hit_1d(filename, hist_name):
 
 
 def calculate_trigger_rate():
-    event_count = 1636.
+    event_count = 5031.
     event_duration = 0.55e-3    # s
     exposure = event_count * event_duration
 
-    cut_names = ['pre-containment', 'containment', 'width-length ratio', 'max track length', 'cell hit count', 'XY view asymmetry', 'hit extent', 'cell number multiplicity']
-    # slice_counts = [106904, 12212., 185., 101., 79., 65., 61., 36.]
+    cut_names = ['pre-containment', 'containment', 'width-length ratio', 'cell number multiplicity', 'hit count asymmetry', 'hit extent asymmetry']
     slice_counts = [
-        106904, 3951,
-        # 80,
-        60,
-        37,
-        21,
-        15,
-        # 13,
-        13,
-        4
+        328274,
+        8762,
+        59,
+        26,
+        20,
+        15
     ]
 
     fractions = [slice_count / slice_counts[0] for slice_count in slice_counts]
@@ -850,32 +890,18 @@ def calculate_trigger_rate():
 
 
 def calculate_efficiency():
-    event_count = 1636.
+    event_count = 5031.
     event_duration = 0.55e-3    # s
     exposure = event_count * event_duration
 
-    cut_names = ['pre-containment', 'containment', 'width-length ratio', 'max track length', 'cell hit count', 'XY view asymmetry', 'hit extent', 'cell number multiplicity']
-    # slice_counts = [
-    #     5048, 3898,
-    #     # 3576,
-    #     3455,
-    #     3453,
-    #     3431,
-    #     3424,
-    #     # 3421,
-    #     3414,
-    #     3341
-    # ]
+    cut_names = ['pre-containment', 'containment', 'width-length ratio', 'cell number multiplicity', 'hit count asymmetry', 'hit extent asymmetry']
     slice_counts = [
-        5048, 3570,
-        # 3274,
-        3156,
-        3155,
-        3138,
-        3133,
-        # 3130,
-        3123,
-        3058
+        10100,
+        6845,
+        6139,
+        5991,
+        5976,
+        5786
     ]
     fractions = [slice_count / slice_counts[0] for slice_count in slice_counts]
     rates = [slice_count / exposure for slice_count in slice_counts]
@@ -1013,8 +1039,167 @@ def get_event_count(filename):
         # print('remain_slices = {}'.format(remain_slices))
         return number_of_slices[0], number_of_slices[1], remain_slices[0]
 
-# blessed plots
-print_evd()
+
+# 20180621_nnbar_topology
+gStyle.SetOptStat(0)
+plot_2d_cuts('hTrackLengthRatioXY',
+             cosmic_filename='neutronosc_ddt_hist.talk.cosmic.root',
+             signal_filename='neutronosc_ddt_hist.talk.clean.root',
+             log_x=False, log_y=False, log_z=False,
+             x_max=1.004, y_max=1.004,
+             x_cut=0.8, y_cut=0.8,
+             rebin=2,
+             cosmic_only=False,
+             grid=True)
+# plot_2d_cuts('hHitDensityXY',
+#              cosmic_filename='neutronosc_ddt_hist.talk.cosmic.root',
+#              signal_filename='neutronosc_ddt_hist.talk.clean.root',
+#              log_x=True, log_y=True, log_z=True,
+#              x_max=1., y_max=1.,
+#              x_cut=0.02, y_cut=0.02,
+#              cosmic_only=False,
+#              grid=True)
+# plot_1d_cut('hTrackCount',
+#             cosmic_filename='neutronosc_ddt_hist.talk.cosmic.root',
+#             signal_filename='neutronosc_ddt_hist.talk.clean.root',
+#             x_max=50,
+#             log_y=True,
+#             x_cut=0.05)
+# plot_2d_cuts('hMomentOfInertiaXY',
+#              cosmic_filename='neutronosc_ddt_hist.talk.cosmic.root',
+#              signal_filename='neutronosc_ddt_hist.talk.clean.root',
+#              log_x=True, log_y=True, log_z=True,
+#              x_max=10000, y_max=10000,
+#              x_cut=50, y_cut=50,
+#              cosmic_only=False)
+# plot_daq_hit('neutronosc_ddt_hist.talk.cosmic.2.root', draw_containment=True)
+# calculate_efficiency()
+# calculate_trigger_rate()
+# plot_2d_cuts('fMultipleCellFractionXY',
+#              cosmic_filename='neutronosc_ddt_hist.talk.cosmic.root',
+#              signal_filename='neutronosc_ddt_hist.talk.clean.root',
+#              log_x=True, log_y=True, log_z=True,
+#              x_max=1.5, y_max=1.5,
+#              x_cut=0.5, y_cut=0.5,
+#              rebin=None,
+#              cosmic_only=False,
+#              grid=True,
+#              equation='0.1 * exp(-x / 0.05) + 0.02')
+# plot_2d_cuts('hPlaneCellExtentAsymmetry',
+#              cosmic_filename='neutronosc_ddt_hist.talk.cosmic.root',
+#              signal_filename='neutronosc_ddt_hist.talk.clean.root',
+#              log_x=False, log_y=False, log_z=True,
+#              x_max=1.01, y_max=1.01,
+#              x_cut=0.5, y_cut=0.5,
+#              rebin=None,
+#              cosmic_only=False,
+#              grid=True,
+#              equation='-0.6*x + 0.6')
+# plot_1d_cut('fXyAsymmetry', cosmic_filename='neutronosc_ddt_hist.talk.cosmic.root', signal_filename='neutronosc_ddt_hist.talk.clean.root', y_max=0.25, x_max=1., rebin=5, x_cut=0.5)
+# plot_2d_cuts('fTrackWidthToLengthRatioXY',
+#              cosmic_filename='neutronosc_ddt_hist.talk.cosmic.root',
+#              signal_filename='neutronosc_ddt_hist.talk.clean.root',
+#              log_x=False, log_y=False, log_z=False,
+#              x_max=1., y_max=1.,
+#              x_cut=0.5, y_cut=0.5,
+#              rebin=None,
+#              cosmic_only=False,
+#              grid=True,
+#              equation='-3.125 * pow(x - 0.4, 3)')
+# plot_daq_hit_colz('neutronosc_ddt_hist.talk.clean.root', draw_containment=True)
+# plot_daq_hit('neutronosc_ddt_hist.topology.root', draw_containment=False)
+# plot_daq_hit('neutronosc_ddt_hist.width_length_ratio_xview.cosmic.root', draw_containment=True)
+# plot_daq_hit('neutronosc_ddt_hist.asymmetry.cosmic.5.root', draw_containment=True)
+# plot_daq_hit('neutronosc_ddt_hist.asymmetry.cosmic.4.root', draw_containment=True)
+# slope = 0.6 / 1.
+# intercept = 0.6
+# equation = '-{}*x + {}'.format(slope, intercept)
+# plot_2d_cuts('hPlaneCellExtentAsymmetry',
+#              cosmic_filename='neutronosc_ddt_hist.asymmetry.cosmic.4.root',
+#              signal_filename='neutronosc_ddt_hist.asymmetry.clean.2.root',
+#              log_x=False, log_y=False, log_z=True,
+#              x_max=1.5, y_max=1.5,
+#              x_cut=0.5, y_cut=0.5,
+#              rebin=None,
+#              cosmic_only=False,
+#              grid=True,
+#              equation=equation)
+# plot_2d_cuts('fTrackWidthToLengthRatioXY',
+#              cosmic_filename='neutronosc_ddt_hist.asymmetry.cosmic.4.root',
+#              signal_filename='neutronosc_ddt_hist.asymmetry.clean.2.root',
+#              log_x=False, log_y=False, log_z=True,
+#              x_max=1.5, y_max=1.5,
+#              x_cut=0.5, y_cut=0.5,
+#              rebin=None,
+#              cosmic_only=False,
+#              grid=True,
+#              equation='-3.125 * pow(x - 0.4, 3)')
+# plot_2d_cuts('fMultipleCellFractionXY',
+#              cosmic_filename='neutronosc_ddt_hist.asymmetry.cosmic.4.root',
+#              signal_filename='neutronosc_ddt_hist.asymmetry.clean.2.root',
+#              log_x=True, log_y=True, log_z=True,
+#              x_max=1.5, y_max=1.5,
+#              x_cut=0.5, y_cut=0.5,
+#              rebin=None,
+#              cosmic_only=False,
+#              grid=True,
+#              equation='0.1 * exp(-x / 0.05) + 0.02')
+# plot_track('neutronosc_ddt_hist.high_stat.cosmic.root')
+# plot_daq_hit('neutronosc_ddt_hist.high_stat.cosmic.root', draw_containment=True)
+# plot_daq_hit('neutronosc_ddt_hist.no_asymmetry.cosmic.root', draw_containment=True)
+# plot_daq_hit('neutronosc_ddt_hist.no_minHitExtentPlane.cosmic.root', draw_containment=True)
+# plot_track('neutronosc_ddt_hist.width_to_length_ratio_0.2.cosmic.root')
+# plot_daq_hit('neutronosc_ddt_hist.width_to_length_ratio_0.2.cosmic.root', draw_containment=True)
+# plot_2d_cuts('fTrackWidthToLengthRatioXY',
+#              cosmic_filename='neutronosc_ddt_hist.containment_y_min_4.cosmic.root',
+#              signal_filename='neutronosc_ddt_hist.containment_y_min_4.cosmic.root',
+#              log_x=True, log_y=True, log_z=True,
+#              x_max=1.5, y_max=1.5,
+#              x_cut=0.8, y_cut=0.8,
+#              rebin=None,
+#              cosmic_only=False,
+#              grid=True)
+# plot_track('neutronosc_ddt_hist.containment_y_min_4.cosmic.root')
+# plot_daq_hit('neutronosc_ddt_hist.containment_y_min_4.cosmic.root', draw_containment=True)
+# plot_daq_hit('neutronosc_ddt_hist.track_length_ratio_cosmic.4.root', draw_containment=True)
+# plot_daq_hit('neutronosc_ddt_hist.fast.root', draw_containment=True)
+# plot_track('neutronosc_ddt_hist.fast.root')
+# plot_2d_cuts('hTrackLengthRatioXY',
+#              cosmic_filename='neutronosc_ddt_hist.track_length_ratio_cosmic.3.root',
+#              signal_filename='neutronosc_ddt_hist.track_length_ratio_clean.3.root',
+#              log_x=False, log_y=False, log_z=True,
+#              x_max=1.5, y_max=1.5,
+#              x_cut=0.8, y_cut=0.8,
+#              rebin=10,
+#              cosmic_only=False,
+#              grid=True)
+# plot_track('neutronosc_ddt_hist.y_min_containment_cosmic.root')
+# plot_track('neutronosc_ddt_hist.x_containment_cosmic.root')
+# plot_track('neutronosc_ddt_hist.feb_flasher.root')
+# plot_daq_hit('neutronosc_ddt_hist.feb_flasher.root')
+# plot_2d_cuts('hMomentOfInertiaXY',
+#              cosmic_filename='neutronosc_ddt_hist.moment_of_inertia_cosmic.root',
+#              signal_filename='neutronosc_ddt_hist.moment_of_inertia_clean.root',
+#              log_x=True, log_y=True, log_z=True,
+#              x_max=10000, y_max=10000,
+#              x_cut=50, y_cut=50,
+#              cosmic_only=False)
+# plot_2d_cuts('hHitDensityXY',
+#              cosmic_filename='neutronosc_ddt_hist.hit_density_cosmic.root',
+#              signal_filename='neutronosc_ddt_hist.hit_density_clean.root',
+#              log_x=True, log_y=True, log_z=True,
+#              x_max=1., y_max=1.,
+#              x_cut=0.02, y_cut=0.02,
+#              cosmic_only=False)
+# plot_1d_cut('hTrackCount',
+#             cosmic_filename='neutronosc_ddt_hist.hit_density_cosmic.root',
+#             signal_filename='neutronosc_ddt_hist.hit_density_clean.root',
+#             x_max=60,
+#             log_y=True,
+#             x_cut=0.05)
+
+# 20180519_nnbar_blessing
+# print_evd()
 
 # 20180506_nnbar_containment
 # gStyle.SetOptStat(0)
