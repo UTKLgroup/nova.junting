@@ -1042,15 +1042,15 @@ def get_event_count(filename):
 
 # 20180621_nnbar_topology
 gStyle.SetOptStat(0)
-plot_2d_cuts('hTrackLengthRatioXY',
-             cosmic_filename='neutronosc_ddt_hist.talk.cosmic.root',
-             signal_filename='neutronosc_ddt_hist.talk.clean.root',
-             log_x=False, log_y=False, log_z=False,
-             x_max=1.004, y_max=1.004,
-             x_cut=0.8, y_cut=0.8,
-             rebin=2,
-             cosmic_only=False,
-             grid=True)
+# plot_2d_cuts('hTrackLengthRatioXY',
+#              cosmic_filename='neutronosc_ddt_hist.talk.cosmic.root',
+#              signal_filename='neutronosc_ddt_hist.talk.clean.root',
+#              log_x=False, log_y=False, log_z=False,
+#              x_max=1.004, y_max=1.004,
+#              x_cut=0.8, y_cut=0.8,
+#              rebin=2,
+#              cosmic_only=False,
+#              grid=True)
 # plot_2d_cuts('hHitDensityXY',
 #              cosmic_filename='neutronosc_ddt_hist.talk.cosmic.root',
 #              signal_filename='neutronosc_ddt_hist.talk.clean.root',
@@ -1065,13 +1065,14 @@ plot_2d_cuts('hTrackLengthRatioXY',
 #             x_max=50,
 #             log_y=True,
 #             x_cut=0.05)
-# plot_2d_cuts('hMomentOfInertiaXY',
-#              cosmic_filename='neutronosc_ddt_hist.talk.cosmic.root',
-#              signal_filename='neutronosc_ddt_hist.talk.clean.root',
-#              log_x=True, log_y=True, log_z=True,
-#              x_max=10000, y_max=10000,
-#              x_cut=50, y_cut=50,
-#              cosmic_only=False)
+plot_2d_cuts('hMomentOfInertiaXY',
+             cosmic_filename='neutronosc_ddt_hist.talk.cosmic.root',
+             signal_filename='neutronosc_ddt_hist.talk.clean.root',
+             log_x=True, log_y=True, log_z=True,
+             x_max=10000, y_max=10000,
+             x_cut=50, y_cut=50,
+             cosmic_only=False,
+             grid=True)
 # plot_daq_hit('neutronosc_ddt_hist.talk.cosmic.2.root', draw_containment=True)
 # calculate_efficiency()
 # calculate_trigger_rate()
