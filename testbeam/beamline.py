@@ -349,7 +349,8 @@ class Beamline:
         self.magnet.theta = self.us_theta + self.ds_theta / 2.
 
         self.f_out.write('genericbend M1 fieldHeight={} fieldLength={} fieldWidth={} kill={} ironColor=1,0,0 ironHeight={} ironLength={} ironWidth={}\n'.format(magnet_field_dimensions[0], magnet_field_dimensions[1], magnet_field_dimensions[2], self.kill, magnet_iron_dimensions[0], magnet_iron_dimensions[1], magnet_iron_dimensions[2]))
-        self.f_out.write('place M1 By={} x={} y={} z={} rotation=Y{}\n'.format(self.magnet_by, self.magnet.x, self.magnet.y, self.magnet.z, self.magnet.theta))
+        # self.f_out.write('place M1 By={} x={} y={} z={} rotation=Y{}\n'.format(self.magnet_by, self.magnet.x, self.magnet.y, self.magnet.z, self.magnet.theta))
+        self.f_out.write('place M1 By=$b_field x={} y={} z={} rotation=Y{}\n'.format(self.magnet.x, self.magnet.y, self.magnet.z, self.magnet.theta))
 
     def write_tof(self):
         tof_us_dimensions = [150., 50.8, 150.]
