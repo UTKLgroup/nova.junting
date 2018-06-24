@@ -441,28 +441,29 @@ class Beamline:
         self.f_out.write('param worldMaterial=Air\n')
         self.f_out.write('param histoFile=beam.root\n')
 
-        # self.f_out.write('g4ui when=4 "/vis/viewer/set/viewpointVector 0 1 0"\n')
-        self.f_out.write('g4ui when=4 "/vis/viewer/set/viewpointVector -1 1 1"\n')
+        self.f_out.write('g4ui when=4 "/vis/viewer/set/viewpointVector 0 1 0"\n')
+        # self.f_out.write('g4ui when=4 "/vis/viewer/set/viewpointVector -1 1 1"\n') # for radiation study
         self.f_out.write('g4ui when=4 "/vis/viewer/zoom 1.5"\n')
         self.f_out.write('g4ui when=4 "/vis/viewer/set/style wireframe"\n')
         if self.screen_shot:
             self.f_out.write('g4ui when=4 "/vis/viewer/set/background 1 1 1"\n')
 
         self.f_out.write('beam gaussian particle=$particle firstEvent=$first lastEvent=$last sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=$momentum\n')
-        # self.f_out.write('trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton\n')
-        self.f_out.write('trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,proton,anti_proton,neutron,anti_neutron\n')
+        self.f_out.write('trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton\n')
+        # self.f_out.write('trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,proton,anti_proton,neutron,anti_neutron\n') # for radiation study
 
         self.write_target()
         self.write_collimator_us()
-        # if not self.screen_shot:
-        #     self.write_virtual_disk()
+        if not self.screen_shot:
+            self.write_virtual_disk()
         self.write_wc()
         self.write_magnet()
         self.write_collimator_ds()
         self.write_tof()
         self.write_cherenkov()
-        self.write_nova()
-        self.write_housing()
+        self.write_nova_plane()
+        # self.write_nova()       # for radiation study
+        # self.write_housing()    # for radiation study
 
 beamline = Beamline()
 beamline.figure_dir = '/Users/juntinghuang/beamer/20180413_testbeam_120gev/figures'
