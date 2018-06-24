@@ -12,7 +12,7 @@ ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
-FIGURE_DIR = '/Users/juntinghuang/beamer/20180530_testbeam_radiation_dosage/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180625_testbeam_64_32_16_8GeV_different_bs/figures'
 DATA_DIR = './data'
 
 
@@ -2197,6 +2197,10 @@ def print_radiation_summary(filename):
         print('{} & {} & {:.0f} \\\\'.format(name, name_infos[name]['count'], name_infos[name]['momentum']))
 
 
+# 20180625_testbeam_64_32_16_8GeV_different_bs
+# save_particle_to_csv()
+
+
 # 20180530_testbeam_radiation_dosage
 # gStyle.SetOptStat(0)
 # plot_radiation_position('radiation.10000.64GeV.root')
@@ -2215,7 +2219,7 @@ def print_radiation_summary(filename):
 # plot_radiation_count('radiation.10000.32GeV.root')
 # print_radiation_tex('radiation.10000.32GeV.root', '32 GeV')
 # print_radiation_summary('radiation.10000.64GeV.root')
-print_radiation_summary('radiation.10000.32GeV.root')
+# print_radiation_summary('radiation.10000.32GeV.root')
 
 # test_beam_neutrino_2018, poster
 # plot_particle_momentum('beam.py.in.30_spill.job_1_900.10k_per_job.b_-0.45T.10m.root.csv', 350, 800, y_max=0.8, bin_count=15, y_title_offset=1.4, normalization_factor=9, y_title='Particle Count per 1M Beam Particles')
