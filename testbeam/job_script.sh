@@ -19,16 +19,14 @@ export G4RADIOACTIVEDATA=/nova/app/users/junting/g4beamline/Geant4Data/Radioacti
 export G4REALSURFACEDATA=/nova/app/users/junting/g4beamline/Geant4Data/RealSurface1.0
 
 PROCESS_START=0
-# B_FIELD=b_1.8T
-# B_FIELD=b_-1.8T
-# B_FIELD=b_0.45T
-# B_FIELD=b_-0.45T
-B_FIELD=b_-0.9T
-# B_FIELD=b_-1.35T
-# B_FIELD=b_-1.8T
+# B_FIELD=-0.45
+B_FIELD=-0.9
+# B_FIELD=-1.35
+# B_FIELD=-1.8
 
 ifdh cp /pnfs/nova/persistent/users/junting/testbeam/merge_tree.py ./merge_tree.py
-ifdh cp /pnfs/nova/persistent/users/junting/testbeam/beam.py.${B_FIELD}.in ./beam.py.in
+ifdh cp /pnfs/nova/persistent/users/junting/testbeam/save_particle_to_csv.py ./save_particle_to_csv.py
+ifdh cp /pnfs/nova/persistent/users/junting/testbeam/beam.py.in ./beam.py.in
 
 # PARTICLE=proton
 # MOMENTUM=120000
@@ -45,10 +43,14 @@ echo "LAST = $LAST"
 JOB_COUNT=$((${PROCESS_START} + ${PROCESS} + 1))
 EVENT_COUNT_PER_SPILL=$((${EVENT_COUNT_PER_JOB} * ${JOB_COUNT_PER_SPILL}))
 
-g4bl beam.py.in first=${FIRST} last=${LAST} particle=${PARTICLE} momentum=${MOMENTUM}
+g4bl beam.py.in first=${FIRST} last=${LAST} particle=${PARTICLE} momentum=${MOMENTUM} b_field=${B_FIELD}
 python merge_tree.py beam.root --subspillnumber $JOB_COUNT --subspillcount $JOB_COUNT_PER_SPILL --spillsize $EVENT_COUNT_PER_SPILL
+python save_particle_to_csv.py MergedAtstart_linebeam.root
 
-chmod 766 MergedAtstart_linebeam.root
-chmod 766 MergedAtstart_linebeam.pickle
-ifdh cp MergedAtstart_linebeam.root /pnfs/nova/scratch/users/junting/g4bl.${B_FIELD}.${PARTICLE}.${MOMENTUM}/MergedAtstart_linebeam.${JOB_COUNT}.root
-ifdh cp MergedAtstart_linebeam.pickle /pnfs/nova/scratch/users/junting/g4bl.${B_FIELD}.${PARTICLE}.${MOMENTUM}/MergedAtstart_linebeam.${JOB_COUNT}.pickle
+# chmod 766 MergedAtstart_linebeam.root
+# chmod 766 MergedAtstart_linebeam.pickle
+# ifdh cp MergedAtstart_linebeam.root /pnfs/nova/scratch/users/junting/g4bl.${B_FIELD}.${PARTICLE}.${MOMENTUM}.MergedAtstart_linebeam.${JOB_COUNT}.root
+# ifdh cp MergedAtstart_linebeam.pickle /pnfs/nova/scratch/users/junting/g4bl.${B_FIELD}.${PARTICLE}.${MOMENTUM}.MergedAtstart_linebeam.${JOB_COUNT}.pickle
+
+chmod 766 MergedAtstart_linebeam.root.csv
+ifdh cp MergedAtstart_linebeam.root.csv /pnfs/nova/scratch/users/junting/g4bl.b_${B_FIELD}T.${PARTICLE}.${MOMENTUM}.MergedAtstart_linebeam.${JOB_COUNT}.root.csv
