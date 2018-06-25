@@ -26,7 +26,7 @@ B_FIELD=-0.9
 
 ifdh cp /pnfs/nova/persistent/users/junting/testbeam/merge_tree.py ./merge_tree.py
 ifdh cp /pnfs/nova/persistent/users/junting/testbeam/save_particle_to_csv.py ./save_particle_to_csv.py
-ifdh cp /pnfs/nova/persistent/users/junting/testbeam/beam.py.in ./beam.py.in
+ifdh cp /pnfs/nova/persistent/users/junting/testbeam/beamline.py.in ./beamline.py.in
 
 # PARTICLE=proton
 # MOMENTUM=120000
@@ -43,7 +43,7 @@ echo "LAST = $LAST"
 JOB_COUNT=$((${PROCESS_START} + ${PROCESS} + 1))
 EVENT_COUNT_PER_SPILL=$((${EVENT_COUNT_PER_JOB} * ${JOB_COUNT_PER_SPILL}))
 
-g4bl beam.py.in first=${FIRST} last=${LAST} particle=${PARTICLE} momentum=${MOMENTUM} b_field=${B_FIELD}
+g4bl beamline.py.in first=${FIRST} last=${LAST} particle=${PARTICLE} momentum=${MOMENTUM} b_field=${B_FIELD}
 python merge_tree.py beam.root --subspillnumber $JOB_COUNT --subspillcount $JOB_COUNT_PER_SPILL --spillsize $EVENT_COUNT_PER_SPILL
 python save_particle_to_csv.py MergedAtstart_linebeam.root
 
