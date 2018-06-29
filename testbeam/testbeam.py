@@ -2198,7 +2198,8 @@ def print_radiation_summary(filename):
 
 
 # 20180625_testbeam_64_32_16_8GeV_different_bs
-# save_particle_to_csv()
+plot_particle_momentum('beam.py.in.30_spill.job_1_900.10k_per_job.b_-0.45T.10m.root.csv', 350, 800, y_max=0.8, bin_count=15, y_title_offset=1.4, normalization_factor=9, y_title='Particle Count per 1M Beam Particles')
+plot_particle_count_vs_secondary_beam_energy()
 
 
 # 20180530_testbeam_radiation_dosage
