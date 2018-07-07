@@ -1002,7 +1002,7 @@ def save_particle_to_csv(filename):
 
 def plot_particle_momentum(filename, x_min, x_max, **kwargs):
     bin_count = kwargs.get('bin_count', 50)
-    y_max = kwargs.get('y_max', 0)
+    y_max = kwargs.get('y_max', 0.)
     y_title = kwargs.get('y_title', 'Particle Count')
     log_y = kwargs.get('log_y', False)
     plot_noise = kwargs.get('plot_noise', False)
@@ -1050,6 +1050,12 @@ def plot_particle_momentum(filename, x_min, x_max, **kwargs):
         hist.Scale(1. / normalization_factor)
         pid_hists[pid] = hist
     h_all.Scale(1. / normalization_factor)
+
+    if y_max == 0.:
+        for pid, hist in pid_hists.items():
+            if hist.GetMaximum() > y_max:
+                y_max = hist.GetMaximum()
+    y_max *= 1.2
 
     # c1 = TCanvas('c1', 'c1', 800, 800)
     c1 = TCanvas('c1', 'c1', 600, 600)
@@ -2291,26 +2297,25 @@ def print_radiation_length():
     print('radiation_length_carbon_dioxide_cm = {}'.format(radiation_length_carbon_dioxide_cm))
 
 # 20180625_testbeam_64_32_16_8GeV_different_bs
-print_radiation_length()
+# print_radiation_length()
 # plot_particle_count_vs_secondary_beam_energy('gr_total', y_min=0, y_max=30)
 # plot_particle_count_vs_secondary_beam_energy('gr_pi', y_min=0, y_max=15)
 # plot_particle_count_vs_secondary_beam_energy('gr_proton', y_min=0, y_max=15)
-# plot_particle_momentum('g4bl.b_-1.8T.pi+.64000.csv', 1500, 3000, title='64 GeV Secondary Beam', y_max=2., bin_count=15, y_title_offset=1.4, normalization_factor=4., y_title='Particle Count per 1M Beam Particles')
-# plot_particle_momentum('g4bl.b_-1.8T.pi+.32000.csv', 1500, 3000, title='32 GeV Secondary Beam', y_max=1., bin_count=15, y_title_offset=1.4, normalization_factor=12., y_title='Particle Count per 1M Beam Particles')
-# plot_particle_momentum('g4bl.b_-1.8T.pi+.16000.csv', 1500, 3000, title='16 GeV Secondary Beam', y_max=3., bin_count=15, y_title_offset=1.4, normalization_factor=2., y_title='Particle Count per 1M Beam Particles')
-# plot_particle_momentum('g4bl.b_-1.8T.pi+.8000.csv', 1500, 3000, title='8 GeV Secondary Beam', y_max=1., bin_count=15, y_title_offset=1.4, normalization_factor=4., y_title='Particle Count per 1M Beam Particles')
+plot_particle_momentum('g4bl.b_-1.8T.pi+.64000.csv', 1500, 3000, title='64 GeV Secondary Beam', y_max=0., bin_count=15, y_title_offset=1.4, normalization_factor=4., y_title='Particle Count per 1M Beam Particles')
+# plot_particle_momentum('g4bl.b_-1.8T.pi+.32000.csv', 1500, 3000, title='32 GeV Secondary Beam', y_max=0., bin_count=15, y_title_offset=1.4, normalization_factor=12., y_title='Particle Count per 1M Beam Particles')
+# plot_particle_momentum('g4bl.b_-1.8T.pi+.16000.csv', 1500, 3000, title='16 GeV Secondary Beam', y_max=0., bin_count=15, y_title_offset=1.4, normalization_factor=24.32, y_title='Particle Count per 1M Beam Particles')
+# plot_particle_momentum('g4bl.b_-1.8T.pi+.8000.csv', 1500, 3000, title='8 GeV Secondary Beam', y_max=0., bin_count=15, y_title_offset=1.4, normalization_factor=4., y_title='Particle Count per 1M Beam Particles')
 # plot_particle_momentum('g4bl.b_-1.35T.pi+.64000.csv', 1300, 2000, title='64 GeV Secondary Beam', y_max=2.5, bin_count=15, y_title_offset=1.4, normalization_factor=4., y_title='Particle Count per 1M Beam Particles')
 # plot_particle_momentum('g4bl.b_-1.35T.pi+.32000.csv', 1300, 2000, title='32 GeV Secondary Beam', y_max=1., bin_count=15, y_title_offset=1.4, normalization_factor=12., y_title='Particle Count per 1M Beam Particles')
-# plot_particle_momentum('g4bl.b_-1.35T.pi+.16000.csv', 1300, 2000, title='16 GeV Secondary Beam', y_max=2., bin_count=15, y_title_offset=1.4, normalization_factor=2., y_title='Particle Count per 1M Beam Particles')
+# plot_particle_momentum('g4bl.b_-1.35T.pi+.16000.csv', 1300, 2000, title='16 GeV Secondary Beam', y_max=2., bin_count=15, y_title_offset=1.4, normalization_factor=28.76, y_title='Particle Count per 1M Beam Particles')
 # plot_particle_momentum('g4bl.b_-1.35T.pi+.8000.csv', 1300, 2000, title='8 GeV Secondary Beam', y_max=1., bin_count=15, y_title_offset=1.4, normalization_factor=4., y_title='Particle Count per 1M Beam Particles')
 # plot_particle_momentum('g4bl.b_-0.45T.pi+.64000.csv', 200, 1500, title='64 GeV Secondary Beam', y_max=2.5, bin_count=15, y_title_offset=1.4, normalization_factor=4., y_title='Particle Count per 1M Beam Particles')
 # plot_particle_momentum('g4bl.b_-0.45T.pi+.32000.csv', 200, 1500, title='32 GeV Secondary Beam', y_max=1., bin_count=15, y_title_offset=1.4, normalization_factor=12., y_title='Particle Count per 1M Beam Particles')
-# plot_particle_momentum('g4bl.b_-0.45T.pi+.16000.csv', 200, 1500, title='16 GeV Secondary Beam', y_max=2., bin_count=15, y_title_offset=1.4, normalization_factor=2., y_title='Particle Count per 1M Beam Particles')
+# plot_particle_momentum('g4bl.b_-0.45T.pi+.16000.csv', 200, 1500, title='16 GeV Secondary Beam', y_max=2., bin_count=15, y_title_offset=1.4, normalization_factor=24.5, y_title='Particle Count per 1M Beam Particles')
 # plot_particle_momentum('g4bl.b_-0.45T.pi+.8000.csv', 200, 1500, title='8 GeV Secondary Beam', y_max=0.6, bin_count=15, y_title_offset=1.4, normalization_factor=4., y_title='Particle Count per 1M Beam Particles')
-
-# get_particle_count_vs_secondary_beam_energy(suffix='b_-1.8T', csv_64gev='g4bl.b_-1.8T.pi+.64000.csv', norm_64gev=4., csv_32gev='g4bl.b_-1.8T.pi+.32000.csv', norm_32gev=12., csv_16gev='g4bl.b_-1.8T.pi+.16000.csv', norm_16gev=2., csv_8gev='g4bl.b_-1.8T.pi+.8000.csv', norm_8gev=4.,)
-# get_particle_count_vs_secondary_beam_energy(suffix='b_-1.35T', csv_64gev='g4bl.b_-1.35T.pi+.64000.csv', norm_64gev=4., csv_32gev='g4bl.b_-1.35T.pi+.32000.csv', norm_32gev=12., csv_16gev='g4bl.b_-1.35T.pi+.16000.csv', norm_16gev=2., csv_8gev='g4bl.b_-1.35T.pi+.8000.csv', norm_8gev=4.,)
-# get_particle_count_vs_secondary_beam_energy(suffix='b_-0.45T', csv_64gev='g4bl.b_-0.45T.pi+.64000.csv', norm_64gev=4., csv_32gev='g4bl.b_-0.45T.pi+.32000.csv', norm_32gev=12., csv_16gev='g4bl.b_-0.45T.pi+.16000.csv', norm_16gev=2., csv_8gev='g4bl.b_-0.45T.pi+.8000.csv', norm_8gev=4.,)
+# get_particle_count_vs_secondary_beam_energy(suffix='b_-1.8T', csv_64gev='g4bl.b_-1.8T.pi+.64000.csv', norm_64gev=4., csv_32gev='g4bl.b_-1.8T.pi+.32000.csv', norm_32gev=12., csv_16gev='g4bl.b_-1.8T.pi+.16000.csv', norm_16gev=24.32, csv_8gev='g4bl.b_-1.8T.pi+.8000.csv', norm_8gev=4.,)
+# get_particle_count_vs_secondary_beam_energy(suffix='b_-1.35T', csv_64gev='g4bl.b_-1.35T.pi+.64000.csv', norm_64gev=4., csv_32gev='g4bl.b_-1.35T.pi+.32000.csv', norm_32gev=12., csv_16gev='g4bl.b_-1.35T.pi+.16000.csv', norm_16gev=28.76, csv_8gev='g4bl.b_-1.35T.pi+.8000.csv', norm_8gev=4.,)
+# get_particle_count_vs_secondary_beam_energy(suffix='b_-0.45T', csv_64gev='g4bl.b_-0.45T.pi+.64000.csv', norm_64gev=4., csv_32gev='g4bl.b_-0.45T.pi+.32000.csv', norm_32gev=12., csv_16gev='g4bl.b_-0.45T.pi+.16000.csv', norm_16gev=24.5, csv_8gev='g4bl.b_-0.45T.pi+.8000.csv', norm_8gev=4.,)
 # get_particle_count_vs_secondary_beam_energy(suffix='b_-0.9T', csv_64gev='beamline.py.in.job_1_1800.18m.b_-0.9T.pi+_64gev.root.csv', norm_64gev=18., csv_32gev='beamline.py.in.job_1_1800.27m.b_-0.9T.pi+_32gev.root.csv', norm_32gev=27., csv_16gev='beamline.py.in.job_1_900.45m.b_-0.9T.pi+_16gev.root.csv', norm_16gev=45., csv_8gev='beamline.py.in.job_1_900.90m.b_-0.9T.pi+_8gev.root.csv', norm_8gev=90.,)
 
 # 20180530_testbeam_radiation_dosage
