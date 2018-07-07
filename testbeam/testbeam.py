@@ -2,7 +2,7 @@ from rootalias import *
 from pprint import pprint
 import csv
 import math
-from math import pi, cos, sin, atan, sqrt
+from math import pi, cos, sin, atan, sqrt, log
 import numpy as np
 
 
@@ -2251,7 +2251,47 @@ def print_radiation_summary(filename):
         print('{} & {} & {:.0f} \\\\'.format(name, name_infos[name]['count'], name_infos[name]['momentum']))
 
 
+def get_radiation_length(Z, A):
+    return 716.4 * A / (Z * (Z + 1) * log(287. / sqrt(Z))) # g/cm2
+    
+def print_radiation_length():
+    Z_nitrogen = 7.
+    A_nitrogen = 14.
+
+    Z_oxygen = 8.
+    A_oxygen = 16.
+
+    Z_helium = 2.
+    A_helium = 4.
+    density_helium = 0.164e-3   # g/cm3
+    air_density = 1.161e-3      # g/cm3
+    air_nitrogen_mass_fraction = 0.76
+    air_oxygen_mass_fraction = 0.24
+
+    radiation_length_helium = get_radiation_length(Z_helium, A_helium)
+    radiation_length_helium_cm = radiation_length_helium / density_helium
+
+    radiation_length_air = 1. / (air_nitrogen_mass_fraction / get_radiation_length(Z_nitrogen, A_nitrogen) + air_oxygen_mass_fraction / get_radiation_length(Z_oxygen, A_oxygen))
+    radiation_length_air_cm = radiation_length_air / air_density
+
+    print('radiation_length_helium = {}'.format(radiation_length_helium))
+    print('radiation_length_helium_cm = {}'.format(radiation_length_helium_cm))
+
+    print('radiation_length_air = {}'.format(radiation_length_air))
+    print('radiation_length_air_cm = {}'.format(radiation_length_air_cm))
+
+    Z_carbon = 6
+    A_carbon = 12
+    density_carbon_dioxide = 1.799e-3 # g/cm3
+    carbon_dioxide_carbon_mass_fraction = A_carbon / (A_carbon + A_oxygen * 2.)
+    carbon_dioxide_oxygen_mass_fraction = A_oxygen * 2. / (A_carbon + A_oxygen * 2.)
+    radiation_length_carbon_dioxide = 1. / (carbon_dioxide_carbon_mass_fraction / get_radiation_length(Z_carbon, A_carbon) + carbon_dioxide_oxygen_mass_fraction / get_radiation_length(Z_oxygen, A_oxygen))
+    radiation_length_carbon_dioxide_cm = radiation_length_carbon_dioxide / density_carbon_dioxide
+    print('radiation_length_carbon_dioxide = {}'.format(radiation_length_carbon_dioxide))
+    print('radiation_length_carbon_dioxide_cm = {}'.format(radiation_length_carbon_dioxide_cm))
+
 # 20180625_testbeam_64_32_16_8GeV_different_bs
+print_radiation_length()
 # plot_particle_count_vs_secondary_beam_energy('gr_total', y_min=0, y_max=30)
 # plot_particle_count_vs_secondary_beam_energy('gr_pi', y_min=0, y_max=15)
 # plot_particle_count_vs_secondary_beam_energy('gr_proton', y_min=0, y_max=15)
@@ -2266,7 +2306,7 @@ def print_radiation_summary(filename):
 # plot_particle_momentum('g4bl.b_-0.45T.pi+.64000.csv', 200, 1500, title='64 GeV Secondary Beam', y_max=2.5, bin_count=15, y_title_offset=1.4, normalization_factor=4., y_title='Particle Count per 1M Beam Particles')
 # plot_particle_momentum('g4bl.b_-0.45T.pi+.32000.csv', 200, 1500, title='32 GeV Secondary Beam', y_max=1., bin_count=15, y_title_offset=1.4, normalization_factor=12., y_title='Particle Count per 1M Beam Particles')
 # plot_particle_momentum('g4bl.b_-0.45T.pi+.16000.csv', 200, 1500, title='16 GeV Secondary Beam', y_max=2., bin_count=15, y_title_offset=1.4, normalization_factor=2., y_title='Particle Count per 1M Beam Particles')
-plot_particle_momentum('g4bl.b_-0.45T.pi+.8000.csv', 200, 1500, title='8 GeV Secondary Beam', y_max=0.6, bin_count=15, y_title_offset=1.4, normalization_factor=4., y_title='Particle Count per 1M Beam Particles')
+# plot_particle_momentum('g4bl.b_-0.45T.pi+.8000.csv', 200, 1500, title='8 GeV Secondary Beam', y_max=0.6, bin_count=15, y_title_offset=1.4, normalization_factor=4., y_title='Particle Count per 1M Beam Particles')
 
 # get_particle_count_vs_secondary_beam_energy(suffix='b_-1.8T', csv_64gev='g4bl.b_-1.8T.pi+.64000.csv', norm_64gev=4., csv_32gev='g4bl.b_-1.8T.pi+.32000.csv', norm_32gev=12., csv_16gev='g4bl.b_-1.8T.pi+.16000.csv', norm_16gev=2., csv_8gev='g4bl.b_-1.8T.pi+.8000.csv', norm_8gev=4.,)
 # get_particle_count_vs_secondary_beam_energy(suffix='b_-1.35T', csv_64gev='g4bl.b_-1.35T.pi+.64000.csv', norm_64gev=4., csv_32gev='g4bl.b_-1.35T.pi+.32000.csv', norm_32gev=12., csv_16gev='g4bl.b_-1.35T.pi+.16000.csv', norm_16gev=2., csv_8gev='g4bl.b_-1.35T.pi+.8000.csv', norm_8gev=4.,)
