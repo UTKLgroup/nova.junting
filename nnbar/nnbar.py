@@ -3,6 +3,7 @@ import math
 import numpy as np
 import random
 import re
+import os
 
 FIGURE_DIR = '/Users/juntinghuang/beamer/20180719_nnbar_globalconfig/figures'
 DATA_DIR = './data'
@@ -1044,9 +1045,67 @@ def get_event_count(filename):
         # print('remain_slices = {}'.format(remain_slices))
         return number_of_slices[0], number_of_slices[1], remain_slices[0]
 
+def print_trigger_evd_tex():
+    figure_names = [
+        'run_25148.subRun_24.event_9032.2018_07_20.16_22_19.png',
+        'run_25148.subRun_24.event_3936.2018_07_20.16_18_44.png',
+        'run_25148.subRun_24.event_3427.2018_07_20.16_10_34.png',
+        'run_25148.subRun_24.event_2684.2018_07_20.16_07_16.png',
+        'run_25148.subRun_24.event_2295.2018_07_20.15_53_21.png',
+        'run_24679.subRun_8.event_6290.2018_07_20.15_45_48.png',
+        'run_24679.subRun_8.event_4968.2018_07_20.15_40_41.png',
+        'run_24679.subRun_8.event_227.2018_07_20.15_34_00.png',
+        'run_24679.subRun_8.event_524.2018_07_20.15_29_10.png',
+        'run_24679.subRun_8.event_1389.2018_07_20.15_26_35.png',
+        'run_24679.subRun_8.event_4739.2018_07_20.15_19_40.png'
+    ]
+
+    run_subrun_events = [
+        'run_24679.subRun_8.event_227',
+        'run_24679.subRun_8.event_524',
+        'run_24679.subRun_8.event_1389',
+        'run_24679.subRun_8.event_4739',
+        'run_24679.subRun_8.event_4968',
+        'run_24679.subRun_8.event_6290',
+        'run_25148.subRun_24.event_2295',
+        'run_25148.subRun_24.event_2684',
+        'run_25148.subRun_24.event_3427',
+        'run_25148.subRun_24.event_3936',
+        'run_25148.subRun_24.event_9032',
+        'run_25154.subRun_26.event_1900',
+        'run_25154.subRun_26.event_2129'
+    ]
+
+    with open('/Users/juntinghuang/beamer/20180719_nnbar_globalconfig/evd.tex', 'w') as f_tex:
+        for i, run_subrun_event in enumerate(run_subrun_events):
+            info = run_subrun_event.split('.')
+            run = info[0].split('_')[1]
+            subrun = info[1].split('_')[1]
+            event = info[2].split('_')[1]
+
+            figure = None
+            for figure_name in figure_names:
+                if run_subrun_event in figure_name:
+                    figure = figure_name
+
+            if not figure:
+                continue
+
+            f_tex.write('\n% .........................................................\n\n')
+            f_tex.write('\\begin{frame}\n')
+            f_tex.write('  \\frametitle{{Run {}, Subrun {}, Event {}}}\n'.format(run, subrun, event))
+            f_tex.write('  \\begin{figure}\n')
+            f_tex.write('    \\includegraphics[width = \\textwidth]{{figures/evd/{{{}}}.png}}\n'.format(os.path.splitext(figure)[0]))
+            f_tex.write('    \\caption{{A triggered slice in Run {}, Subrun {}, Event {}.}}\n'.format(run, subrun, event))
+            f_tex.write('  \\end{figure}\n')
+            f_tex.write('\\end{frame}\n')
+
+
 # 20180719_nnbar_globalconfig
 gStyle.SetOptStat(0)
-plot_daq_hit('neutronosc_ddt_hist.no_hit_extent.cosmic.large.root', draw_containment=True, draw_option='colz')
+# print_trigger_evd_tex()
+# plot_daq_hit('neutronosc_ddt_hist.maxCellCountFraction.cosmic.root', draw_containment=True)
+# plot_daq_hit('neutronosc_ddt_hist.no_hit_extent.cosmic.large.root', draw_containment=True, draw_option='colz')
 # plot_2d_cuts('fTrackWidthToLengthRatioXY',
 #              cosmic_filename='neutronosc_ddt_hist.no_hit_extent.cosmic.root',
 #              signal_filename='neutronosc_ddt_hist.no_hit_extent.cosmic.root',
