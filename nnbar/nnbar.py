@@ -1046,16 +1046,17 @@ def get_event_count(filename):
 
 # 20180719_nnbar_globalconfig
 gStyle.SetOptStat(0)
-plot_2d_cuts('fTrackWidthToLengthRatioXY',
-             cosmic_filename='neutronosc_ddt_hist.no_hit_extent.cosmic.root',
-             signal_filename='neutronosc_ddt_hist.no_hit_extent.cosmic.root',
-             log_x=False, log_y=False, log_z=True,
-             x_max=1.01, y_max=1.01,
-             x_cut=0.5, y_cut=0.5,
-             rebin=None,
-             cosmic_only=False,
-             grid=True,
-             equation='-3.125 * pow(x - 0.4, 3)')
+plot_daq_hit('neutronosc_ddt_hist.no_hit_extent.cosmic.large.root', draw_containment=True, draw_option='colz')
+# plot_2d_cuts('fTrackWidthToLengthRatioXY',
+#              cosmic_filename='neutronosc_ddt_hist.no_hit_extent.cosmic.root',
+#              signal_filename='neutronosc_ddt_hist.no_hit_extent.cosmic.root',
+#              log_x=False, log_y=False, log_z=True,
+#              x_max=1.01, y_max=1.01,
+#              x_cut=0.5, y_cut=0.5,
+#              rebin=None,
+#              cosmic_only=False,
+#              grid=True,
+#              equation='-3.125 * pow(x - 0.4, 3)')
 # plot_2d_cuts('fMultipleCellFractionXY',
 #              cosmic_filename='neutronosc_ddt_hist.no_hit_extent.cosmic.root',
 #              signal_filename='neutronosc_ddt_hist.no_hit_extent.cosmic.root',
