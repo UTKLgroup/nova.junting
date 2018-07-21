@@ -878,14 +878,15 @@ def calculate_trigger_rate():
     event_duration = 0.55e-3    # s
     exposure = event_count * event_duration
 
-    cut_names = ['pre-containment', 'containment', 'width-length ratio', 'cell number multiplicity', 'hit count asymmetry', 'hit extent asymmetry']
+    cut_names = ['pre-containment', 'containment', 'width-length ratio', 'cell number multiplicity', 'hit count asymmetry', 'FEB flasher', 'one planer']
     slice_counts = [
-        328274,
-        8762,
-        59,
-        26,
-        20,
-        15
+        328862,
+        8840,
+        121,
+        81,
+        56,
+        18,
+        13
     ]
 
     fractions = [slice_count / slice_counts[0] for slice_count in slice_counts]
@@ -896,21 +897,17 @@ def calculate_trigger_rate():
 
 
 def calculate_efficiency():
-    event_count = 5031.
-    event_duration = 0.55e-3    # s
-    exposure = event_count * event_duration
-
-    cut_names = ['pre-containment', 'containment', 'width-length ratio', 'cell number multiplicity', 'hit count asymmetry', 'hit extent asymmetry']
+    cut_names = ['pre-containment', 'containment', 'width-length ratio', 'cell number multiplicity', 'hit count asymmetry', 'FEB flasher', 'one planer']
     slice_counts = [
-        10100,
-        6845,
-        6139,
-        5991,
-        5976,
-        5786
+	10104,
+	6814,
+        6117,
+        5970,
+        5955,
+        5901,
+        5898
     ]
     fractions = [slice_count / slice_counts[0] for slice_count in slice_counts]
-    rates = [slice_count / exposure for slice_count in slice_counts]
     for i, fraction in enumerate(fractions):
         fraction = fractions[i] * 100.
         print('{} & {:.0f} & {:.0f}\\% \\\\'.format(cut_names[i], slice_counts[i], fraction))
@@ -1101,8 +1098,57 @@ def print_trigger_evd_tex():
             f_tex.write('\\end{frame}\n')
 
 
+def plot_feb_flasher(filename):
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    h_x = tf.Get('neutronoscana/fDaqHitXView')
+    h_y = tf.Get('neutronoscana/fDaqHitYView')
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetRightMargin(0.2)
+
+    set_h2_color_style()
+    set_h2_style(h_x)
+    h_x.GetZaxis().SetTitle('Raw ADC')
+    h_x.GetYaxis().SetTitle('X Cell Number')
+    h_x.GetYaxis().SetTitleOffset(1.3)
+    h_x.Draw('colz')
+    h_x.GetXaxis().SetRangeUser(790, 820)
+    h_x.GetYaxis().SetRangeUser(280, 330)
+
+    c1.Update()
+    c1.SaveAs('{}/plot_feb_flasher.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+def plot_one_planer(filename):
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    h_x = tf.Get('neutronoscana/fDaqHitXView')
+    h_y = tf.Get('neutronoscana/fDaqHitYView')
+
+    c1 = TCanvas('c1', 'c1', 1000, 600)
+    set_margin()
+    # gPad.SetRightMargin(0.2)
+
+    set_h2_color_style()
+    set_h2_style(h_y)
+    h_y.GetZaxis().SetTitle('Raw ADC')
+    h_y.GetYaxis().SetTitle('Y Cell Number')
+    h_y.GetYaxis().SetTitleOffset(1.3)
+    h_y.Draw('box')
+    # h_y.GetXaxis().SetRangeUser(790, 820)
+    # h_y.GetYaxis().SetRangeUser(280, 330)
+
+    c1.Update()
+    c1.SaveAs('{}/plot_one_planer.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
 # 20180719_nnbar_globalconfig
 gStyle.SetOptStat(0)
+plot_one_planer('neutronosc_ddt_hist.no_hit_extent.cosmic.root')
+# plot_feb_flasher('neutronosc_ddt_hist.flasher.root')
+# calculate_efficiency()
+# calculate_trigger_rate()
 # print_trigger_evd_tex()
 # plot_daq_hit('neutronosc_ddt_hist.maxCellCountFraction.cosmic.root', draw_containment=True)
 # plot_daq_hit('neutronosc_ddt_hist.no_hit_extent.cosmic.large.root', draw_containment=True, draw_option='colz')
