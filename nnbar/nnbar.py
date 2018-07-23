@@ -878,7 +878,7 @@ def calculate_trigger_rate():
     event_duration = 0.55e-3    # s
     exposure = event_count * event_duration
 
-    cut_names = ['pre-containment', 'containment', 'width-length ratio', 'cell number multiplicity', 'hit count asymmetry', 'FEB flasher', 'one planer']
+    cut_names = ['pre-containment', 'containment', 'width-length ratio', 'cell number multiplicity', 'hit count asymmetry', 'FEB flasher', 'one-planer']
     slice_counts = [
         328862,
         8840,
@@ -897,7 +897,7 @@ def calculate_trigger_rate():
 
 
 def calculate_efficiency():
-    cut_names = ['pre-containment', 'containment', 'width-length ratio', 'cell number multiplicity', 'hit count asymmetry', 'FEB flasher', 'one planer']
+    cut_names = ['pre-containment', 'containment', 'width-length ratio', 'cell number multiplicity', 'hit count asymmetry', 'FEB flasher', 'one-planer']
     slice_counts = [
 	10104,
 	6814,
@@ -1091,6 +1091,7 @@ def print_trigger_evd_tex():
             f_tex.write('\n% .........................................................\n\n')
             f_tex.write('\\begin{frame}\n')
             f_tex.write('  \\frametitle{{Run {}, Subrun {}, Event {}}}\n'.format(run, subrun, event))
+            f_tex.write('  \\vspace{6mm}\n')
             f_tex.write('  \\begin{figure}\n')
             f_tex.write('    \\includegraphics[width = \\textwidth]{{figures/evd/{{{}}}.png}}\n'.format(os.path.splitext(figure)[0]))
             f_tex.write('    \\caption{{A triggered slice in Run {}, Subrun {}, Event {}.}}\n'.format(run, subrun, event))
@@ -1145,11 +1146,11 @@ def plot_one_planer(filename):
 
 # 20180719_nnbar_globalconfig
 gStyle.SetOptStat(0)
-plot_one_planer('neutronosc_ddt_hist.no_hit_extent.cosmic.root')
+# plot_one_planer('neutronosc_ddt_hist.no_hit_extent.cosmic.root')
 # plot_feb_flasher('neutronosc_ddt_hist.flasher.root')
 # calculate_efficiency()
 # calculate_trigger_rate()
-# print_trigger_evd_tex()
+print_trigger_evd_tex()
 # plot_daq_hit('neutronosc_ddt_hist.maxCellCountFraction.cosmic.root', draw_containment=True)
 # plot_daq_hit('neutronosc_ddt_hist.no_hit_extent.cosmic.large.root', draw_containment=True, draw_option='colz')
 # plot_2d_cuts('fTrackWidthToLengthRatioXY',
