@@ -1054,7 +1054,9 @@ def print_trigger_evd_tex():
         'run_24679.subRun_8.event_227.2018_07_20.15_34_00.png',
         'run_24679.subRun_8.event_524.2018_07_20.15_29_10.png',
         'run_24679.subRun_8.event_1389.2018_07_20.15_26_35.png',
-        'run_24679.subRun_8.event_4739.2018_07_20.15_19_40.png'
+        'run_24679.subRun_8.event_4739.2018_07_20.15_19_40.png',
+        'run_25154.subRun_26.event_2129.2018_07_21.22_00_26.png',
+        'run_25154.subRun_26.event_1900.2018_07_21.21_48_58.png'
     ]
 
     run_subrun_events = [
