@@ -2,7 +2,7 @@ from rootalias import *
 from pprint import pprint
 import csv
 import math
-from math import pi, cos, sin, atan, sqrt, log
+from math import pi, cos, sin, atan, sqrt, log, exp
 import numpy as np
 
 
@@ -2377,10 +2377,79 @@ def plot_cherenkov_photon_count():
     input('Press any key to continue.')
 
 
+def plot_dt_dz_collection_rate():
+    tf = TFile('{}/dT_dZ_CollectionRate.root'.format(DATA_DIR))
+    h1 = tf.Get('dT_dZ_CollectionRate')
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    set_h2_color_style()
+    gPad.SetLogz()
+    set_h2_style(h1)
+
+    # h1.GetZaxis().SetRangeUser(1e-7, 1e-5)
+    h1.GetXaxis().SetTitle('#Delta Z (cm)')
+    h1.GetYaxis().SetTitle('#Delta T (ns)')
+    h1.GetZaxis().SetTitle('Collection Fraction')
+    h1.Draw('colz')
+
+    c1.Update()
+    c1.SaveAs('{}/plot_dt_dz_collection_rate.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
+def plot_fiber_brightness():
+    tf = TFile('{}/ndBrightnessFromCosmics.root'.format(DATA_DIR))
+    h1 = tf.Get('BrightnessByCell')
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    set_h2_color_style()
+    # gPad.SetLogz()
+    set_h2_style(h1)
+
+    # h1.GetZaxis().SetRangeUser(1e-7, 1e-5)
+    # h1.GetXaxis().SetTitle('#Delta Z (cm)')
+    # h1.GetYaxis().SetTitle('#Delta T (ns)')
+    h1.GetZaxis().SetTitle('Fiber Brightness')
+    h1.Draw('colz')
+
+    c1.Update()
+    c1.SaveAs('{}/plot_brightness.pdf'.format(FIGURE_DIR))
+    c1.SaveAs('{}/plot_brightness.png'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
+def plot_fiber_attenuation():
+    xs = np.arange(0, 1600, 20.)
+    ts = []
+    for x in xs:
+        ts.append(0.2667 * exp(-x / 254.) + 0.2139 * exp(-x / 860.))
+        # ts.append(0.555 * exp(-x / 254.) + 0.445 * exp(-x / 860.))
+    gr = TGraph(len(xs), np.array(xs), np.array(ts))
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    set_graph_style(gr)
+    gPad.SetGrid()
+
+    gr.GetXaxis().SetTitle('Distance (cm)')
+    gr.GetYaxis().SetTitle('Transmission')
+    gr.GetYaxis().SetRangeUser(0, 0.6)
+    gr.Draw('AL')
+
+    c1.Update()
+    c1.SaveAs('{}/plot_attenuation.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
 # 20180726_testbeam_detsim_config
 gStyle.SetOptStat(0)
 # plot_birks_law()
-plot_cherenkov_photon_count()
+# plot_cherenkov_photon_count()
+# plot_dt_dz_collection_rate()
+# plot_fiber_brightness()
+plot_fiber_attenuation()
 
 # 20180625_testbeam_64_32_16_8GeV_different_bs
 # print_radiation_length()
