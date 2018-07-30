@@ -2327,9 +2327,60 @@ def plot_birks_law():
     input('Press any key to continue.')
 
 
+def get_rindex(wavelength):
+    # wavelength in nm
+    return 1.45689 + 4362 / wavelength**2
+
+
+def plot_cherenkov_photon_count():
+    wavelength_low = 200
+    wavelength_high = 400
+
+    h_cherenkov_2d = TH2D('h_cherenkov_2d','h_cherenkov_2d', 2000, 0, 1, 100, wavelength_low, wavelength_high)
+    for i_beta in range(1, h_cherenkov_2d.GetXaxis().GetNbins() + 1):
+        for i_wavelength in range(1, h_cherenkov_2d.GetYaxis().GetNbins() + 1):
+            beta = h_cherenkov_2d.GetXaxis().GetBinCenter(i_beta)
+            wavelength = h_cherenkov_2d.GetYaxis().GetBinCenter(i_wavelength)
+            delta_wavelength = h_cherenkov_2d.GetYaxis().GetBinWidth(i_wavelength)
+            rindex = get_rindex(wavelength);
+            photon_count = 0.0459 / wavelength**2 * (1. - 1. / (beta * rindex)**2) * delta_wavelength
+            if photon_count < 0.:
+                photon_count = 0.
+            photon_count *= 1.e7 # change unit from per nm to per cm
+            h_cherenkov_2d.SetBinContent(i_beta, i_wavelength, photon_count)
+
+    h_cherenkov_beta = h_cherenkov_2d.ProjectionX('h_cherenkov_beta')
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    set_h2_color_style()
+    set_h2_style(h_cherenkov_2d)
+    gPad.SetLogz()
+    gPad.SetRightMargin(0.2)
+    h_cherenkov_2d.GetXaxis().SetRangeUser(0.5, 1)
+    h_cherenkov_2d.GetXaxis().SetTitle('#beta')
+    h_cherenkov_2d.GetYaxis().SetTitle('#lambda (nm)')
+    h_cherenkov_2d.GetZaxis().SetTitle('Photon Count / cm')
+    h_cherenkov_2d.Draw('colz')
+    c1.Update()
+    c1.SaveAs('{}/plot_cherenkov_photon_count.2d.png'.format(FIGURE_DIR))
+
+    c2 = TCanvas('c2', 'c2', 800, 600)
+    set_margin()
+    set_h1_style(h_cherenkov_beta)
+    h_cherenkov_beta.GetXaxis().SetRangeUser(0.5, 1)
+    h_cherenkov_beta.GetXaxis().SetTitle('#beta')
+    h_cherenkov_beta.GetYaxis().SetTitle('Photon Count / cm')
+    h_cherenkov_beta.Draw()
+    c2.Update()
+    c2.SaveAs('{}/plot_cherenkov_photon_count.1d.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
 
 # 20180726_testbeam_detsim_config
-plot_birks_law()
+gStyle.SetOptStat(0)
+# plot_birks_law()
+plot_cherenkov_photon_count()
 
 # 20180625_testbeam_64_32_16_8GeV_different_bs
 # print_radiation_length()
