@@ -12,7 +12,7 @@ ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
-FIGURE_DIR = '/Users/juntinghuang/beamer/20180726_testbeam_detsim_config/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180731_doe/figures'
 DATA_DIR = './data'
 
 
@@ -404,7 +404,7 @@ def plot_time_of_flight_diff(**kwargs):
 
     names = ['proton', 'K+', 'pi+', 'mu+', 'e+']
     masses = list(map(lambda x: PDG.GetParticle(x).Mass(), names)) # GeV
-    colors = [kRed + 2, kMagenta + 2, kBlue + 2, kGreen + 2, kBlack]
+    colors = [kRed + 1, kMagenta + 2, kBlue + 1, kGreen + 2, kBlack]
     name_diffs = ['proton - K+', 'K+ - pi+', 'pi+ - mu+', 'mu+ - e+']
 
     momentums = np.arange(0.001, 10, 0.001)
@@ -1327,25 +1327,29 @@ def plot_cherenkov_index_of_refaction():
     # names = ['proton', 'K+', 'pi+', 'mu+', 'e+']
     # colors = [kRed + 2, kMagenta + 2, kBlue + 2, kGreen + 2, kBlack]
     names = ['pi+', 'mu+', 'e+']
-    colors = [kBlue + 2, kGreen + 2, kBlack]
+    colors = [kBlue + 1, kGreen + 2, kRed + 1]
     masses = list(map(lambda x: PDG.GetParticle(x).Mass(), names)) # GeV
     eta = 4.1e-4                  # atm-1
 
     momentums = np.arange(0.01, 10, 0.01)
-    ppressures = []
+    rrefraction_indexs = []
     for i, mass in enumerate(masses):
-        pressures = []
+        refraction_indexs = []
         for momentum in momentums:
             # pressure = 1. / eta * ((1 + (mass / momentum)**2)**0.5 - 1.)
-            pressure = (1 + (mass / momentum)**2)**0.5
-            pressures.append(pressure)
-        ppressures.append(pressures)
+            refraction_index = (1 + (mass / momentum)**2)**0.5
+            refraction_indexs.append(refraction_index)
+        rrefraction_indexs.append(refraction_indexs)
 
     grs = []
-    for i in range(len(ppressures)):
-        gr = TGraph(len(momentums), np.array(momentums), np.array(ppressures[i]))
+    for i in range(len(rrefraction_indexs)):
+        gr = TGraph(len(momentums), np.array(momentums), np.array(rrefraction_indexs[i]))
         set_graph_style(gr)
         grs.append(gr)
+
+    refraction_index_one_atm = eta * 1. + 1.;
+    one_atm_refraction_indexs = [refraction_index_one_atm for i in range(len(momentums))]
+    gr_one_atm = TGraph(len(momentums), np.array(momentums), np.array(one_atm_refraction_indexs))
 
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
@@ -1354,9 +1358,10 @@ def plot_cherenkov_index_of_refaction():
     gPad.SetLeftMargin(0.2)
 
     # lg1 = TLegend(0.2, 0.8, 0.88, 0.88)
-    lg1 = TLegend(0.3, 0.18, 0.8, 0.26)
+    # lg1 = TLegend(0.3, 0.18, 0.8, 0.26)
+    lg1 = TLegend(0.23, 0.62, 0.58, 0.86)
     set_legend_style(lg1)
-    lg1.SetNColumns(5)
+    # lg1.SetNColumns(5)
 
     grs[0].Draw('AL')
     grs[0].SetLineColor(colors[0])
@@ -1375,6 +1380,16 @@ def plot_cherenkov_index_of_refaction():
         grs[i].SetLineColor(colors[i])
         lg1.AddEntry(grs[i], names[i], 'l')
     lg1.Draw()
+
+    set_graph_style(gr_one_atm)
+    gr_one_atm.SetLineStyle(2)
+    gr_one_atm.Draw('L')
+
+    latex = TLatex()
+    latex.SetNDC()
+    latex.SetTextFont(43)
+    latex.SetTextSize(28)
+    latex.DrawLatex(0.5, 0.25, '1 atm')
 
     c1.Update()
     c1.SaveAs('{}/plot_cherenkov_index_of_refaction.pdf'.format(FIGURE_DIR))
@@ -2442,14 +2457,17 @@ def plot_fiber_attenuation():
     c1.SaveAs('{}/plot_attenuation.pdf'.format(FIGURE_DIR))
     input('Press any key to continue.')
 
+# 20180731_doe
+# plot_cherenkov_index_of_refaction()
+plot_time_of_flight_diff(distance=14.8, y_max=3.e6, canvas_height=600)
 
 # 20180726_testbeam_detsim_config
-gStyle.SetOptStat(0)
+# gStyle.SetOptStat(0)
 # plot_birks_law()
 # plot_cherenkov_photon_count()
 # plot_dt_dz_collection_rate()
 # plot_fiber_brightness()
-plot_fiber_attenuation()
+# plot_fiber_attenuation()
 
 # 20180625_testbeam_64_32_16_8GeV_different_bs
 # print_radiation_length()
