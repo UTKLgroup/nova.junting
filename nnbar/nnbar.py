@@ -75,19 +75,20 @@ def get_super_kamiokande_parameters():
 
     parameters.update(center_values)
     parameters.update(errors)
+    # pprint(parameters)
 
     return parameters
 
 
 def get_nova_parameters():
     parameters = {
-        'event_count_observe': 100.
+        'event_count_observe': 50.
     }
 
     center_values = {
         'exposure_0': get_nova_exposure() / 1.e34, # 1.e34 * neutron * year
         'efficiency_0': 40.e-2,
-        'background_0': 100.,
+        'background_0': 50.,
         'suppression_factor_0': 0.517 * 0.75,    # 1.e23 s-1
     }
 
@@ -100,7 +101,7 @@ def get_nova_parameters():
 
     parameters.update(center_values)
     parameters.update(errors)
-    pprint(parameters)
+    # pprint(parameters)
 
     return parameters
 
@@ -109,6 +110,8 @@ def get_life_time_bound(**kwargs):
     parameters = kwargs.get('parameters', get_super_kamiokande_parameters())
     make_plot = kwargs.get('make_plot', True)
     plot_suffix = kwargs.get('plot_suffix', '')
+    max_x = kwargs.get('max_x', None)
+    pprint(parameters)
 
     exposure_0 = parameters['exposure_0'] # 1.e34 * neutron * year
     efficiency_0 = parameters['efficiency_0']
@@ -174,13 +177,15 @@ def get_life_time_bound(**kwargs):
         gr.GetYaxis().SetDecimals()
         gr.GetXaxis().SetTitle('True Event Count per 10^{34} neutron year')
         gr.GetYaxis().SetTitle('Probability Density')
-        gr.GetXaxis().SetRangeUser(0, max(event_rate_trues))
         gr.GetYaxis().SetTitleOffset(1.5)
-        max_y = 0.03
+        if not max_x:
+            max_x = max(event_rate_trues)
+        gr.GetXaxis().SetRangeUser(0, max_x)
+        max_y = max(probabilities) * 1.1
         gr.GetYaxis().SetRangeUser(0, max_y)
         tl = TLine(event_rate_true_cl, 0, event_rate_true_cl, max_y)
         tl.SetLineWidth(3)
-        tl.SetLineColor(kRed)
+        tl.SetLineColor(kRed + 1)
         tl.SetLineStyle(7)
         tl.Draw()
 
@@ -200,6 +205,8 @@ def get_life_time_free(**kwargs):
     parameters = kwargs.get('parameters', get_super_kamiokande_parameters())
     make_plot = kwargs.get('make_plot', True)
     plot_suffix = kwargs.get('plot_suffix', '')
+    max_x = kwargs.get('max_x', None)
+    pprint(parameters)
 
     exposure_0 = parameters['exposure_0'] # 1.e34 * neutron * year
     efficiency_0 = parameters['efficiency_0']
@@ -237,6 +244,7 @@ def get_life_time_free(**kwargs):
                                        * efficiency_sigma \
                                        * background_sigma \
                                        * suppression_factor_sigma
+                                       # / math.factorial(event_count_observe)
         probabilities.append(probability)
 
     total_area = 0.
@@ -271,16 +279,18 @@ def get_life_time_free(**kwargs):
         gr.GetYaxis().SetDecimals()
         gr.GetXaxis().SetTitle('1 / #tau^{2} (10^{-16} s^{-2})')
         gr.GetYaxis().SetTitle('Probability Density')
-        gr.GetXaxis().SetRangeUser(0, max(inverse_square_free_life_time_trues))
         gr.GetYaxis().SetTitleOffset(1.5)
         gr.GetYaxis().SetNdivisions(505, 1)
         gr.GetXaxis().SetNdivisions(505, 1)
-        max_y = 19
-        gr.GetYaxis().SetRangeUser(0, max_y)
+
+        if not max_x:
+            max_x = max(inverse_square_free_life_time_trues)
+        gr.GetXaxis().SetRangeUser(0, max_x)
+        max_y = max(probabilities) * 1.1
         gr.GetYaxis().SetRangeUser(0, max_y)
         tl = TLine(inverse_square_free_life_time_true_cl, 0, inverse_square_free_life_time_true_cl, max_y)
         tl.SetLineWidth(3)
-        tl.SetLineColor(kRed)
+        tl.SetLineColor(kRed + 1)
         tl.SetLineStyle(7)
         tl.Draw()
 
@@ -1247,11 +1257,56 @@ def get_nova_exposure():
     year_count = 6.
     neutron_year = neutron_count * year_count
 
-    print('Avogadro = {}'.format(Avogadro))
     print('neutron_count = {}'.format(neutron_count))
     print('neutron_year = {}'.format(neutron_year))
 
     return neutron_year
+
+
+def plot_nova_sensitivity():
+    parameters = get_nova_parameters()
+    # parameters = get_super_kamiokande_parameters()
+    parameters['event_count_observe'] = 50.
+    parameters['background_0'] = 50.
+    parameters['efficiency_0'] = 0.4
+    life_times = []
+
+    efficiency_0s = []
+    for efficiency_0 in np.arange(0.1, 0.7, 0.1):
+        print('\n*******************')
+        parameters['efficiency_0'] = efficiency_0
+        life_time = get_life_time_free(parameters=parameters, make_plot=False)
+        # life_time = get_life_time_bound(parameters=parameters, make_plot=False)
+        print('life_time = {}'.format(life_time))
+        life_times.append(life_time)
+        efficiency_0s.append(efficiency_0 * 100.)
+    gr = TGraph(len(efficiency_0s), np.array(efficiency_0s), np.array(life_times))
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    set_graph_style(gr)
+
+    gr.GetXaxis().SetRangeUser(efficiency_0s[0], efficiency_0s[-1])
+    gr.GetXaxis().SetTitle('NOvA Signal Efficiency (%)')
+    gr.GetYaxis().SetTitle('#tau (s)')
+    gr.Draw('AL')
+
+    life_time_super_kamiokande = 2.7e8
+    tl = TLine(efficiency_0s[0], life_time_super_kamiokande, efficiency_0s[-1], life_time_super_kamiokande)
+    tl.SetLineWidth(3)
+    tl.SetLineColor(kRed + 1)
+    tl.SetLineStyle(7)
+    tl.Draw()
+
+    lg1 = TLegend(0.19, 0.7, 0.34, 0.85)
+    set_legend_style(lg1)
+    lg1.AddEntry(gr, 'NOvA limit', 'l')
+    lg1.AddEntry(tl, 'Super-Kamiokande limit', 'l')
+    lg1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_nova_sensitivity.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
 
 
 # 20180731_doe
@@ -1259,10 +1314,14 @@ def get_nova_exposure():
 # get_super_kamiokande_parameters()
 # get_nova_parameters()
 # get_life_time_bound(parameters=get_super_kamiokande_parameters(), make_plot=True, plot_suffix='.super_kamiokande')
-get_life_time_free(parameters=get_super_kamiokande_parameters(), make_plot=True, plot_suffix='.super_kamiokande')
+# get_life_time_free(parameters=get_super_kamiokande_parameters(), make_plot=True, plot_suffix='.super_kamiokande')
 # get_life_time_bound(parameters=get_nova_parameters(), make_plot=False)
 # get_life_time_free(parameters=get_nova_parameters(), make_plot=False)
-
+# plot_nova_sensitivity()
+# parameters=get_super_kamiokande_parameters()
+parameters=get_nova_parameters()
+# get_life_time_free(parameters=parameters, make_plot=True, plot_suffix='.nova', max_x=0.15)
+get_life_time_bound(parameters=parameters, make_plot=True, plot_suffix='.nova', max_x=100)
 
 # 20180719_nnbar_globalconfig
 # gStyle.SetOptStat(0)
