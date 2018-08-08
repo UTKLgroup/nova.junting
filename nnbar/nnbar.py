@@ -4,19 +4,24 @@ import numpy as np
 import random
 import re
 import os
+from scipy.constants import Avogadro
+from pprint import pprint
 
-FIGURE_DIR = '/Users/juntinghuang/beamer/20180719_nnbar_globalconfig/figures'
+
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180731_doe/figures'
 DATA_DIR = './data'
 
-exposure_0 = 2.45               # 1.e34 * neutron * year
-efficiency_0 = 12.1e-2
-background_0 = 24.1
-suppression_factor_0 = 0.517    # 1.e23 s-1
-exposure_sigma = 3.e-2 * exposure_0
-efficiency_sigma = 22.9e-2 * efficiency_0
-background_sigma = 23.7e-2 * background_0
-suppression_factor_sigma = 0.3 * suppression_factor_0
-event_count_observe = 24
+# exposure_0 = 2.45               # 1.e34 * neutron * year
+# efficiency_0 = 12.1e-2
+# background_0 = 24.1
+# suppression_factor_0 = 0.517    # 1.e23 s-1
+# exposure_sigma = 3.e-2 * exposure_0
+# efficiency_sigma = 22.9e-2 * efficiency_0
+# background_sigma = 23.7e-2 * background_0
+# suppression_factor_sigma = 0.3 * suppression_factor_0
+# event_count_observe = 24
+# second_in_year = 3.16           # 1.e7 s / year
+
 second_in_year = 3.16           # 1.e7 s / year
 
 colors = [
@@ -49,7 +54,72 @@ def get_xs(x_0, x_sigma):
     return xs
 
 
-def plot_life_time_bound():
+def get_super_kamiokande_parameters():
+    parameters = {
+        'event_count_observe': 24
+    }
+
+    center_values = {
+        'exposure_0': 2.45,               # 1.e34 * neutron * year
+        'efficiency_0': 12.1e-2,
+        'background_0': 24.1,
+        'suppression_factor_0': 0.517,    # 1.e23 s-1
+    }
+
+    errors = {
+        'exposure_sigma': 3.e-2 * center_values['exposure_0'],
+        'efficiency_sigma': 22.9e-2 * center_values['efficiency_0'],
+        'background_sigma': 23.7e-2 * center_values['background_0'],
+        'suppression_factor_sigma': 0.3 * center_values['suppression_factor_0'],
+    }
+
+    parameters.update(center_values)
+    parameters.update(errors)
+
+    return parameters
+
+
+def get_nova_parameters():
+    parameters = {
+        'event_count_observe': 100.
+    }
+
+    center_values = {
+        'exposure_0': get_nova_exposure() / 1.e34, # 1.e34 * neutron * year
+        'efficiency_0': 40.e-2,
+        'background_0': 100.,
+        'suppression_factor_0': 0.517 * 0.75,    # 1.e23 s-1
+    }
+
+    errors = {
+        'exposure_sigma': 3.e-2 * center_values['exposure_0'],
+        'efficiency_sigma': 22.9e-2 * center_values['efficiency_0'],
+        'background_sigma': 23.7e-2 * center_values['background_0'],
+        'suppression_factor_sigma': 0.3 * center_values['suppression_factor_0'],
+    }
+
+    parameters.update(center_values)
+    parameters.update(errors)
+    pprint(parameters)
+
+    return parameters
+
+
+def get_life_time_bound(**kwargs):
+    parameters = kwargs.get('parameters', get_super_kamiokande_parameters())
+    make_plot = kwargs.get('make_plot', True)
+    plot_suffix = kwargs.get('plot_suffix', '')
+
+    exposure_0 = parameters['exposure_0'] # 1.e34 * neutron * year
+    efficiency_0 = parameters['efficiency_0']
+    background_0 = parameters['background_0']
+    suppression_factor_0 = parameters['suppression_factor_0']  # 1.e23 s-1
+    exposure_sigma = parameters['exposure_sigma']
+    efficiency_sigma = parameters['efficiency_sigma']
+    background_sigma = parameters['background_sigma']
+    suppression_factor_sigma = parameters['suppression_factor_sigma']
+    event_count_observe = parameters['event_count_observe']
+
     exposures = get_xs(exposure_0, exposure_sigma)
     efficiencies = get_xs(efficiency_0, efficiency_sigma)
     backgrounds = get_xs(background_0, background_sigma)
@@ -88,42 +158,59 @@ def plot_life_time_bound():
             event_rate_true_cl = event_rate_true
             break
 
-    life_time_cl = 1. / event_rate_true_cl
-    print('event_rate_true_cl = ', event_rate_true_cl * 1.e-34, ' per year at 90% C.L.')
-    print('life_time_cl = ', life_time_cl * 1.e34, ' years at 90% C.L.')
+    life_time_cl = 1. / event_rate_true_cl * 1.e34
+    print('event_rate_true_cl = {:.2e} per neutron per year at 90% C.L.'.format(event_rate_true_cl * 1.e-34))
+    print('life_time_cl = {:.2e} neutron years at 90% C.L.'.format(life_time_cl))
 
-    probabilities = list(map(lambda x: x / total_area, probabilities))
-    gr = TGraph(len(event_rate_trues), event_rate_trues, np.array(probabilities))
+    if make_plot:
+        probabilities = list(map(lambda x: x / total_area, probabilities))
+        gr = TGraph(len(event_rate_trues), event_rate_trues, np.array(probabilities))
 
-    c1 = TCanvas('c1', 'c1', 800, 600)
-    set_graph_style(gr)
-    set_margin()
+        c1 = TCanvas('c1', 'c1', 800, 600)
+        set_graph_style(gr)
+        set_margin()
 
-    gr.Draw('AL')
-    gr.GetYaxis().SetDecimals()
-    gr.GetXaxis().SetTitle('True Event Count per 10^{34} neutron year')
-    gr.GetYaxis().SetTitle('Probability Density')
-    gr.GetXaxis().SetRangeUser(0, max(event_rate_trues))
-    gr.GetYaxis().SetTitleOffset(1.5)
-    max_y = 0.03
-    gr.GetYaxis().SetRangeUser(0, max_y)
-    tl = TLine(event_rate_true_cl, 0, event_rate_true_cl, max_y)
-    tl.SetLineWidth(3)
-    tl.SetLineColor(kRed)
-    tl.SetLineStyle(7)
-    tl.Draw()
+        gr.Draw('AL')
+        gr.GetYaxis().SetDecimals()
+        gr.GetXaxis().SetTitle('True Event Count per 10^{34} neutron year')
+        gr.GetYaxis().SetTitle('Probability Density')
+        gr.GetXaxis().SetRangeUser(0, max(event_rate_trues))
+        gr.GetYaxis().SetTitleOffset(1.5)
+        max_y = 0.03
+        gr.GetYaxis().SetRangeUser(0, max_y)
+        tl = TLine(event_rate_true_cl, 0, event_rate_true_cl, max_y)
+        tl.SetLineWidth(3)
+        tl.SetLineColor(kRed)
+        tl.SetLineStyle(7)
+        tl.Draw()
 
-    lg1 = TLegend(0.6, 0.8, 0.75, 0.88)
-    set_legend_style(lg1)
-    lg1.AddEntry(tl, '90% C.L. Limit', 'l')
-    lg1.Draw()
+        lg1 = TLegend(0.6, 0.8, 0.75, 0.88)
+        set_legend_style(lg1)
+        lg1.AddEntry(tl, '90% C.L. Limit', 'l')
+        lg1.Draw()
 
-    c1.Update()
-    c1.SaveAs('{}/plot_life_time_bound.pdf'.format(figure_dir))
-    input('Press any key to continue.')
+        c1.Update()
+        c1.SaveAs('{}/plot_life_time_bound{}.pdf'.format(FIGURE_DIR, plot_suffix))
+        input('Press any key to continue.')
+
+    return life_time_cl
 
 
-def plot_life_time_free():
+def get_life_time_free(**kwargs):
+    parameters = kwargs.get('parameters', get_super_kamiokande_parameters())
+    make_plot = kwargs.get('make_plot', True)
+    plot_suffix = kwargs.get('plot_suffix', '')
+
+    exposure_0 = parameters['exposure_0'] # 1.e34 * neutron * year
+    efficiency_0 = parameters['efficiency_0']
+    background_0 = parameters['background_0']
+    suppression_factor_0 = parameters['suppression_factor_0'] # 1.e23 s-1
+    exposure_sigma = parameters['exposure_sigma']
+    efficiency_sigma = parameters['efficiency_sigma']
+    background_sigma = parameters['background_sigma']
+    suppression_factor_sigma = parameters['suppression_factor_sigma']
+    event_count_observe = parameters['event_count_observe']
+
     exposures = get_xs(exposure_0, exposure_sigma)
     efficiencies = get_xs(efficiency_0, efficiency_sigma)
     backgrounds = get_xs(background_0, background_sigma)
@@ -168,41 +255,45 @@ def plot_life_time_free():
             inverse_square_free_life_time_true_cl = inverse_square_free_life_time_true
             break
 
-    print('inverse_square_free_life_time_true_cl = ', inverse_square_free_life_time_true_cl, ' at 90% C.L.')
-    print('free_life_time_cl = ', (1. / inverse_square_free_life_time_true_cl)**0.5, ' * 1e8 secondat 90% C.L.')
+    free_life_time_cl = (1. / inverse_square_free_life_time_true_cl)**0.5 * 1.e8
+    print('inverse_square_free_life_time_true_cl = {:.2e} s-2 at 90% C.L.'.format(inverse_square_free_life_time_true_cl * 1e-16))
+    print('free_life_time_cl = {:.2e} seconds at 90% C.L.'.format(free_life_time_cl))
 
-    probabilities = list(map(lambda x: x / total_area, probabilities))
-    gr = TGraph(len(inverse_square_free_life_time_trues), inverse_square_free_life_time_trues, np.array(probabilities))
+    if make_plot:
+        probabilities = list(map(lambda x: x / total_area, probabilities))
+        gr = TGraph(len(inverse_square_free_life_time_trues), inverse_square_free_life_time_trues, np.array(probabilities))
 
-    c1 = TCanvas('c1', 'c1', 800, 600)
-    set_graph_style(gr)
-    set_margin()
+        c1 = TCanvas('c1', 'c1', 800, 600)
+        set_graph_style(gr)
+        set_margin()
 
-    gr.Draw('AL')
-    gr.GetYaxis().SetDecimals()
-    gr.GetXaxis().SetTitle('1 / #tau^{2} (10^{-16} s^{-2})')
-    gr.GetYaxis().SetTitle('Probability Density')
-    gr.GetXaxis().SetRangeUser(0, max(inverse_square_free_life_time_trues))
-    gr.GetYaxis().SetTitleOffset(1.5)
-    gr.GetYaxis().SetNdivisions(505, 1)
-    gr.GetXaxis().SetNdivisions(505, 1)
-    max_y = 19
-    gr.GetYaxis().SetRangeUser(0, max_y)
-    gr.GetYaxis().SetRangeUser(0, max_y)
-    tl = TLine(inverse_square_free_life_time_true_cl, 0, inverse_square_free_life_time_true_cl, max_y)
-    tl.SetLineWidth(3)
-    tl.SetLineColor(kRed)
-    tl.SetLineStyle(7)
-    tl.Draw()
+        gr.Draw('AL')
+        gr.GetYaxis().SetDecimals()
+        gr.GetXaxis().SetTitle('1 / #tau^{2} (10^{-16} s^{-2})')
+        gr.GetYaxis().SetTitle('Probability Density')
+        gr.GetXaxis().SetRangeUser(0, max(inverse_square_free_life_time_trues))
+        gr.GetYaxis().SetTitleOffset(1.5)
+        gr.GetYaxis().SetNdivisions(505, 1)
+        gr.GetXaxis().SetNdivisions(505, 1)
+        max_y = 19
+        gr.GetYaxis().SetRangeUser(0, max_y)
+        gr.GetYaxis().SetRangeUser(0, max_y)
+        tl = TLine(inverse_square_free_life_time_true_cl, 0, inverse_square_free_life_time_true_cl, max_y)
+        tl.SetLineWidth(3)
+        tl.SetLineColor(kRed)
+        tl.SetLineStyle(7)
+        tl.Draw()
 
-    lg1 = TLegend(0.6, 0.8, 0.75, 0.88)
-    set_legend_style(lg1)
-    lg1.AddEntry(tl, '90% C.L. Limit', 'l')
-    lg1.Draw()
+        lg1 = TLegend(0.6, 0.8, 0.75, 0.88)
+        set_legend_style(lg1)
+        lg1.AddEntry(tl, '90% C.L. Limit', 'l')
+        lg1.Draw()
 
-    c1.Update()
-    c1.SaveAs('{}/plot_life_time_free.pdf'.format(figure_dir))
-    input('Press any key to continue.')
+        c1.Update()
+        c1.SaveAs('{}/plot_life_time_free{}.pdf'.format(FIGURE_DIR, plot_suffix))
+        input('Press any key to continue.')
+
+    return free_life_time_cl
 
 
 def print_evd():
@@ -1146,13 +1237,40 @@ def plot_one_planer(filename):
     input('Press any key to continue.')
 
 
+def get_nova_exposure():
+    detector_mass = 1.4e10      # g
+    mineral_oil_mass_fraction = 0.65
+    pvc_mass_fraction = 0.35
+    neutron_count_in_carbon = 6
+    carbon_molar_mass = 12.     # g / mol
+    neutron_count = detector_mass * (mineral_oil_mass_fraction * 12. / 14. + pvc_mass_fraction * 24. / (24. + 3. + 35.)) / carbon_molar_mass * Avogadro * 6.
+    year_count = 6.
+    neutron_year = neutron_count * year_count
+
+    print('Avogadro = {}'.format(Avogadro))
+    print('neutron_count = {}'.format(neutron_count))
+    print('neutron_year = {}'.format(neutron_year))
+
+    return neutron_year
+
+
+# 20180731_doe
+# get_nova_exposure()
+# get_super_kamiokande_parameters()
+# get_nova_parameters()
+# get_life_time_bound(parameters=get_super_kamiokande_parameters(), make_plot=True, plot_suffix='.super_kamiokande')
+get_life_time_free(parameters=get_super_kamiokande_parameters(), make_plot=True, plot_suffix='.super_kamiokande')
+# get_life_time_bound(parameters=get_nova_parameters(), make_plot=False)
+# get_life_time_free(parameters=get_nova_parameters(), make_plot=False)
+
+
 # 20180719_nnbar_globalconfig
-gStyle.SetOptStat(0)
+# gStyle.SetOptStat(0)
 # plot_one_planer('neutronosc_ddt_hist.no_hit_extent.cosmic.root')
 # plot_feb_flasher('neutronosc_ddt_hist.flasher.root')
 # calculate_efficiency()
 # calculate_trigger_rate()
-print_trigger_evd_tex()
+# print_trigger_evd_tex()
 # plot_daq_hit('neutronosc_ddt_hist.maxCellCountFraction.cosmic.root', draw_containment=True)
 # plot_daq_hit('neutronosc_ddt_hist.no_hit_extent.cosmic.large.root', draw_containment=True, draw_option='colz')
 # plot_2d_cuts('fTrackWidthToLengthRatioXY',
