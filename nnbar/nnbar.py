@@ -11,20 +11,9 @@ from pprint import pprint
 FIGURE_DIR = '/Users/juntinghuang/beamer/20180731_doe/figures'
 DATA_DIR = './data'
 
-# exposure_0 = 2.45               # 1.e34 * neutron * year
-# efficiency_0 = 12.1e-2
-# background_0 = 24.1
-# suppression_factor_0 = 0.517    # 1.e23 s-1
-# exposure_sigma = 3.e-2 * exposure_0
-# efficiency_sigma = 22.9e-2 * efficiency_0
-# background_sigma = 23.7e-2 * background_0
-# suppression_factor_sigma = 0.3 * suppression_factor_0
-# event_count_observe = 24
-# second_in_year = 3.16           # 1.e7 s / year
+SECOND_IN_YEAR = 3.16           # 1.e7 s / year
 
-second_in_year = 3.16           # 1.e7 s / year
-
-colors = [
+COLORS = [
     kRed + 2,
     kGreen + 2,
     kBlue + 2,
@@ -233,7 +222,7 @@ def get_life_time_free(**kwargs):
             for efficiency in efficiencies:
                 for background in backgrounds:
                     for suppression_factor in suppression_factors:
-                        event_rate_true = inverse_square_free_life_time_true / suppression_factor * second_in_year * 1.e2
+                        event_rate_true = inverse_square_free_life_time_true / suppression_factor * SECOND_IN_YEAR * 1.e2
                         event_count_true = event_rate_true * exposure * efficiency + background
                         probability += math.exp(-event_count_true) * event_count_true**event_count_observe \
                                        * get_gaussian(exposure, exposure_0, exposure_sigma) \
@@ -586,7 +575,7 @@ def get_track3d(tf):
         gr_x = TGraph(2, np.array([track.fTrack3dStartZ, track.fTrack3dEndZ]), np.array([track.fTrack3dStartX, track.fTrack3dEndX]))
         gr_y = TGraph(2, np.array([track.fTrack3dStartZ, track.fTrack3dEndZ]), np.array([track.fTrack3dStartY, track.fTrack3dEndY]))
 
-        color = random.choice(colors)
+        color = random.choice(COLORS)
         gr_x.SetLineWidth(2)
         gr_y.SetLineWidth(2)
         gr_x.SetLineColor(color)
@@ -606,7 +595,7 @@ def get_track2d(tf):
     for track in tf.Get('neutronoscana/fTrack2dTree'):
         track_count += 1
 
-        color = random.choice(colors)
+        color = random.choice(COLORS)
         if track.fTrack2dView == 1:
             gr_x = TGraph(2, np.array([track.fTrack2dStartZ, track.fTrack2dEndZ]), np.array([track.fTrack2dStartV, track.fTrack2dEndV]))
             gr_x.SetLineWidth(2)
