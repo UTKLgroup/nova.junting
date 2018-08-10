@@ -8,7 +8,7 @@ from scipy.constants import Avogadro
 from pprint import pprint
 
 
-FIGURE_DIR = '/Users/juntinghuang/beamer/20180731_doe/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180803_nnbar_first_data/figures'
 DATA_DIR = './data'
 
 SECOND_IN_YEAR = 3.16           # 1.e7 s / year
@@ -432,12 +432,6 @@ def plot_daq_hit(filename, **kwargs):
     if draw_option == 'colz':
         gPad.SetRightMargin(0.15)
 
-    # x_min = 3
-    # x_max = 380
-    # y_min = 3
-    # y_max = 347
-    # z_min = 3
-    # z_max = 891
     x_min = 4
     x_max = 377
     y_min = 6
@@ -484,7 +478,10 @@ def plot_daq_hit(filename, **kwargs):
             ly.Draw('sames')
 
     c1.Update()
-    c1.SaveAs('{}/plot_daq_hit.{}.pdf'.format(FIGURE_DIR, filename))
+    c1.SaveAs('{}/plot_daq_hit.{}.{}.pdf'.format(FIGURE_DIR, filename, draw_option))
+    if draw_option == 'colz':
+        c1.SaveAs('{}/plot_daq_hit.{}.{}.png'.format(FIGURE_DIR, filename, draw_option))
+        c1.SaveAs('{}/plot_daq_hit.{}.{}.jpg'.format(FIGURE_DIR, filename, draw_option))
     input('Press any key to continue.')
 
 
@@ -760,7 +757,11 @@ def plot_1d_cut(hist_name, **kwargs):
     x_cut = kwargs.get('x_cut', None)
     log_x = kwargs.get('log_x', False)
     log_y = kwargs.get('log_y', False)
+    legend_fx1ndc = kwargs.get('legend_fx1ndc', 0.57)
+    legend_fx2ndc = kwargs.get('legend_fx2ndc', 0.84)
     legend_left = kwargs.get('legend_left', False)
+    legend_text_cosmic = kwargs.get('legend_text_cosmic', 'Cosmic ray')
+    legend_text_signal = kwargs.get('legend_text_signal', 'Signal')
 
     tf_cosmic = TFile('{}/{}'.format(DATA_DIR, cosmic_filename))
     tf_clean = TFile('{}/{}'.format(DATA_DIR, signal_filename))
@@ -794,8 +795,10 @@ def plot_1d_cut(hist_name, **kwargs):
     h_cosmic.Draw('hist')
     if x_max:
         h_cosmic.GetXaxis().SetRangeUser(0, x_max)
-    if y_max:
-        h_cosmic.GetYaxis().SetRangeUser(0, y_max)
+
+    if not y_max:
+        y_max = max(h_cosmic.GetMaximum(), h_clean.GetMaximum()) * 1.2
+    h_cosmic.GetYaxis().SetRangeUser(0, y_max)
 
     set_h1_style(h_clean)
     h_clean.SetLineColor(kRed + 2)
@@ -805,10 +808,10 @@ def plot_1d_cut(hist_name, **kwargs):
     if legend_left:
         lg1 = TLegend(0.21, 0.7, 0.48, 0.85)
     else:
-        lg1 = TLegend(0.57, 0.7, 0.84, 0.85)
+        lg1 = TLegend(legend_fx1ndc, 0.7, legend_fx2ndc, 0.85)
     set_legend_style(lg1)
-    lg1.AddEntry(h_cosmic, 'Cosmic ray', 'l')
-    lg1.AddEntry(h_clean, 'Signal', 'l')
+    lg1.AddEntry(h_cosmic, legend_text_cosmic, 'l')
+    lg1.AddEntry(h_clean, legend_text_signal, 'l')
     lg1.Draw()
 
     c1.Update()
@@ -1298,6 +1301,31 @@ def plot_nova_sensitivity():
     input('Press any key to continue.')
 
 
+# 20180803_nnbar_first_data
+gStyle.SetOptStat(0)
+# plot_daq_hit('raw.hist.n_20.root', draw_containment=True, draw_option='box')
+# plot_daq_hit('fardet_r00030450_s00_DDNNBar.raw.hist.root', draw_containment=True, draw_option='colz')
+# plot_daq_hit('raw.hist.n_1000.root', draw_containment=True, draw_option='box')
+# plot_daq_hit('raw.hist.root', draw_containment=True, draw_option='colz')
+# plot_daq_hit_colz('raw.hist.root', draw_containment=True, draw_option='colz')
+# plot_daq_hit('fardet_r00030450_s38_DDNNBar.raw.hist.root', draw_containment=True, draw_option='box')
+# plot_daq_hit('fardet_r00030450_s38_DDNNBar.raw.hist.n_20.root', draw_containment=True, draw_option='box')
+# plot_daq_hit('fardet_r00030450_s38_DDNNBar.raw.hist.n_30.root', draw_containment=True, draw_option='box')
+# plot_daq_hit('fardet_r00030450_s38_DDNNBar.raw.hist.n_1000.root', draw_containment=True, draw_option='box')
+# plot_daq_hit('fardet_r00030450_s04_DDNNBar.raw.hist.n_1000.root', draw_containment=True, draw_option='box')
+# plot_daq_hit('fardet_r00030450_s05_DDNNBar.raw.hist.n_1000.root', draw_containment=True, draw_option='box')
+plot_1d_cut('fSliceHitCount',
+            cosmic_filename='raw.hist.root',
+            signal_filename='neutronosc_ddt_hist.maxCellCountFraction.clean.root',
+            x_max=400,
+            rebin=2,
+            legend_text_cosmic='Triggered Cosmic Data',
+            legend_text_signal='Signal MC',
+            legend_fx1ndc=0.40,
+            legend_fx2ndc=0.67,
+            # log_y=True,
+            x_cut=100)
+
 # 20180731_doe
 # get_nova_exposure()
 # get_super_kamiokande_parameters()
@@ -1308,9 +1336,9 @@ def plot_nova_sensitivity():
 # get_life_time_free(parameters=get_nova_parameters(), make_plot=False)
 # plot_nova_sensitivity()
 # parameters=get_super_kamiokande_parameters()
-parameters=get_nova_parameters()
+# parameters=get_nova_parameters()
 # get_life_time_free(parameters=parameters, make_plot=True, plot_suffix='.nova', max_x=0.15)
-get_life_time_bound(parameters=parameters, make_plot=True, plot_suffix='.nova', max_x=100)
+# get_life_time_bound(parameters=parameters, make_plot=True, plot_suffix='.nova', max_x=100)
 
 # 20180719_nnbar_globalconfig
 # gStyle.SetOptStat(0)
