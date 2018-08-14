@@ -1304,9 +1304,9 @@ def plot_nova_sensitivity():
 # 20180803_nnbar_first_data
 gStyle.SetOptStat(0)
 # plot_daq_hit('raw.hist.n_20.root', draw_containment=True, draw_option='box')
-# plot_daq_hit('fardet_r00030450_s00_DDNNBar.raw.hist.root', draw_containment=True, draw_option='colz')
+plot_daq_hit('fardet_r00030450_s00_DDNNBar.raw.hist.root', draw_containment=True, draw_option='colz')
 # plot_daq_hit('raw.hist.n_1000.root', draw_containment=True, draw_option='box')
-# plot_daq_hit('raw.hist.root', draw_containment=True, draw_option='colz')
+# plot_daq_hit('raw.hist.clean.root', draw_containment=True, draw_option='colz')
 # plot_daq_hit_colz('raw.hist.root', draw_containment=True, draw_option='colz')
 # plot_daq_hit('fardet_r00030450_s38_DDNNBar.raw.hist.root', draw_containment=True, draw_option='box')
 # plot_daq_hit('fardet_r00030450_s38_DDNNBar.raw.hist.n_20.root', draw_containment=True, draw_option='box')
@@ -1314,17 +1314,16 @@ gStyle.SetOptStat(0)
 # plot_daq_hit('fardet_r00030450_s38_DDNNBar.raw.hist.n_1000.root', draw_containment=True, draw_option='box')
 # plot_daq_hit('fardet_r00030450_s04_DDNNBar.raw.hist.n_1000.root', draw_containment=True, draw_option='box')
 # plot_daq_hit('fardet_r00030450_s05_DDNNBar.raw.hist.n_1000.root', draw_containment=True, draw_option='box')
-plot_1d_cut('fSliceHitCount',
-            cosmic_filename='raw.hist.root',
-            signal_filename='neutronosc_ddt_hist.maxCellCountFraction.clean.root',
-            x_max=400,
-            rebin=2,
-            legend_text_cosmic='Triggered Cosmic Data',
-            legend_text_signal='Signal MC',
-            legend_fx1ndc=0.40,
-            legend_fx2ndc=0.67,
-            # log_y=True,
-            x_cut=100)
+# plot_1d_cut('fSliceHitCount',
+#             cosmic_filename='raw.hist.root',
+#             signal_filename='neutronosc_ddt_hist.maxCellCountFraction.clean.root',
+#             x_max=400,
+#             rebin=2,
+#             legend_text_cosmic='Triggered Cosmic Data',
+#             legend_text_signal='Signal MC',
+#             legend_fx1ndc=0.40,
+#             legend_fx2ndc=0.67,
+#             x_cut=100)
 
 # 20180731_doe
 # get_nova_exposure()
