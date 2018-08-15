@@ -8,6 +8,9 @@ import os
 import pathlib
 
 
+FIGURE_DIR = './figures'
+
+
 def create_model():
     model = keras.Sequential([
         keras.layers.Flatten(input_shape=(28, 28)),
@@ -188,15 +191,13 @@ def test_load_data():
 
     fashion_mnist = keras.datasets.fashion_mnist
     (train_images, train_labels), (test_images, test_labels) = fashion_mnist.load_data()
-    # print('train_images[0] = {}'.format(train_images[0]))
     train_images = train_images / 255.
     test_images = test_images / 255.
-
     print('train_images.shape = {}'.format(train_images.shape))
     print('train_labels.shape = {}'.format(train_labels.shape))
 
 
-def load_train_data(filename):
+def load_root_data(filename):
     tf = TFile(filename)
     images = []
     for event in tf.Get('neutronoscana/fSliceTree'):
@@ -212,38 +213,141 @@ def load_train_data(filename):
             if view == 1:
                 cell += 384
             image[cell][plane] = 1.
-
-        # plt.figure(figsize=(int(896 / 60), int(768 / 60)))
-        # plt.imshow(img)
-        # plt.colorbar()
-        # plt.gca().grid(False)
-        # plt.show()
-        # break
         images.append(image)
 
     return np.array(images)
 
 
+def create_model_nnbar():
+    model = tf.keras.models.Sequential([
+        keras.layers.Flatten(input_shape=(768, 896)),
+        keras.layers.Dense(128, activation=tf.nn.relu),
+        keras.layers.Dense(128, activation=tf.nn.relu),
+        keras.layers.Dense(2, activation=tf.nn.softmax)
+    ])
+    model.compile(optimizer=tf.keras.optimizers.Adam(),
+                  loss=tf.keras.losses.sparse_categorical_crossentropy,
+                  metrics=['accuracy'])
+
+    # model = keras.Sequential([
+    #     keras.layers.Flatten(input_shape=(768, 896)),
+    #     keras.layers.Dense(128, activation=tf.nn.relu),
+    #     keras.layers.Dense(2, activation=tf.nn.softmax)
+    #    ])
+    # model.compile(optimizer=tf.train.AdamOptimizer(),
+    #               loss='sparse_categorical_crossentropy',
+    #               metrics=['accuracy'])
+    return model
+
+
+def mix_images_labels(noise_filename, signal_filename):
+    noises = load_root_data(noise_filename)
+    signals = load_root_data(signal_filename)
+
+    noise_labels = np.full((len(noises)), 0)
+    signal_labels = np.full((len(signals)), 1)
+
+    images = np.append(noises, signals, axis=0)
+    labels = np.append(noise_labels, signal_labels, axis=0)
+
+    return images, labels
+
+
+def plot_image(image):
+    plt.figure(figsize=(int(896 / 60), int(768 / 60)))
+    plt.imshow(image)
+    plt.colorbar()
+    plt.gca().grid(False)
+    plt.show()
+
+
 def train():
-    noises = load_train_data('data/train.noise.hist.root')
-    noise_labels = np.full((1, len(noises)), 1)[0]
-    signals = load_train_data('data/train.signal.hist.root')
-    signals_labels = np.full((1, len(signals)), 1)[0]
-    # print('signals_labels = {}'.format(signals_labels))
-    # print('noises.shape = {}'.format(noises.shape))
-    print('noise_labels.shape = {}'.format(noise_labels.shape))
-    print('signals_labels.shape = {}'.format(signals_labels.shape))
+    train_images, train_labels = mix_images_labels('data/train.noise.hist.root', 'data/train.signal.hist.root')
+    test_images, test_labels = mix_images_labels('data/test.noise.hist.root', 'data/test.signal.hist.root')
 
-    # plt.figure(figsize=(int(896 / 60), int(768 / 60)))
-    # plt.imshow(noises[0])
-    # plt.colorbar()
-    # plt.gca().grid(False)
-    # plt.show()
+    model = create_model_nnbar()
+    model.summary()
+
+    model.fit(train_images, train_labels, epochs=5)
+    # model.save_weights('./tmp/nnbar_checkpoint')
+    model.save('./tmp/nnbar_model.h5')
+
+    test_loss, test_acc = model.evaluate(test_images, test_labels)
+    print('Test accuracy:', test_acc)
 
 
-train()
+def test():
+    test_images, test_labels = mix_images_labels('data/test.noise.hist.root', 'data/test.signal.hist.root')
+    model = keras.models.load_model('./tmp/nnbar_model.h5')
+    # model.compile(optimizer=tf.train.AdamOptimizer(),
+    #               loss='sparse_categorical_crossentropy',
+    #               metrics=['accuracy'])
+    # test_loss, test_acc = model.evaluate(test_images, test_labels)
+    # print('test_loss = {}'.format(test_loss))
+    # print('test_acc = {}'.format(test_acc))
+
+    predictions = model.predict(test_images)
+
+    h_noise = TH1D('h_noise', 'h_noise', 100, 0, 1)
+    h_signal = TH1D('h_signal', 'h_signal', 100, 0, 1)
+    for i, prediction in enumerate(predictions):
+        if test_labels[i] == 0:
+            h_noise.Fill(prediction[1])
+        else:
+            h_signal.Fill(prediction[1])
+    tfile = TFile('nnbar_cosmic_rejection.root', 'RECREATE')
+    h_noise.Write()
+    h_signal.Write()
+    tfile.Close()
+
+
+def plot_signal_noise():
+    tfile = TFile('nnbar_cosmic_rejection.root')
+    h_noise = tfile.Get('h_noise')
+    h_signal = tfile.Get('h_signal')
+
+    h_noise.Scale(1. / h_noise.Integral())
+    h_signal.Scale(1. / h_signal.Integral())
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    # gPad.SetLogy()
+
+    set_h1_style(h_noise)
+    set_h1_style(h_signal)
+
+    h_signal.SetFillStyle(3003)
+    h_signal.SetLineColor(kRed)
+    h_signal.GetYaxis().SetRangeUser(0, max(h_signal.GetMaximum(), h_noise.GetMaximum()) * 1.2)
+    h_signal.GetXaxis().SetTitle('PID')
+
+    h_signal.Draw('hist')
+    h_noise.Draw('hist,sames')
+
+    lg1 = TLegend(0.5, 0.7, 0.8, 0.88)
+    set_legend_style(lg1)
+    lg1.AddEntry(h_signal, 'signal', 'l')
+    lg1.AddEntry(h_noise, 'noise', 'l')
+    lg1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_signal_noise.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+def hand_scan():
+    noises = load_root_data('data/train.noise.hist.small.root')
+    signals = load_root_data('data/train.signal.hist.small.root')
+    for image in signals:
+        plot_image(image)
+
+
+gStyle.SetOptStat(0)
+# hand_scan()
+plot_signal_noise()
+# test()
+# train()
 # test_load_data()
-# load_train_data('data/train.noise.hist.root')
-# load_train_data('data/train.signal.hist.root')
+# load_root_data('data/train.noise.hist.root')
+# load_root_data('data/train.signal.hist.root')
 # test_tensorflow()
 # test_load_model()
