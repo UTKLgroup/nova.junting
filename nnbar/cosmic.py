@@ -225,18 +225,11 @@ def create_model_nnbar():
         keras.layers.Dense(128, activation=tf.nn.relu),
         keras.layers.Dense(2, activation=tf.nn.softmax)
     ])
+
     model.compile(optimizer=tf.keras.optimizers.Adam(),
                   loss=tf.keras.losses.sparse_categorical_crossentropy,
                   metrics=['accuracy'])
 
-    # model = keras.Sequential([
-    #     keras.layers.Flatten(input_shape=(768, 896)),
-    #     keras.layers.Dense(128, activation=tf.nn.relu),
-    #     keras.layers.Dense(2, activation=tf.nn.softmax)
-    #    ])
-    # model.compile(optimizer=tf.train.AdamOptimizer(),
-    #               loss='sparse_categorical_crossentropy',
-    #               metrics=['accuracy'])
     return model
 
 
@@ -253,12 +246,21 @@ def mix_images_labels(noise_filename, signal_filename):
     return images, labels
 
 
-def plot_image(image):
+def plot_image(image, **kwargs):
+    show = kwargs.get('show', True)
+    image_filename = kwargs.get('image_filename', None)
+
     plt.figure(figsize=(int(896 / 60), int(768 / 60)))
     plt.imshow(image)
-    plt.colorbar()
-    plt.gca().grid(False)
-    plt.show()
+    # plt.colorbar()
+    # plt.gca().grid(False)
+    if image_filename:
+        image_path = '{}/{}'.format(FIGURE_DIR, image_filename)
+        print(image_path)
+        plt.savefig(image_path)
+    if show:
+        plt.show()
+    plt.close()
 
 
 def train():
@@ -279,15 +281,11 @@ def train():
 def test():
     test_images, test_labels = mix_images_labels('data/test.noise.hist.root', 'data/test.signal.hist.root')
     model = keras.models.load_model('./tmp/nnbar_model.h5')
-    # model.compile(optimizer=tf.train.AdamOptimizer(),
-    #               loss='sparse_categorical_crossentropy',
-    #               metrics=['accuracy'])
     # test_loss, test_acc = model.evaluate(test_images, test_labels)
     # print('test_loss = {}'.format(test_loss))
     # print('test_acc = {}'.format(test_acc))
 
     predictions = model.predict(test_images)
-
     h_noise = TH1D('h_noise', 'h_noise', 100, 0, 1)
     h_signal = TH1D('h_signal', 'h_signal', 100, 0, 1)
     for i, prediction in enumerate(predictions):
@@ -334,16 +332,25 @@ def plot_signal_noise():
     c1.SaveAs('{}/plot_signal_noise.pdf'.format(FIGURE_DIR))
     input('Press any key to continue.')
 
+
 def hand_scan():
     noises = load_root_data('data/train.noise.hist.small.root')
     signals = load_root_data('data/train.signal.hist.small.root')
-    for image in signals:
-        plot_image(image)
+
+    # for i, image in enumerate(signals):
+    #     image_filename = 'signals_{}.png'.format(i)
+    #     plot_image(image, image_filename=image_filename, show=False)
+
+    for i, image in enumerate(noises):
+        image_filename = 'noises_{}.png'.format(i)
+        plot_image(image, image_filename=image_filename, show=False)
+        if i == 60:
+            break
 
 
 gStyle.SetOptStat(0)
-# hand_scan()
-plot_signal_noise()
+hand_scan()
+# plot_signal_noise()
 # test()
 # train()
 # test_load_data()
