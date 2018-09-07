@@ -12,7 +12,7 @@ ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
-FIGURE_DIR = '/Users/juntinghuang/beamer/20180731_doe/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180904_testbeam_readout_sim/figures'
 DATA_DIR = './data'
 
 
@@ -2457,9 +2457,39 @@ def plot_fiber_attenuation():
     c1.SaveAs('{}/plot_attenuation.pdf'.format(FIGURE_DIR))
     input('Press any key to continue.')
 
+
+def plot_dcs_threshold():
+    tf = TFile('det/fd_thresholdDist_lowThresh.root')
+    h2 = tf.Get('thresholds')
+    h1 = h2.Clone()
+
+    set_h1_style(h1)
+
+    c1 = TCanvas('c1', 'c1', 800, 400)
+    set_margin()
+    gPad.SetBottomMargin(0.2)
+
+    h1.GetXaxis().SetTitle('FD DCS threshold (ADC)')
+    h1.GetYaxis().SetTitle('APD Pixel Count')
+    h1.GetXaxis().SetTitleOffset(1.1)
+    h1.GetYaxis().SetTitleOffset(1.1)
+    h1.GetXaxis().SetRangeUser(30, 70)
+    h1.Draw()
+    c1.Update()
+    draw_statbox(h1, y1=0.7, x1=0.7)
+
+    c1.Update()
+    c1.SaveAs('{}/plot_dcs_threshold.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
+# 20180904_testbeam_readout_sim
+gStyle.SetOptStat('emr')
+plot_dcs_threshold()
+
 # 20180731_doe
 # plot_cherenkov_index_of_refaction()
-plot_time_of_flight_diff(distance=14.8, y_max=3.e6, canvas_height=600)
+# plot_time_of_flight_diff(distance=14.8, y_max=3.e6, canvas_height=600)
 
 # 20180726_testbeam_detsim_config
 # gStyle.SetOptStat(0)
