@@ -6,9 +6,10 @@ import re
 import os
 from scipy.constants import Avogadro
 from pprint import pprint
+from math import sqrt
 
 
-FIGURE_DIR = '/Users/juntinghuang/beamer/20180803_nnbar_first_data/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180907_nnbar_background/figures'
 DATA_DIR = './data'
 
 SECOND_IN_YEAR = 3.16           # 1.e7 s / year
@@ -1301,10 +1302,67 @@ def plot_nova_sensitivity():
     input('Press any key to continue.')
 
 
+def plot_lifetime_vs_background():
+    exposure_year = get_nova_exposure()
+    exposure_second = exposure_year * SECOND_IN_YEAR * 1.e7
+    print('exposure_year = {}'.format(exposure_year))
+    print('exposure_second = {}'.format(exposure_second))
+
+    efficiency = 0.3
+    suppression_factor = 0.388e23
+
+    backgrounds = np.arange(10., 1000., 10.)
+    bound_lifetimes = []
+    free_lifetimes = []
+    for background in backgrounds:
+        bound_lifetime = exposure_year * 0.3 / sqrt(background) # year
+        free_lifetime = sqrt(bound_lifetime * SECOND_IN_YEAR * 1.e7 / suppression_factor)
+
+        bound_lifetimes.append(bound_lifetime)
+        free_lifetimes.append(free_lifetime)
+
+    gr_bound = TGraph(len(backgrounds), np.array(backgrounds), np.array(bound_lifetimes))
+    gr_free = TGraph(len(backgrounds), np.array(backgrounds), np.array(free_lifetimes))
+
+    c1 = TCanvas('c1', 'c1', 600, 600)
+    set_margin()
+    gPad.SetLogx()
+    gPad.SetGrid()
+    set_graph_style(gr_free)
+
+    gr_free.GetYaxis().SetTitle('Free Neutron Lifetime (s)')
+    gr_free.GetYaxis().SetTitleOffset(1.65)
+    gr_free.GetXaxis().SetTitle('Background Event Count')
+    gr_free.Draw('AL')
+
+    c1.Update()
+    c1.SaveAs('{}/plot_lifetime_vs_background.free.pdf'.format(FIGURE_DIR))
+
+    c2 = TCanvas('c2', 'c2', 600, 600)
+    set_margin()
+    gPad.SetLogx()
+    gPad.SetGrid()
+    set_graph_style(gr_bound)
+
+    gr_bound.Draw('AL')
+    gr_bound.GetYaxis().SetTitle('Bound Neutron Lifetime (year)')
+    gr_bound.GetYaxis().SetTitleOffset(1.65)
+    gr_bound.GetXaxis().SetTitle('Background Event Count')
+
+    c2.Update()
+    c2.SaveAs('{}/plot_lifetime_vs_background.bound.pdf'.format(FIGURE_DIR))
+
+    input('Press any key to continue.')
+
+
+# 20180907_nnbar_background
+plot_lifetime_vs_background()
+
+
 # 20180803_nnbar_first_data
-gStyle.SetOptStat(0)
+# gStyle.SetOptStat(0)
 # plot_daq_hit('raw.hist.n_20.root', draw_containment=True, draw_option='box')
-plot_daq_hit('fardet_r00030450_s00_DDNNBar.raw.hist.root', draw_containment=True, draw_option='colz')
+# plot_daq_hit('fardet_r00030450_s00_DDNNBar.raw.hist.root', draw_containment=True, draw_option='colz')
 # plot_daq_hit('raw.hist.n_1000.root', draw_containment=True, draw_option='box')
 # plot_daq_hit('raw.hist.clean.root', draw_containment=True, draw_option='colz')
 # plot_daq_hit_colz('raw.hist.root', draw_containment=True, draw_option='colz')
