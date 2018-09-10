@@ -12,7 +12,7 @@ ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
-FIGURE_DIR = '/Users/juntinghuang/beamer/20180904_testbeam_readout_sim/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180910_testbeam_cherenkov_length/figures'
 DATA_DIR = './data'
 
 
@@ -2483,9 +2483,33 @@ def plot_dcs_threshold():
     input('Press any key to continue.')
 
 
+def plot_energy_loss_vs_cherenkov_length():
+    lengths = [1., 1.5, 2., 2.5, 3., 3.5]
+    air_energy_losses = [17.23, 17.28, 17.38, 17.41, 17.51, 17.54]
+    helium_energy_losses = [12.55, 12.73, 12.96, 13.17, 13.37, 13.56]
+
+    gr = TGraph(len(lengths), np.array(lengths), np.array(helium_energy_losses))
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    set_graph_style(gr)
+    gPad.SetGrid()
+
+    gr.GetXaxis().SetTitle('Length of Cherenkov Counter (m)')
+    gr.GetYaxis().SetTitle('Energy Loss in Beamline (MeV)')
+    gr.Draw('AL')
+
+    c1.Update()
+    c1.SaveAs('{}/plot_energy_loss_vs_cherenkov_length.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
+# 20180910_testbeam_cherenkov_length
+plot_energy_loss_vs_cherenkov_length()
+
 # 20180904_testbeam_readout_sim
-gStyle.SetOptStat('emr')
-plot_dcs_threshold()
+# gStyle.SetOptStat('emr')
+# plot_dcs_threshold()
 
 # 20180731_doe
 # plot_cherenkov_index_of_refaction()
