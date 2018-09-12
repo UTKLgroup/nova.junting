@@ -18,9 +18,9 @@ export G4LEVELGAMMADATA=/nova/app/users/junting/g4beamline/Geant4Data/PhotonEvap
 export G4RADIOACTIVEDATA=/nova/app/users/junting/g4beamline/Geant4Data/RadioactiveDecay5.1
 export G4REALSURFACEDATA=/nova/app/users/junting/g4beamline/Geant4Data/RealSurface1.0
 
-PROCESS_START=0
-# B_FIELD=-0.45
-B_FIELD=-0.9
+PROCESS_START=2000
+B_FIELD=-0.45
+# B_FIELD=-0.9
 # B_FIELD=-1.35
 # B_FIELD=-1.8
 
@@ -31,8 +31,13 @@ ifdh cp /pnfs/nova/persistent/users/junting/testbeam/beamline.py.in ./beamline.p
 # PARTICLE=proton
 # MOMENTUM=120000
 PARTICLE=pi+
-MOMENTUM=64000
-EVENT_COUNT_PER_JOB=10000
+MOMENTUM=8000
+# EVENT_COUNT_PER_JOB=100000
+EVENT_COUNT_PER_JOB=50000
+# EVENT_COUNT_PER_JOB=30000
+# EVENT_COUNT_PER_JOB=10000
+# EVENT_COUNT_PER_JOB=5000
+# EVENT_COUNT_PER_JOB=2000
 JOB_COUNT_PER_SPILL=30
 FIRST=$((((${PROCESS_START} + ${PROCESS}))* ${EVENT_COUNT_PER_JOB}))
 LAST=$((${FIRST} + $EVENT_COUNT_PER_JOB - 1))
