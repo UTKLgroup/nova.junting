@@ -31,11 +31,11 @@ class Beamline:
     INCH = 25.4
     RADIAN_PER_DEGREE = pi / 180.
 
-    def __init__(self):
+    def __init__(self, g4bl_filename='beamline.py.in'):
         self.figure_dir = None
         self.us_theta = -16.    # degree
         self.ds_theta = 16.     # degree
-        self.f_out = open('beamline.py.in', 'w')
+        self.f_out = open(g4bl_filename, 'w')
         self.screen_shot = False
         # self.kill = 1
         self.kill = 0
@@ -466,8 +466,33 @@ class Beamline:
         # self.write_nova()       # for radiation study
         # self.write_housing()    # for radiation study
 
-beamline = Beamline()
-beamline.figure_dir = '/Users/juntinghuang/beamer/20180413_testbeam_120gev/figures'
+
+    def write_radiation(self):
+        self.f_out.write('physics QGSP_BIC\n')
+        self.f_out.write('param worldMaterial=Air\n')
+        self.f_out.write('param histoFile=beam.root\n')
+
+        self.f_out.write('g4ui when=4 "/vis/viewer/set/viewpointVector 0 1 0"\n')
+        # self.f_out.write('g4ui when=4 "/vis/viewer/set/viewpointVector -1 1 1"\n')
+        self.f_out.write('g4ui when=4 "/vis/viewer/zoom 1.5"\n')
+        self.f_out.write('g4ui when=4 "/vis/viewer/set/style wireframe"\n')
+        if self.screen_shot:
+            self.f_out.write('g4ui when=4 "/vis/viewer/set/background 1 1 1"\n')
+
+        self.f_out.write('beam gaussian particle=$particle firstEvent=$first lastEvent=$last sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=$momentum\n')
+        self.f_out.write('trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton,neutron,anti_neutron\n')
+
+        self.write_target()
+        self.write_collimator_us()
+        if not self.screen_shot:
+            self.write_virtual_disk()
+
+
+# beamline = Beamline()
+# beamline.figure_dir = '/Users/juntinghuang/beamer/20180413_testbeam_120gev/figures'
 # beamline.plot_position()
 # beamline.screen_shot = True
-beamline.write()
+# beamline.write()
+
+beamline = Beamline('beamline.py.radiation.collimator.in')
+beamline.write_radiation()
