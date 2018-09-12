@@ -468,12 +468,14 @@ class Beamline:
 
 
     def write_radiation(self):
+        self.kill = 1
+
         self.f_out.write('physics QGSP_BIC\n')
         self.f_out.write('param worldMaterial=Air\n')
         self.f_out.write('param histoFile=beam.root\n')
 
-        self.f_out.write('g4ui when=4 "/vis/viewer/set/viewpointVector 0 1 0"\n')
-        # self.f_out.write('g4ui when=4 "/vis/viewer/set/viewpointVector -1 1 1"\n')
+        # self.f_out.write('g4ui when=4 "/vis/viewer/set/viewpointVector 0 1 0"\n')
+        self.f_out.write('g4ui when=4 "/vis/viewer/set/viewpointVector -1 1 1"\n')
         self.f_out.write('g4ui when=4 "/vis/viewer/zoom 1.5"\n')
         self.f_out.write('g4ui when=4 "/vis/viewer/set/style wireframe"\n')
         if self.screen_shot:
@@ -484,8 +486,14 @@ class Beamline:
 
         self.write_target()
         self.write_collimator_us()
-        if not self.screen_shot:
-            self.write_virtual_disk()
+
+        det_width = 152.4
+        det_height = 50.8
+        det_length = 1.
+        det_r = 1440.
+        det_positions = [det_r * sin(self.us_theta * Beamline.RADIAN_PER_DEGREE), 0., det_r * cos(self.us_theta * Beamline.RADIAN_PER_DEGREE)]
+        self.f_out.write('virtualdetector det width={} height={} length={} material=Air color=0.9,0.9,0.7\n'.format(det_width, det_height, det_length))
+        self.f_out.write('place det rotation=y{} x={} y={} z={}\n'.format(self.us_theta, det_positions[0], det_positions[1], det_positions[2]))
 
 
 # beamline = Beamline()
