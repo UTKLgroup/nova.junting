@@ -2504,8 +2504,34 @@ def plot_energy_loss_vs_cherenkov_length():
     input('Press any key to continue.')
 
 
+def save_momentum_collimator_up():
+    tf = TFile('tmp/beam.root')
+
+    pid_h_energies = {}
+    for particle in tf.Get('VirtualDetector/det'):
+        pid = int(particle.PDGid)
+        px = particle.Px
+        py = particle.Py
+        pz = particle.Pz
+        mass = PDG.GetParticle(pid).Mass()
+        energy = (mass**2 + px**2 + py**2 + pz**2)**0.5
+
+        if pid not in pid_h_energies:
+            pid_h_energies[pid] = TH1D('h_{}'.format(pid), 'h_{}'.format(pid), 100000, 0, 100000)
+        pid_h_energies[pid].Fill(energy)
+
+    tf_out = TFile('tmp/beam.hist.root', 'RECREATE')
+    for pid in pid_h_energies:
+        pid_h_energies[pid].Write('h_{}'.format(pid))
+    tf_out.Close()
+    print('tf_out.Close()')
+
+
+# 20180912_testbeam_radiation_collimator
+save_momentum_collimator_up()
+
 # 20180910_testbeam_cherenkov_length
-plot_energy_loss_vs_cherenkov_length()
+# plot_energy_loss_vs_cherenkov_length()
 
 # 20180904_testbeam_readout_sim
 # gStyle.SetOptStat('emr')
