@@ -2549,15 +2549,39 @@ def plot_momentum_collimator_up():
         particle_name = PDG.GetParticle(pid).GetName()
         hist = tf.Get(hist_name)
 
-        # if particle_name != 'mu-':
+        # particle_plot = 'antineutron'
+        # if particle_name != particle_plot:
         #     continue
-        # if particle_name == 'antineutron':
-        #     hist.Rebin(100)
+
+        if particle_name == 'antineutron':
+            hist.Rebin(100)
+        if particle_name == 'neutron':
+            hist.Rebin(5)
+        if particle_name == 'antiproton':
+            hist.Rebin(100)
+        if particle_name == 'proton':
+            hist.Rebin(20)
+        if particle_name == 'K+':
+            hist.Rebin(50)
+        if particle_name == 'K-':
+            hist.Rebin(100)
+        if particle_name == 'pi+':
+            hist.Rebin(20)
+            hist.GetXaxis().SetLimits(1, 1e5)
+        if particle_name == 'pi-':
+            hist.Rebin(20)
+        if particle_name == 'mu+':
+            hist.Rebin(50)
+            hist.GetXaxis().SetLimits(1, 1e5)
+        if particle_name == 'mu-':
+            hist.Rebin(50)
+            hist.GetXaxis().SetLimits(1, 1e5)
 
         c1 = TCanvas('c1', 'c1', 800, 600)
         set_margin()
         gPad.SetLogx()
         gPad.SetLogy()
+        gPad.SetGrid()
         set_h1_style(hist)
         hist.Draw()
         hist.GetXaxis().SetTitle('Momentum (MeV)')
@@ -2569,14 +2593,13 @@ def plot_momentum_collimator_up():
 
         c1.Update()
         c1.SaveAs('{}/plot_momentum_collimator_up.{}.pdf'.format(FIGURE_DIR, particle_name))
-        input('Press any key to continue.')
+        # input('Press any key to continue.')
 
 
 def print_momentum_collimator_up():
     tf = TFile('data/beamline.py.radiation.collimator.in.pi+_85gev.15m.hist.root')
 
     particle_name_infos = {}
-    pids = []
     for key in tf.GetListOfKeys():
         hist_name = key.GetName()
         if hist_name == 'h_total':
@@ -2585,18 +2608,19 @@ def print_momentum_collimator_up():
         particle_name = PDG.GetParticle(pid).GetName()
         hist = tf.Get(hist_name)
 
-        pids.append(pid)
         if particle_name not in particle_name_infos:
             particle_name_infos[particle_name] = {
                 'mean': hist.GetMean(),
                 'count': hist.GetEntries()
             }
-            pprint(particle_name_infos)
-            particle_names = sorted(particle_name_infos.keys(), key=lambda x: PDG.GetParticle(x).Mass())
-    print('particle_names = {}'.format(particle_names))
+
+    pprint(particle_name_infos)
+
+    particle_names = sorted(particle_name_infos.keys(), key=lambda x: PDG.GetParticle(x).Mass())
+    scaling_factor = 4.68e9 / 1.5e6
     for particle_name in particle_names:
         info = particle_name_infos[particle_name]
-        print('{} & {:.0f} & {:.0f} \\\\'.format(particle_name, info['count'], info['mean']))
+        print('{} & \SI{{{:.1E}}}{{}} & \SI{{{:.1E}}}{{}} & {:.0f} \\\\'.format(particle_name, info['count'], info['count'] * scaling_factor, info['mean']))
 
     with open('/Users/juntinghuang/beamer/20180912_testbeam_radiation_collimator/print_momentum_collimator_up.tex', 'w') as f_tex:
         for particle_name in particle_names:
@@ -2605,24 +2629,24 @@ def print_momentum_collimator_up():
             f_tex.write('  \\frametitle{{{}}}\n'.format(particle_name))
             f_tex.write('  \\begin{figure}\n')
             f_tex.write('    \\includegraphics[width = 0.8\\textwidth]{{figures/{{plot_momentum_collimator_up.{}}}.pdf}}\n'.format(particle_name))
-            f_tex.write('    \\caption{{Momentum distribution for {} for 10M particle on target.}}\n'.format(particle_name))
+            f_tex.write('    \\caption{{Momentum distribution for {} based on 15 million secondary beam particles on target.}}\n'.format(particle_name))
             f_tex.write('  \\end{figure}\n')
             f_tex.write('\\end{frame}\n\n')
             f_tex.write('% .........................................................\n\n')
 
-            print('\\begin{frame}')
-            print('  \\frametitle{{{}}}'.format(particle_name))
-            print('  \\begin{figure}')
-            print('    \\includegraphics[width = 0.8\\textwidth]{{figures/{{plot_momentum_collimator_up.{}}}.pdf}}'.format(particle_name))
-            print('    \\caption{{Momentum distribution for {} based on 10M secondary particle on target.}}'.format(particle_name))
-            print('  \\end{figure}')
-            print('\\end{frame}')
+            # print('\\begin{frame}')
+            # print('  \\frametitle{{{}}}'.format(particle_name))
+            # print('  \\begin{figure}')
+            # print('    \\includegraphics[width = 0.8\\textwidth]{{figures/{{plot_momentum_collimator_up.{}}}.pdf}}'.format(particle_name))
+            # print('    \\caption{{Momentum distribution for {} based on 10M secondary particle on target.}}'.format(particle_name))
+            # print('  \\end{figure}')
+            # print('\\end{frame}')
             # break
 
 # 20180912_testbeam_radiation_collimator
 # save_momentum_collimator_up()
-plot_momentum_collimator_up()
-# print_momentum_collimator_up()
+# plot_momentum_collimator_up()
+print_momentum_collimator_up()
 
 # 20180910_testbeam_cherenkov_length
 # plot_energy_loss_vs_cherenkov_length()
