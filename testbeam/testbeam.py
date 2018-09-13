@@ -2542,16 +2542,17 @@ def plot_momentum_collimator_up():
     tf = TFile('data/beamline.py.radiation.collimator.in.pi+_85gev.15m.hist.root')
     for key in tf.GetListOfKeys():
         hist_name = key.GetName()
-        if hist_name == 'h_total':
-            continue
-
-        pid = int(hist_name.split('_')[1])
-        particle_name = PDG.GetParticle(pid).GetName()
         hist = tf.Get(hist_name)
 
-        # particle_plot = 'antineutron'
-        # if particle_name != particle_plot:
-        #     continue
+        particle_name = None
+        if hist_name == 'h_total':
+            particle_name = 'all'
+        else:
+            pid = int(hist_name.split('_')[1])
+            particle_name = PDG.GetParticle(pid).GetName()
+
+        if particle_name != 'all':
+            continue
 
         if particle_name == 'antineutron':
             hist.Rebin(100)
@@ -2593,7 +2594,7 @@ def plot_momentum_collimator_up():
 
         c1.Update()
         c1.SaveAs('{}/plot_momentum_collimator_up.{}.pdf'.format(FIGURE_DIR, particle_name))
-        # input('Press any key to continue.')
+        input('Press any key to continue.')
 
 
 def print_momentum_collimator_up():
@@ -2617,10 +2618,18 @@ def print_momentum_collimator_up():
     pprint(particle_name_infos)
 
     particle_names = sorted(particle_name_infos.keys(), key=lambda x: PDG.GetParticle(x).Mass())
-    scaling_factor = 4.68e9 / 1.5e6
+    scaling_factor = 4.68e9 / 15.e6
+
+    count_all = 0.
+    avg_momentum = 0.
     for particle_name in particle_names:
         info = particle_name_infos[particle_name]
         print('{} & \SI{{{:.1E}}}{{}} & \SI{{{:.1E}}}{{}} & {:.0f} \\\\'.format(particle_name, info['count'], info['count'] * scaling_factor, info['mean']))
+        count_all += info['count']
+        avg_momentum += info['mean'] * info['count']
+
+    avg_momentum /= count_all
+    print('{} & \SI{{{:.1E}}}{{}} & \SI{{{:.1E}}}{{}} & {:.0f} \\\\'.format('all', count_all, count_all * scaling_factor, avg_momentum))
 
     with open('/Users/juntinghuang/beamer/20180912_testbeam_radiation_collimator/print_momentum_collimator_up.tex', 'w') as f_tex:
         for particle_name in particle_names:
