@@ -2620,16 +2620,21 @@ def print_momentum_collimator_up():
     particle_names = sorted(particle_name_infos.keys(), key=lambda x: PDG.GetParticle(x).Mass())
     scaling_factor = 4.68e9 / 15.e6
 
-    count_all = 0.
-    avg_momentum = 0.
-    for particle_name in particle_names:
-        info = particle_name_infos[particle_name]
-        print('{} & \SI{{{:.1E}}}{{}} & \SI{{{:.1E}}}{{}} & {:.0f} \\\\'.format(particle_name, info['count'], info['count'] * scaling_factor, info['mean']))
-        count_all += info['count']
-        avg_momentum += info['mean'] * info['count']
+    with open ('/Users/juntinghuang/beamer/20180912_testbeam_radiation_collimator/print_momentum_collimator_up.csv', 'w') as f_csv:
+        f_csv.write('particle name, count per 1.5e7 particles on target, count per 4.68e9 particles on target, mean momentum (MeV)\n')
 
-    avg_momentum /= count_all
-    print('{} & \SI{{{:.1E}}}{{}} & \SI{{{:.1E}}}{{}} & {:.0f} \\\\'.format('all', count_all, count_all * scaling_factor, avg_momentum))
+        count_all = 0.
+        avg_momentum = 0.
+        for particle_name in particle_names:
+            info = particle_name_infos[particle_name]
+            print('{} & \SI{{{:.1E}}}{{}} & \SI{{{:.1E}}}{{}} & {:.0f} \\\\'.format(particle_name, info['count'], info['count'] * scaling_factor, info['mean']))
+            f_csv.write('{}, {:.3E}, {:.3E}, {:.3f}\n'.format(particle_name, info['count'], info['count'] * scaling_factor, info['mean']))
+            count_all += info['count']
+            avg_momentum += info['mean'] * info['count']
+
+        avg_momentum /= count_all
+        print('{} & \SI{{{:.1E}}}{{}} & \SI{{{:.1E}}}{{}} & {:.0f} \\\\'.format('all', count_all, count_all * scaling_factor, avg_momentum))
+        f_csv.write('{}, {:.3E}, {:.3E}, {:.3f}\n'.format('all', count_all, count_all * scaling_factor, avg_momentum))
 
     with open('/Users/juntinghuang/beamer/20180912_testbeam_radiation_collimator/print_momentum_collimator_up.tex', 'w') as f_tex:
         for particle_name in particle_names:
