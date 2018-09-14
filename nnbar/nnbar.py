@@ -9,7 +9,7 @@ from pprint import pprint
 from math import sqrt
 
 
-FIGURE_DIR = '/Users/juntinghuang/beamer/20180907_nnbar_background/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180913_nnbar_prong/figures'
 DATA_DIR = './data'
 
 SECOND_IN_YEAR = 3.16           # 1.e7 s / year
@@ -763,12 +763,14 @@ def plot_1d_cut(hist_name, **kwargs):
     legend_left = kwargs.get('legend_left', False)
     legend_text_cosmic = kwargs.get('legend_text_cosmic', 'Cosmic ray')
     legend_text_signal = kwargs.get('legend_text_signal', 'Signal')
+    tdirectory_cosmic = kwargs.get('tdirectory_cosmic', 'neutronoscana')
+    tdirectory_signal = kwargs.get('tdirectory_signal', 'neutronoscana')
 
     tf_cosmic = TFile('{}/{}'.format(DATA_DIR, cosmic_filename))
     tf_clean = TFile('{}/{}'.format(DATA_DIR, signal_filename))
 
-    h_cosmic = tf_cosmic.Get('neutronoscana/{}'.format(hist_name))
-    h_clean = tf_clean.Get('neutronoscana/{}'.format(hist_name))
+    h_cosmic = tf_cosmic.Get('{}/{}'.format(tdirectory_cosmic, hist_name))
+    h_clean = tf_clean.Get('{}/{}'.format(tdirectory_signal, hist_name))
 
     print('h_clean.GetNbinsX() = {}'.format(h_clean.GetNbinsX()))
     print('h_clean.Integral(1, h_clean.FindBin(x_cut)) / h_clean.Integral() = {}'.format(h_clean.Integral(1, h_clean.FindBin(x_cut)) / h_clean.Integral()))
@@ -1355,9 +1357,17 @@ def plot_lifetime_vs_background():
     input('Press any key to continue.')
 
 
-# 20180907_nnbar_background
-plot_lifetime_vs_background()
+# 20180913_nnbar_prong
+gStyle.SetOptStat(0)
+# plot_1d_cut('fProngCount3D', cosmic_filename='ddnnbar.hist.n_2000.root', signal_filename='genie_noscgen_10000_rndVertex.hist.n_2500.root', x_max=10, x_cut=4, tdirectory_signal='nnbarana', tdirectory_cosmic='neutronoscana', legend_text_cosmic='Cosmic Data', legend_text_signal='Signal MC', legend_fx1ndc=0.55)
+# plot_1d_cut('fRecoHitGeV', cosmic_filename='ddnnbar.hist.n_2000.root', signal_filename='genie_noscgen_10000_rndVertex.hist.n_2500.root', x_max=3., x_cut=1.5, tdirectory_signal='nnbarana', tdirectory_cosmic='neutronoscana', legend_text_cosmic='Cosmic Data', legend_text_signal='Signal MC', legend_fx1ndc=0.55, rebin=5)
+# plot_1d_cut('fRecoHitCount', cosmic_filename='ddnnbar.hist.n_2000.root', signal_filename='genie_noscgen_10000_rndVertex.hist.n_2500.root', x_cut=1.5, tdirectory_signal='nnbarana', tdirectory_cosmic='neutronoscana', legend_text_cosmic='Cosmic Data', legend_text_signal='Signal MC', legend_fx1ndc=0.55, rebin=10)
+plot_1d_cut('fExtentPlane', cosmic_filename='ddnnbar.hist.n_2000.root', signal_filename='genie_noscgen_10000_rndVertex.hist.n_2500.root', x_cut=1.5, tdirectory_signal='nnbarana', tdirectory_cosmic='neutronoscana', legend_text_cosmic='Cosmic Data', legend_text_signal='Signal MC', legend_fx1ndc=0.55, rebin=10, x_max=100)
+# plot_1d_cut('fProngCount2D', cosmic_filename='ddnnbar.hist.n_2000.root', signal_filename='genie_noscgen_10000_rndVertex.hist.n_2500.root', x_max=20, x_cut=4, tdirectory_signal='nnbarana', tdirectory_cosmic='neutronoscana', legend_text_cosmic='Cosmic Data', legend_text_signal='Signal MC', legend_fx1ndc=0.55)
 
+
+# 20180907_nnbar_background
+# plot_lifetime_vs_background()
 
 # 20180803_nnbar_first_data
 # gStyle.SetOptStat(0)
