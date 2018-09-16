@@ -478,6 +478,7 @@ class Beamline:
         self.f_out.write('g4ui when=4 "/vis/viewer/set/viewpointVector -1 1 1"\n')
         self.f_out.write('g4ui when=4 "/vis/viewer/zoom 1.5"\n')
         self.f_out.write('g4ui when=4 "/vis/viewer/set/style wireframe"\n')
+        self.f_out.write('g4ui when=4 "/vis/scene/add/axes 0 0 0 2 m"\n')
         if self.screen_shot:
             self.f_out.write('g4ui when=4 "/vis/viewer/set/background 1 1 1"\n')
 
