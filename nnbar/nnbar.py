@@ -7,9 +7,11 @@ import os
 from scipy.constants import Avogadro
 from pprint import pprint
 from math import sqrt
+import json
+import datetime
 
 
-FIGURE_DIR = '/Users/juntinghuang/beamer/20180913_nnbar_prong/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180920_nnbar_exposure/figures'
 DATA_DIR = './data'
 
 SECOND_IN_YEAR = 3.16           # 1.e7 s / year
@@ -1357,12 +1359,78 @@ def plot_lifetime_vs_background():
     input('Press any key to continue.')
 
 
-# 20180913_nnbar_prong
+def plot_ddt_exposure(filename):
+    datetime_start = datetime.datetime(2018, 7, 31)
+    datetime_end = datetime.datetime(2018, 9, 20)
+    timestamp_start = datetime_start.timestamp()
+    timestamp_end = datetime_end.timestamp()
+    day_count = (datetime_end - datetime_start).days
+
+    h_subrun_count = TH1D('h_subrun_count', 'h_subrun_count', day_count, timestamp_start, timestamp_end)
+    h_exposure = TH1D('h_exposure', 'h_exposure', day_count, timestamp_start, timestamp_end)
+    h_file_size = TH1D('h_file_size', 'h_file_size', day_count, timestamp_start, timestamp_end)
+    h_event_count = TH1D('h_event_count', 'h_event_count', day_count, timestamp_start, timestamp_end)
+
+    exposure = 0.
+    subrun_start_times = []
+    with open('{}/{}'.format(DATA_DIR, filename)) as f_json:
+        for i, row in enumerate(f_json.readlines()):
+            row = json.loads(row)
+            event_count = row['Online.TotalEvents']
+            if event_count == 0:
+                continue
+            subrun_start = row['Online.SubRunStartTime']
+            subrun_end = row['Online.SubRunEndTime']
+            file_size = row['file_size'] / 1.e9
+
+            subrun_exposure = (subrun_end - subrun_start) / 60. / 60. / 24.
+            exposure += subrun_exposure
+
+            subrun_start_times.append(subrun_start)
+            h_subrun_count.Fill(subrun_start)
+            h_exposure.Fill(subrun_start, subrun_exposure)
+            h_file_size.Fill(subrun_start, file_size)
+            h_event_count.Fill(subrun_start, event_count)
+
+    subrun_start_times = sorted(subrun_start_times)
+    subrun_start_time_min = subrun_start_times[0]
+    subrun_start_time_max = subrun_start_times[-1]
+    print('first subrun: {}'.format(datetime.datetime.fromtimestamp(subrun_start_time_min).isoformat()))
+    print('last subrun: {}'.format(datetime.datetime.fromtimestamp(subrun_start_time_max).isoformat()))
+    print('exposure = {} days'.format(exposure))
+
+    hists = [h_subrun_count, h_exposure, h_file_size, h_event_count]
+    y_axis_title = ['File Count (/ Day)', 'Exposure Time (Day / Day)', 'File Size (GB / Day)', 'Event Count (/ Day)']
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetGrid()
+
+    for i, hist in enumerate(hists):
+        set_h1_style(hist)
+        hist.GetXaxis().SetTimeDisplay(1)
+        hist.GetXaxis().SetTimeFormat("%m/%d/%Y");
+        hist.GetXaxis().SetTimeOffset(0, 'gmt')
+        hist.GetYaxis().SetTitle(y_axis_title[i])
+        hist.GetXaxis().SetTitle('Time (Month/Day/Year)')
+        hist.Draw('hist')
+        c1.Update()
+        c1.SaveAs('{}/plot_ddt_exposure.{}.pdf'.format(FIGURE_DIR, hist.GetName()))
+        # input('Press any key to continue.')
+        # break
+
+
+# 20180920_nnbar_exposure
 gStyle.SetOptStat(0)
+plot_ddt_exposure('get-metadata.json')
+
+
+# 20180913_nnbar_prong
+# gStyle.SetOptStat(0)
 # plot_1d_cut('fProngCount3D', cosmic_filename='ddnnbar.hist.n_2000.root', signal_filename='genie_noscgen_10000_rndVertex.hist.n_2500.root', x_max=10, x_cut=4, tdirectory_signal='nnbarana', tdirectory_cosmic='neutronoscana', legend_text_cosmic='Cosmic Data', legend_text_signal='Signal MC', legend_fx1ndc=0.55)
 # plot_1d_cut('fRecoHitGeV', cosmic_filename='ddnnbar.hist.n_2000.root', signal_filename='genie_noscgen_10000_rndVertex.hist.n_2500.root', x_max=3., x_cut=1.5, tdirectory_signal='nnbarana', tdirectory_cosmic='neutronoscana', legend_text_cosmic='Cosmic Data', legend_text_signal='Signal MC', legend_fx1ndc=0.55, rebin=5)
 # plot_1d_cut('fRecoHitCount', cosmic_filename='ddnnbar.hist.n_2000.root', signal_filename='genie_noscgen_10000_rndVertex.hist.n_2500.root', x_cut=1.5, tdirectory_signal='nnbarana', tdirectory_cosmic='neutronoscana', legend_text_cosmic='Cosmic Data', legend_text_signal='Signal MC', legend_fx1ndc=0.55, rebin=10)
-plot_1d_cut('fExtentPlane', cosmic_filename='ddnnbar.hist.n_2000.root', signal_filename='genie_noscgen_10000_rndVertex.hist.n_2500.root', x_cut=1.5, tdirectory_signal='nnbarana', tdirectory_cosmic='neutronoscana', legend_text_cosmic='Cosmic Data', legend_text_signal='Signal MC', legend_fx1ndc=0.55, rebin=10, x_max=100)
+# plot_1d_cut('fExtentPlane', cosmic_filename='ddnnbar.hist.n_2000.root', signal_filename='genie_noscgen_10000_rndVertex.hist.n_2500.root', x_cut=1.5, tdirectory_signal='nnbarana', tdirectory_cosmic='neutronoscana', legend_text_cosmic='Cosmic Data', legend_text_signal='Signal MC', legend_fx1ndc=0.55, rebin=10, x_max=100)
 # plot_1d_cut('fProngCount2D', cosmic_filename='ddnnbar.hist.n_2000.root', signal_filename='genie_noscgen_10000_rndVertex.hist.n_2500.root', x_max=20, x_cut=4, tdirectory_signal='nnbarana', tdirectory_cosmic='neutronoscana', legend_text_cosmic='Cosmic Data', legend_text_signal='Signal MC', legend_fx1ndc=0.55)
 
 
