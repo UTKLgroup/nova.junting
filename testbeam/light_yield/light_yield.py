@@ -3,7 +3,7 @@ import scipy.constants
 import csv
 
 
-FIGURE_DIR = './figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20181005_testbeam_light_yield_setup/figures'
 DATA_DIR = './data'
 
 
@@ -204,3 +204,4 @@ gStyle.SetOptStat(0)
 # plot_mean_per_pe_vs_hv()
 plot_sigma2_vs_mu()
 # plot_npe_vs_led_voltage()
+
