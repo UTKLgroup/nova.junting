@@ -26,7 +26,7 @@ def plot_gain(filename):
     for i, charge in enumerate(charges):
         h1.Fill(charge, entries[i])
 
-    h1.Rebin(10)
+    # h1.Rebin(10)
     mean =h1.GetMean()
     sigma = h1.GetRMS()
     npe = (mean / sigma)**2.
@@ -47,6 +47,10 @@ def plot_gain(filename):
     h1.GetYaxis().SetTitleOffset(1.5)
     # c1.Update()
     # draw_statbox(h1, x1= 0.65)
+
+    # f1 = TF1('f1', 'gaus', 0., 20.e-12)
+    # h1.Fit('f1')
+    # f1.Draw('sames')
 
     t1 = TLatex()
     t1.SetNDC()
@@ -143,15 +147,25 @@ def plot_mean_per_pe_vs_hv():
 
 def plot_sigma2_vs_mu():
     # at 1100 V
-    led_voltages = [1.430, 1.435, 1.440, 1.445, 1.450, 1.460]
-    txts = ['F1ch200008.txt', 'F1ch200015.txt', 'F1ch200011.txt', 'F1ch200014.txt', 'F1ch200013.txt', 'F1ch200012.txt']
+    # led_voltages = [1.430, 1.435, 1.440, 1.445, 1.450, 1.460]
+    # txts = ['F1ch200008.txt', 'F1ch200015.txt', 'F1ch200011.txt', 'F1ch200014.txt', 'F1ch200013.txt', 'F1ch200012.txt']
 
-    means = []
-    sigma2s = []
-    for txt in txts:
-        mean, sigma, npe, gain = get_npe_gain(txt)
-        means.append(mean)
-        sigma2s.append(sigma**2)
+    # at 1000 V
+    led_voltages = [1.480, 1.490, 1.500, 1.510, 1.520]
+    txts = ['F1ch300007.txt', 'F1ch300008.txt', 'F1ch300009.txt', 'F1ch300010.txt', 'F1ch300011.txt']
+    pedestal = get_npe_gain('F1ch300012.txt')[0]
+    print('pedestal = {}'.format(pedestal))
+
+    # means = []
+    # sigma2s = []
+    # for txt in txts:
+    #     mean, sigma, npe, gain = get_npe_gain(txt)
+    #     means.append(mean - pedestal)
+    #     sigma2s.append(sigma**2)
+
+    means = [9.587e-12, 1.678e-11, 2.8e-11, 4.6e-11, 7.335e-11]
+    sigmas = [2.694e-12, 3.531e-12, 4.822e-12, 6.158e-12, 7.974e-12]
+    sigma2s = [x**2 for x in sigmas]
 
     gr = TGraph(len(sigma2s), np.array(means), np.array(sigma2s))
     c1 = TCanvas('c1', 'c1', 800, 600)
@@ -162,7 +176,21 @@ def plot_sigma2_vs_mu():
 
     gr.GetXaxis().SetTitle('#mu (C)')
     gr.GetYaxis().SetTitle('#sigma^{2} (C^{2})')
-    gr.Fit('pol1')
+
+    f1 = TF1('f1', 'pol1')
+    gr.Fit('f1')
+    intercept = f1.GetParameter(0)
+    slope = f1.GetParameter(1)
+
+    print('intercept = {}'.format(intercept))
+    print('slope = {}'.format(slope))
+
+    t1 = TLatex()
+    t1.SetNDC()
+    t1.SetTextFont(43)
+    t1.SetTextSize(28)
+    t1.SetTextAlign(13)
+    t1.DrawLatex(0.25, 0.85, '#sigma^{{2}} = {:.1E} + {:.1E} #mu'.format(intercept, slope))
 
     c1.Update()
     c1.SaveAs('{}/plot_sigma2_vs_mu.pdf'.format(FIGURE_DIR))
@@ -301,9 +329,9 @@ def plot_spectra(filename_1, filename_2):
 
 
 # 20181005_testbeam_light_yield_setup
-gStyle.SetOptStat(0)
+# gStyle.SetOptStat(0)
 # gStyle.SetOptStat('mri')
-# gStyle.SetOptFit()
+gStyle.SetOptFit(0)
 # plot_gain('F1ch200008.txt')
 # plot_gain('F1ch200015.txt')
 # plot_gain('F1ch200011.txt')
@@ -316,4 +344,11 @@ gStyle.SetOptStat(0)
 # plot_spectrum('F1ch300002.txt')
 # plot_spectra('F1ch300001.txt', 'F1ch300002.txt')
 # plot_spectrum('F1ch300005.txt', rebin=5, x_min=-0.02e-9, x_max=0.15e-9)
-plot_spectrum('F1ch300006.txt', rebin=5, x_min=-0.02e-9, x_max=0.15e-9)
+# plot_spectrum('F1ch300006.txt', rebin=5, x_min=-0.02e-9, x_max=0.15e-9)
+# plot_sigma2_vs_mu()
+# plot_gain('F1ch300007.txt')
+# plot_gain('F1ch300008.txt')
+# plot_gain('F1ch300009.txt')
+# plot_gain('F1ch300010.txt')
+# plot_gain('F1ch300011.txt')
+# plot_gain('F1ch300012.txt')
