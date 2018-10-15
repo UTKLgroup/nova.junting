@@ -1,6 +1,7 @@
 from rootalias import *
 import scipy.constants
 import csv
+from datetime import datetime
 
 
 FIGURE_DIR = '/Users/juntinghuang/beamer/20181011_light_yield_measurement/figures'
@@ -224,7 +225,9 @@ def plot_npe_vs_led_voltage():
     input('Press any key to continue.')
 
 
-def get_spectrum(filename):
+def get_spectrum(filename, **kwargs):
+    scale = kwargs.get('scale', None)
+
     row_count = 0
     charges = []
     entries = []
@@ -234,6 +237,10 @@ def get_spectrum(filename):
         for row in reader:
             charge = -float(row[0]) / 50. # Coulomb
             entry = float(row[1])
+
+            if scale is not None:
+                charge *= scale
+
             charges.append(charge)
             entries.append(entry)
             row_count += 1
@@ -275,14 +282,13 @@ def plot_spectrum(filename, **kwargs):
     # c1.Update()
     # draw_statbox(h1, x1= 0.65)
 
-    peak_xs = spectrum.GetPositionX()
-    peak_count = spectrum.GetNPeaks()
-    peaks = []
-    for i in range(peak_count):
-        peaks.append(peak_xs[i])
-
-    peaks = sorted(peaks)
-    print('peaks = {}'.format(peaks))
+    # peak_xs = spectrum.GetPositionX()
+    # peak_count = spectrum.GetNPeaks()
+    # peaks = []
+    # for i in range(peak_count):
+    #     peaks.append(peak_xs[i])
+    # peaks = sorted(peaks)
+    # print('peaks = {}'.format(peaks))
 
     t1 = TLatex()
     t1.SetNDC()
@@ -290,48 +296,195 @@ def plot_spectrum(filename, **kwargs):
     t1.SetTextSize(28)
     t1.SetTextAlign(13)
 
-    t1.DrawLatex(0.55, 0.85, 'Integral = {:.1E}'.format(h1.Integral()))
-    t1.DrawLatex(0.55, 0.78, 'Pedestal = {:.1E} C'.format(peaks[0]))
-    t1.DrawLatex(0.55, 0.71, 'Peak = {:.1E} C'.format(peaks[1]))
+    # t1.DrawLatex(0.55, 0.85, 'Integral = {:.1E}'.format(h1.Integral()))
+    # t1.DrawLatex(0.55, 0.78, 'Pedestal = {:.1E} C'.format(peaks[0]))
+    # t1.DrawLatex(0.55, 0.71, 'Peak = {:.1E} C'.format(peaks[1]))
 
     c1.Update()
     c1.SaveAs('{}/plot_spectrum.{}.pdf'.format(FIGURE_DIR, filename))
     input('Press any key to continue.')
 
 
-def plot_spectra(filename_1, filename_2):
-    h1 = get_spectrum(filename_1)
-    h2 = get_spectrum(filename_2)
+def plot_spectra(**kwargs):
+    calibration_constant = kwargs.get('calibration_constant', None)
+    rebin = kwargs.get('rebin', None)
+    # no_pedestal = kwargs.get('no_pedestal', False)
 
-    h1.Scale(1. / h1.Integral())
-    h2.Scale(1. / h2.Integral())
+    filenames = ['F1ch300006.txt', 'F1ch300016.txt', 'F1ch300018.txt', 'F1ch300020.txt']
+    no_pedestal_filenames = ['F1ch300005.txt', 'F1ch300015.txt', 'F1ch300017.txt', 'F1ch300019.txt']
 
-    # h1.Rebin(5)
-    # h2.Rebin(2)
+    h1 = None
+    h2 = None
+    h3 = None
+    h4 = None
+    if calibration_constant is None:
+        h1 = get_spectrum(filenames[0])
+        h2 = get_spectrum(filenames[1])
+        h3 = get_spectrum(filenames[2])
+        h4 = get_spectrum(filenames[3])
+    else:
+        h1 = get_spectrum(filenames[0], scale=1. / calibration_constant)
+        h2 = get_spectrum(filenames[1], scale=1. / calibration_constant)
+        h3 = get_spectrum(filenames[2], scale=1. / calibration_constant)
+        h4 = get_spectrum(filenames[3], scale=1. / calibration_constant)
+
+    if rebin:
+        h1.Rebin(rebin)
+        h2.Rebin(rebin)
+        h3.Rebin(rebin)
+        h4.Rebin(rebin)
+
+    # peak_ys = []
+    # for filename in no_pedestal_filenames:
+    #     peak_x, peak_y = get_spectrum_peak(filename, rebin=10)
+    #     peak_ys.append(peak_y)
+    # h1.Scale(1. / peak_ys[0])
+    # h2.Scale(1. / peak_ys[1])
+    # h3.Scale(1. / peak_ys[2])
+    # h4.Scale(1. / peak_ys[3])
+
+    h1.Scale(1. / h1.GetMaximum())
+    h2.Scale(1. / h2.GetMaximum())
+    h3.Scale(1. / h3.GetMaximum())
+    h4.Scale(1. / h4.GetMaximum())
 
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
+    gPad.SetGrid()
+
     set_h1_style(h1)
     h1.Draw('hist')
-
-    h1.GetXaxis().SetTitle('Charge (C)')
+    h1.SetLineColor(kBlack)
     h1.GetYaxis().SetTitle('Event Count')
     h1.GetYaxis().SetTitleOffset(1.5)
-    # c1.Update()
-    # draw_statbox(h1, x1= 0.65)
+    if calibration_constant is None:
+        h1.GetXaxis().SetRangeUser(-1.e-11, 12.e-11)
+        h1.GetXaxis().SetTitle('Charge (C)')
+    else:
+        h1.GetXaxis().SetRangeUser(-1.e-11 / calibration_constant, 12.e-11 / calibration_constant)
+        h1.GetXaxis().SetTitle('NPE')
 
     set_h1_style(h2)
     h2.Draw('hist,sames')
+    h2.SetLineColor(kBlue)
+
+    set_h1_style(h3)
+    h3.Draw('hist,sames')
+    h3.SetLineColor(kRed + 1)
+
+    set_h1_style(h4)
+    h4.Draw('hist,sames')
+    h4.SetLineColor(kMagenta + 2)
+
+    lg1 = TLegend(0.56, 0.6, 0.90, 0.85)
+    set_legend_style(lg1)
+    lg1.AddEntry(h1, 'NDOS', 'l')
+    lg1.AddEntry(h2, 'Production', 'l')
+    lg1.AddEntry(h3, 'Tanker', 'l')
+    lg1.AddEntry(h4, 'Tank 2', 'l')
+    lg1.Draw()
 
     c1.Update()
-    c1.SaveAs('{}/plot_spectra.{}.pdf'.format(FIGURE_DIR, filename))
+    if calibration_constant is None:
+        c1.SaveAs('{}/plot_spectra.pdf'.format(FIGURE_DIR))
+    else:
+        c1.SaveAs('{}/plot_spectra.pe.pdf'.format(FIGURE_DIR))
     input('Press any key to continue.')
 
 
+def print_event_rate():
+    sample_names = [
+        'NDOS',
+        'Production',
+        'Tanker',
+        'Tank 2'
+    ]
+    filenames = [
+        'F1ch300005.txt',
+        'F1ch300015.txt',
+        'F1ch300017.txt',
+        'F1ch300019.txt'
+    ]
+    start_times = [
+        datetime(2018, 10, 11, 18, 10),
+        datetime(2018, 10, 12, 19, 58),
+        datetime(2018, 10, 13, 12, 27),
+        datetime(2018, 10, 14, 13, 16)
+    ]
+    end_times = [
+        datetime(2018, 10, 12, 10, 10),
+        datetime(2018, 10, 13, 11, 57),
+        datetime(2018, 10, 14, 12, 51),
+        datetime(2018, 10, 15, 10, 9)
+    ]
+
+    durations = []              # minutes
+    for i in range(len(start_times)):
+        durations.append((end_times[i] - start_times[i]).total_seconds() / 60.)
+
+    event_counts = []
+    for filename in filenames:
+        h1 = get_spectrum(filename)
+        event_count = h1.Integral()
+        event_counts.append(event_count)
+
+    event_rates = []
+    for i, duration in enumerate(durations):
+        event_rates.append(event_counts[i] / durations[i])
+
+    for i, event_rate in enumerate(event_rates):
+        print('{} & {:.1f} & {:.0f} & {:.0f} \\\\'.format(sample_names[i], durations[i] / 60., event_counts[i], event_rates[i]))
+
+
+def print_peaks():
+    filenames = [
+        'F1ch300005.txt',
+        'F1ch300015.txt',
+        'F1ch300017.txt',
+        'F1ch300019.txt'
+    ]
+
+    peak_xs = []
+    peak_ys = []
+    for filename in filenames:
+        peak_x, peak_y = get_spectrum_peak(filename, rebin=10)
+        peak_xs.append(peak_x)
+        peak_ys.append(peak_y)
+
+    for peak_x in peak_xs:
+        print('peak_x = {:.2E}'.format(peak_x))
+        print('peak_x = {:.1F}'.format(peak_x / 8.854658242290205e-13))
+
+def get_spectrum_peak(filename, **kwargs):
+    rebin = kwargs.get('rebin', None)
+    h1 = get_spectrum(filename)
+    if rebin:
+        h1.Rebin(rebin)
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetGrid()
+    set_h1_style(h1)
+
+    spectrum = TSpectrum()
+    spectrum.Search(h1, 3)
+    # spectrum.Print()
+    # poly_marker = h1.GetListOfFunctions().FindObject('TPolyMarker')
+    peak_xs = spectrum.GetPositionX()
+    peak_ys = spectrum.GetPositionY()
+    peak_count = spectrum.GetNPeaks()
+    # peaks = []
+    # for i in range(peak_count):
+    #     peaks.append(peak_xs[i])
+    # peaks = sorted(peaks)
+    # print('peaks = {}'.format(peaks))
+    return peak_xs[0], peak_ys[0]
+
+
 # 20181005_testbeam_light_yield_setup
-# gStyle.SetOptStat(0)
+gStyle.SetOptStat(0)
 # gStyle.SetOptStat('mri')
-gStyle.SetOptFit(0)
+# gStyle.SetOptFit(0)
 # plot_gain('F1ch200008.txt')
 # plot_gain('F1ch200015.txt')
 # plot_gain('F1ch200011.txt')
@@ -345,6 +498,8 @@ gStyle.SetOptFit(0)
 # plot_spectra('F1ch300001.txt', 'F1ch300002.txt')
 # plot_spectrum('F1ch300005.txt', rebin=5, x_min=-0.02e-9, x_max=0.15e-9)
 # plot_spectrum('F1ch300006.txt', rebin=5, x_min=-0.02e-9, x_max=0.15e-9)
+# plot_spectrum('F1ch300016.txt', rebin=5, x_min=-0.02e-9, x_max=0.15e-9)
+# plot_spectrum('F1ch300018.txt', rebin=5, x_min=-0.02e-9, x_max=0.15e-9)
 # plot_sigma2_vs_mu()
 # plot_gain('F1ch300007.txt')
 # plot_gain('F1ch300008.txt')
@@ -352,3 +507,22 @@ gStyle.SetOptFit(0)
 # plot_gain('F1ch300010.txt')
 # plot_gain('F1ch300011.txt')
 # plot_gain('F1ch300012.txt')
+# calibration_constant = 8.854658242290205e-13 # C / PE
+# plot_spectra(rebin=10, calibration_constant=calibration_constant)
+# plot_spectra(rebin=10)
+# no pedestal
+# plot_spectrum('F1ch300005.txt', rebin=10, x_min=-0.02e-9, x_max=0.15e-9)
+# plot_spectrum('F1ch300015.txt', rebin=10, x_min=-0.02e-9, x_max=0.15e-9)
+# plot_spectrum('F1ch300017.txt', rebin=10, x_min=-0.02e-9, x_max=0.15e-9)
+# plot_spectrum('F1ch300019.txt', rebin=10, x_min=-0.02e-9, x_max=0.15e-9)
+# added pedestal
+# plot_spectrum('F1ch300006.txt', rebin=10, x_min=-0.02e-9, x_max=0.15e-9)
+# plot_spectrum('F1ch300016.txt', rebin=10, x_min=-0.02e-9, x_max=0.15e-9)
+# plot_spectrum('F1ch300018.txt', rebin=10, x_min=-0.02e-9, x_max=0.15e-9)
+# plot_spectrum('F1ch300020.txt', rebin=10, x_min=-0.02e-9, x_max=0.15e-9)
+print_event_rate()
+# get_spectrum_peak('F1ch300005.txt', rebin=10)
+# get_spectrum_peak('F1ch300015.txt', rebin=10)
+# get_spectrum_peak('F1ch300017.txt', rebin=10)
+# get_spectrum_peak('F1ch300019.txt', rebin=10)
+# print_peaks()
