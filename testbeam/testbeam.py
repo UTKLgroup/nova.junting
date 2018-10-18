@@ -12,7 +12,7 @@ ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
-FIGURE_DIR = '/Users/juntinghuang/beamer/20180912_testbeam_radiation_collimator/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20180625_testbeam_64_32_16_8GeV_different_bs/figures'
 DATA_DIR = './data'
 
 
@@ -1735,10 +1735,17 @@ def get_particle_count_vs_secondary_beam_energy(**kwargs):
     total_counts = []
     pi_counts = []
     proton_counts = []
+    e_counts = []
+    mu_counts = []
+    k_counts = []
 
     total_count_errs = []
     pi_count_errs = []
     proton_count_errs = []
+    e_count_errs = []
+    mu_count_errs = []
+    k_count_errs = []
+
     for i, pid_count in enumerate(pid_counts):
         norm = norms[i]
 
@@ -1754,15 +1761,39 @@ def get_particle_count_vs_secondary_beam_energy(**kwargs):
         proton_counts.append(proton_count / norm)
         proton_count_errs.append(sqrt(proton_count) / norm)
 
+        e_count = 0
+        if -11 in pid_count:
+            e_count = pid_count[-11]
+        e_counts.append(e_count / norm)
+        e_count_errs.append(sqrt(e_count) / norm)
+
+        mu_count = 0
+        if -13 in pid_count:
+            mu_count = pid_count[-13]
+        mu_counts.append(mu_count / norm)
+        mu_count_errs.append(sqrt(mu_count) / norm)
+
+        k_count = 0
+        if 321 in pid_count:
+            k_count = pid_count[321]
+        k_counts.append(k_count / norm)
+        k_count_errs.append(sqrt(k_count) / norm)
+
     gr_total = TGraphErrors(len(beam_energies), np.array(beam_energies), np.array(total_counts), np.array(beam_energy_errs), np.array(total_count_errs))
     gr_pi = TGraphErrors(len(beam_energies), np.array(beam_energies), np.array(pi_counts), np.array(beam_energy_errs), np.array(pi_count_errs))
     gr_proton = TGraphErrors(len(beam_energies), np.array(beam_energies), np.array(proton_counts), np.array(beam_energy_errs), np.array(proton_count_errs))
+    gr_e = TGraphErrors(len(beam_energies), np.array(beam_energies), np.array(e_counts), np.array(beam_energy_errs), np.array(e_count_errs))
+    gr_mu = TGraphErrors(len(beam_energies), np.array(beam_energies), np.array(mu_counts), np.array(beam_energy_errs), np.array(mu_count_errs))
+    gr_k = TGraphErrors(len(beam_energies), np.array(beam_energies), np.array(k_counts), np.array(beam_energy_errs), np.array(k_count_errs))
 
     print('proton_counts = {}'.format(proton_counts))
     print('pi_counts = {}'.format(pi_counts))
+    print('e_counts = {}'.format(e_counts))
+    print('mu_counts = {}'.format(mu_counts))
+    print('k_counts = {}'.format(k_counts))
     print('total_counts = {}'.format(total_counts))
 
-    grs = [gr_total, gr_pi, gr_proton]
+    grs = [gr_total, gr_pi, gr_proton, gr_e, gr_mu, gr_k]
     for gr in grs:
         set_graph_style(gr)
         gr.GetXaxis().SetTitle('Secondary Beam Energy (GeV)')
@@ -1774,10 +1805,13 @@ def get_particle_count_vs_secondary_beam_energy(**kwargs):
     gr_total.Write('gr_total')
     gr_pi.Write('gr_pi')
     gr_proton.Write('gr_proton')
+    gr_e.Write('gr_e')
+    gr_mu.Write('gr_mu')
+    gr_k.Write('gr_k')
     f_out.Close()
     print('Graphs saved to {}.'.format(filename))
 
-    return gr_total, gr_pi, gr_proton
+    return gr_total, gr_pi, gr_proton, gr_e, gr_mu, gr_k
 
 
 def plot_particle_count_vs_secondary_beam_energy(gr_name, **kwargs):
@@ -1793,7 +1827,7 @@ def plot_particle_count_vs_secondary_beam_energy(gr_name, **kwargs):
 
     gr_totals = []
     for filename in filenames:
-        tf = TFile(filename)
+        tf = TFile('{}/{}'.format(DATA_DIR, filename))
         gr_totals.append(tf.Get(gr_name))
 
     lg_names = ['-1.8', '-1.35', '-0.9', '-0.45']
@@ -2657,10 +2691,70 @@ def print_momentum_collimator_up():
             # print('\\end{frame}')
             # break
 
+
+def plot_p_vs_angle_16_degree():
+    field_length = 42. * INCH_TO_METER # m
+    b_fields = [1.8, 1.35, 0.9, 0.45]
+    colors = [kBlue + 2, kGreen + 2, kRed + 2, kBlack]
+    degrees = np.arange(0.1, 32., 0.1)
+
+    b_field_momentums = []
+    for b_field in b_fields:
+        momentums = []
+        for degree in degrees:
+            momentum = b_field * field_length * SPEED_OF_LIGHT / (degree * DEGREE_TO_RADIAN) * 1.e-9 # GeV
+            momentums.append(momentum)
+        b_field_momentums.append(momentums)
+
+    print(degrees)
+    print(momentums)
+
+    grs = []
+    for b_field_momentum in b_field_momentums:
+        gr = TGraph(len(degrees), np.array(degrees), np.array(b_field_momentum))
+        set_graph_style(gr)
+        gr.SetMarkerStyle(24)
+        grs.append(gr)
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    lg1 = TLegend(0.31, 0.56, 0.54, 0.85)
+    set_legend_style(lg1)
+    gPad.SetGrid()
+
+    grs[0].Draw('AL')
+    grs[0].GetXaxis().SetRangeUser(0., 25.)
+    grs[0].GetYaxis().SetRangeUser(0., 15.)
+    grs[0].GetXaxis().SetTitle('Bending Angle #theta (degree)')
+    grs[0].GetYaxis().SetTitle('Momentum (GeV)')
+    grs[0].GetYaxis().SetTitleOffset(1.5)
+    grs[0].SetLineColor(colors[0])
+    lg1.AddEntry(grs[0], 'B = {} T'.format(b_fields[0]), 'l')
+
+    for i in range(1, len(grs)):
+        grs[i].Draw('sames,L')
+        grs[i].SetLineColor(colors[i])
+        lg1.AddEntry(grs[i], 'B = {} T'.format(b_fields[i]), 'l')
+
+    tl = TLine(16, 0, 16, 15)
+    tl.SetLineWidth(3)
+    tl.SetLineColor(kMagenta + 1)
+    tl.SetLineStyle(10)
+    tl.Draw()
+    lg1.AddEntry(tl, '\\theta = 16^{\circ}', 'l')
+
+    lg1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_p_vs_angle_16_degree.pdf'.format(FIGURE_DIR))
+    c1.SaveAs('{}/plot_p_vs_angle_16_degree.png'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
 # 20180912_testbeam_radiation_collimator
 # save_momentum_collimator_up()
 # plot_momentum_collimator_up()
-print_momentum_collimator_up()
+# print_momentum_collimator_up()
 
 # 20180910_testbeam_cherenkov_length
 # plot_energy_loss_vs_cherenkov_length()
@@ -2686,6 +2780,9 @@ print_momentum_collimator_up()
 # plot_particle_count_vs_secondary_beam_energy('gr_total', y_min=0, y_max=30)
 # plot_particle_count_vs_secondary_beam_energy('gr_pi', y_min=0, y_max=15)
 # plot_particle_count_vs_secondary_beam_energy('gr_proton', y_min=0, y_max=15)
+# plot_particle_count_vs_secondary_beam_energy('gr_k', y_min=0, y_max=1.8)
+# plot_particle_count_vs_secondary_beam_energy('gr_e', y_min=0, y_max=3.)
+# plot_particle_count_vs_secondary_beam_energy('gr_mu', y_min=0, y_max=1.8)
 # plot_particle_momentum('g4bl.b_-1.8T.pi+.64000.csv', 1500, 3500, title='64 GeV Secondary Beam', y_max=0., bin_count=20, y_title_offset=1.4, normalization_factor=4., y_title='Particle Count per 1M Beam Particles')
 # plot_particle_momentum('g4bl.b_-1.8T.pi+.32000.csv', 1500, 3500, title='32 GeV Secondary Beam', y_max=0., bin_count=20, y_title_offset=1.4, normalization_factor=12., y_title='Particle Count per 1M Beam Particles')
 # plot_particle_momentum('g4bl.b_-1.8T.pi+.16000.csv', 1500, 3500, title='16 GeV Secondary Beam', y_max=0., bin_count=20, y_title_offset=1.4, normalization_factor=24.32, y_title='Particle Count per 1M Beam Particles')
@@ -2706,6 +2803,7 @@ print_momentum_collimator_up()
 # get_particle_count_vs_secondary_beam_energy(suffix='b_-1.35T', csv_64gev='g4bl.b_-1.35T.pi+.64000.csv', norm_64gev=4., csv_32gev='g4bl.b_-1.35T.pi+.32000.csv', norm_32gev=12., csv_16gev='g4bl.b_-1.35T.pi+.16000.csv', norm_16gev=28.76, csv_8gev='g4bl.b_-1.35T.pi+.8000.csv', norm_8gev=103.7,)
 # get_particle_count_vs_secondary_beam_energy(suffix='b_-0.45T', csv_64gev='g4bl.b_-0.45T.pi+.64000.csv', norm_64gev=4., csv_32gev='g4bl.b_-0.45T.pi+.32000.csv', norm_32gev=12., csv_16gev='g4bl.b_-0.45T.pi+.16000.csv', norm_16gev=24.5, csv_8gev='g4bl.b_-0.45T.pi+.8000.csv', norm_8gev=103.75,)
 # get_particle_count_vs_secondary_beam_energy(suffix='b_-0.9T', csv_64gev='beamline.py.in.job_1_1800.18m.b_-0.9T.pi+_64gev.root.csv', norm_64gev=18., csv_32gev='beamline.py.in.job_1_1800.27m.b_-0.9T.pi+_32gev.root.csv', norm_32gev=27., csv_16gev='beamline.py.in.job_1_900.45m.b_-0.9T.pi+_16gev.root.csv', norm_16gev=45., csv_8gev='beamline.py.in.job_1_900.90m.b_-0.9T.pi+_8gev.root.csv', norm_8gev=90.,)
+plot_p_vs_angle_16_degree()
 
 # 20180530_testbeam_radiation_dosage
 # gStyle.SetOptStat(0)
