@@ -310,78 +310,54 @@ def plot_spectra(**kwargs):
     rebin = kwargs.get('rebin', None)
     # no_pedestal = kwargs.get('no_pedestal', False)
 
-    filenames = ['F1ch300006.txt', 'F1ch300016.txt', 'F1ch300018.txt', 'F1ch300020.txt']
-    no_pedestal_filenames = ['F1ch300005.txt', 'F1ch300015.txt', 'F1ch300017.txt', 'F1ch300019.txt']
+    filenames = ['F1ch300006.txt', 'F1ch300016.txt', 'F1ch300018.txt', 'F1ch300020.txt', 'F1ch300022.txt', 'F1ch300024.txt']
+    filename_no_pedestals = ['F1ch300005.txt', 'F1ch300015.txt', 'F1ch300017.txt', 'F1ch300019.txt', 'F1ch300021.txt', 'F1ch300023.txt']
+    legend_txts = ['NDOS', 'Production', 'Tanker', 'Tank 2', 'Tank 3', 'Tank 4']
+    colors = [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1]
 
-    h1 = None
-    h2 = None
-    h3 = None
-    h4 = None
-    if calibration_constant is None:
-        h1 = get_spectrum(filenames[0])
-        h2 = get_spectrum(filenames[1])
-        h3 = get_spectrum(filenames[2])
-        h4 = get_spectrum(filenames[3])
-    else:
-        h1 = get_spectrum(filenames[0], scale=1. / calibration_constant)
-        h2 = get_spectrum(filenames[1], scale=1. / calibration_constant)
-        h3 = get_spectrum(filenames[2], scale=1. / calibration_constant)
-        h4 = get_spectrum(filenames[3], scale=1. / calibration_constant)
-
-    if rebin:
-        h1.Rebin(rebin)
-        h2.Rebin(rebin)
-        h3.Rebin(rebin)
-        h4.Rebin(rebin)
+    hists = []
+    for i in range(len(filenames)):
+        if calibration_constant is None:
+            hist = get_spectrum(filenames[i])
+        else:
+            hist = get_spectrum(filenames[i], scale=1. / calibration_constant)
+        if rebin:
+            hist.Rebin(rebin)
+        hist.Scale(1. / hist.GetMaximum())
+        hists.append(hist)
 
     # peak_ys = []
-    # for filename in no_pedestal_filenames:
+    # for filename in filename_no_pedestals:
     #     peak_x, peak_y = get_spectrum_peak(filename, rebin=10)
     #     peak_ys.append(peak_y)
     # h1.Scale(1. / peak_ys[0])
-    # h2.Scale(1. / peak_ys[1])
-    # h3.Scale(1. / peak_ys[2])
-    # h4.Scale(1. / peak_ys[3])
-
-    h1.Scale(1. / h1.GetMaximum())
-    h2.Scale(1. / h2.GetMaximum())
-    h3.Scale(1. / h3.GetMaximum())
-    h4.Scale(1. / h4.GetMaximum())
 
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
     gPad.SetGrid()
 
-    set_h1_style(h1)
-    h1.Draw('hist')
-    h1.SetLineColor(kBlack)
-    h1.GetYaxis().SetTitle('Event Count')
-    h1.GetYaxis().SetTitleOffset(1.5)
-    if calibration_constant is None:
-        h1.GetXaxis().SetRangeUser(-1.e-11, 12.e-11)
-        h1.GetXaxis().SetTitle('Charge (C)')
-    else:
-        h1.GetXaxis().SetRangeUser(-1.e-11 / calibration_constant, 12.e-11 / calibration_constant)
-        h1.GetXaxis().SetTitle('NPE')
-
-    set_h1_style(h2)
-    h2.Draw('hist,sames')
-    h2.SetLineColor(kBlue)
-
-    set_h1_style(h3)
-    h3.Draw('hist,sames')
-    h3.SetLineColor(kRed + 1)
-
-    set_h1_style(h4)
-    h4.Draw('hist,sames')
-    h4.SetLineColor(kMagenta + 2)
-
-    lg1 = TLegend(0.56, 0.6, 0.90, 0.85)
+    lg1 = TLegend(0.58, 0.5, 0.92, 0.86)
     set_legend_style(lg1)
-    lg1.AddEntry(h1, 'NDOS', 'l')
-    lg1.AddEntry(h2, 'Production', 'l')
-    lg1.AddEntry(h3, 'Tanker', 'l')
-    lg1.AddEntry(h4, 'Tank 2', 'l')
+
+    for i, hist in enumerate(hists):
+        set_h1_style(hist)
+        hist.SetLineColor(colors[i])
+
+        if i == 0:
+            hist.Draw('hist')
+            hist.GetYaxis().SetTitle('Event Count')
+            hist.GetYaxis().SetTitleOffset(1.5)
+            if calibration_constant is None:
+                hist.GetXaxis().SetRangeUser(-1.e-11, 12.e-11)
+                hist.GetXaxis().SetTitle('Charge (C)')
+            else:
+                hist.GetXaxis().SetRangeUser(-1.e-11 / calibration_constant, 12.e-11 / calibration_constant)
+                hist.GetXaxis().SetTitle('NPE')
+        else:
+            hist.Draw('hist,sames')
+
+        lg1.AddEntry(hist, legend_txts[i], 'l')
+
     lg1.Draw()
 
     c1.Update()
@@ -507,8 +483,8 @@ gStyle.SetOptStat(0)
 # plot_gain('F1ch300010.txt')
 # plot_gain('F1ch300011.txt')
 # plot_gain('F1ch300012.txt')
-# calibration_constant = 8.854658242290205e-13 # C / PE
-# plot_spectra(rebin=10, calibration_constant=calibration_constant)
+calibration_constant = 8.854658242290205e-13 # C / PE
+plot_spectra(rebin=10, calibration_constant=calibration_constant)
 # plot_spectra(rebin=10)
 # no pedestal
 # plot_spectrum('F1ch300005.txt', rebin=10, x_min=-0.02e-9, x_max=0.15e-9)
@@ -520,7 +496,7 @@ gStyle.SetOptStat(0)
 # plot_spectrum('F1ch300016.txt', rebin=10, x_min=-0.02e-9, x_max=0.15e-9)
 # plot_spectrum('F1ch300018.txt', rebin=10, x_min=-0.02e-9, x_max=0.15e-9)
 # plot_spectrum('F1ch300020.txt', rebin=10, x_min=-0.02e-9, x_max=0.15e-9)
-print_event_rate()
+# print_event_rate()
 # get_spectrum_peak('F1ch300005.txt', rebin=10)
 # get_spectrum_peak('F1ch300015.txt', rebin=10)
 # get_spectrum_peak('F1ch300017.txt', rebin=10)
