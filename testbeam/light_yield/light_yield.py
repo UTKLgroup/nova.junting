@@ -368,30 +368,138 @@ def plot_spectra(**kwargs):
     input('Press any key to continue.')
 
 
+def plot_spectra_ratio(**kwargs):
+    calibration_constant = kwargs.get('calibration_constant', None)
+    rebin = kwargs.get('rebin', None)
+
+    filenames = ['F1ch300006.txt', 'F1ch300016.txt', 'F1ch300018.txt', 'F1ch300020.txt', 'F1ch300022.txt', 'F1ch300024.txt']
+    filename_no_pedestals = ['F1ch300005.txt', 'F1ch300015.txt', 'F1ch300017.txt', 'F1ch300019.txt', 'F1ch300021.txt', 'F1ch300023.txt']
+    legend_txts = ['NDOS', 'Production', 'Tanker', 'Tank 2', 'Tank 3', 'Tank 4']
+    colors = [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1]
+
+    hists = []
+    for i in range(len(filenames)):
+        if calibration_constant is None:
+            hist = get_spectrum(filenames[i])
+        else:
+            hist = get_spectrum(filenames[i], scale=1. / calibration_constant)
+        if rebin:
+            hist.Rebin(rebin)
+        hist.Scale(1. / hist.GetMaximum())
+        hists.append(hist)
+
+    h_ratios = []
+    for i in range(1, len(hists)):
+        h_ratio = hists[i].Clone()
+        h_ratio.Sumw2()
+        h_ratio.Divide(hists[0])
+        set_h1_style(h_ratio)
+        h_ratio.SetLineColor(colors[i])
+        h_ratios.append(h_ratio)
+
+    gStyle.SetOptStat(0)
+    c1 = TCanvas('c1', 'c1', 1200, 1000)
+    gPad.SetBottomMargin(0.15)
+    gPad.SetLeftMargin(0.15)
+
+    pad1 = TPad("pad1", "pad1", 0, 0.42, 1, 1)
+    pad1.SetTopMargin(0.15)
+    pad1.SetBottomMargin(0.02)
+    pad1.SetLeftMargin(0.15)
+    pad1.Draw()
+    pad1.cd()
+
+    gPad.SetGrid()
+    lg1 = TLegend(0.63, 0.34, 0.97, 0.79)
+    set_legend_style(lg1)
+
+    for i, hist in enumerate(hists):
+        set_h1_style(hist)
+        hist.SetLineColor(colors[i])
+        if i == 0:
+            hist.Draw('hist')
+            hist.GetYaxis().SetTitle('Event Count')
+            hist.GetYaxis().SetTitleOffset(1.5)
+            hist.GetXaxis().SetLabelSize(0)
+            if calibration_constant is None:
+                hist.GetXaxis().SetRangeUser(-1.e-11, 12.e-11)
+                hist.GetXaxis().SetTitle('Charge (C)')
+            else:
+                hist.GetXaxis().SetRangeUser(-1.e-11 / calibration_constant, 12.e-11 / calibration_constant)
+                hist.GetXaxis().SetTitle('NPE')
+        else:
+            hist.Draw('hist,sames')
+        lg1.AddEntry(hist, legend_txts[i], 'l')
+    lg1.Draw()
+
+    c1.cd()
+    pad2 = TPad('pad2', 'pad2', 0, 0, 1, 0.375)
+    pad2.SetTopMargin(0.025)
+    pad2.SetLeftMargin(0.15)
+    pad2.SetBottomMargin(0.4)
+    pad2.Draw()
+    pad2.cd()
+    gPad.SetGrid()
+    for i, h_ratio in enumerate(h_ratios):
+        if i == 0:
+            h_ratio.GetYaxis().SetRangeUser(0.0, 2)
+            h_ratio.SetTitle('')
+            h_ratio.GetYaxis().SetNdivisions(205, 1)
+            h_ratio.GetYaxis().SetTitle('Ratio to NDOS')
+            h_ratio.GetXaxis().SetTitleOffset(4)
+            h_ratio.Draw('hist')
+            if calibration_constant is None:
+                h_ratio.GetXaxis().SetRangeUser(-1.e-11, 12.e-11)
+                h_ratio.GetXaxis().SetTitle('Charge (C)')
+            else:
+                h_ratio.GetXaxis().SetRangeUser(-1.e-11 / calibration_constant, 12.e-11 / calibration_constant)
+                h_ratio.GetXaxis().SetTitle('NPE')
+        h_ratio.Draw('hist,sames')
+
+    c1.Update()
+    if calibration_constant is None:
+        c1.SaveAs('{}/plot_spectra_ratio.pdf'.format(FIGURE_DIR))
+    else:
+        c1.SaveAs('{}/plot_spectra_ratio.pe.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
 def print_event_rate():
     sample_names = [
         'NDOS',
         'Production',
         'Tanker',
-        'Tank 2'
+        'Tank 2',
+        'Tank 3',
+        'Tank 4',
+        'Production run 2'
     ]
     filenames = [
         'F1ch300005.txt',
         'F1ch300015.txt',
         'F1ch300017.txt',
-        'F1ch300019.txt'
+        'F1ch300019.txt',
+        'F1ch300021.txt',
+        'F1ch300023.txt',
+        'F1ch300025.txt'
     ]
     start_times = [
         datetime(2018, 10, 11, 18, 10),
         datetime(2018, 10, 12, 19, 58),
         datetime(2018, 10, 13, 12, 27),
-        datetime(2018, 10, 14, 13, 16)
+        datetime(2018, 10, 14, 13, 16),
+        datetime(2018, 10, 15, 10, 27),
+        datetime(2018, 10, 16, 16, 6),
+        datetime(2018, 10, 17, 18, 42)
     ]
     end_times = [
         datetime(2018, 10, 12, 10, 10),
         datetime(2018, 10, 13, 11, 57),
         datetime(2018, 10, 14, 12, 51),
-        datetime(2018, 10, 15, 10, 9)
+        datetime(2018, 10, 15, 10, 9),
+        datetime(2018, 10, 16, 15, 31),
+        datetime(2018, 10, 17, 18, 21),
+        datetime(2018, 10, 19, 10, 21)
     ]
 
     durations = []              # minutes
@@ -413,11 +521,14 @@ def print_event_rate():
 
 
 def print_peaks():
+    sample_names = ['NDOS', 'production', 'tanker', 'tank 2', 'tank 3', 'tank 4']
     filenames = [
         'F1ch300005.txt',
         'F1ch300015.txt',
         'F1ch300017.txt',
-        'F1ch300019.txt'
+        'F1ch300019.txt',
+        'F1ch300021.txt',
+        'F1ch300023.txt'
     ]
 
     peak_xs = []
@@ -427,9 +538,9 @@ def print_peaks():
         peak_xs.append(peak_x)
         peak_ys.append(peak_y)
 
-    for peak_x in peak_xs:
-        print('peak_x = {:.2E}'.format(peak_x))
-        print('peak_x = {:.1F}'.format(peak_x / 8.854658242290205e-13))
+    for i, sample_name in enumerate(sample_names):
+        print('{} & {:.2F} & {:.1F} \\\\'.format(sample_name, peak_xs[i] * 1.e11, peak_xs[i] / 8.854658242290205e-13))
+        
 
 def get_spectrum_peak(filename, **kwargs):
     rebin = kwargs.get('rebin', None)
@@ -455,6 +566,62 @@ def get_spectrum_peak(filename, **kwargs):
     # peaks = sorted(peaks)
     # print('peaks = {}'.format(peaks))
     return peak_xs[0], peak_ys[0]
+
+
+def plot_two_spectra(**kwargs):
+    calibration_constant = kwargs.get('calibration_constant', None)
+    rebin = kwargs.get('rebin', None)
+
+    filenames = ['F1ch300016.txt', 'F1ch300026.txt']
+    filename_no_pedestals = ['F1ch300015.txt', 'F1ch300025.txt']
+    legend_txts = ['Trial 1', 'Trial 2']
+    colors = [kBlack, kBlue]
+
+    hists = []
+    for i in range(len(filenames)):
+        if calibration_constant is None:
+            hist = get_spectrum(filenames[i])
+        else:
+            hist = get_spectrum(filenames[i], scale=1. / calibration_constant)
+        if rebin:
+            hist.Rebin(rebin)
+        hist.Scale(1. / hist.GetMaximum())
+        hists.append(hist)
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetGrid()
+
+    lg1 = TLegend(0.58, 0.5, 0.92, 0.86)
+    set_legend_style(lg1)
+
+    for i, hist in enumerate(hists):
+        set_h1_style(hist)
+        hist.SetLineColor(colors[i])
+
+        if i == 0:
+            hist.Draw('hist')
+            hist.GetYaxis().SetTitle('Event Count')
+            hist.GetYaxis().SetTitleOffset(1.5)
+            if calibration_constant is None:
+                hist.GetXaxis().SetRangeUser(-1.e-11, 12.e-11)
+                hist.GetXaxis().SetTitle('Charge (C)')
+            else:
+                hist.GetXaxis().SetRangeUser(-1.e-11 / calibration_constant, 12.e-11 / calibration_constant)
+                hist.GetXaxis().SetTitle('NPE')
+        else:
+            hist.Draw('hist,sames')
+
+        lg1.AddEntry(hist, legend_txts[i], 'l')
+
+    lg1.Draw()
+
+    c1.Update()
+    if calibration_constant is None:
+        c1.SaveAs('{}/plot_two_spectra.pdf'.format(FIGURE_DIR))
+    else:
+        c1.SaveAs('{}/plot_two_spectra.pe.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
 
 
 # 20181005_testbeam_light_yield_setup
@@ -483,9 +650,12 @@ gStyle.SetOptStat(0)
 # plot_gain('F1ch300010.txt')
 # plot_gain('F1ch300011.txt')
 # plot_gain('F1ch300012.txt')
-calibration_constant = 8.854658242290205e-13 # C / PE
-plot_spectra(rebin=10, calibration_constant=calibration_constant)
+# calibration_constant = 8.854658242290205e-13 # C / PE
+# plot_spectra(rebin=10, calibration_constant=calibration_constant)
 # plot_spectra(rebin=10)
+# plot_spectra_ratio(rebin=10)
+# plot_spectra_ratio(rebin=10, calibration_constant=calibration_constant)
+plot_two_spectra(rebin=10)
 # no pedestal
 # plot_spectrum('F1ch300005.txt', rebin=10, x_min=-0.02e-9, x_max=0.15e-9)
 # plot_spectrum('F1ch300015.txt', rebin=10, x_min=-0.02e-9, x_max=0.15e-9)
