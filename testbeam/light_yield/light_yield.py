@@ -4,6 +4,7 @@ import csv
 from datetime import datetime
 
 
+PDG = TDatabasePDG()
 FIGURE_DIR = '/Users/juntinghuang/beamer/20181011_light_yield_measurement/figures'
 DATA_DIR = './data/scintillator'
 # DATA_DIR = './data/calibration'
@@ -624,8 +625,39 @@ def plot_two_spectra(**kwargs):
     input('Press any key to continue.')
 
 
+def print_cherenkov_threshold():
+    index_of_refraction = 1.461
+    beta = 1. / index_of_refraction
+    print('beta = {}'.format(beta))
+
+    pids = [11, 13, -211, -321, 2212]
+    for pid in pids:
+        name = PDG.GetParticle(pid).GetName()
+        mass = PDG.GetParticle(pid).Mass() * 1.e3   # MeV
+        momentum = beta / (1 - beta**2)**0.5 * mass # MeV
+        # print('mass = {}'.format(mass))
+        # print('momentum = {}'.format(momentum))
+        print('{} & {:.2f} & {:.1f} \\\\'.format(name, mass, momentum))
+        print('beta / (1 - beta**2)**0.5 = {}'.format(beta / (1 - beta**2)**0.5))
+        print('1. / (1. - beta**2)**0.5 = {}'.format(1. / (1. - beta**2)**0.5))
+
+
+def print_photon_count():
+    index_of_refraction = 1.461
+    beta = 1.
+    sin2theta = 1. - 1. / index_of_refraction**2 / beta**2
+
+    dNdx = 2 * 3.14 / 137. * sin2theta * (1. / 300. - 1. / 500.) * 10**7 # per cm
+    print('dNdx = {}'.format(dNdx))
+
+
+# 20181018_testbeam_mineral_oil
+# print_cherenkov_threshold()
+print_photon_count()
+
+
 # 20181005_testbeam_light_yield_setup
-gStyle.SetOptStat(0)
+# gStyle.SetOptStat(0)
 # gStyle.SetOptStat('mri')
 # gStyle.SetOptFit(0)
 # plot_gain('F1ch200008.txt')
@@ -655,7 +687,7 @@ gStyle.SetOptStat(0)
 # plot_spectra(rebin=10)
 # plot_spectra_ratio(rebin=10)
 # plot_spectra_ratio(rebin=10, calibration_constant=calibration_constant)
-plot_two_spectra(rebin=10)
+# plot_two_spectra(rebin=10)
 # no pedestal
 # plot_spectrum('F1ch300005.txt', rebin=10, x_min=-0.02e-9, x_max=0.15e-9)
 # plot_spectrum('F1ch300015.txt', rebin=10, x_min=-0.02e-9, x_max=0.15e-9)
