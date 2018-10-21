@@ -647,9 +647,9 @@ def print_photon_count():
     beta = 1.
     sin2theta = 1. - 1. / index_of_refraction**2 / beta**2
 
-    dNdx = 2 * 3.14 / 137. * sin2theta * (1. / 300. - 1. / 500.) * 10**7 # per cm
+    dNdx = 2 * 3.14 / 137. * sin2theta * (1. / 250. - 1. / 500.) * 10**7 # per cm
     print('dNdx = {}'.format(dNdx))
-
+    print('sin2theta = {}'.format(sin2theta))
 
 # 20181018_testbeam_mineral_oil
 # print_cherenkov_threshold()
