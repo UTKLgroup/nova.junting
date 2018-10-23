@@ -4,7 +4,7 @@ param histoFile=beam.root
 g4ui when=4 "/vis/viewer/set/viewpointVector -1 1 1"
 g4ui when=4 "/vis/viewer/zoom 1.5"
 g4ui when=4 "/vis/viewer/set/style wireframe"
-g4ui when=4 "/vis/scene/add/axes 0 0 0 2 m"
+g4ui when=4 "/vis/scene/add/axes 0 0 0 0.5 m"
 beam gaussian particle=$particle firstEvent=$first lastEvent=$last sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=$momentum
 trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton,neutron,anti_neutron
 box slab height=31.75 length=209.55 width=6.35 material=Cu color=1,0.01,0.01
@@ -14,13 +14,13 @@ place slab rename=target_slab_0 x=0.0 y=0.0 z=0.0
 place slab rename=target_slab_1 x=6.35 y=0.0 z=-22.145
 place slab rename=target_slab_2 x=12.7 y=0.0 z=-44.29
 box collimator_us_base height=131.826 length=1473.1999999999998 width=812.8 material=Fe color=0,1,1 kill=1
-box collimator_us_bottom height=65.913 length=1086.1039999999998 width=812.8 material=Fe color=0,1,1 kill=1
-box collimator_us_middle height=50.8 length=1086.1039999999998 width=294.64 material=Fe color=0,1,1 kill=1
-box collimator_us_top height=131.826 length=1086.1039999999998 width=812.8 material=Fe color=0,1,1 kill=1
-place collimator_us_base rename=collimator_us_base x=-216.60631742066045 y=-157.226 z=561.848
-place collimator_us_bottom rename=collimator_us_bottom x=-216.60631742066045 y=-58.356500000000004 z=755.396
-place collimator_us_middle rename=collimator_us_middle_1 x=-1.3163174206604253 y=0.0 z=755.396 rotation=y-14.03
-place collimator_us_middle rename=collimator_us_middle_2 x=-431.89631742066047 y=0.0 z=755.396 rotation=y-17.97
-place collimator_us_top rename=collimator_us_top x=-216.60631742066045 y=91.313 z=755.396
+box collimator_us_plate height=131.826 length=1086.1039999999998 width=812.8 material=Fe color=0,1,1 kill=1
+box collimator_us_aperture height=50.8 length=1086.1039999999998 width=294.64 material=Fe color=0,1,1 kill=1
+place collimator_us_base rename=collimator_us_base x=-216.60631742066045 y=-223.13899999999998 z=561.848
+place collimator_us_plate rename=collimator_us_bottom x=-216.60631742066045 y=-91.313 z=755.396
+place collimator_us_aperture rename=collimator_us_aperture_1 x=-1.3163174206604253 y=0.0 z=755.396 rotation=y-14.03
+place collimator_us_aperture rename=collimator_us_aperture_2 x=-431.89631742066047 y=0.0 z=755.396 rotation=y-17.97
+place collimator_us_plate rename=collimator_us_top_1 x=-216.60631742066045 y=91.313 z=755.396
+place collimator_us_plate rename=collimator_us_top_2 x=-216.60631742066045 y=223.13899999999998 z=755.396
 virtualdetector det width=177.79999999999998 height=76.19999999999999 length=1.0 material=Air color=0.9,0.9,0.7
 place det rotation=y-16.0 x=-396.9177923764788 y=0.0 z=1384.2168421511792

@@ -263,44 +263,45 @@ class Beamline:
 
     def write_collimator_us(self):
         collimator_us_base_dimensions = [5.19 * Beamline.INCH, 58. * Beamline.INCH, 32. * Beamline.INCH]
-        collimator_us_bottom_dimensions = [5.19 / 2. * Beamline.INCH, 42.76 * Beamline.INCH, 32. * Beamline.INCH]
-        collimator_us_middle_dimensions = [2. * Beamline.INCH, 42.76 * Beamline.INCH, 11.6 * Beamline.INCH]
-        collimator_us_top_dimensions = [5.19 * Beamline.INCH, 42.76 * Beamline.INCH, 32. * Beamline.INCH]
+        collimator_us_plate_dimensions = [5.19 * Beamline.INCH, 42.76 * Beamline.INCH, 32. * Beamline.INCH]
+        collimator_us_aperture_dimensions = [2. * Beamline.INCH, 42.76 * Beamline.INCH, 11.6 * Beamline.INCH]
 
-        collimator_us_base_positions = [0., -6.19 * Beamline.INCH, 0.]
-        collimator_us_bottom_positions = [0., -(1. + 5.19 / 4.) * Beamline.INCH, 7.62 * Beamline.INCH]
-        collimator_us_middle_1_positions = [296. / 2. + 67.29, 0., 7.62 * Beamline.INCH]
-        collimator_us_middle_2_positions = [-296. / 2. - 67.29, 0., 7.62 * Beamline.INCH]
-        collimator_us_top_positions = [0., (1. + 5.19 / 2.) * Beamline.INCH, 7.62 * Beamline.INCH]
+        collimator_us_base_positions = [0., -(1. + 5.19 * 1.5) * Beamline.INCH, 0.]
+        collimator_us_bottom_positions = [0., -(1. + 5.19 / 2.) * Beamline.INCH, 7.62 * Beamline.INCH]
+        collimator_us_aperture_1_positions = [296. / 2. + 67.29, 0., 7.62 * Beamline.INCH]
+        collimator_us_aperture_2_positions = [-296. / 2. - 67.29, 0., 7.62 * Beamline.INCH]
+        collimator_us_top_1_positions = [0., (1. + 5.19 / 2.) * Beamline.INCH, 7.62 * Beamline.INCH]
+        collimator_us_top_2_positions = [0., (1. + 5.19 * 1.5) * Beamline.INCH, 7.62 * Beamline.INCH]
 
         collimator_us_z_offset = (29. / 2. + 7.62) * Beamline.INCH
         collimator_us_theta_offset = 1.97
-        collimator_us_middle_1_theta = self.us_theta + collimator_us_theta_offset
-        collimator_us_middle_2_theta = self.us_theta - collimator_us_theta_offset
+        collimator_us_aperture_1_theta = self.us_theta + collimator_us_theta_offset
+        collimator_us_aperture_2_theta = self.us_theta - collimator_us_theta_offset
 
         collimator_us_parts = [
             collimator_us_base_positions,
             collimator_us_bottom_positions,
-            collimator_us_middle_1_positions,
-            collimator_us_middle_2_positions,
-            collimator_us_top_positions
+            collimator_us_aperture_1_positions,
+            collimator_us_aperture_2_positions,
+            collimator_us_top_1_positions,
+            collimator_us_top_2_positions
         ]
         for collimator_us_part in collimator_us_parts:
             collimator_us_part[2] += collimator_us_z_offset
-        x_offset = tan(self.us_theta * pi / 180.) * collimator_us_middle_1_positions[2]
+        x_offset = tan(self.us_theta * pi / 180.) * collimator_us_aperture_1_positions[2]
         for collimator_us_part in collimator_us_parts:
             collimator_us_part[0] += x_offset
 
         self.f_out.write('box collimator_us_base height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_us_base_dimensions[0], collimator_us_base_dimensions[1], collimator_us_base_dimensions[2], self.kill))
-        self.f_out.write('box collimator_us_bottom height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_us_bottom_dimensions[0], collimator_us_bottom_dimensions[1], collimator_us_bottom_dimensions[2], self.kill))
-        self.f_out.write('box collimator_us_middle height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_us_middle_dimensions[0], collimator_us_middle_dimensions[1], collimator_us_middle_dimensions[2], self.kill))
-        self.f_out.write('box collimator_us_top height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_us_top_dimensions[0], collimator_us_top_dimensions[1], collimator_us_top_dimensions[2], self.kill))
+        self.f_out.write('box collimator_us_plate height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_us_plate_dimensions[0], collimator_us_plate_dimensions[1], collimator_us_plate_dimensions[2], self.kill))
+        self.f_out.write('box collimator_us_aperture height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_us_aperture_dimensions[0], collimator_us_aperture_dimensions[1], collimator_us_aperture_dimensions[2], self.kill))
 
         self.f_out.write('place collimator_us_base rename=collimator_us_base x={} y={} z={}\n'.format(collimator_us_base_positions[0], collimator_us_base_positions[1], collimator_us_base_positions[2]))
-        self.f_out.write('place collimator_us_bottom rename=collimator_us_bottom x={} y={} z={}\n'.format(collimator_us_bottom_positions[0], collimator_us_bottom_positions[1], collimator_us_bottom_positions[2]))
-        self.f_out.write('place collimator_us_middle rename=collimator_us_middle_1 x={} y={} z={} rotation=y{}\n'.format(collimator_us_middle_1_positions[0], collimator_us_middle_1_positions[1], collimator_us_middle_1_positions[2], collimator_us_middle_1_theta))
-        self.f_out.write('place collimator_us_middle rename=collimator_us_middle_2 x={} y={} z={} rotation=y{}\n'.format(collimator_us_middle_2_positions[0], collimator_us_middle_2_positions[1], collimator_us_middle_2_positions[2], collimator_us_middle_2_theta))
-        self.f_out.write('place collimator_us_top rename=collimator_us_top x={} y={} z={}\n'.format(collimator_us_top_positions[0], collimator_us_top_positions[1], collimator_us_top_positions[2]))
+        self.f_out.write('place collimator_us_plate rename=collimator_us_bottom x={} y={} z={}\n'.format(collimator_us_bottom_positions[0], collimator_us_bottom_positions[1], collimator_us_bottom_positions[2]))
+        self.f_out.write('place collimator_us_aperture rename=collimator_us_aperture_1 x={} y={} z={} rotation=y{}\n'.format(collimator_us_aperture_1_positions[0], collimator_us_aperture_1_positions[1], collimator_us_aperture_1_positions[2], collimator_us_aperture_1_theta))
+        self.f_out.write('place collimator_us_aperture rename=collimator_us_aperture_2 x={} y={} z={} rotation=y{}\n'.format(collimator_us_aperture_2_positions[0], collimator_us_aperture_2_positions[1], collimator_us_aperture_2_positions[2], collimator_us_aperture_2_theta))
+        self.f_out.write('place collimator_us_plate rename=collimator_us_top_1 x={} y={} z={}\n'.format(collimator_us_top_1_positions[0], collimator_us_top_1_positions[1], collimator_us_top_1_positions[2]))
+        self.f_out.write('place collimator_us_plate rename=collimator_us_top_2 x={} y={} z={}\n'.format(collimator_us_top_2_positions[0], collimator_us_top_2_positions[1], collimator_us_top_2_positions[2]))
 
     def write_virtual_disk(self):
         start_line_radius = 1750.
@@ -478,7 +479,8 @@ class Beamline:
         self.f_out.write('g4ui when=4 "/vis/viewer/set/viewpointVector -1 1 1"\n')
         self.f_out.write('g4ui when=4 "/vis/viewer/zoom 1.5"\n')
         self.f_out.write('g4ui when=4 "/vis/viewer/set/style wireframe"\n')
-        self.f_out.write('g4ui when=4 "/vis/scene/add/axes 0 0 0 2 m"\n')
+        # self.f_out.write('g4ui when=4 "/vis/scene/add/axes 0 0 0 2 m"\n')
+        self.f_out.write('g4ui when=4 "/vis/scene/add/axes 0 0 0 0.5 m"\n')
         if self.screen_shot:
             self.f_out.write('g4ui when=4 "/vis/viewer/set/background 1 1 1"\n')
 
