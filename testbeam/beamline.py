@@ -495,6 +495,19 @@ class Beamline:
         det_length = 1.
         det_r = 1440.
 
+        # check upstream opening width
+        # det_width = 2.83 * Beamline.INCH
+        # det_r = 210.
+
+        # check downstream opening width
+        # det_width = 6 * Beamline.INCH
+        # det_r = 1440.
+
+        # check downstream opening to the left edge
+        # det_width = 6.5 * Beamline.INCH
+        # det_r = 1440.
+        # self.us_theta = 0.
+
         det_positions = [det_r * sin(self.us_theta * Beamline.RADIAN_PER_DEGREE), 0., det_r * cos(self.us_theta * Beamline.RADIAN_PER_DEGREE)]
         self.f_out.write('virtualdetector det width={} height={} length={} material=Air color=0.9,0.9,0.7\n'.format(det_width, det_height, det_length))
         self.f_out.write('place det rotation=y{} x={} y={} z={}\n'.format(self.us_theta, det_positions[0], det_positions[1], det_positions[2]))
