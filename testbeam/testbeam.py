@@ -12,7 +12,7 @@ ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
-FIGURE_DIR = '/Users/juntinghuang/beamer/20180625_testbeam_64_32_16_8GeV_different_bs/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20181025_testbeam_trigger_rate/figures'
 DATA_DIR = './data'
 
 
@@ -2751,6 +2751,125 @@ def plot_p_vs_angle_16_degree():
     input('Press any key to continue.')
 
 
+def save_trigger_rate():
+    tfile = TFile('{}/beamline.py.in.job_901_1800.9m.b_-0.9T.pi+_64gev.root'.format(DATA_DIR))
+
+    pid_momentums = {}
+    particles = []
+    noise_particles = []
+    charged_particles = [
+        'e-', 'e+',
+        'mu-', 'mu+',
+        'pi-', 'pi+',
+        'K-', 'K+',
+        'antiproton', 'proton'
+    ]
+
+    h_present = TH1D('h_present', 'h_present', 8, 0, 8)
+    h_pass = TH1D('h_pass', 'h_pass', 3, 0, 3)
+
+    h_present.GetXaxis().CanExtend()
+    h_pass.GetXaxis().CanExtend()
+
+    detector_names = ['TOF US', 'WC 1', 'WC 2', 'WC 3', 'WC 4', 'TOF DS', 'Cherenkov', 'NOvA']
+    pass_names = ['4 WC + 0 TOF', '3 WC + 2 TOF', 'All']
+
+    keys = [key.GetName() for key in gDirectory.GetListOfKeys()]
+    for key in keys:
+        print('key = {}'.format(key))
+        track_count = 0
+        for track in tfile.Get(key):
+            track_count += 1
+            if track_count % 100000 == 0:
+                print('track_count = {}'.format(track_count))
+
+            pid = int(track.PDGidstart_line)
+            name = PDG.GetParticle(pid).GetName()
+            if name not in charged_particles:
+                continue
+
+            pass_all = track.TrackPresentstart_line and \
+                       track.TrackPresenttof_us and \
+                       track.TrackPresentwire_chamber_1_detector and \
+                       track.TrackPresentwire_chamber_2_detector and \
+                       track.TrackPresentwire_chamber_3_detector and \
+                       track.TrackPresentwire_chamber_4_detector and \
+                       track.TrackPresenttof_ds and \
+                       track.TrackPresentcherenkov and \
+                       track.TrackPresentnova
+
+            pass_4_wc_0_tof = track.TrackPresentstart_line and \
+                              track.TrackPresentwire_chamber_1_detector and \
+                              track.TrackPresentwire_chamber_2_detector and \
+                              track.TrackPresentwire_chamber_3_detector and \
+                              track.TrackPresentwire_chamber_4_detector
+
+            pass_3_wc_2_tof = track.TrackPresentstart_line and \
+                              track.TrackPresenttof_us and \
+                              track.TrackPresentwire_chamber_1_detector and \
+                              track.TrackPresentwire_chamber_2_detector and \
+                              track.TrackPresentwire_chamber_3_detector and \
+                              track.TrackPresentwire_chamber_4_detector and \
+                              track.TrackPresenttof_ds
+
+            track_presents = [
+                track.TrackPresenttof_us,
+                track.TrackPresentwire_chamber_1_detector,
+                track.TrackPresentwire_chamber_2_detector,
+                track.TrackPresentwire_chamber_3_detector,
+                track.TrackPresentwire_chamber_4_detector,
+                track.TrackPresenttof_ds,
+                track.TrackPresentcherenkov,
+                track.TrackPresentnova
+            ]
+            for i, track_present in enumerate(track_presents):
+                if track_present:
+                    h_present.Fill(detector_names[i], 1)
+
+            track_passes = [pass_4_wc_0_tof, pass_3_wc_2_tof, pass_all]
+            for i, track_pass in enumerate(track_passes):
+                if track_pass:
+                    h_pass.Fill(pass_names[i], 1)
+
+            # if track_count % 1000 == 0:
+            #     break
+        # break
+
+    tfile_out = TFile('{}/save_trigger_rate.root'.format(DATA_DIR), 'RECREATE')
+    h_present.Write('h_present')
+    h_pass.Write('h_pass')
+    tfile_out.Close()
+
+
+def plot_trigger_rate():
+    tfile = TFile('{}/save_trigger_rate.root'.format(DATA_DIR))
+    h_present = tfile.Get('h_present')
+    h_pass = tfile.Get('h_pass')
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetGrid()
+    set_h1_style(h_present)
+    h_present.LabelsDeflate('X')
+    h_present.Draw('hist')
+    c1.Update()
+    c1.SaveAs('{}/plot_trigger_rate.present.pdf'.format(FIGURE_DIR))
+
+    c2 = TCanvas('c2', 'c2', 800, 600)
+    set_margin()
+    set_h1_style(h_pass)
+    h_pass.LabelsDeflate('X')
+    h_pass.Draw('hist')
+    c2.Update()
+    c2.SaveAs('{}/plot_trigger_rate.pass.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
+# 20181025_testbeam_trigger_rate
+gStyle.SetOptStat(0)
+save_trigger_rate()
+# plot_trigger_rate()
+
 # 20180912_testbeam_radiation_collimator
 # save_momentum_collimator_up()
 # plot_momentum_collimator_up()
@@ -2803,7 +2922,7 @@ def plot_p_vs_angle_16_degree():
 # get_particle_count_vs_secondary_beam_energy(suffix='b_-1.35T', csv_64gev='g4bl.b_-1.35T.pi+.64000.csv', norm_64gev=4., csv_32gev='g4bl.b_-1.35T.pi+.32000.csv', norm_32gev=12., csv_16gev='g4bl.b_-1.35T.pi+.16000.csv', norm_16gev=28.76, csv_8gev='g4bl.b_-1.35T.pi+.8000.csv', norm_8gev=103.7,)
 # get_particle_count_vs_secondary_beam_energy(suffix='b_-0.45T', csv_64gev='g4bl.b_-0.45T.pi+.64000.csv', norm_64gev=4., csv_32gev='g4bl.b_-0.45T.pi+.32000.csv', norm_32gev=12., csv_16gev='g4bl.b_-0.45T.pi+.16000.csv', norm_16gev=24.5, csv_8gev='g4bl.b_-0.45T.pi+.8000.csv', norm_8gev=103.75,)
 # get_particle_count_vs_secondary_beam_energy(suffix='b_-0.9T', csv_64gev='beamline.py.in.job_1_1800.18m.b_-0.9T.pi+_64gev.root.csv', norm_64gev=18., csv_32gev='beamline.py.in.job_1_1800.27m.b_-0.9T.pi+_32gev.root.csv', norm_32gev=27., csv_16gev='beamline.py.in.job_1_900.45m.b_-0.9T.pi+_16gev.root.csv', norm_16gev=45., csv_8gev='beamline.py.in.job_1_900.90m.b_-0.9T.pi+_8gev.root.csv', norm_8gev=90.,)
-plot_p_vs_angle_16_degree()
+# plot_p_vs_angle_16_degree()
 
 # 20180530_testbeam_radiation_dosage
 # gStyle.SetOptStat(0)
