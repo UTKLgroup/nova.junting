@@ -2841,34 +2841,52 @@ def save_trigger_rate():
     tfile_out.Close()
 
 
-def plot_trigger_rate():
+def plot_trigger_rate(**kwargs):
+    plot_rate = kwargs.get('plot_rate', False)
+
     tfile = TFile('{}/save_trigger_rate.root'.format(DATA_DIR))
     h_present = tfile.Get('h_present')
     h_pass = tfile.Get('h_pass')
 
+    h_present.Scale(1. / 9.)
+    h_pass.Scale(1. / 9.)
+    if plot_rate:
+        h_present.Scale(1. / 4.2)
+        h_pass.Scale(1. / 4.2)
+
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
     gPad.SetGrid()
+    gPad.SetLogy()
     set_h1_style(h_present)
     h_present.LabelsDeflate('X')
     h_present.Draw('hist')
+    h_present.GetYaxis().SetTitle('Particle Count per 1M Beam Particles')
+    if plot_rate:
+        h_present.GetYaxis().SetTitle('Particle Rate (Hz)')
+    h_present.GetYaxis().SetTitleOffset(1.6)
     c1.Update()
-    c1.SaveAs('{}/plot_trigger_rate.present.pdf'.format(FIGURE_DIR))
+    c1.SaveAs('{}/plot_trigger_rate.present.plot_rate_{}.pdf'.format(FIGURE_DIR, plot_rate))
 
     c2 = TCanvas('c2', 'c2', 800, 600)
     set_margin()
+    gPad.SetGrid()
     set_h1_style(h_pass)
+    h_pass.GetYaxis().SetTitle('Coincidence Count per 1M Beam Particles')
+    if plot_rate:
+        h_pass.GetYaxis().SetTitle('Coincidence Rate (Hz)')
     h_pass.LabelsDeflate('X')
     h_pass.Draw('hist')
     c2.Update()
-    c2.SaveAs('{}/plot_trigger_rate.pass.pdf'.format(FIGURE_DIR))
+    c2.SaveAs('{}/plot_trigger_rate.pass.plot_rate_{}.pdf'.format(FIGURE_DIR, plot_rate))
     input('Press any key to continue.')
 
 
 # 20181025_testbeam_trigger_rate
 gStyle.SetOptStat(0)
-save_trigger_rate()
-# plot_trigger_rate()
+# save_trigger_rate()
+plot_trigger_rate(plot_rate=False)
+# plot_trigger_rate(plot_rate=True)
 
 # 20180912_testbeam_radiation_collimator
 # save_momentum_collimator_up()
