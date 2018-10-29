@@ -307,14 +307,15 @@ def plot_spectrum(filename, **kwargs):
 
 
 def plot_spectra(**kwargs):
+    suffix = kwargs.get('suffix', '')
     calibration_constant = kwargs.get('calibration_constant', None)
     rebin = kwargs.get('rebin', None)
-    # no_pedestal = kwargs.get('no_pedestal', False)
-
-    filenames = ['F1ch300006.txt', 'F1ch300016.txt', 'F1ch300018.txt', 'F1ch300020.txt', 'F1ch300022.txt', 'F1ch300024.txt', 'F1ch300036.txt']
-    filename_no_pedestals = ['F1ch300005.txt', 'F1ch300015.txt', 'F1ch300017.txt', 'F1ch300019.txt', 'F1ch300021.txt', 'F1ch300023.txt', 'F1ch300035.txt']
-    legend_txts = ['NDOS', 'Production', 'Tanker', 'Tank 2', 'Tank 3', 'Tank 4', 'Ash River 1']
-    colors = [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1, kCyan + 1]
+    filenames = kwargs.get('filenames', ['F1ch300006.txt', 'F1ch300016.txt', 'F1ch300018.txt', 'F1ch300020.txt', 'F1ch300022.txt', 'F1ch300024.txt'])
+    filename_no_pedestals = kwargs.get('filename_no_pedestals', ['F1ch300005.txt', 'F1ch300015.txt', 'F1ch300017.txt', 'F1ch300019.txt', 'F1ch300021.txt', 'F1ch300023.txt'])
+    legend_txts = kwargs.get('legend_txts', ['NDOS', 'Production', 'Tanker', 'Tank 2', 'Tank 3', 'Tank 4'])
+    colors = kwargs.get('colors', [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1])
+    legend_x1ndc = kwargs.get('legend_x1ndc', 0.58)
+    legend_x2ndc = kwargs.get('legend_x2ndc', 0.92)
 
     hists = []
     for i in range(len(filenames)):
@@ -337,7 +338,7 @@ def plot_spectra(**kwargs):
     set_margin()
     gPad.SetGrid()
 
-    lg1 = TLegend(0.58, 0.5, 0.92, 0.86)
+    lg1 = TLegend(legend_x1ndc, 0.86 - 0.06 * len(hists), legend_x2ndc, 0.86)
     set_legend_style(lg1)
 
     for i, hist in enumerate(hists):
@@ -363,9 +364,9 @@ def plot_spectra(**kwargs):
 
     c1.Update()
     if calibration_constant is None:
-        c1.SaveAs('{}/plot_spectra.pdf'.format(FIGURE_DIR))
+        c1.SaveAs('{}/plot_spectra{}.pdf'.format(FIGURE_DIR, suffix))
     else:
-        c1.SaveAs('{}/plot_spectra.pe.pdf'.format(FIGURE_DIR))
+        c1.SaveAs('{}/plot_spectra.pe{}.pdf'.format(FIGURE_DIR, suffix))
     input('Press any key to continue.')
 
 
@@ -658,10 +659,24 @@ def print_photon_count():
 
 # 20181025_testbeam_ash_river_sample
 # plot_spectrum('F1ch300036.txt', rebin=10, x_min=-0.02e-9, x_max=0.15e-9)
-# gStyle.SetOptStat(0)
-# calibration_constant = 8.854658242290205e-13 # C / PE
+gStyle.SetOptStat(0)
+calibration_constant = 8.854658242290205e-13 # C / PE
 # plot_spectra(rebin=10, calibration_constant=calibration_constant)
-print_event_rate()
+# print_event_rate()
+# plot_spectra(rebin=10,
+#              suffix='.tote',
+#              calibration_constant=calibration_constant,
+#              filenames=['F1ch300040.txt', 'F1ch300036.txt'],
+#              filename_no_pedestals=['F1ch300039.txt', 'F1ch300035.txt'],
+#              legend_txts=['Production', 'Ash River 1'])
+plot_spectra(rebin=10,
+             suffix='.production_comparison',
+             calibration_constant=calibration_constant,
+             filenames=['F1ch300016.txt', 'F1ch300040.txt'],
+             filename_no_pedestals=['F1ch300015.txt', 'F1ch300039.txt'],
+             legend_txts=['Production (old)', 'Production (new)'],
+             legend_x1ndc=0.5,
+             legend_x2ndc=0.85)
 
 # 20181018_testbeam_mineral_oil
 # print_cherenkov_threshold()
