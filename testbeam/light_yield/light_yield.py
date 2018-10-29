@@ -5,7 +5,7 @@ from datetime import datetime
 
 
 PDG = TDatabasePDG()
-FIGURE_DIR = '/Users/juntinghuang/beamer/20181011_light_yield_measurement/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20181025_testbeam_ash_river_sample/figures'
 DATA_DIR = './data/scintillator'
 # DATA_DIR = './data/calibration'
 
@@ -311,10 +311,10 @@ def plot_spectra(**kwargs):
     rebin = kwargs.get('rebin', None)
     # no_pedestal = kwargs.get('no_pedestal', False)
 
-    filenames = ['F1ch300006.txt', 'F1ch300016.txt', 'F1ch300018.txt', 'F1ch300020.txt', 'F1ch300022.txt', 'F1ch300024.txt']
-    filename_no_pedestals = ['F1ch300005.txt', 'F1ch300015.txt', 'F1ch300017.txt', 'F1ch300019.txt', 'F1ch300021.txt', 'F1ch300023.txt']
-    legend_txts = ['NDOS', 'Production', 'Tanker', 'Tank 2', 'Tank 3', 'Tank 4']
-    colors = [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1]
+    filenames = ['F1ch300006.txt', 'F1ch300016.txt', 'F1ch300018.txt', 'F1ch300020.txt', 'F1ch300022.txt', 'F1ch300024.txt', 'F1ch300036.txt']
+    filename_no_pedestals = ['F1ch300005.txt', 'F1ch300015.txt', 'F1ch300017.txt', 'F1ch300019.txt', 'F1ch300021.txt', 'F1ch300023.txt', 'F1ch300035.txt']
+    legend_txts = ['NDOS', 'Production', 'Tanker', 'Tank 2', 'Tank 3', 'Tank 4', 'Ash River 1']
+    colors = [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1, kCyan + 1]
 
     hists = []
     for i in range(len(filenames)):
@@ -473,7 +473,8 @@ def print_event_rate():
         'Tank 2',
         'Tank 3',
         'Tank 4',
-        'Production run 2'
+        'Production run 2',
+        'Ash River 1'
     ]
     filenames = [
         'F1ch300005.txt',
@@ -482,7 +483,8 @@ def print_event_rate():
         'F1ch300019.txt',
         'F1ch300021.txt',
         'F1ch300023.txt',
-        'F1ch300025.txt'
+        'F1ch300025.txt',
+        'F1ch300035.txt'
     ]
     start_times = [
         datetime(2018, 10, 11, 18, 10),
@@ -491,7 +493,8 @@ def print_event_rate():
         datetime(2018, 10, 14, 13, 16),
         datetime(2018, 10, 15, 10, 27),
         datetime(2018, 10, 16, 16, 6),
-        datetime(2018, 10, 17, 18, 42)
+        datetime(2018, 10, 17, 18, 42),
+        datetime(2018, 10, 25, 9, 29)
     ]
     end_times = [
         datetime(2018, 10, 12, 10, 10),
@@ -500,7 +503,8 @@ def print_event_rate():
         datetime(2018, 10, 15, 10, 9),
         datetime(2018, 10, 16, 15, 31),
         datetime(2018, 10, 17, 18, 21),
-        datetime(2018, 10, 19, 10, 21)
+        datetime(2018, 10, 19, 10, 21),
+        datetime(2018, 10, 26, 10, 20)
     ]
 
     durations = []              # minutes
@@ -541,7 +545,7 @@ def print_peaks():
 
     for i, sample_name in enumerate(sample_names):
         print('{} & {:.2F} & {:.1F} \\\\'.format(sample_name, peak_xs[i] * 1.e11, peak_xs[i] / 8.854658242290205e-13))
-        
+
 
 def get_spectrum_peak(filename, **kwargs):
     rebin = kwargs.get('rebin', None)
@@ -651,10 +655,17 @@ def print_photon_count():
     print('dNdx = {}'.format(dNdx))
     print('sin2theta = {}'.format(sin2theta))
 
+
+# 20181025_testbeam_ash_river_sample
+# plot_spectrum('F1ch300036.txt', rebin=10, x_min=-0.02e-9, x_max=0.15e-9)
+# gStyle.SetOptStat(0)
+# calibration_constant = 8.854658242290205e-13 # C / PE
+# plot_spectra(rebin=10, calibration_constant=calibration_constant)
+print_event_rate()
+
 # 20181018_testbeam_mineral_oil
 # print_cherenkov_threshold()
-print_photon_count()
-
+# print_photon_count()
 
 # 20181005_testbeam_light_yield_setup
 # gStyle.SetOptStat(0)
