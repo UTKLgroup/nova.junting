@@ -380,6 +380,7 @@ def plot_spectra_ratio(**kwargs):
     colors = kwargs.get('colors', [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1])
     legend_x1ndc = kwargs.get('legend_x1ndc', 0.58)
     legend_x2ndc = kwargs.get('legend_x2ndc', 0.92)
+    y_axis_title_ratio = kwargs.get('y_axis_title_ratio', 'Ratio to NDOS')
 
     hists = []
     for i in range(len(filenames)):
@@ -450,7 +451,7 @@ def plot_spectra_ratio(**kwargs):
             h_ratio.GetYaxis().SetRangeUser(0.0, 2)
             h_ratio.SetTitle('')
             h_ratio.GetYaxis().SetNdivisions(205, 1)
-            h_ratio.GetYaxis().SetTitle('Ratio to NDOS')
+            h_ratio.GetYaxis().SetTitle(y_axis_title_ratio)
             h_ratio.GetXaxis().SetTitleOffset(4)
             h_ratio.Draw('hist')
             if calibration_constant is None:
@@ -478,7 +479,13 @@ def print_event_rate():
         'Tank 3',
         'Tank 4',
         'Production run 2',
-        'Ash River 1'
+        # short runs
+        'Tanker Short',
+        'Production Short',
+        # after spill
+        'Ash River 1',
+        'Production',
+        'Ash River 2'
     ]
     filenames = [
         'F1ch300005.txt',
@@ -488,7 +495,13 @@ def print_event_rate():
         'F1ch300021.txt',
         'F1ch300023.txt',
         'F1ch300025.txt',
-        'F1ch300035.txt'
+        # short runs
+        'F1ch300031.txt',
+        'F1ch300033.txt',
+        # after spill
+        'F1ch300035.txt',
+        'F1ch300039.txt',
+        'F1ch300041.txt'
     ]
     start_times = [
         datetime(2018, 10, 11, 18, 10),
@@ -498,7 +511,13 @@ def print_event_rate():
         datetime(2018, 10, 15, 10, 27),
         datetime(2018, 10, 16, 16, 6),
         datetime(2018, 10, 17, 18, 42),
-        datetime(2018, 10, 25, 9, 29)
+        # short runs
+        datetime(2018, 10, 24, 10, 46),
+        datetime(2018, 10, 24, 14, 36),
+        # after spill
+        datetime(2018, 10, 25, 9, 29),
+        datetime(2018, 10, 26, 18, 21),
+        datetime(2018, 10, 28, 18, 19)
     ]
     end_times = [
         datetime(2018, 10, 12, 10, 10),
@@ -508,7 +527,13 @@ def print_event_rate():
         datetime(2018, 10, 16, 15, 31),
         datetime(2018, 10, 17, 18, 21),
         datetime(2018, 10, 19, 10, 21),
-        datetime(2018, 10, 26, 10, 20)
+        # short runs
+        datetime(2018, 10, 24, 13, 14),
+        datetime(2018, 10, 24, 15, 40),
+        # after spill
+        datetime(2018, 10, 26, 10, 20),
+        datetime(2018, 10, 28, 16, 51),
+        datetime(2018, 10, 29, 11, 53)
     ]
 
     durations = []              # minutes
@@ -529,16 +554,9 @@ def print_event_rate():
         print('{} & {:.1f} & {:.0f} & {:.0f} \\\\'.format(sample_names[i], durations[i] / 60., event_counts[i], event_rates[i]))
 
 
-def print_peaks():
-    sample_names = ['NDOS', 'production', 'tanker', 'tank 2', 'tank 3', 'tank 4']
-    filenames = [
-        'F1ch300005.txt',
-        'F1ch300015.txt',
-        'F1ch300017.txt',
-        'F1ch300019.txt',
-        'F1ch300021.txt',
-        'F1ch300023.txt'
-    ]
+def print_peaks(**kwargs):
+    sample_names = kwargs.get('sample_names', ['NDOS', 'production', 'tanker', 'tank 2', 'tank 3', 'tank 4'])
+    filenames = kwargs.get('filenames', ['F1ch300005.txt', 'F1ch300015.txt', 'F1ch300017.txt', 'F1ch300019.txt', 'F1ch300021.txt', 'F1ch300023.txt'])
 
     peak_xs = []
     peak_ys = []
@@ -663,7 +681,8 @@ def print_photon_count():
 # 20181025_testbeam_ash_river_sample
 # plot_spectrum('F1ch300036.txt', rebin=10, x_min=-0.02e-9, x_max=0.15e-9)
 gStyle.SetOptStat(0)
-calibration_constant = 8.854658242290205e-13 # C / PE
+# print_peaks(sample_names=['Production', 'Ash River 1', 'Ash River 2'], filenames=['F1ch300039.txt', 'F1ch300035.txt', 'F1ch300041.txt'])
+# calibration_constant = 8.854658242290205e-13 # C / PE
 # plot_spectra(rebin=10, calibration_constant=calibration_constant)
 print_event_rate()
 # plot_spectra(rebin=10,
@@ -675,9 +694,10 @@ print_event_rate()
 # plot_spectra_ratio(rebin=10,
 #                    suffix='.tote',
 #                    calibration_constant=calibration_constant,
-#                    filenames=['F1ch300040.txt', 'F1ch300036.txt'],
-#                    filename_no_pedestals=['F1ch300039.txt', 'F1ch300035.txt'],
-#                    legend_txts=['Production', 'Ash River 1'])
+#                    filenames=['F1ch300040.txt', 'F1ch300036.txt', 'F1ch300042.txt'],
+#                    filename_no_pedestals=['F1ch300039.txt', 'F1ch300035.txt', 'F1ch300041.txt'],
+#                    legend_txts=['Production', 'Ash River 1', 'Ash River 2'],
+#                    y_axis_title_ratio='Ratio to Production')
 # plot_spectra(rebin=10,
 #              suffix='.production_comparison',
 #              calibration_constant=calibration_constant,
@@ -693,7 +713,8 @@ print_event_rate()
 #                    filename_no_pedestals=['F1ch300015.txt', 'F1ch300039.txt'],
 #                    legend_txts=['Production (old)', 'Production (new)'],
 #                    legend_x1ndc=0.6,
-#                    legend_x2ndc=0.85)
+#                    legend_x2ndc=0.85,
+#                    y_axis_title_ratio='Ratio')
 
 # 20181018_testbeam_mineral_oil
 # print_cherenkov_threshold()
