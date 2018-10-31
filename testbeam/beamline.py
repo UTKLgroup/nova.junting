@@ -354,15 +354,15 @@ class Beamline:
         self.f_out.write('place M1 By=$b_field x={} y={} z={} rotation=Y{}\n'.format(self.magnet.x, self.magnet.y, self.magnet.z, self.magnet.theta))
 
     def write_tof(self):
-        tof_us_dimensions = [150., 50.8, 150.]
+        tof_us_dimensions = [150., 20., 150.]
         self.tof_us.theta = self.us_theta
-        tof_ds_dimensions = [130., 50.8, 130.]
+        tof_ds_dimensions = [150., 20., 150.]
         self.tof_ds.theta = self.us_theta + self.ds_theta
 
         self.f_out.write('virtualdetector tof_us  height={} length={} width={} material=LUCITE color=0.05,0.05,0.93\n'.format(tof_us_dimensions[0], tof_us_dimensions[1], tof_us_dimensions[2]))
-        self.f_out.write('place tof_us rename=tof_us x={} y={} z={} rotation=z45,y{}\n'.format(self.tof_us.x, self.tof_us.y, self.tof_us.z, self.tof_us.theta))
+        self.f_out.write('place tof_us rename=tof_us x={} y={} z={} rotation=y{}\n'.format(self.tof_us.x, self.tof_us.y, self.tof_us.z, self.tof_us.theta))
         self.f_out.write('virtualdetector tof_ds height={} length={} width={} material=LUCITE color=0.05,0.05,0.93\n'.format(tof_ds_dimensions[0], tof_ds_dimensions[1], tof_ds_dimensions[2]))
-        self.f_out.write('place tof_ds rename=tof_ds x={} y={} z={} rotation=z90,y{}\n'.format(self.tof_ds.x, self.tof_ds.y, self.tof_ds.z, self.tof_ds.theta))
+        self.f_out.write('place tof_ds rename=tof_ds x={} y={} z={} rotation=y{}\n'.format(self.tof_ds.x, self.tof_ds.y, self.tof_ds.z, self.tof_ds.theta))
 
     def write_nova_plane(self):
         self.nova.theta = self.us_theta + self.ds_theta
@@ -568,20 +568,24 @@ class Beamline:
 
         # downstream collimator
 
-        self.collimator_ds.x = 0.
-        self.collimator_ds.y = 0.
-        self.collimator_ds.z = 0.
-        self.write_collimator_ds()
+        # self.collimator_ds.x = 0.
+        # self.collimator_ds.y = 0.
+        # self.collimator_ds.z = 0.
+        # self.write_collimator_ds()
+
+        # tofs
+
+        self.write_tof()
 
 
-# beamline = Beamline()
+beamline = Beamline()
 # beamline.figure_dir = '/Users/juntinghuang/beamer/20180413_testbeam_120gev/figures'
 # beamline.plot_position()
 # beamline.screen_shot = True
-# beamline.write()
+beamline.write()
 
 # beamline = Beamline('beamline.py.radiation.collimator.in')
 # beamline.write_radiation()
 
-beamline = Beamline('tmp/beamline.py.geometry_check.in')
-beamline.write_geometry_check()
+# beamline = Beamline('tmp/beamline.py.geometry_check.in')
+# beamline.write_geometry_check()
