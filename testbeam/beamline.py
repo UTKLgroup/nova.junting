@@ -495,6 +495,35 @@ class Beamline:
         det_length = 1.
         det_r = 1440.
 
+        det_positions = [det_r * sin(self.us_theta * Beamline.RADIAN_PER_DEGREE), 0., det_r * cos(self.us_theta * Beamline.RADIAN_PER_DEGREE)]
+        self.f_out.write('virtualdetector det width={} height={} length={} material=Air color=0.9,0.9,0.7\n'.format(det_width, det_height, det_length))
+        self.f_out.write('place det rotation=y{} x={} y={} z={}\n'.format(self.us_theta, det_positions[0], det_positions[1], det_positions[2]))
+
+
+    def write_geometry_check(self):
+        self.kill = 1
+        self.f_out.write('physics QGSP_BIC\n')
+        self.f_out.write('param worldMaterial=Air\n')
+        self.f_out.write('param histoFile=beam.root\n')
+        self.f_out.write('g4ui when=4 "/vis/viewer/set/viewpointVector -1 1 1"\n')
+        self.f_out.write('g4ui when=4 "/vis/viewer/zoom 1.5"\n')
+        self.f_out.write('g4ui when=4 "/vis/viewer/set/style wireframe"\n')
+        self.f_out.write('g4ui when=4 "/vis/scene/add/axes 0 0 0 0.5 m"\n')
+        if self.screen_shot:
+            self.f_out.write('g4ui when=4 "/vis/viewer/set/background 1 1 1"\n')
+        self.f_out.write('beam gaussian particle=$particle firstEvent=$first lastEvent=$last sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=$momentum\n')
+        self.f_out.write('trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton,neutron,anti_neutron\n')
+
+        # upstream collimator
+
+        # self.write_target()
+        # self.write_collimator_us()
+
+        # det_width = (6. + 1.) * Beamline.INCH
+        # det_height = (2. + 1.) * Beamline.INCH
+        # det_length = 1.
+        # det_r = 1440.
+
         # # check upstream opening width
         # # det_width = 2.83 * Beamline.INCH
         # # det_r = 210.
@@ -519,9 +548,16 @@ class Beamline:
         # det_width = 19.5 * Beamline.INCH
         # det_positions = [-58, 0., 1350]
 
-        det_positions = [det_r * sin(self.us_theta * Beamline.RADIAN_PER_DEGREE), 0., det_r * cos(self.us_theta * Beamline.RADIAN_PER_DEGREE)]
-        self.f_out.write('virtualdetector det width={} height={} length={} material=Air color=0.9,0.9,0.7\n'.format(det_width, det_height, det_length))
-        self.f_out.write('place det rotation=y{} x={} y={} z={}\n'.format(self.us_theta, det_positions[0], det_positions[1], det_positions[2]))
+        # det_positions = [det_r * sin(self.us_theta * Beamline.RADIAN_PER_DEGREE), 0., det_r * cos(self.us_theta * Beamline.RADIAN_PER_DEGREE)]
+        # self.f_out.write('virtualdetector det width={} height={} length={} material=Air color=0.9,0.9,0.7\n'.format(det_width, det_height, det_length))
+        # self.f_out.write('place det rotation=y{} x={} y={} z={}\n'.format(self.us_theta, det_positions[0], det_positions[1], det_positions[2]))
+
+        # downstream collimator
+
+        self.collimator_ds.x = 0.
+        self.collimator_ds.y = 0.
+        self.collimator_ds.z = 0.
+        self.write_collimator_ds()
 
 
 # beamline = Beamline()
@@ -530,5 +566,8 @@ class Beamline:
 # beamline.screen_shot = True
 # beamline.write()
 
-beamline = Beamline('beamline.py.radiation.collimator.in')
-beamline.write_radiation()
+# beamline = Beamline('beamline.py.radiation.collimator.in')
+# beamline.write_radiation()
+
+beamline = Beamline('tmp/beamline.py.geometry_check.in')
+beamline.write_geometry_check()
