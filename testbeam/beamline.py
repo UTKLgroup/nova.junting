@@ -382,12 +382,26 @@ class Beamline:
         self.f_out.write('place cherenkov rename=cherenkov x={} y={} z={} rotation=y{}\n'.format(self.cherenkov.x, self.cherenkov.y, self.cherenkov.z, self.cherenkov.theta))
 
     def write_collimator_ds(self):
-        collimator_ds_bottom_dimensions = [8.5 * Beamline.INCH, 36. * Beamline.INCH, 30. * Beamline.INCH]
-        collimator_ds_middle_dimensions = [6. * Beamline.INCH, 36. * Beamline.INCH, 11. * Beamline.INCH]
-        collimator_ds_middle_1_positions = [9. * Beamline.INCH, 0., 18. * Beamline.INCH]
-        collimator_ds_middle_2_positions = [-9. * Beamline.INCH, 0., 18. * Beamline.INCH]
-        collimator_ds_bottom_positions = [0., (4.25 + 3.) * Beamline.INCH, 18. * Beamline.INCH]
-        collimator_ds_top_positions = [0., -(4.25 + 3.) * Beamline.INCH, 18. * Beamline.INCH]
+        # lariat
+        # collimator_ds_bottom_dimensions = [8.5 * Beamline.INCH, 36. * Beamline.INCH, 30. * Beamline.INCH]
+        # collimator_ds_middle_dimensions = [6. * Beamline.INCH, 36. * Beamline.INCH, 11. * Beamline.INCH]
+        # collimator_ds_middle_1_positions = [9. * Beamline.INCH, 0., 18. * Beamline.INCH]
+        # collimator_ds_middle_2_positions = [-9. * Beamline.INCH, 0., 18. * Beamline.INCH]
+        # collimator_ds_bottom_positions = [0., (4.25 + 3.) * Beamline.INCH, 18. * Beamline.INCH]
+        # collimator_ds_top_positions = [0., -(4.25 + 3.) * Beamline.INCH, 18. * Beamline.INCH]
+
+        aperture_width = 6.25 * Beamline.INCH
+        aperture_height = 8.25 * Beamline.INCH
+        collimator_width = 28. * Beamline.INCH
+        collimator_length = 36. * Beamline.INCH
+        collimator_height = 24. * Beamline.INCH
+        collimator_ds_bottom_dimensions = [(collimator_height - aperture_height) / 2., collimator_length, collimator_width]
+        collimator_ds_middle_dimensions = [aperture_height, collimator_length, (collimator_width - aperture_width) / 2.]
+        collimator_ds_middle_1_positions = [aperture_width / 2. + collimator_ds_middle_dimensions[2] / 2., 0., collimator_length / 2.]
+        collimator_ds_middle_2_positions = [-aperture_width / 2. - collimator_ds_middle_dimensions[2] / 2., 0., collimator_length / 2.]
+        collimator_ds_bottom_positions = [0., aperture_height / 2 + collimator_ds_bottom_dimensions[0] / 2., collimator_length / 2.]
+        collimator_ds_top_positions = [0., -aperture_height / 2 - collimator_ds_bottom_dimensions[0] / 2., collimator_length / 2.]
+
         self.collimator_ds.theta = self.us_theta + self.ds_theta
 
         self.f_out.write('group collimator_ds\n')
