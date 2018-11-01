@@ -37,7 +37,7 @@ place wire_chamber rename=wire_chamber_1 x=-491.51939604891317 y=0.0 z=1714.1318
 place wire_chamber rename=wire_chamber_2 x=-910.5721743366385 y=0.0 z=3175.542552941215 rotation=y-16.0
 place wire_chamber rename=wire_chamber_3 x=-1354.35596 y=0.0 z=6822.489320000001 rotation=y0.0
 place wire_chamber rename=wire_chamber_4 x=-1354.35596 y=0.0 z=10326.081044999999 rotation=y0.0
-genericbend M1 fieldHeight=88.89999999999999 fieldLength=1066.8 fieldWidth=450.84999999999997 kill=0 ironColor=1,0,0 ironHeight=849.2767490941856 ironLength=1066.8 ironWidth=1066.8
+genericbend M1 fieldHeight=88.89999999999999 fieldLength=1066.8 fieldWidth=450.84999999999997 kill=0 ironColor=1,0,0 ironHeight=762.0 ironLength=1066.8 ironWidth=1270.0
 place M1 By=$b_field x=-1354.35596 y=0.0 z=4723.200537006021 rotation=Y-8.0
 group collimator_ds
   box collimator_ds_bottom height=200.02499999999998 length=914.4 width=711.1999999999999 material=Fe color=0,1,1 kill=0

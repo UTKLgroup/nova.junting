@@ -331,8 +331,8 @@ class Beamline:
 
         self.f_out.write('group wire_chamber\n')
         self.f_out.write('  virtualdetector wire_chamber_detector height={} length={} width={} color=0,1,0\n'.format(wire_chamber_detector_dimensions[0], wire_chamber_detector_dimensions[1], wire_chamber_detector_dimensions[2]))
-        self.f_out.write('  box wire_chamber_frame_vertical height={} length={} width={} color=1,0,1 kill={} material=Al\n'.format(wire_chamber_frame_vertical_dimensions[0], wire_chamber_frame_vertical_dimensions[1], wire_chamber_frame_vertical_dimensions[2], self.kill))
-        self.f_out.write('  box wire_chamber_frame_horizontal height={} length={} width={} color=1,0,1 kill={} material=Al\n'.format(wire_chamber_frame_horizontal_dimensions[0], wire_chamber_frame_horizontal_dimensions[1], wire_chamber_frame_horizontal_dimensions[2], self.kill))
+        self.f_out.write('  box wire_chamber_frame_vertical height={} length={} width={} color=1,0,1 kill=0 material=Al\n'.format(wire_chamber_frame_vertical_dimensions[0], wire_chamber_frame_vertical_dimensions[1], wire_chamber_frame_vertical_dimensions[2]))
+        self.f_out.write('  box wire_chamber_frame_horizontal height={} length={} width={} color=1,0,1 kill=0 material=Al\n'.format(wire_chamber_frame_horizontal_dimensions[0], wire_chamber_frame_horizontal_dimensions[1], wire_chamber_frame_horizontal_dimensions[2]))
         self.f_out.write('  place wire_chamber_frame_vertical rename=+_frame_left x={} y={} z={}\n'.format(wire_chamber_frame_vertical_left_positions[0], wire_chamber_frame_vertical_left_positions[1], wire_chamber_frame_vertical_left_positions[2]))
         self.f_out.write('  place wire_chamber_frame_vertical rename=+_frame_right x={} y={} z={}\n'.format(wire_chamber_frame_vertical_right_positions[0], wire_chamber_frame_vertical_right_positions[1], wire_chamber_frame_vertical_right_positions[2]))
         self.f_out.write('  place wire_chamber_frame_horizontal rename=+_frame_top x={} y={} z={}\n'.format(wire_chamber_frame_horizontal_top_positions[0], wire_chamber_frame_horizontal_top_positions[1], wire_chamber_frame_horizontal_top_positions[2]))
@@ -601,14 +601,14 @@ class Beamline:
         self.magnet.theta = 0.
         self.write_magnet()
 
-# beamline = Beamline()
+beamline = Beamline()
 # beamline.figure_dir = '/Users/juntinghuang/beamer/20180413_testbeam_120gev/figures'
 # beamline.plot_position()
 # beamline.screen_shot = True
-# beamline.write()
+beamline.write()
 
 # beamline = Beamline('beamline.py.radiation.collimator.in')
 # beamline.write_radiation()
 
-beamline = Beamline('tmp/beamline.py.geometry_check.in')
-beamline.write_geometry_check()
+# beamline = Beamline('tmp/beamline.py.geometry_check.in')
+# beamline.write_geometry_check()
