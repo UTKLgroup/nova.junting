@@ -378,8 +378,20 @@ class Beamline:
 
     def write_cherenkov(self):
         self.cherenkov.theta = self.us_theta + self.ds_theta
-        self.f_out.write('virtualdetector cherenkov radius={} length={} color=0.74,0.34,0.09\n'.format(100, self.cherenkov.length))
+        self.cherenkov.length = 2925.
+        cherenkov_inner_radius = 315. / 2.
+        cherenkov_outer_radius = 324. / 2.
+        cherenkov_pmt_pipe_outer_radius = 273. / 2.
+        cherenkov_pmt_pipe_inner_radius = 264. / 2.
+        cherenkov_pmt_pipe_length = 846. - 324. / 2.
+
+        self.f_out.write('virtualdetector cherenkov radius={} length={} color=1,1,1\n'.format(cherenkov_inner_radius, self.cherenkov.length))
+        self.f_out.write('tubs cherenkov_pipe innerRadius={} outerRadius={} length={} color=0.74,0.34,0.09 material=STAINLESS-STEEL\n'.format(cherenkov_inner_radius, cherenkov_outer_radius, self.cherenkov.length))
+        self.f_out.write('tubs cherenkov_pipe_pmt innerRadius={} outerRadius={} length={} color=0.74,0.34,0.09 material=STAINLESS-STEEL\n'.format(cherenkov_pmt_pipe_inner_radius, cherenkov_pmt_pipe_outer_radius, cherenkov_pmt_pipe_length))
+
         self.f_out.write('place cherenkov rename=cherenkov x={} y={} z={} rotation=y{}\n'.format(self.cherenkov.x, self.cherenkov.y, self.cherenkov.z, self.cherenkov.theta))
+        self.f_out.write('place cherenkov_pipe rename=cherenkov_pipe x={} y={} z={} rotation=y{} kill=0\n'.format(self.cherenkov.x, self.cherenkov.y, self.cherenkov.z, self.cherenkov.theta))
+        self.f_out.write('place cherenkov_pipe_pmt rename=cherenkov_pipe_pmt x={} y={} z={} rotation=y{},x90 kill=0\n'.format(self.cherenkov.x, self.cherenkov.y - cherenkov_outer_radius - cherenkov_pmt_pipe_length / 2., self.cherenkov.z + self.cherenkov.length / 2. - cherenkov_pmt_pipe_outer_radius - 1.75 * Beamline.INCH, self.cherenkov.theta))
 
     def write_collimator_ds(self):
         # lariat
@@ -567,15 +579,19 @@ class Beamline:
         # self.f_out.write('place det rotation=y{} x={} y={} z={}\n'.format(self.us_theta, det_positions[0], det_positions[1], det_positions[2]))
 
         # downstream collimator
-
         # self.collimator_ds.x = 0.
         # self.collimator_ds.y = 0.
         # self.collimator_ds.z = 0.
         # self.write_collimator_ds()
 
         # tofs
+        # self.write_tof()
 
-        self.write_tof()
+        # Cherenkov counter
+        self.cherenkov.x = 0.
+        self.cherenkov.y = 0.
+        self.cherenkov.z = 0.
+        self.write_cherenkov()
 
 
 beamline = Beamline()
