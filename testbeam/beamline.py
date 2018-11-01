@@ -345,12 +345,13 @@ class Beamline:
         self.f_out.write('place wire_chamber rename=wire_chamber_4 x={} y={} z={} rotation=y{}\n'.format(self.wc_4.x, self.wc_4.y, self.wc_4.z, self.wc_4.theta))
 
     def write_magnet(self):
+        self.magnet.height = 30. * Beamline.INCH
+
         magnet_field_dimensions = [3.5 * Beamline.INCH, 42 * Beamline.INCH, 17.75 * Beamline.INCH]
-        magnet_iron_dimensions = [self.magnet.height, 42 * Beamline.INCH, 42 * Beamline.INCH]
+        magnet_iron_dimensions = [self.magnet.height, 42 * Beamline.INCH, 50 * Beamline.INCH]
         self.magnet.theta = self.us_theta + self.ds_theta / 2.
 
         self.f_out.write('genericbend M1 fieldHeight={} fieldLength={} fieldWidth={} kill={} ironColor=1,0,0 ironHeight={} ironLength={} ironWidth={}\n'.format(magnet_field_dimensions[0], magnet_field_dimensions[1], magnet_field_dimensions[2], self.kill, magnet_iron_dimensions[0], magnet_iron_dimensions[1], magnet_iron_dimensions[2]))
-        # self.f_out.write('place M1 By={} x={} y={} z={} rotation=Y{}\n'.format(self.magnet_by, self.magnet.x, self.magnet.y, self.magnet.z, self.magnet.theta))
         self.f_out.write('place M1 By=$b_field x={} y={} z={} rotation=Y{}\n'.format(self.magnet.x, self.magnet.y, self.magnet.z, self.magnet.theta))
 
     def write_tof(self):
@@ -588,20 +589,26 @@ class Beamline:
         # self.write_tof()
 
         # Cherenkov counter
-        self.cherenkov.x = 0.
-        self.cherenkov.y = 0.
-        self.cherenkov.z = 0.
-        self.write_cherenkov()
+        # self.cherenkov.x = 0.
+        # self.cherenkov.y = 0.
+        # self.cherenkov.z = 0.
+        # self.write_cherenkov()
 
+        # magnet
+        self.magnet.x = 0.
+        self.magnet.y = 0.
+        self.magnet.z = 0.
+        self.magnet.theta = 0.
+        self.write_magnet()
 
-beamline = Beamline()
+# beamline = Beamline()
 # beamline.figure_dir = '/Users/juntinghuang/beamer/20180413_testbeam_120gev/figures'
 # beamline.plot_position()
 # beamline.screen_shot = True
-beamline.write()
+# beamline.write()
 
 # beamline = Beamline('beamline.py.radiation.collimator.in')
 # beamline.write_radiation()
 
-# beamline = Beamline('tmp/beamline.py.geometry_check.in')
-# beamline.write_geometry_check()
+beamline = Beamline('tmp/beamline.py.geometry_check.in')
+beamline.write_geometry_check()
