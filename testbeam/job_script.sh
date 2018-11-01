@@ -19,8 +19,8 @@ export G4RADIOACTIVEDATA=/cvmfs/nova.opensciencegrid.org/externals/g4radiative/v
 export G4REALSURFACEDATA=/cvmfs/nova.opensciencegrid.org/externals/g4surface/v1_0/NULL/RealSurface1.0
 
 PROCESS_START=0
-B_FIELD=-0.45
-# B_FIELD=-0.9
+# B_FIELD=-0.45
+B_FIELD=-0.9
 # B_FIELD=-1.35
 # B_FIELD=-1.8
 
@@ -30,8 +30,8 @@ ifdh cp /pnfs/nova/persistent/users/junting/testbeam/beamline.py.in ./beamline.p
 
 PARTICLE=pi+
 MOMENTUM=64000
-EVENT_COUNT_PER_JOB=25000
-JOB_COUNT_PER_SPILL=40
+EVENT_COUNT_PER_JOB=10000
+JOB_COUNT_PER_SPILL=100
 FIRST=$((((${PROCESS_START} + ${PROCESS}))* ${EVENT_COUNT_PER_JOB}))
 LAST=$((${FIRST} + $EVENT_COUNT_PER_JOB - 1))
 echo "PROCESS is: $PROCESS"
