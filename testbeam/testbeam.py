@@ -12,7 +12,7 @@ ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
-FIGURE_DIR = '/Users/juntinghuang/beamer/20181025_testbeam_trigger_rate/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20181031_beamline_sim_update/figures'
 DATA_DIR = './data'
 
 
@@ -2881,11 +2881,13 @@ def plot_trigger_rate(**kwargs):
     c2.SaveAs('{}/plot_trigger_rate.pass.plot_rate_{}.pdf'.format(FIGURE_DIR, plot_rate))
     input('Press any key to continue.')
 
+# 20181031_beamline_sim_update
+plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.1_100.610k.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=0.61, y_title='Particle Count per 1M Beam Particles')
 
 # 20181025_testbeam_trigger_rate
-gStyle.SetOptStat(0)
+# gStyle.SetOptStat(0)
 # save_trigger_rate()
-plot_trigger_rate(plot_rate=False)
+# plot_trigger_rate(plot_rate=False)
 # plot_trigger_rate(plot_rate=True)
 
 # 20180912_testbeam_radiation_collimator
