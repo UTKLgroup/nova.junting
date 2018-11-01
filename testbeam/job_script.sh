@@ -4,21 +4,21 @@ function setup_nova_grid {
 }
 
 setup_nova_grid -r S18-01-19 -6 /cvmfs/nova.opensciencegrid.org/novasoft/slf6/novasoft -e /cvmfs/nova.opensciencegrid.org/externals -b maxopt
-source /nova/app/users/junting/g4beamline/G4beamline-3.04/bin/g4bl-setup.sh
+setup G4beamline v3_04
 
-export G4BL_DIR=/nova/app/users/junting/g4beamline/G4beamline-3.04
-export G4ABLADATA=/nova/app/users/junting/g4beamline/Geant4Data/G4ABLA3.0
-export G4LEDATA=/nova/app/users/junting/g4beamline/Geant4Data/G4EMLOW6.50
-export G4ENSDFSTATEDATA=/nova/app/users/junting/g4beamline/Geant4Data/G4ENSDFSTATE2.1
-export G4NEUTRONHPDATA=/nova/app/users/junting/g4beamline/Geant4Data/G4NDL4.5
-export G4NEUTRONXSDATA=/nova/app/users/junting/g4beamline/Geant4Data/G4NEUTRONXS1.4
-export G4PIIDATA=/nova/app/users/junting/g4beamline/Geant4Data/G4PII1.3
-export G4SAIDXSDATA=/nova/app/users/junting/g4beamline/Geant4Data/G4SAIDDATA1.1
-export G4LEVELGAMMADATA=/nova/app/users/junting/g4beamline/Geant4Data/PhotonEvaporation4.3
-export G4RADIOACTIVEDATA=/nova/app/users/junting/g4beamline/Geant4Data/RadioactiveDecay5.1
-export G4REALSURFACEDATA=/nova/app/users/junting/g4beamline/Geant4Data/RealSurface1.0
+export G4BL_DIR=/cvmfs/nova.opensciencegrid.org/externals/G4beamline/v3_04
+export G4ABLADATA=/cvmfs/nova.opensciencegrid.org/externals/g4abla/v3_0/NULL/G4ABLA3.0
+export G4LEDATA=/cvmfs/nova.opensciencegrid.org/externals/g4emlow/v6_50/G4EMLOW6.50
+export G4ENSDFSTATEDATA=/cvmfs/nova.opensciencegrid.org/externals/g4nuclide/v2_1/G4ENSDFSTATE2.1
+export G4NEUTRONHPDATA=/cvmfs/nova.opensciencegrid.org/externals/g4neutron/v4_5/NULL/G4NDL4.5
+export G4NEUTRONXSDATA=/cvmfs/nova.opensciencegrid.org/externals/g4neutronxs/v1_4/NULL/G4NEUTRONXS1.4
+export G4PIIDATA=/cvmfs/nova.opensciencegrid.org/externals/g4pii/v1_3/NULL/G4PII1.3
+export G4SAIDXSDATA=/cvmfs/nova.opensciencegrid.org/externals/g4nucleonxs/v1_1/NULL/G4SAIDDATA1.1
+export G4LEVELGAMMADATA=/cvmfs/nova.opensciencegrid.org/externals/g4photon/v4_3_2/PhotonEvaporation4.3.2
+export G4RADIOACTIVEDATA=/cvmfs/nova.opensciencegrid.org/externals/g4radiative/v5_1_1/RadioactiveDecay5.1.1
+export G4REALSURFACEDATA=/cvmfs/nova.opensciencegrid.org/externals/g4surface/v1_0/NULL/RealSurface1.0
 
-PROCESS_START=2000
+PROCESS_START=0
 B_FIELD=-0.45
 # B_FIELD=-0.9
 # B_FIELD=-1.35
@@ -28,17 +28,10 @@ ifdh cp /pnfs/nova/persistent/users/junting/testbeam/merge_tree.py ./merge_tree.
 ifdh cp /pnfs/nova/persistent/users/junting/testbeam/save_particle_to_csv.py ./save_particle_to_csv.py
 ifdh cp /pnfs/nova/persistent/users/junting/testbeam/beamline.py.in ./beamline.py.in
 
-# PARTICLE=proton
-# MOMENTUM=120000
 PARTICLE=pi+
-MOMENTUM=8000
-# EVENT_COUNT_PER_JOB=100000
-EVENT_COUNT_PER_JOB=50000
-# EVENT_COUNT_PER_JOB=30000
-# EVENT_COUNT_PER_JOB=10000
-# EVENT_COUNT_PER_JOB=5000
-# EVENT_COUNT_PER_JOB=2000
-JOB_COUNT_PER_SPILL=30
+MOMENTUM=64000
+EVENT_COUNT_PER_JOB=25000
+JOB_COUNT_PER_SPILL=40
 FIRST=$((((${PROCESS_START} + ${PROCESS}))* ${EVENT_COUNT_PER_JOB}))
 LAST=$((${FIRST} + $EVENT_COUNT_PER_JOB - 1))
 echo "PROCESS is: $PROCESS"
