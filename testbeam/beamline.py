@@ -386,6 +386,11 @@ class Beamline:
         cherenkov_pmt_pipe_inner_radius = 264. / 2.
         cherenkov_pmt_pipe_length = 846. - 324. / 2.
 
+        # to align with the previous position for the upstream end (ftbf_drawing.pdf)
+        # later engineer drawings (gsmith_F10059283.pdf) is not used
+        # for no justifications for the positions there either
+        self.cherenkov.z += 500.
+
         self.f_out.write('virtualdetector cherenkov radius={} length={} color=1,1,1\n'.format(cherenkov_inner_radius, self.cherenkov.length))
         self.f_out.write('tubs cherenkov_pipe innerRadius={} outerRadius={} length={} color=0.74,0.34,0.09 material=STAINLESS-STEEL\n'.format(cherenkov_inner_radius, cherenkov_outer_radius, self.cherenkov.length))
         self.f_out.write('tubs cherenkov_pipe_pmt innerRadius={} outerRadius={} length={} color=0.74,0.34,0.09 material=STAINLESS-STEEL\n'.format(cherenkov_pmt_pipe_inner_radius, cherenkov_pmt_pipe_outer_radius, cherenkov_pmt_pipe_length))
@@ -605,6 +610,7 @@ beamline = Beamline()
 # beamline.figure_dir = '/Users/juntinghuang/beamer/20180413_testbeam_120gev/figures'
 # beamline.plot_position()
 # beamline.screen_shot = True
+# beamline.read_cherenkov_dimension()
 beamline.write()
 
 # beamline = Beamline('beamline.py.radiation.collimator.in')
