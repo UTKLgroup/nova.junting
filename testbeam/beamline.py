@@ -391,7 +391,7 @@ class Beamline:
         # for no justifications for the positions there either
         self.cherenkov.z += 500.
 
-        self.f_out.write('virtualdetector cherenkov radius={} length={} color=1,1,1\n'.format(cherenkov_inner_radius, self.cherenkov.length))
+        self.f_out.write('virtualdetector cherenkov radius={} length={} color=1,1,1 material=CARBON_DIOXIDE\n'.format(cherenkov_inner_radius, self.cherenkov.length))
         self.f_out.write('tubs cherenkov_pipe innerRadius={} outerRadius={} length={} color=0.74,0.34,0.09 material=STAINLESS-STEEL\n'.format(cherenkov_inner_radius, cherenkov_outer_radius, self.cherenkov.length))
         self.f_out.write('tubs cherenkov_pipe_pmt innerRadius={} outerRadius={} length={} color=0.74,0.34,0.09 material=STAINLESS-STEEL\n'.format(cherenkov_pmt_pipe_inner_radius, cherenkov_pmt_pipe_outer_radius, cherenkov_pmt_pipe_length))
 
