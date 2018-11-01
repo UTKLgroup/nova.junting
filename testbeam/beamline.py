@@ -531,8 +531,8 @@ class Beamline:
         self.f_out.write('virtualdetector det width={} height={} length={} material=Air color=0.9,0.9,0.7\n'.format(det_width, det_height, det_length))
         self.f_out.write('place det rotation=y{} x={} y={} z={}\n'.format(self.us_theta, det_positions[0], det_positions[1], det_positions[2]))
 
-
     def write_geometry_check(self):
+        self.screen_shot = True
         self.kill = 1
         self.f_out.write('physics QGSP_BIC\n')
         self.f_out.write('param worldMaterial=Air\n')
@@ -547,7 +547,6 @@ class Beamline:
         self.f_out.write('trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton,neutron,anti_neutron\n')
 
         # upstream collimator
-
         # self.write_target()
         # self.write_collimator_us()
 
@@ -591,6 +590,10 @@ class Beamline:
         # self.write_collimator_ds()
 
         # tofs
+        # self.tof_us.x = 0.
+        # self.tof_us.y = 0.
+        # self.tof_us.z = 0.
+        # self.tof_us.theta = 0.
         # self.write_tof()
 
         # Cherenkov counter
@@ -605,6 +608,7 @@ class Beamline:
         self.magnet.z = 0.
         self.magnet.theta = 0.
         self.write_magnet()
+
 
 beamline = Beamline()
 # beamline.figure_dir = '/Users/juntinghuang/beamer/20180413_testbeam_120gev/figures'
