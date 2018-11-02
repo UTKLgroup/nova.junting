@@ -2882,7 +2882,8 @@ def plot_trigger_rate(**kwargs):
     input('Press any key to continue.')
 
 # 20181031_beamline_sim_update
-plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.1_100.610k.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=0.61, y_title='Particle Count per 1M Beam Particles')
+# plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.1_100.610k.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=0.61, y_title='Particle Count per 1M Beam Particles')
+plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.job_1_4000.33.66m.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=33.66, y_title='Particle Count per 1M Beam Particles')
 
 # 20181025_testbeam_trigger_rate
 # gStyle.SetOptStat(0)
