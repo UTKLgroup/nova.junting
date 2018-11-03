@@ -5,16 +5,16 @@ g4ui when=4 "/vis/viewer/set/viewpointVector 0 1 0"
 g4ui when=4 "/vis/viewer/zoom 1.5"
 g4ui when=4 "/vis/viewer/set/style wireframe"
 beam gaussian particle=$particle firstEvent=$first lastEvent=$last sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=$momentum
-trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton
+trackcuts keep=pi+,pi-,kaon+,kaon-,mu+,mu-,e+,e-,proton,anti_proton
 box slab height=31.75 length=209.55 width=6.35 material=Cu color=1,0.01,0.01
 place slab rename=target_slab_-2 x=-12.7 y=0.0 z=44.29
 place slab rename=target_slab_-1 x=-6.35 y=0.0 z=22.145
 place slab rename=target_slab_0 x=0.0 y=0.0 z=0.0
 place slab rename=target_slab_1 x=6.35 y=0.0 z=-22.145
 place slab rename=target_slab_2 x=12.7 y=0.0 z=-44.29
-box collimator_us_base height=131.826 length=1473.1999999999998 width=812.8 material=Fe color=0,1,1 kill=0
-box collimator_us_plate height=131.826 length=1086.1039999999998 width=812.8 material=Fe color=0,1,1 kill=0
-box collimator_us_aperture height=50.8 length=1086.1039999999998 width=294.64 material=Fe color=0,1,1 kill=0
+box collimator_us_base height=131.826 length=1473.1999999999998 width=812.8 material=Fe color=0,1,1 kill=1
+box collimator_us_plate height=131.826 length=1086.1039999999998 width=812.8 material=Fe color=0,1,1 kill=1
+box collimator_us_aperture height=50.8 length=1086.1039999999998 width=294.64 material=Fe color=0,1,1 kill=1
 place collimator_us_base rename=collimator_us_base x=-216.60631742066045 y=-223.13899999999998 z=561.848
 place collimator_us_plate rename=collimator_us_bottom x=-216.60631742066045 y=-91.313 z=755.396
 place collimator_us_aperture rename=collimator_us_aperture_1 x=-1.3163174206604253 y=0.0 z=755.396 rotation=y-14.03
@@ -25,8 +25,8 @@ virtualdetector start_line radius=1750.0 length=1.0 material=Air color=0.9,0.9,0
 place start_line rotation=y-16.0 x=-399.6741659346488 y=0.0 z=1393.8294591105623
 group wire_chamber
   virtualdetector wire_chamber_detector height=125.0 length=25.0 width=128.0 color=0,1,0
-  box wire_chamber_frame_vertical height=254.0 length=25.0 width=63.0 color=1,0,1 kill=0 material=Al
-  box wire_chamber_frame_horizontal height=63.0 length=25.0 width=128.0 color=1,0,1 kill=0 material=Al
+  box wire_chamber_frame_vertical height=254.0 length=25.0 width=63.0 color=1,0,1 kill=1 material=Al
+  box wire_chamber_frame_horizontal height=63.0 length=25.0 width=128.0 color=1,0,1 kill=1 material=Al
   place wire_chamber_frame_vertical rename=+_frame_left x=-95.5 y=0.0 z=12.5
   place wire_chamber_frame_vertical rename=+_frame_right x=95.5 y=0.0 z=12.5
   place wire_chamber_frame_horizontal rename=+_frame_top x=0.0 y=95.5 z=12.5
@@ -37,11 +37,11 @@ place wire_chamber rename=wire_chamber_1 x=-491.51939604891317 y=0.0 z=1714.1318
 place wire_chamber rename=wire_chamber_2 x=-910.5721743366385 y=0.0 z=3175.542552941215 rotation=y-16.0
 place wire_chamber rename=wire_chamber_3 x=-1354.35596 y=0.0 z=6822.489320000001 rotation=y0.0
 place wire_chamber rename=wire_chamber_4 x=-1354.35596 y=0.0 z=10326.081044999999 rotation=y0.0
-genericbend M1 fieldHeight=88.89999999999999 fieldLength=1066.8 fieldWidth=450.84999999999997 kill=0 ironColor=1,0,0 ironHeight=762.0 ironLength=1066.8 ironWidth=1270.0
+genericbend M1 fieldHeight=88.89999999999999 fieldLength=1066.8 fieldWidth=450.84999999999997 kill=1 ironColor=1,0,0 ironHeight=762.0 ironLength=1066.8 ironWidth=1270.0
 place M1 By=$b_field x=-1354.35596 y=0.0 z=4723.200537006021 rotation=Y-8.0
 group collimator_ds
-  box collimator_ds_bottom height=200.02499999999998 length=914.4 width=711.1999999999999 material=Fe color=0,1,1 kill=0
-  box collimator_ds_middle height=209.54999999999998 length=914.4 width=276.22499999999997 material=Fe color=0,.8,1 kill=0
+  box collimator_ds_bottom height=200.02499999999998 length=914.4 width=711.1999999999999 material=Fe color=0,1,1 kill=1
+  box collimator_ds_middle height=209.54999999999998 length=914.4 width=276.22499999999997 material=Fe color=0,.8,1 kill=1
   place collimator_ds_middle rename=+_middle_1 x=217.48749999999998 y=0.0 z=457.2
   place collimator_ds_middle rename=+_middle_2 x=-217.48749999999998 y=0.0 z=457.2
   place collimator_ds_bottom rename=+_bottom x=0.0 y=204.78749999999997 z=457.2
@@ -56,7 +56,7 @@ virtualdetector cherenkov radius=157.5 length=2925.0 color=1,1,1 material=CARBON
 tubs cherenkov_pipe innerRadius=157.5 outerRadius=162.0 length=2925.0 color=0.74,0.34,0.09 material=STAINLESS-STEEL
 tubs cherenkov_pipe_pmt innerRadius=132.0 outerRadius=136.5 length=684.0 color=0.74,0.34,0.09 material=STAINLESS-STEEL
 place cherenkov rename=cherenkov x=-1354.35596 y=0.0 z=12212.219835 rotation=y0.0
-place cherenkov_pipe rename=cherenkov_pipe x=-1354.35596 y=0.0 z=12212.219835 rotation=y0.0 kill=0
-place cherenkov_pipe_pmt rename=cherenkov_pipe_pmt x=-1354.35596 y=-504.0 z=13493.769835 rotation=y0.0,x90 kill=0
+place cherenkov_pipe rename=cherenkov_pipe x=-1354.35596 y=0.0 z=12212.219835 rotation=y0.0 kill=1
+place cherenkov_pipe_pmt rename=cherenkov_pipe_pmt x=-1354.35596 y=-504.0 z=13493.769835 rotation=y0.0,x90 kill=1
 virtualdetector nova height=2606.1905036738476 length=10.0 width=2606.1905036738476 color=0.39,0.39,0.39
 place nova rename=nova x=-1354.35596 y=0.0 z=14648.66998 rotation=y0.0
