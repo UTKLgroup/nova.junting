@@ -37,8 +37,8 @@ class Beamline:
         self.ds_theta = 16.     # degree
         self.f_out = open(g4bl_filename, 'w')
         self.screen_shot = False
-        # self.kill = 1
-        self.kill = 0
+        self.kill = 1
+        # self.kill = 0
         self.magnet_by = -0.9    # B field in tesla
 
         self.target = Detector('target')
@@ -331,8 +331,8 @@ class Beamline:
 
         self.f_out.write('group wire_chamber\n')
         self.f_out.write('  virtualdetector wire_chamber_detector height={} length={} width={} color=0,1,0\n'.format(wire_chamber_detector_dimensions[0], wire_chamber_detector_dimensions[1], wire_chamber_detector_dimensions[2]))
-        self.f_out.write('  box wire_chamber_frame_vertical height={} length={} width={} color=1,0,1 kill=0 material=Al\n'.format(wire_chamber_frame_vertical_dimensions[0], wire_chamber_frame_vertical_dimensions[1], wire_chamber_frame_vertical_dimensions[2]))
-        self.f_out.write('  box wire_chamber_frame_horizontal height={} length={} width={} color=1,0,1 kill=0 material=Al\n'.format(wire_chamber_frame_horizontal_dimensions[0], wire_chamber_frame_horizontal_dimensions[1], wire_chamber_frame_horizontal_dimensions[2]))
+        self.f_out.write('  box wire_chamber_frame_vertical height={} length={} width={} color=1,0,1 kill={} material=Al\n'.format(wire_chamber_frame_vertical_dimensions[0], wire_chamber_frame_vertical_dimensions[1], wire_chamber_frame_vertical_dimensions[2], self.kill))
+        self.f_out.write('  box wire_chamber_frame_horizontal height={} length={} width={} color=1,0,1 kill={} material=Al\n'.format(wire_chamber_frame_horizontal_dimensions[0], wire_chamber_frame_horizontal_dimensions[1], wire_chamber_frame_horizontal_dimensions[2], self.kill))
         self.f_out.write('  place wire_chamber_frame_vertical rename=+_frame_left x={} y={} z={}\n'.format(wire_chamber_frame_vertical_left_positions[0], wire_chamber_frame_vertical_left_positions[1], wire_chamber_frame_vertical_left_positions[2]))
         self.f_out.write('  place wire_chamber_frame_vertical rename=+_frame_right x={} y={} z={}\n'.format(wire_chamber_frame_vertical_right_positions[0], wire_chamber_frame_vertical_right_positions[1], wire_chamber_frame_vertical_right_positions[2]))
         self.f_out.write('  place wire_chamber_frame_horizontal rename=+_frame_top x={} y={} z={}\n'.format(wire_chamber_frame_horizontal_top_positions[0], wire_chamber_frame_horizontal_top_positions[1], wire_chamber_frame_horizontal_top_positions[2]))
@@ -396,8 +396,8 @@ class Beamline:
         self.f_out.write('tubs cherenkov_pipe_pmt innerRadius={} outerRadius={} length={} color=0.74,0.34,0.09 material=STAINLESS-STEEL\n'.format(cherenkov_pmt_pipe_inner_radius, cherenkov_pmt_pipe_outer_radius, cherenkov_pmt_pipe_length))
 
         self.f_out.write('place cherenkov rename=cherenkov x={} y={} z={} rotation=y{}\n'.format(self.cherenkov.x, self.cherenkov.y, self.cherenkov.z, self.cherenkov.theta))
-        self.f_out.write('place cherenkov_pipe rename=cherenkov_pipe x={} y={} z={} rotation=y{} kill=0\n'.format(self.cherenkov.x, self.cherenkov.y, self.cherenkov.z, self.cherenkov.theta))
-        self.f_out.write('place cherenkov_pipe_pmt rename=cherenkov_pipe_pmt x={} y={} z={} rotation=y{},x90 kill=0\n'.format(self.cherenkov.x, self.cherenkov.y - cherenkov_outer_radius - cherenkov_pmt_pipe_length / 2., self.cherenkov.z + self.cherenkov.length / 2. - cherenkov_pmt_pipe_outer_radius - 1.75 * Beamline.INCH, self.cherenkov.theta))
+        self.f_out.write('place cherenkov_pipe rename=cherenkov_pipe x={} y={} z={} rotation=y{} kill={}\n'.format(self.cherenkov.x, self.cherenkov.y, self.cherenkov.z, self.cherenkov.theta, self.kill))
+        self.f_out.write('place cherenkov_pipe_pmt rename=cherenkov_pipe_pmt x={} y={} z={} rotation=y{},x90 kill={}\n'.format(self.cherenkov.x, self.cherenkov.y - cherenkov_outer_radius - cherenkov_pmt_pipe_length / 2., self.cherenkov.z + self.cherenkov.length / 2. - cherenkov_pmt_pipe_outer_radius - 1.75 * Beamline.INCH, self.cherenkov.theta, self.kill))
 
     def write_collimator_ds(self):
         # lariat
@@ -483,7 +483,8 @@ class Beamline:
             self.f_out.write('g4ui when=4 "/vis/viewer/set/background 1 1 1"\n')
 
         self.f_out.write('beam gaussian particle=$particle firstEvent=$first lastEvent=$last sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=$momentum\n')
-        self.f_out.write('trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton\n')
+        self.f_out.write('trackcuts keep=pi+,pi-,kaon+,kaon-,mu+,mu-,e+,e-,proton,anti_proton\n')
+        # self.f_out.write('trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton\n')
         # self.f_out.write('trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,proton,anti_proton,neutron,anti_neutron\n') # for radiation study
 
         self.write_target()
