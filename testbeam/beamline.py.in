@@ -5,7 +5,7 @@ g4ui when=4 "/vis/viewer/set/viewpointVector 0 1 0"
 g4ui when=4 "/vis/viewer/zoom 1.5"
 g4ui when=4 "/vis/viewer/set/style wireframe"
 beam gaussian particle=$particle firstEvent=$first lastEvent=$last sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=$momentum
-trackcuts kineticEnergyCut=5 kineticEnergyMax=3000 keep=pi+,pi-,kaon+,kaon-,mu+,mu-,e+,e-,proton,anti_proton
+trackcuts kineticEnergyCut=5 keep=pi+,pi-,kaon+,kaon-,mu+,mu-,e+,e-,proton,anti_proton
 box slab height=31.75 length=209.55 width=6.35 material=Cu color=1,0.01,0.01
 place slab rename=target_slab_-2 x=-12.7 y=0.0 z=44.29
 place slab rename=target_slab_-1 x=-6.35 y=0.0 z=22.145
