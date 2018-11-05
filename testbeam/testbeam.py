@@ -2881,9 +2881,25 @@ def plot_trigger_rate(**kwargs):
     c2.SaveAs('{}/plot_trigger_rate.pass.plot_rate_{}.pdf'.format(FIGURE_DIR, plot_rate))
     input('Press any key to continue.')
 
+
+def compute_minimum_kinetic_energy():
+    pids = [11, 13, -211, -321, 2212]
+    # momentum = 100
+    momentum = 3000
+    for pid in pids:
+        mass = PDG.GetParticle(pid).Mass() * 1.e3
+        name = PDG.GetParticle(pid).GetName()
+        gamma = (momentum**2 / mass**2 + 1)**0.5
+        kinetic_energy = (gamma - 1.) * mass
+        kinetic_energy_2 = ((gamma - 1) / (gamma + 1))**0.5 * momentum
+
+        print('{}: gamma = {}, kinetic_energy = {}, kinetic_energy_2 = {}'.format(name, gamma, kinetic_energy, kinetic_energy_2))
+
+
 # 20181031_beamline_sim_update
 # plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.1_100.610k.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=0.61, y_title='Particle Count per 1M Beam Particles')
-plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.job_1_4000.33.66m.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=33.66, y_title='Particle Count per 1M Beam Particles')
+# plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.job_1_4000.33.66m.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=33.66, y_title='Particle Count per 1M Beam Particles')
+compute_minimum_kinetic_energy()
 
 # 20181025_testbeam_trigger_rate
 # gStyle.SetOptStat(0)
