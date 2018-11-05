@@ -377,7 +377,7 @@ def plot_spectra_ratio(**kwargs):
     filenames = kwargs.get('filenames', ['F1ch300006.txt', 'F1ch300016.txt', 'F1ch300018.txt', 'F1ch300020.txt', 'F1ch300022.txt', 'F1ch300024.txt'])
     filename_no_pedestals = kwargs.get('filename_no_pedestals', ['F1ch300005.txt', 'F1ch300015.txt', 'F1ch300017.txt', 'F1ch300019.txt', 'F1ch300021.txt', 'F1ch300023.txt'])
     legend_txts = kwargs.get('legend_txts', ['NDOS', 'Production', 'Tanker', 'Tank 2', 'Tank 3', 'Tank 4'])
-    colors = kwargs.get('colors', [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1])
+    colors = kwargs.get('colors', [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1, kYellow + 2])
     legend_x1ndc = kwargs.get('legend_x1ndc', 0.58)
     legend_x2ndc = kwargs.get('legend_x2ndc', 0.92)
     y_axis_title_ratio = kwargs.get('y_axis_title_ratio', 'Ratio to NDOS')
@@ -416,7 +416,8 @@ def plot_spectra_ratio(**kwargs):
 
     gPad.SetGrid()
     # lg1 = TLegend(0.63, 0.34, 0.97, 0.79)
-    lg1 = TLegend(legend_x1ndc, 0.86 - 0.12 * len(hists), legend_x2ndc, 0.79)
+    # lg1 = TLegend(legend_x1ndc, 0.86 - 0.12 * len(hists), legend_x2ndc, 0.79)
+    lg1 = TLegend(legend_x1ndc, 0.86 - 0.08 * len(hists), legend_x2ndc, 0.79)
     set_legend_style(lg1)
 
     for i, hist in enumerate(hists):
@@ -485,7 +486,11 @@ def print_event_rate():
         # after spill
         'Ash River 1',
         'Production',
-        'Ash River 2'
+        'Ash River 2',
+        'Ash River 3',
+        'Ash River 4',
+        'Ash River 5',
+        'Ash River 6'
     ]
     filenames = [
         'F1ch300005.txt',
@@ -501,7 +506,11 @@ def print_event_rate():
         # after spill
         'F1ch300035.txt',
         'F1ch300039.txt',
-        'F1ch300041.txt'
+        'F1ch300041.txt',
+        'F1ch300045.txt',
+        'F1ch300047.txt',
+        'F1ch300049.txt',
+        'F1ch300051.txt'
     ]
     start_times = [
         datetime(2018, 10, 11, 18, 10),
@@ -517,7 +526,11 @@ def print_event_rate():
         # after spill
         datetime(2018, 10, 25, 9, 29),
         datetime(2018, 10, 26, 18, 21),
-        datetime(2018, 10, 28, 18, 19)
+        datetime(2018, 10, 28, 18, 19),
+        datetime(2018, 10, 29, 17, 45),
+        datetime(2018, 10, 30, 18, 8),
+        datetime(2018, 10, 31, 19, 2),
+        datetime(2018, 11, 1, 17, 53)
     ]
     end_times = [
         datetime(2018, 10, 12, 10, 10),
@@ -533,7 +546,11 @@ def print_event_rate():
         # after spill
         datetime(2018, 10, 26, 10, 20),
         datetime(2018, 10, 28, 16, 51),
-        datetime(2018, 10, 29, 11, 53)
+        datetime(2018, 10, 29, 11, 53),
+        datetime(2018, 10, 30, 16, 35),
+        datetime(2018, 10, 31, 17, 16),
+        datetime(2018, 11, 1, 16, 5),
+        datetime(2018, 11, 2, 10, 54),
     ]
 
     durations = []              # minutes
@@ -681,10 +698,11 @@ def print_photon_count():
 # 20181025_testbeam_ash_river_sample
 # plot_spectrum('F1ch300036.txt', rebin=10, x_min=-0.02e-9, x_max=0.15e-9)
 gStyle.SetOptStat(0)
-# print_peaks(sample_names=['Production', 'Ash River 1', 'Ash River 2'], filenames=['F1ch300039.txt', 'F1ch300035.txt', 'F1ch300041.txt'])
+print_peaks(sample_names=['Production', 'Ash River 1', 'Ash River 2', 'Ash River 3', 'Ash River 4', 'Ash River 5', 'Ash River 6'],
+            filenames=['F1ch300039.txt', 'F1ch300035.txt', 'F1ch300041.txt', 'F1ch300045.txt', 'F1ch300047.txt', 'F1ch300049.txt', 'F1ch300051.txt'])
 # calibration_constant = 8.854658242290205e-13 # C / PE
 # plot_spectra(rebin=10, calibration_constant=calibration_constant)
-print_event_rate()
+# print_event_rate()
 # plot_spectra(rebin=10,
 #              suffix='.tote',
 #              calibration_constant=calibration_constant,
@@ -694,9 +712,9 @@ print_event_rate()
 # plot_spectra_ratio(rebin=10,
 #                    suffix='.tote',
 #                    calibration_constant=calibration_constant,
-#                    filenames=['F1ch300040.txt', 'F1ch300036.txt', 'F1ch300042.txt'],
-#                    filename_no_pedestals=['F1ch300039.txt', 'F1ch300035.txt', 'F1ch300041.txt'],
-#                    legend_txts=['Production', 'Ash River 1', 'Ash River 2'],
+#                    filenames=['F1ch300040.txt', 'F1ch300036.txt', 'F1ch300042.txt', 'F1ch300046.txt', 'F1ch300048.txt', 'F1ch300050.txt', 'F1ch300052.txt'],
+#                    filename_no_pedestals=['F1ch300039.txt', 'F1ch300035.txt', 'F1ch300041.txt', 'F1ch300045.txt', 'F1ch300047.txt', 'F1ch300049.txt', 'F1ch300051.txt'],
+#                    legend_txts=['Production', 'Ash River 1', 'Ash River 2', 'Ash River 3', 'Ash River 4', 'Ash River 5', 'Ash River 6'],
 #                    y_axis_title_ratio='Ratio to Production')
 # plot_spectra(rebin=10,
 #              suffix='.production_comparison',
