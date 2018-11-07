@@ -37,8 +37,8 @@ class Beamline:
         self.ds_theta = 16.     # degree
         self.f_out = open(g4bl_filename, 'w')
         self.screen_shot = False
-        self.kill = 1
-        # self.kill = 0
+        # self.kill = 1
+        self.kill = 0
         self.magnet_by = -0.9    # B field in tesla
 
         self.target = Detector('target')
