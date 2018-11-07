@@ -12,7 +12,7 @@ ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
-FIGURE_DIR = '/Users/juntinghuang/beamer/20181031_beamline_sim_update/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20181105_testbeam_g4bl_speed/figures'
 DATA_DIR = './data'
 
 
@@ -1096,9 +1096,9 @@ def plot_particle_momentum(filename, x_min, x_max, **kwargs):
         hist.SetLineColor(colors[i])
 
         if plot_noise:
-            lg1.AddEntry(hist, '{} ({:.0f}, {:.0f} MeV)'.format(PDG.GetParticle(pid).GetName(), hist.Integral(), hist.GetMean()), 'l')
+            lg1.AddEntry(hist, '{} ({:.0f}, {:.0f} MeV)'.format(PDG.GetParticle(pid).GetName(), pid_counts[i][1], hist.GetMean()), 'l')
         else:
-            lg1.AddEntry(hist, '{1} ({2:.{0}f})'.format(count_precision, PDG.GetParticle(pid).GetName(), hist.Integral()), 'l')
+            lg1.AddEntry(hist, '{1} ({2:.{0}f})'.format(count_precision, PDG.GetParticle(pid).GetName(), pid_counts[i][1]), 'l')
 
         if i == 0:
             hist.Draw('hist')
@@ -1125,7 +1125,7 @@ def plot_particle_momentum(filename, x_min, x_max, **kwargs):
     lg1.Draw()
 
     c1.Update()
-    c1.SaveAs('{}/plot_particle_momentum.{}.plot_noise_{}.pdf'.format(FIGURE_DIR, filename, plot_noise))
+    c1.SaveAs('{}/plot_particle_momentum.{}.plot_noise_{}.normalization_factor_{}.pdf'.format(FIGURE_DIR, filename, plot_noise, normalization_factor))
     input('Press any key to continue.')
 
 
@@ -2896,10 +2896,21 @@ def compute_minimum_kinetic_energy():
         print('{}: gamma = {}, kinetic_energy = {}, kinetic_energy_2 = {}'.format(name, gamma, kinetic_energy, kinetic_energy_2))
 
 
+# 20181105_testbeam_g4bl_speed
+# plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.job_1_6000.53.63m.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=53.63, y_title='Particle Count per 1M Beam Particles')
+# plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.job_1_2000.1537m.kill.keep.kineticEnergyCut.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=1537, y_title='Particle Count per 1M Beam Particles')
+# plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.job_1_2000.1998m.kill.keep.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=1998, y_title='Particle Count per 1M Beam Particles')
+# plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.job_1_2000.399.4m.keep.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=399.4, y_title='Particle Count per 1M Beam Particles')
+# no normalization
+# plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.job_1_6000.53.63m.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=1., y_title='Particle Count per 1M Beam Particles')
+plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.job_1_2000.399.4m.keep.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=1., y_title='Particle Count per 1M Beam Particles')
+# plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.job_1_2000.1998m.kill.keep.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=1., y_title='Particle Count per 1M Beam Particles')
+# plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.job_1_2000.1537m.kill.keep.kineticEnergyCut.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=1., y_title='Particle Count per 1M Beam Particles')
+
 # 20181031_beamline_sim_update
 # plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.1_100.610k.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=0.61, y_title='Particle Count per 1M Beam Particles')
 # plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.job_1_4000.33.66m.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=33.66, y_title='Particle Count per 1M Beam Particles')
-compute_minimum_kinetic_energy()
+# compute_minimum_kinetic_energy()
 
 # 20181025_testbeam_trigger_rate
 # gStyle.SetOptStat(0)
