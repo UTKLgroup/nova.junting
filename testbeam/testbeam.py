@@ -1096,9 +1096,9 @@ def plot_particle_momentum(filename, x_min, x_max, **kwargs):
         hist.SetLineColor(colors[i])
 
         if plot_noise:
-            lg1.AddEntry(hist, '{} ({:.0f}, {:.0f} MeV)'.format(PDG.GetParticle(pid).GetName(), pid_counts[i][1], hist.GetMean()), 'l')
+            lg1.AddEntry(hist, '{} ({:.0f}, {:.0f} MeV)'.format(PDG.GetParticle(pid).GetName(), pid_counts[i][1] / normalization_factor, hist.GetMean()), 'l')
         else:
-            lg1.AddEntry(hist, '{1} ({2:.{0}f})'.format(count_precision, PDG.GetParticle(pid).GetName(), pid_counts[i][1]), 'l')
+            lg1.AddEntry(hist, '{1} ({2:.{0}f})'.format(count_precision, PDG.GetParticle(pid).GetName(), pid_counts[i][1] / normalization_factor), 'l')
 
         if i == 0:
             hist.Draw('hist')
