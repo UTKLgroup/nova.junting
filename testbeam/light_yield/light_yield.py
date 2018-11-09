@@ -5,7 +5,7 @@ from datetime import datetime
 
 
 PDG = TDatabasePDG()
-FIGURE_DIR = '/Users/juntinghuang/beamer/20181025_testbeam_ash_river_sample/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20181108_testbeam_light_yield_all/figures'
 DATA_DIR = './data/scintillator'
 # DATA_DIR = './data/calibration'
 
@@ -377,7 +377,7 @@ def plot_spectra_ratio(**kwargs):
     filenames = kwargs.get('filenames', ['F1ch300006.txt', 'F1ch300016.txt', 'F1ch300018.txt', 'F1ch300020.txt', 'F1ch300022.txt', 'F1ch300024.txt'])
     filename_no_pedestals = kwargs.get('filename_no_pedestals', ['F1ch300005.txt', 'F1ch300015.txt', 'F1ch300017.txt', 'F1ch300019.txt', 'F1ch300021.txt', 'F1ch300023.txt'])
     legend_txts = kwargs.get('legend_txts', ['NDOS', 'Production', 'Tanker', 'Tank 2', 'Tank 3', 'Tank 4'])
-    colors = kwargs.get('colors', [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1, kYellow + 2, kPink, kViolet, kAzure + 4, kCyan, kTeal])
+    colors = kwargs.get('colors', [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1, kYellow + 2, kPink, kViolet, kAzure + 4, kCyan + 1, kTeal - 7])
     legend_x1ndc = kwargs.get('legend_x1ndc', 0.58)
     legend_x2ndc = kwargs.get('legend_x2ndc', 0.92)
     y_axis_title_ratio = kwargs.get('y_axis_title_ratio', 'Ratio to NDOS')
@@ -470,7 +470,7 @@ def plot_spectra_ratio(**kwargs):
     input('Press any key to continue.')
 
 
-def print_event_rate():
+def plot_event_rate():
     sample_names = [
         'NDOS',
         'Production',
@@ -489,7 +489,12 @@ def print_event_rate():
         'Ash River 3',
         'Ash River 4',
         'Ash River 5',
-        'Ash River 6'
+        'Ash River 6',
+        'Tank 2',
+        'Tanker',
+        'NDOS',
+        'Tank 3',
+        'Tank 4'
     ]
     filenames = [
         'F1ch300005.txt',
@@ -509,7 +514,12 @@ def print_event_rate():
         'F1ch300045.txt',
         'F1ch300047.txt',
         'F1ch300049.txt',
-        'F1ch300051.txt'
+        'F1ch300051.txt',
+        'F1ch300055.txt',       # Tank 2
+        'F1ch300057.txt',       # Tanker
+        'F1ch300059.txt',       # NDOS
+        'F1ch300061.txt',       # Tank 3
+        'F1ch300063.txt'        # Tank 4
     ]
     start_times = [
         datetime(2018, 10, 11, 18, 10),
@@ -529,7 +539,12 @@ def print_event_rate():
         datetime(2018, 10, 29, 17, 45),
         datetime(2018, 10, 30, 18, 8),
         datetime(2018, 10, 31, 19, 2),
-        datetime(2018, 11, 1, 17, 53)
+        datetime(2018, 11, 1, 17, 53),
+        datetime(2018, 11, 2, 16, 40), # Tank 2
+        datetime(2018, 11, 5, 15, 53), # Tanker
+        datetime(2018, 11, 6, 16, 36), # NDOS
+        datetime(2018, 11, 7, 18, 27), # Tank 3
+        datetime(2018, 11, 8, 18, 13)  # Tank 4
     ]
     end_times = [
         datetime(2018, 10, 12, 10, 10),
@@ -550,6 +565,11 @@ def print_event_rate():
         datetime(2018, 10, 31, 17, 16),
         datetime(2018, 11, 1, 16, 5),
         datetime(2018, 11, 2, 10, 54),
+        datetime(2018, 11, 5, 15, 26),  # Tank 2
+        datetime(2018, 11, 6, 15, 4),   # Tanker
+        datetime(2018, 11, 7, 17, 6),   # NDOS
+        datetime(2018, 11, 8, 16, 45),  # Tank 3
+        datetime(2018, 11, 9, 11, 19)   # Tank 4
     ]
 
     durations = []              # minutes
@@ -566,8 +586,31 @@ def print_event_rate():
     for i, duration in enumerate(durations):
         event_rates.append(event_counts[i] / durations[i])
 
-    for i, event_rate in enumerate(event_rates):
-        print('{} & {:.1f} & {:.0f} & {:.0f} \\\\'.format(sample_names[i], durations[i] / 60., event_counts[i], event_rates[i]))
+    # for i, event_rate in enumerate(event_rates):
+    #     print('{} & {:.1f} & {:.0f} & {:.0f} \\\\'.format(sample_names[i], durations[i] / 60., event_counts[i], event_rates[i]))
+
+    plot_indexs = [10, 18, 17, 16, 19, 20, 9, 11, 12, 13, 14, 15]
+    for plot_index in plot_indexs:
+        print('{} & {:.1f} & {:.0f} & {:.0f} \\\\'.format(sample_names[plot_index], durations[plot_index] / 60., event_counts[plot_index], event_rates[plot_index]))
+
+    h_rate = TH1D('h_rate', 'h_rate', 2, 0, 2)
+    h_rate.GetXaxis().CanExtend()
+
+    for plot_index in plot_indexs:
+        h_rate.Fill(sample_names[plot_index], event_rates[plot_index])
+
+    c1 = TCanvas('c1', 'c1', 1050, 600)
+    set_margin()
+    gPad.SetGrid()
+
+    set_h1_style(h_rate)
+    h_rate.LabelsDeflate('X')
+    h_rate.Draw('hist')
+    h_rate.GetYaxis().SetTitle('Rate (per minute)')
+
+    c1.Update()
+    c1.SaveAs('{}/plot_event_rate.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
 
 
 def plot_peaks(**kwargs):
@@ -589,14 +632,14 @@ def plot_peaks(**kwargs):
     for i, sample_name in enumerate(sample_names):
         print('{} & {:.2F} & {:.1F} \\\\'.format(sample_name, peak_xs[i] * 1.e11, peak_xs[i] / calibration_constant))
 
-    c1 = TCanvas('c1', 'c1', 1000, 600)
+    c1 = TCanvas('c1', 'c1', 1050, 600)
     set_margin()
     gPad.SetGrid()
 
     set_h1_style(h_peak)
     h_peak.LabelsDeflate('X')
     h_peak.Draw('hist')
-    h_peak.GetYaxis().SetTitle('Peak (PE)')
+    h_peak.GetYaxis().SetTitle('Peak (NPE)')
 
     c1.Update()
     c1.SaveAs('{}/plot_peaks.pdf'.format(FIGURE_DIR))
@@ -712,17 +755,29 @@ def print_photon_count():
     print('dNdx = {}'.format(dNdx))
     print('sin2theta = {}'.format(sin2theta))
 
+# 20181108_testbeam_light_yield_all
+calibration_constant = 8.854658242290205e-13 # C / PE
+# plot_spectra_ratio(rebin=10,
+#                    suffix='.tote',
+#                    calibration_constant=calibration_constant,
+#                    filenames=['F1ch300040.txt', 'F1ch300060.txt', 'F1ch300058.txt', 'F1ch300056.txt', 'F1ch300062.txt', 'F1ch300064.txt', 'F1ch300036.txt', 'F1ch300042.txt', 'F1ch300046.txt', 'F1ch300048.txt', 'F1ch300050.txt', 'F1ch300052.txt'],
+#                    filename_no_pedestals=['F1ch300039.txt', 'F1ch300059.txt', 'F1ch300057.txt', 'F1ch300055.txt', 'F1ch300061.txt', 'F1ch300063.txt', 'F1ch300035.txt', 'F1ch300041.txt', 'F1ch300045.txt', 'F1ch300047.txt', 'F1ch300049.txt', 'F1ch300051.txt'],
+#                    legend_txts=['Production', 'NDOS', 'Tanker', 'Tank 2', 'Tank 3', 'Tank 4', 'Ash River 1', 'Ash River 2', 'Ash River 3', 'Ash River 4', 'Ash River 5', 'Ash River 6'],
+#                    y_axis_title_ratio='Ratio to Production')
+# plot_peaks(sample_names=['Production', 'NDOS', 'Tanker', 'Tank 2', 'Tank 3', 'Tank 4', 'Ash River 1', 'Ash River 2', 'Ash River 3', 'Ash River 4', 'Ash River 5', 'Ash River 6'],
+#            filenames=['F1ch300039.txt', 'F1ch300059.txt', 'F1ch300057.txt', 'F1ch300055.txt', 'F1ch300061.txt', 'F1ch300063.txt', 'F1ch300035.txt', 'F1ch300041.txt', 'F1ch300045.txt', 'F1ch300047.txt', 'F1ch300049.txt', 'F1ch300051.txt'])
+plot_event_rate()
 
 # 20181025_testbeam_ash_river_sample
 # plot_spectrum('F1ch300036.txt', rebin=10, x_min=-0.02e-9, x_max=0.15e-9)
-gStyle.SetOptStat(0)
-plot_peaks(
-    sample_names=['Production', 'NDOS', 'Tanker', 'Tank 2', 'Ash River 1', 'Ash River 2', 'Ash River 3', 'Ash River 4', 'Ash River 5', 'Ash River 6'],
-    filenames=['F1ch300039.txt', 'F1ch300059.txt', 'F1ch300057.txt', 'F1ch300055.txt', 'F1ch300035.txt', 'F1ch300041.txt', 'F1ch300045.txt', 'F1ch300047.txt', 'F1ch300049.txt', 'F1ch300051.txt']
-)
+# gStyle.SetOptStat(0)
+# plot_peaks(
+#     sample_names=['Production', 'NDOS', 'Tanker', 'Tank 2', 'Ash River 1', 'Ash River 2', 'Ash River 3', 'Ash River 4', 'Ash River 5', 'Ash River 6'],
+#     filenames=['F1ch300039.txt', 'F1ch300059.txt', 'F1ch300057.txt', 'F1ch300055.txt', 'F1ch300035.txt', 'F1ch300041.txt', 'F1ch300045.txt', 'F1ch300047.txt', 'F1ch300049.txt', 'F1ch300051.txt']
+# )
 # calibration_constant = 8.854658242290205e-13 # C / PE
 # plot_spectra(rebin=10, calibration_constant=calibration_constant)
-# print_event_rate()
+# plot_event_rate()
 # plot_spectra(rebin=10,
 #              suffix='.tote',
 #              calibration_constant=calibration_constant,
@@ -735,13 +790,6 @@ plot_peaks(
 #                    filenames=['F1ch300040.txt', 'F1ch300036.txt', 'F1ch300042.txt', 'F1ch300046.txt', 'F1ch300048.txt', 'F1ch300050.txt', 'F1ch300052.txt'],
 #                    filename_no_pedestals=['F1ch300039.txt', 'F1ch300035.txt', 'F1ch300041.txt', 'F1ch300045.txt', 'F1ch300047.txt', 'F1ch300049.txt', 'F1ch300051.txt'],
 #                    legend_txts=['Production', 'Ash River 1', 'Ash River 2', 'Ash River 3', 'Ash River 4', 'Ash River 5', 'Ash River 6'],
-#                    y_axis_title_ratio='Ratio to Production')
-# plot_spectra_ratio(rebin=10,
-#                    suffix='.tote',
-#                    calibration_constant=calibration_constant,
-#                    filenames=['F1ch300040.txt', 'F1ch300060.txt', 'F1ch300058.txt', 'F1ch300056.txt', 'F1ch300036.txt', 'F1ch300042.txt', 'F1ch300046.txt', 'F1ch300048.txt', 'F1ch300050.txt', 'F1ch300052.txt'],
-#                    filename_no_pedestals=['F1ch300039.txt', 'F1ch300059.txt', 'F1ch300057.txt', 'F1ch300055.txt', 'F1ch300035.txt', 'F1ch300041.txt', 'F1ch300045.txt', 'F1ch300047.txt', 'F1ch300049.txt', 'F1ch300051.txt'],
-#                    legend_txts=['Production', 'NDOS', 'Tanker', 'Tank 2', 'Ash River 1', 'Ash River 2', 'Ash River 3', 'Ash River 4', 'Ash River 5', 'Ash River 6'],
 #                    y_axis_title_ratio='Ratio to Production')
 # plot_spectra(rebin=10,
 #              suffix='.production_comparison',
