@@ -617,6 +617,7 @@ def plot_peaks(**kwargs):
     sample_names = kwargs.get('sample_names', ['NDOS', 'production', 'tanker', 'tank 2', 'tank 3', 'tank 4'])
     filenames = kwargs.get('filenames', ['F1ch300005.txt', 'F1ch300015.txt', 'F1ch300017.txt', 'F1ch300019.txt', 'F1ch300021.txt', 'F1ch300023.txt'])
     calibration_constant = kwargs.get('calibration_constant', 8.854658242290205e-13)
+    pseudocumene_fractions = kwargs.get('pseudocumene_fractions', None)
 
     h_peak = TH1D('h_peak', 'h_peak', 2, 0, 2)
     h_peak.GetXaxis().CanExtend()
@@ -632,17 +633,43 @@ def plot_peaks(**kwargs):
     for i, sample_name in enumerate(sample_names):
         print('{} & {:.2F} & {:.1F} \\\\'.format(sample_name, peak_xs[i] * 1.e11, peak_xs[i] / calibration_constant))
 
-    c1 = TCanvas('c1', 'c1', 1050, 600)
+    calibrate_peak_xs = [peak_x / calibration_constant for peak_x in peak_xs]
+    gr_pseudocumene = TGraph(len(sample_names), np.array(pseudocumene_fractions), np.array(calibrate_peak_xs))
+
+    # c1 = TCanvas('c1', 'c1', 1050, 600)
+    # set_margin()
+    # gPad.SetGrid()
+
+    # set_h1_style(h_peak)
+    # h_peak.LabelsDeflate('X')
+    # h_peak.Draw('hist')
+    # h_peak.GetYaxis().SetTitle('Peak (NPE)')
+
+    # c1.Update()
+    # c1.SaveAs('{}/plot_peaks.pdf'.format(FIGURE_DIR))
+    # input('Press any key to continue.')
+
+    c2 = TCanvas('c2', 'c2', 800, 600)
     set_margin()
-    gPad.SetGrid()
 
-    set_h1_style(h_peak)
-    h_peak.LabelsDeflate('X')
-    h_peak.Draw('hist')
-    h_peak.GetYaxis().SetTitle('Peak (NPE)')
+    set_graph_style(gr_pseudocumene)
+    gr_pseudocumene.Draw('AP')
+    gr_pseudocumene.GetXaxis().SetTitle('Pseudocumene Fraction (%)')
+    gr_pseudocumene.GetYaxis().SetTitle('Spectrum Peak (NPE)')
 
-    c1.Update()
-    c1.SaveAs('{}/plot_peaks.pdf'.format(FIGURE_DIR))
+    f1 = TF1('f1', 'pol1', 4., 6.)
+    gr_pseudocumene.Fit('f1')
+
+    t1 = TLatex()
+    # t1.SetNDC()
+    t1.SetTextFont(43)
+    t1.SetTextSize(28)
+    t1.SetTextAlign(13)
+    t1.DrawLatex(5.1, 28., 'fitting function:')
+    t1.DrawLatex(5.1, 27.3, 'y = {:.1f} x {:.1f}'.format(f1.GetParameter(1), f1.GetParameter(0)))
+
+    c2.Update()
+    c2.SaveAs('{}/plot_peaks.pseudocumene.pdf'.format(FIGURE_DIR))
     input('Press any key to continue.')
 
 
@@ -764,9 +791,10 @@ calibration_constant = 8.854658242290205e-13 # C / PE
 #                    filename_no_pedestals=['F1ch300039.txt', 'F1ch300059.txt', 'F1ch300057.txt', 'F1ch300055.txt', 'F1ch300061.txt', 'F1ch300063.txt', 'F1ch300035.txt', 'F1ch300041.txt', 'F1ch300045.txt', 'F1ch300047.txt', 'F1ch300049.txt', 'F1ch300051.txt'],
 #                    legend_txts=['Production', 'NDOS', 'Tanker', 'Tank 2', 'Tank 3', 'Tank 4', 'Ash River 1', 'Ash River 2', 'Ash River 3', 'Ash River 4', 'Ash River 5', 'Ash River 6'],
 #                    y_axis_title_ratio='Ratio to Production')
-# plot_peaks(sample_names=['Production', 'NDOS', 'Tanker', 'Tank 2', 'Tank 3', 'Tank 4', 'Ash River 1', 'Ash River 2', 'Ash River 3', 'Ash River 4', 'Ash River 5', 'Ash River 6'],
-#            filenames=['F1ch300039.txt', 'F1ch300059.txt', 'F1ch300057.txt', 'F1ch300055.txt', 'F1ch300061.txt', 'F1ch300063.txt', 'F1ch300035.txt', 'F1ch300041.txt', 'F1ch300045.txt', 'F1ch300047.txt', 'F1ch300049.txt', 'F1ch300051.txt'])
-plot_event_rate()
+plot_peaks(sample_names=['Production', 'NDOS', 'Tanker', 'Tank 2', 'Tank 3', 'Tank 4', 'Ash River 1', 'Ash River 2', 'Ash River 3', 'Ash River 4', 'Ash River 5', 'Ash River 6'],
+           filenames=['F1ch300039.txt', 'F1ch300059.txt', 'F1ch300057.txt', 'F1ch300055.txt', 'F1ch300061.txt', 'F1ch300063.txt', 'F1ch300035.txt', 'F1ch300041.txt', 'F1ch300045.txt', 'F1ch300047.txt', 'F1ch300049.txt', 'F1ch300051.txt'],
+           pseudocumene_fractions=[5.4, 4.91, 4.83, 4.62, 4.57, 4.48, 5.22, 5.17, 4.99, 5.06, 4.97, 4.93])
+# plot_event_rate()
 
 # 20181025_testbeam_ash_river_sample
 # plot_spectrum('F1ch300036.txt', rebin=10, x_min=-0.02e-9, x_max=0.15e-9)
