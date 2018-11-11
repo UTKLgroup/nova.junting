@@ -599,18 +599,46 @@ def plot_event_rate():
     for plot_index in plot_indexs:
         h_rate.Fill(sample_names[plot_index], event_rates[plot_index])
 
-    c1 = TCanvas('c1', 'c1', 1050, 600)
-    set_margin()
-    gPad.SetGrid()
+    plot_event_rates = [event_rates[plot_index] for plot_index in plot_indexs]
+    pseudocumene_fractions=[5.4, 4.91, 4.83, 4.62, 4.57, 4.48, 5.22, 5.17, 4.99, 5.06, 4.97, 4.93]
+    gr_pseudocumene = TGraph(len(plot_indexs), np.array(pseudocumene_fractions), np.array(plot_event_rates))
 
-    set_h1_style(h_rate)
-    h_rate.LabelsDeflate('X')
-    h_rate.Draw('hist')
-    h_rate.GetYaxis().SetTitle('Rate (per minute)')
+    # c1 = TCanvas('c1', 'c1', 1050, 600)
+    # set_margin()
+    # gPad.SetGrid()
+
+    # set_h1_style(h_rate)
+    # h_rate.LabelsDeflate('X')
+    # h_rate.Draw('hist')
+    # h_rate.GetYaxis().SetTitle('Rate (per minute)')
+
+    # c1.Update()
+    # c1.SaveAs('{}/plot_event_rate.pdf'.format(FIGURE_DIR))
+    # input('Press any key to continue.')
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+
+    set_graph_style(gr_pseudocumene)
+    gr_pseudocumene.Draw('AP')
+    gr_pseudocumene.GetXaxis().SetTitle('Pseudocumene Mass Fraction (%)')
+    gr_pseudocumene.GetYaxis().SetTitle('Event Rate (per minute)')
+
+    f1 = TF1('f1', 'pol1', 4., 6.)
+    gr_pseudocumene.Fit('f1')
+
+    t1 = TLatex()
+    t1.SetNDC()
+    t1.SetTextFont(43)
+    t1.SetTextSize(28)
+    t1.SetTextAlign(13)
+    t1.DrawLatex(0.6, 0.32, 'fitting function:')
+    t1.DrawLatex(0.6, 0.25, 'y = {:.1f} x {:.1f}'.format(f1.GetParameter(1), f1.GetParameter(0)))
 
     c1.Update()
-    c1.SaveAs('{}/plot_event_rate.pdf'.format(FIGURE_DIR))
+    c1.SaveAs('{}/plot_event_rate.pseudocumene.pdf'.format(FIGURE_DIR))
     input('Press any key to continue.')
+
 
 
 def plot_peaks(**kwargs):
@@ -654,24 +682,25 @@ def plot_peaks(**kwargs):
 
     set_graph_style(gr_pseudocumene)
     gr_pseudocumene.Draw('AP')
-    gr_pseudocumene.GetXaxis().SetTitle('Pseudocumene Fraction (%)')
+    gr_pseudocumene.GetXaxis().SetTitle('Pseudocumene Mass Fraction (%)')
     gr_pseudocumene.GetYaxis().SetTitle('Spectrum Peak (NPE)')
 
     f1 = TF1('f1', 'pol1', 4., 6.)
     gr_pseudocumene.Fit('f1')
 
     t1 = TLatex()
-    # t1.SetNDC()
+    t1.SetNDC()
     t1.SetTextFont(43)
     t1.SetTextSize(28)
     t1.SetTextAlign(13)
-    t1.DrawLatex(5.1, 28., 'fitting function:')
-    t1.DrawLatex(5.1, 27.3, 'y = {:.1f} x {:.1f}'.format(f1.GetParameter(1), f1.GetParameter(0)))
+    t1.DrawLatex(0.6, 0.32, 'fitting function:')
+    t1.DrawLatex(0.6, 0.25, 'y = {:.1f} x {:.1f}'.format(f1.GetParameter(1), f1.GetParameter(0)))
+    # t1.DrawLatex(5.1, 28., 'fitting function:')
+    # t1.DrawLatex(5.1, 27.3, 'y = {:.1f} x {:.1f}'.format(f1.GetParameter(1), f1.GetParameter(0)))
 
     c2.Update()
     c2.SaveAs('{}/plot_peaks.pseudocumene.pdf'.format(FIGURE_DIR))
     input('Press any key to continue.')
-
 
 
 def get_spectrum_peak(filename, **kwargs):
@@ -783,7 +812,7 @@ def print_photon_count():
     print('sin2theta = {}'.format(sin2theta))
 
 # 20181108_testbeam_light_yield_all
-calibration_constant = 8.854658242290205e-13 # C / PE
+# calibration_constant = 8.854658242290205e-13 # C / PE
 # plot_spectra_ratio(rebin=10,
 #                    suffix='.tote',
 #                    calibration_constant=calibration_constant,
