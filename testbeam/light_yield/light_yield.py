@@ -603,6 +603,21 @@ def plot_event_rate():
     pseudocumene_fractions=[5.4, 4.91, 4.83, 4.62, 4.57, 4.48, 5.22, 5.17, 4.99, 5.06, 4.97, 4.93]
     gr_pseudocumene = TGraph(len(plot_indexs), np.array(pseudocumene_fractions), np.array(plot_event_rates))
 
+    lg1 = TLegend(0.68, 0.18, 0.88, 0.66)
+    set_legend_style(lg1)
+    lg1.SetBorderSize(1)
+    lg1.SetMargin(0.3)
+    lg1.SetTextSize(20)
+
+    colors = [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1, kYellow + 2, kPink, kViolet, kAzure + 4, kCyan + 1, kTeal - 7]
+    tmarkers = []
+    for i, plot_index in enumerate(plot_indexs):
+        tmarker = TMarker(pseudocumene_fractions[i], plot_event_rates[i], 20)
+        tmarker.SetMarkerColor(colors[i])
+        tmarker.SetMarkerSize(1.2)
+        tmarkers.append(tmarker)
+        lg1.AddEntry(tmarkers[i], sample_names[plot_index], 'p')
+
     # c1 = TCanvas('c1', 'c1', 1050, 600)
     # set_margin()
     # gPad.SetGrid()
@@ -621,6 +636,7 @@ def plot_event_rate():
 
     set_graph_style(gr_pseudocumene)
     gr_pseudocumene.Draw('AP')
+    gr_pseudocumene.SetMarkerSize(0.)
     gr_pseudocumene.GetXaxis().SetTitle('Pseudocumene Mass Fraction (%)')
     gr_pseudocumene.GetYaxis().SetTitle('Event Rate (per minute)')
 
@@ -632,13 +648,17 @@ def plot_event_rate():
     t1.SetTextFont(43)
     t1.SetTextSize(28)
     t1.SetTextAlign(13)
-    t1.DrawLatex(0.6, 0.32, 'fitting function:')
-    t1.DrawLatex(0.6, 0.25, 'y = {:.1f} x {:.1f}'.format(f1.GetParameter(1), f1.GetParameter(0)))
+    t1.DrawLatex(0.19, 0.87, 'fitting function:')
+    t1.DrawLatex(0.19, 0.81, 'y = {:.1f} x {:.1f}'.format(f1.GetParameter(1), f1.GetParameter(0)))
+
+    for tmarker in tmarkers:
+        tmarker.Draw()
+
+    lg1.Draw()
 
     c1.Update()
     c1.SaveAs('{}/plot_event_rate.pseudocumene.pdf'.format(FIGURE_DIR))
     input('Press any key to continue.')
-
 
 
 def plot_peaks(**kwargs):
@@ -664,6 +684,21 @@ def plot_peaks(**kwargs):
     calibrate_peak_xs = [peak_x / calibration_constant for peak_x in peak_xs]
     gr_pseudocumene = TGraph(len(sample_names), np.array(pseudocumene_fractions), np.array(calibrate_peak_xs))
 
+    lg1 = TLegend(0.68, 0.18, 0.88, 0.66)
+    set_legend_style(lg1)
+    lg1.SetBorderSize(1)
+    lg1.SetMargin(0.3)
+    lg1.SetTextSize(20)
+
+    colors = [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1, kYellow + 2, kPink, kViolet, kAzure + 4, kCyan + 1, kTeal - 7]
+    tmarkers = []
+    for i in range(len(pseudocumene_fractions)):
+        tmarker = TMarker(pseudocumene_fractions[i], calibrate_peak_xs[i], 20)
+        tmarker.SetMarkerColor(colors[i])
+        tmarker.SetMarkerSize(1.2)
+        tmarkers.append(tmarker)
+        lg1.AddEntry(tmarkers[i], sample_names[i], 'p')
+
     # c1 = TCanvas('c1', 'c1', 1050, 600)
     # set_margin()
     # gPad.SetGrid()
@@ -681,6 +716,7 @@ def plot_peaks(**kwargs):
     set_margin()
 
     set_graph_style(gr_pseudocumene)
+    gr_pseudocumene.SetMarkerSize(0)
     gr_pseudocumene.Draw('AP')
     gr_pseudocumene.GetXaxis().SetTitle('Pseudocumene Mass Fraction (%)')
     gr_pseudocumene.GetYaxis().SetTitle('Spectrum Peak (NPE)')
@@ -693,10 +729,13 @@ def plot_peaks(**kwargs):
     t1.SetTextFont(43)
     t1.SetTextSize(28)
     t1.SetTextAlign(13)
-    t1.DrawLatex(0.6, 0.32, 'fitting function:')
-    t1.DrawLatex(0.6, 0.25, 'y = {:.1f} x {:.1f}'.format(f1.GetParameter(1), f1.GetParameter(0)))
-    # t1.DrawLatex(5.1, 28., 'fitting function:')
-    # t1.DrawLatex(5.1, 27.3, 'y = {:.1f} x {:.1f}'.format(f1.GetParameter(1), f1.GetParameter(0)))
+    t1.DrawLatex(0.19, 0.87, 'fitting function:')
+    t1.DrawLatex(0.19, 0.81, 'y = {:.1f} x {:.1f}'.format(f1.GetParameter(1), f1.GetParameter(0)))
+
+    for tmarker in tmarkers:
+        tmarker.Draw()
+
+    lg1.Draw()
 
     c2.Update()
     c2.SaveAs('{}/plot_peaks.pseudocumene.pdf'.format(FIGURE_DIR))
