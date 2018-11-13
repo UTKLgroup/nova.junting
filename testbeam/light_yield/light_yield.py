@@ -834,11 +834,13 @@ def print_cherenkov_threshold():
         name = PDG.GetParticle(pid).GetName()
         mass = PDG.GetParticle(pid).Mass() * 1.e3   # MeV
         momentum = beta / (1 - beta**2)**0.5 * mass # MeV
-        # print('mass = {}'.format(mass))
-        # print('momentum = {}'.format(momentum))
+        gamma = 1. / (1. - beta**2)**0.5
+        kinetic_energy = (gamma - 1.) * mass
+
         print('{} & {:.2f} & {:.1f} \\\\'.format(name, mass, momentum))
         print('beta / (1 - beta**2)**0.5 = {}'.format(beta / (1 - beta**2)**0.5))
-        print('1. / (1. - beta**2)**0.5 = {}'.format(1. / (1. - beta**2)**0.5))
+        print('gamma = {}'.format(gamma))
+        print('kinetic_energy = {}'.format(kinetic_energy))
 
 
 def print_photon_count():
@@ -850,6 +852,7 @@ def print_photon_count():
     print('dNdx = {}'.format(dNdx))
     print('sin2theta = {}'.format(sin2theta))
 
+
 # 20181108_testbeam_light_yield_all
 # calibration_constant = 8.854658242290205e-13 # C / PE
 # plot_spectra_ratio(rebin=10,
@@ -859,9 +862,9 @@ def print_photon_count():
 #                    filename_no_pedestals=['F1ch300039.txt', 'F1ch300059.txt', 'F1ch300057.txt', 'F1ch300055.txt', 'F1ch300061.txt', 'F1ch300063.txt', 'F1ch300035.txt', 'F1ch300041.txt', 'F1ch300045.txt', 'F1ch300047.txt', 'F1ch300049.txt', 'F1ch300051.txt'],
 #                    legend_txts=['Production', 'NDOS', 'Tanker', 'Tank 2', 'Tank 3', 'Tank 4', 'Ash River 1', 'Ash River 2', 'Ash River 3', 'Ash River 4', 'Ash River 5', 'Ash River 6'],
 #                    y_axis_title_ratio='Ratio to Production')
-plot_peaks(sample_names=['Production', 'NDOS', 'Tanker', 'Tank 2', 'Tank 3', 'Tank 4', 'Ash River 1', 'Ash River 2', 'Ash River 3', 'Ash River 4', 'Ash River 5', 'Ash River 6'],
-           filenames=['F1ch300039.txt', 'F1ch300059.txt', 'F1ch300057.txt', 'F1ch300055.txt', 'F1ch300061.txt', 'F1ch300063.txt', 'F1ch300035.txt', 'F1ch300041.txt', 'F1ch300045.txt', 'F1ch300047.txt', 'F1ch300049.txt', 'F1ch300051.txt'],
-           pseudocumene_fractions=[5.4, 4.91, 4.83, 4.62, 4.57, 4.48, 5.22, 5.17, 4.99, 5.06, 4.97, 4.93])
+# plot_peaks(sample_names=['Production', 'NDOS', 'Tanker', 'Tank 2', 'Tank 3', 'Tank 4', 'Ash River 1', 'Ash River 2', 'Ash River 3', 'Ash River 4', 'Ash River 5', 'Ash River 6'],
+#            filenames=['F1ch300039.txt', 'F1ch300059.txt', 'F1ch300057.txt', 'F1ch300055.txt', 'F1ch300061.txt', 'F1ch300063.txt', 'F1ch300035.txt', 'F1ch300041.txt', 'F1ch300045.txt', 'F1ch300047.txt', 'F1ch300049.txt', 'F1ch300051.txt'],
+#            pseudocumene_fractions=[5.4, 4.91, 4.83, 4.62, 4.57, 4.48, 5.22, 5.17, 4.99, 5.06, 4.97, 4.93])
 # plot_event_rate()
 
 # 20181025_testbeam_ash_river_sample
@@ -906,7 +909,7 @@ plot_peaks(sample_names=['Production', 'NDOS', 'Tanker', 'Tank 2', 'Tank 3', 'Ta
 #                    y_axis_title_ratio='Ratio')
 
 # 20181018_testbeam_mineral_oil
-# print_cherenkov_threshold()
+print_cherenkov_threshold()
 # print_photon_count()
 
 # 20181005_testbeam_light_yield_setup
