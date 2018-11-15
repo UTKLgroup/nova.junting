@@ -2951,20 +2951,56 @@ def plot_b_field():
             for position_z in position_zs:
                 h_y.Fill(position_z, position_x, abs(position_b_ys[(position_x, 0., position_z)]))
 
+        h_z = TH2D('h_z', 'h_z', position_x_count, 0., max_position_x, position_y_count, 0., max_position_y)
+        for position_x in position_xs:
+            for position_y in position_ys:
+                h_z.Fill(position_x, position_y, abs(position_b_ys[(position_x, position_y, 0.)]))
+
+        h_x = TH2D('h_x', 'h_x', position_z_count, 0., max_position_z, position_y_count, 0., max_position_y)
+        for position_y in position_ys:
+            for position_z in position_zs:
+                h_x.Fill(position_z, position_y, abs(position_b_ys[(0., position_y, position_z)]))
+
         c1 = TCanvas('c1', 'c1', 800, 600)
         set_margin()
         set_h2_color_style()
         set_h2_style(h_y)
-
         h_y.Draw('colz')
-        h_y.GetYaxis().SetRangeUser(0, max_position_x - max_position_x / position_x_count)
+        # h_y.GetYaxis().SetRangeUser(0, max_position_x - max_position_x / position_x_count)
         h_y.GetXaxis().SetTitle('Z (m)')
         h_y.GetYaxis().SetTitle('X (m)')
         h_y.GetXaxis().SetTitleOffset(1.2)
         h_y.GetYaxis().SetTitleOffset(1.4)
-
         c1.Update()
         c1.SaveAs('{}/plot_b_field.h_y.pdf'.format(FIGURE_DIR))
+        input('Press any key to continue.')
+
+        c2 = TCanvas('c2', 'c2', 800, 600)
+        set_margin()
+        set_h2_color_style()
+        set_h2_style(h_z)
+        h_z.Draw('colz')
+        # h_z.GetYaxis().SetRangeUser(0, max_position_x - max_position_x / position_x_count)
+        h_z.GetXaxis().SetTitle('X (m)')
+        h_z.GetYaxis().SetTitle('Y (m)')
+        h_z.GetXaxis().SetTitleOffset(1.2)
+        h_z.GetYaxis().SetTitleOffset(1.4)
+        c2.Update()
+        c2.SaveAs('{}/plot_b_field.h_z.pdf'.format(FIGURE_DIR))
+        input('Press any key to continue.')
+
+        c3 = TCanvas('c3', 'c3', 800, 600)
+        set_margin()
+        set_h2_color_style()
+        set_h2_style(h_x)
+        h_x.Draw('colz')
+        # h_x.GetYaxis().SetRangeUser(0, max_position_x - max_position_x / position_x_count)
+        h_x.GetXaxis().SetTitle('Z (m)')
+        h_x.GetYaxis().SetTitle('Y (m)')
+        h_x.GetXaxis().SetTitleOffset(1.2)
+        h_x.GetYaxis().SetTitleOffset(1.4)
+        c3.Update()
+        c3.SaveAs('{}/plot_b_field.h_x.pdf'.format(FIGURE_DIR))
         input('Press any key to continue.')
 
 
