@@ -12,7 +12,7 @@ ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
-FIGURE_DIR = '/Users/juntinghuang/beamer/20181105_testbeam_g4bl_speed/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20181115_testbeam_proton_secondary_beam/figures'
 DATA_DIR = './data'
 
 
@@ -2905,13 +2905,16 @@ def compute_minimum_kinetic_energy():
         print('{}: gamma = {:.3f}, kinetic_energy = {:.1f}, kinetic_energy_2 = {:.1f}, E = {}'.format(name, gamma, kinetic_energy, kinetic_energy_2, gamma * mass))
 
 
+# 20181115_testbeam_proton_secondary_beam
+plot_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_2000.40m.kineticEnergyCut_20.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=40., y_title='Particle Count per 1M Beam Particles', b_field=-0.9, beam_momentum=64)
+
 # 20181105_testbeam_g4bl_speed
 # plot_particle_momentum('g4bl.b_0.9T.pi+.64000.root.job_1_6000.80m.kineticEnergyCut_20.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=80., y_title='Particle Count per 1M Beam Particles', b_field=0.9, beam_momentum=64)
 # print('Charge() = {}'.format(PDG.GetParticle('e+').Charge()))
 # use kineticEnergyCut=20 only
 # plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.job_1_2000.301.4m.kineticEnergyCut_20.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=301.4, y_title='Particle Count per 1M Beam Particles', b_field=-0.9, beam_momentum=64)
 # plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.job_1_2000.87.6m.kineticEnergyCut_20.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=87.6, y_title='Particle Count per 1M Beam Particles', b_field=-0.9, beam_momentum=64)
-compute_minimum_kinetic_energy()
+# compute_minimum_kinetic_energy()
 # plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.job_1_6000.53.63m.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=53.63, y_title='Particle Count per 1M Beam Particles', b_field=-0.9, beam_momentum=64)
 # plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.job_1_2000.1537m.kill.keep.kineticEnergyCut.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=1537, y_title='Particle Count per 1M Beam Particles', b_field=-0.9, beam_momentum=64)
 # plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.job_1_2000.1998m.kill.keep.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=1998, y_title='Particle Count per 1M Beam Particles', b_field=-0.9, beam_momentum=64)
