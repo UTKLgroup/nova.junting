@@ -2937,6 +2937,9 @@ def plot_b_field():
         position_x_count = len(position_xs)
         position_y_count = len(position_ys)
         position_z_count = len(position_zs)
+        position_step_x = max_position_x / position_x_count
+        position_step_y = max_position_y / position_y_count
+        position_step_z = max_position_z / position_z_count
 
         print('max_position_x = {}'.format(max_position_x))
         print('max_position_y = {}'.format(max_position_y))
@@ -2945,18 +2948,27 @@ def plot_b_field():
         print('position_y_count = {}'.format(position_y_count))
         print('position_z_count = {}'.format(position_z_count))
         print('position_x_count * position_y_count * position_z_count = {}'.format(position_x_count * position_y_count * position_z_count))
+        print('position_step_x = {}'.format(position_step_x))
+        print('position_step_y = {}'.format(position_step_y))
+        print('position_step_z = {}'.format(position_step_z))
 
-        h_y = TH2D('h_y', 'h_y', position_z_count, 0., max_position_z, position_x_count, 0., max_position_x)
+        h_y = TH2D('h_y', 'h_y',
+                   position_z_count, -position_step_z / 2., max_position_z + position_step_z / 2.,
+                   position_x_count, -position_step_x / 2., max_position_x + position_step_x / 2.)
         for position_x in position_xs:
             for position_z in position_zs:
                 h_y.Fill(position_z, position_x, abs(position_b_ys[(position_x, 0., position_z)]))
 
-        h_z = TH2D('h_z', 'h_z', position_x_count, 0., max_position_x, position_y_count, 0., max_position_y)
+        h_z = TH2D('h_z', 'h_z',
+                   position_x_count, -position_step_x / 2., max_position_x + position_step_x / 2.,
+                   position_y_count, -position_step_y / 2., max_position_y + position_step_y / 2.)
         for position_x in position_xs:
             for position_y in position_ys:
                 h_z.Fill(position_x, position_y, abs(position_b_ys[(position_x, position_y, 0.)]))
 
-        h_x = TH2D('h_x', 'h_x', position_z_count, 0., max_position_z, position_y_count, 0., max_position_y)
+        h_x = TH2D('h_x', 'h_x',
+                   position_z_count, -position_step_z / 2., max_position_z + position_step_z / 2.,
+                   position_y_count, -position_step_y / 2., max_position_y + position_step_y / 2.)
         for position_y in position_ys:
             for position_z in position_zs:
                 h_x.Fill(position_z, position_y, abs(position_b_ys[(0., position_y, position_z)]))
@@ -2966,7 +2978,6 @@ def plot_b_field():
         set_h2_color_style()
         set_h2_style(h_y)
         h_y.Draw('colz')
-        # h_y.GetYaxis().SetRangeUser(0, max_position_x - max_position_x / position_x_count)
         h_y.GetXaxis().SetTitle('Z (m)')
         h_y.GetYaxis().SetTitle('X (m)')
         h_y.GetXaxis().SetTitleOffset(1.2)
@@ -2980,7 +2991,6 @@ def plot_b_field():
         set_h2_color_style()
         set_h2_style(h_z)
         h_z.Draw('colz')
-        # h_z.GetYaxis().SetRangeUser(0, max_position_x - max_position_x / position_x_count)
         h_z.GetXaxis().SetTitle('X (m)')
         h_z.GetYaxis().SetTitle('Y (m)')
         h_z.GetXaxis().SetTitleOffset(1.2)
@@ -2994,7 +3004,6 @@ def plot_b_field():
         set_h2_color_style()
         set_h2_style(h_x)
         h_x.Draw('colz')
-        # h_x.GetYaxis().SetRangeUser(0, max_position_x - max_position_x / position_x_count)
         h_x.GetXaxis().SetTitle('Z (m)')
         h_x.GetYaxis().SetTitle('Y (m)')
         h_x.GetXaxis().SetTitleOffset(1.2)
