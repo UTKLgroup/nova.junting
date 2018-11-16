@@ -11,7 +11,7 @@ import json
 import datetime
 
 
-FIGURE_DIR = '/Users/juntinghuang/beamer/20180920_nnbar_exposure/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20181115_nnbar_data_quality/figures'
 DATA_DIR = './data'
 
 SECOND_IN_YEAR = 3.16           # 1.e7 s / year
@@ -1359,9 +1359,9 @@ def plot_lifetime_vs_background():
     input('Press any key to continue.')
 
 
-def plot_ddt_exposure(filename):
-    datetime_start = datetime.datetime(2018, 7, 31)
-    datetime_end = datetime.datetime(2018, 9, 20)
+def plot_ddt_exposure(filename, **kwargs):
+    datetime_start = kwargs.get('datetime_start', datetime.datetime(2018, 7, 31))
+    datetime_end = kwargs.get('datetime_end', datetime.datetime(2018, 9, 20))
     timestamp_start = datetime_start.timestamp()
     timestamp_end = datetime_end.timestamp()
     day_count = (datetime_end - datetime_start).days
@@ -1376,7 +1376,12 @@ def plot_ddt_exposure(filename):
     with open('{}/{}'.format(DATA_DIR, filename)) as f_json:
         for i, row in enumerate(f_json.readlines()):
             row = json.loads(row)
-            event_count = row['Online.TotalEvents']
+            try:
+                event_count = row['Online.TotalEvents']
+            except:
+                print('event_count error')
+                continue
+
             if event_count == 0:
                 continue
             subrun_start = row['Online.SubRunStartTime']
@@ -1419,11 +1424,15 @@ def plot_ddt_exposure(filename):
         # input('Press any key to continue.')
         # break
 
+# 20181115_nnbar_data_quality
+gStyle.SetOptStat(0)
+plot_ddt_exposure('get-metadata.2018_11_15.json',
+                  datetime_start=datetime.datetime(2018, 7, 31),
+                  datetime_end=datetime.datetime(2018, 11, 15))
 
 # 20180920_nnbar_exposure
-gStyle.SetOptStat(0)
-plot_ddt_exposure('get-metadata.json')
-
+# gStyle.SetOptStat(0)
+# plot_ddt_exposure('get-metadata.json')
 
 # 20180913_nnbar_prong
 # gStyle.SetOptStat(0)
@@ -1432,7 +1441,6 @@ plot_ddt_exposure('get-metadata.json')
 # plot_1d_cut('fRecoHitCount', cosmic_filename='ddnnbar.hist.n_2000.root', signal_filename='genie_noscgen_10000_rndVertex.hist.n_2500.root', x_cut=1.5, tdirectory_signal='nnbarana', tdirectory_cosmic='neutronoscana', legend_text_cosmic='Cosmic Data', legend_text_signal='Signal MC', legend_fx1ndc=0.55, rebin=10)
 # plot_1d_cut('fExtentPlane', cosmic_filename='ddnnbar.hist.n_2000.root', signal_filename='genie_noscgen_10000_rndVertex.hist.n_2500.root', x_cut=1.5, tdirectory_signal='nnbarana', tdirectory_cosmic='neutronoscana', legend_text_cosmic='Cosmic Data', legend_text_signal='Signal MC', legend_fx1ndc=0.55, rebin=10, x_max=100)
 # plot_1d_cut('fProngCount2D', cosmic_filename='ddnnbar.hist.n_2000.root', signal_filename='genie_noscgen_10000_rndVertex.hist.n_2500.root', x_max=20, x_cut=4, tdirectory_signal='nnbarana', tdirectory_cosmic='neutronoscana', legend_text_cosmic='Cosmic Data', legend_text_signal='Signal MC', legend_fx1ndc=0.55)
-
 
 # 20180907_nnbar_background
 # plot_lifetime_vs_background()

@@ -12,7 +12,7 @@ ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
-FIGURE_DIR = '/Users/juntinghuang/beamer/20181105_testbeam_g4bl_speed/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20181115_testbeam_proton_secondary_beam/figures'
 DATA_DIR = './data'
 
 
@@ -2905,13 +2905,141 @@ def compute_minimum_kinetic_energy():
         print('{}: gamma = {:.3f}, kinetic_energy = {:.1f}, kinetic_energy_2 = {:.1f}, E = {}'.format(name, gamma, kinetic_energy, kinetic_energy_2, gamma * mass))
 
 
+def plot_b_field():
+    with open('{}/SDG_Field_Map/SDG_Field_Map_082718a_1200A.txt'.format(DATA_DIR)) as f_txt:
+        rows = csv.reader(f_txt, delimiter='\t')
+        for i in range(4):
+            next(rows)
+
+        position_xs = set({})
+        position_ys = set({})
+        position_zs = set({})
+        position_b_ys = {}
+        for row in rows:
+            position_x = float(row[0])
+            position_y = float(row[1])
+            position_z = float(row[2])
+            b_x = float(row[3])
+            b_y = float(row[4])
+            b_z = float(row[5])
+
+            position_xs.add(position_x)
+            position_ys.add(position_y)
+            position_zs.add(position_z)
+            position_b_ys[(position_x, position_y, position_z)] = b_y
+
+        position_xs = sorted(list(position_xs))
+        position_ys = sorted(list(position_ys))
+        position_zs = sorted(list(position_zs))
+        max_position_x = max(position_xs)
+        max_position_y = max(position_ys)
+        max_position_z = max(position_zs)
+        position_x_count = len(position_xs)
+        position_y_count = len(position_ys)
+        position_z_count = len(position_zs)
+        position_step_x = max_position_x / position_x_count
+        position_step_y = max_position_y / position_y_count
+        position_step_z = max_position_z / position_z_count
+
+        print('max_position_x = {}'.format(max_position_x))
+        print('max_position_y = {}'.format(max_position_y))
+        print('max_position_z = {}'.format(max_position_z))
+        print('position_x_count = {}'.format(position_x_count))
+        print('position_y_count = {}'.format(position_y_count))
+        print('position_z_count = {}'.format(position_z_count))
+        print('position_x_count * position_y_count * position_z_count = {}'.format(position_x_count * position_y_count * position_z_count))
+        print('position_step_x = {}'.format(position_step_x))
+        print('position_step_y = {}'.format(position_step_y))
+        print('position_step_z = {}'.format(position_step_z))
+
+        h_y = TH2D('h_y', 'h_y',
+                   position_z_count, -position_step_z / 2., max_position_z + position_step_z / 2.,
+                   position_x_count, -position_step_x / 2., max_position_x + position_step_x / 2.)
+        for position_x in position_xs:
+            for position_z in position_zs:
+                h_y.Fill(position_z, position_x, abs(position_b_ys[(position_x, 0., position_z)]))
+
+        h_z = TH2D('h_z', 'h_z',
+                   position_x_count, -position_step_x / 2., max_position_x + position_step_x / 2.,
+                   position_y_count, -position_step_y / 2., max_position_y + position_step_y / 2.)
+        for position_x in position_xs:
+            for position_y in position_ys:
+                h_z.Fill(position_x, position_y, abs(position_b_ys[(position_x, position_y, 0.)]))
+
+        h_x = TH2D('h_x', 'h_x',
+                   position_z_count, -position_step_z / 2., max_position_z + position_step_z / 2.,
+                   position_y_count, -position_step_y / 2., max_position_y + position_step_y / 2.)
+        for position_y in position_ys:
+            for position_z in position_zs:
+                h_x.Fill(position_z, position_y, abs(position_b_ys[(0., position_y, position_z)]))
+
+        c1 = TCanvas('c1', 'c1', 800, 600)
+        set_margin()
+        set_h2_color_style()
+        set_h2_style(h_y)
+        h_y.Draw('colz')
+        h_y.GetXaxis().SetTitle('Z (m)')
+        h_y.GetYaxis().SetTitle('X (m)')
+        h_y.GetZaxis().SetTitle('B_{y} (T)')
+        h_y.GetXaxis().SetTitleOffset(1.2)
+        h_y.GetYaxis().SetTitleOffset(1.4)
+        c1.Update()
+        c1.SaveAs('{}/plot_b_field.h_y.pdf'.format(FIGURE_DIR))
+        input('Press any key to continue.')
+
+        h_y.GetXaxis().SetRangeUser(0, 0.5334)
+        # h_y.GetXaxis().SetRangeUser(0, 0.5)
+        c1.SaveAs('{}/plot_b_field.h_y.zoom.pdf'.format(FIGURE_DIR))
+        input('Press any key to continue.')
+
+        c2 = TCanvas('c2', 'c2', 800, 600)
+        set_margin()
+        set_h2_color_style()
+        set_h2_style(h_z)
+        h_z.Draw('colz')
+        h_z.GetXaxis().SetTitle('X (m)')
+        h_z.GetYaxis().SetTitle('Y (m)')
+        h_z.GetZaxis().SetTitle('B_{y} (T)')
+        h_z.GetXaxis().SetTitleOffset(1.2)
+        h_z.GetYaxis().SetTitleOffset(1.4)
+        c2.Update()
+        c2.SaveAs('{}/plot_b_field.h_z.pdf'.format(FIGURE_DIR))
+        input('Press any key to continue.')
+
+        c3 = TCanvas('c3', 'c3', 800, 600)
+        set_margin()
+        set_h2_color_style()
+        set_h2_style(h_x)
+        h_x.Draw('colz')
+        h_x.GetXaxis().SetTitle('Z (m)')
+        h_x.GetYaxis().SetTitle('Y (m)')
+        h_x.GetZaxis().SetTitle('B_{y} (T)')
+        h_x.GetXaxis().SetTitleOffset(1.2)
+        h_x.GetYaxis().SetTitleOffset(1.4)
+        c3.Update()
+        c3.SaveAs('{}/plot_b_field.h_x.pdf'.format(FIGURE_DIR))
+        input('Press any key to continue.')
+
+        h_x.GetXaxis().SetRangeUser(0, 0.5334)
+        # h_x.GetXaxis().SetRangeUser(0, 0.5)
+        c3.SaveAs('{}/plot_b_field.h_x.zoom.pdf'.format(FIGURE_DIR))
+        input('Press any key to continue.')
+
+
+
+# 20181115_testbeam_proton_secondary_beam
+gStyle.SetOptStat(0)
+# plot_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_2000.40m.kineticEnergyCut_20.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=40., y_title='Particle Count per 1M Beam Particles', b_field=-0.9, beam_momentum=64)
+plot_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_6000.119.3m.kineticEnergyCut_20.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=119.3, y_title='Particle Count per 1M Beam Particles', b_field=-0.9, beam_momentum=64)
+# plot_b_field()
+
 # 20181105_testbeam_g4bl_speed
 # plot_particle_momentum('g4bl.b_0.9T.pi+.64000.root.job_1_6000.80m.kineticEnergyCut_20.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=80., y_title='Particle Count per 1M Beam Particles', b_field=0.9, beam_momentum=64)
 # print('Charge() = {}'.format(PDG.GetParticle('e+').Charge()))
 # use kineticEnergyCut=20 only
 # plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.job_1_2000.301.4m.kineticEnergyCut_20.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=301.4, y_title='Particle Count per 1M Beam Particles', b_field=-0.9, beam_momentum=64)
 # plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.job_1_2000.87.6m.kineticEnergyCut_20.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=87.6, y_title='Particle Count per 1M Beam Particles', b_field=-0.9, beam_momentum=64)
-compute_minimum_kinetic_energy()
+# compute_minimum_kinetic_energy()
 # plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.job_1_6000.53.63m.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=53.63, y_title='Particle Count per 1M Beam Particles', b_field=-0.9, beam_momentum=64)
 # plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.job_1_2000.1537m.kill.keep.kineticEnergyCut.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=1537, y_title='Particle Count per 1M Beam Particles', b_field=-0.9, beam_momentum=64)
 # plot_particle_momentum('g4bl.b_-0.9T.pi+.64000.root.job_1_2000.1998m.kill.keep.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=1998, y_title='Particle Count per 1M Beam Particles', b_field=-0.9, beam_momentum=64)
