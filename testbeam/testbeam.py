@@ -2980,10 +2980,16 @@ def plot_b_field():
         h_y.Draw('colz')
         h_y.GetXaxis().SetTitle('Z (m)')
         h_y.GetYaxis().SetTitle('X (m)')
+        h_y.GetZaxis().SetTitle('B_{y} (T)')
         h_y.GetXaxis().SetTitleOffset(1.2)
         h_y.GetYaxis().SetTitleOffset(1.4)
         c1.Update()
         c1.SaveAs('{}/plot_b_field.h_y.pdf'.format(FIGURE_DIR))
+        input('Press any key to continue.')
+
+        h_y.GetXaxis().SetRangeUser(0, 0.5334)
+        # h_y.GetXaxis().SetRangeUser(0, 0.5)
+        c1.SaveAs('{}/plot_b_field.h_y.zoom.pdf'.format(FIGURE_DIR))
         input('Press any key to continue.')
 
         c2 = TCanvas('c2', 'c2', 800, 600)
@@ -2993,6 +2999,7 @@ def plot_b_field():
         h_z.Draw('colz')
         h_z.GetXaxis().SetTitle('X (m)')
         h_z.GetYaxis().SetTitle('Y (m)')
+        h_z.GetZaxis().SetTitle('B_{y} (T)')
         h_z.GetXaxis().SetTitleOffset(1.2)
         h_z.GetYaxis().SetTitleOffset(1.4)
         c2.Update()
@@ -3006,17 +3013,25 @@ def plot_b_field():
         h_x.Draw('colz')
         h_x.GetXaxis().SetTitle('Z (m)')
         h_x.GetYaxis().SetTitle('Y (m)')
+        h_x.GetZaxis().SetTitle('B_{y} (T)')
         h_x.GetXaxis().SetTitleOffset(1.2)
         h_x.GetYaxis().SetTitleOffset(1.4)
         c3.Update()
         c3.SaveAs('{}/plot_b_field.h_x.pdf'.format(FIGURE_DIR))
         input('Press any key to continue.')
 
+        h_x.GetXaxis().SetRangeUser(0, 0.5334)
+        # h_x.GetXaxis().SetRangeUser(0, 0.5)
+        c3.SaveAs('{}/plot_b_field.h_x.zoom.pdf'.format(FIGURE_DIR))
+        input('Press any key to continue.')
+
+
 
 # 20181115_testbeam_proton_secondary_beam
 gStyle.SetOptStat(0)
 # plot_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_2000.40m.kineticEnergyCut_20.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=40., y_title='Particle Count per 1M Beam Particles', b_field=-0.9, beam_momentum=64)
-plot_b_field()
+plot_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_6000.119.3m.kineticEnergyCut_20.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=119.3, y_title='Particle Count per 1M Beam Particles', b_field=-0.9, beam_momentum=64)
+# plot_b_field()
 
 # 20181105_testbeam_g4bl_speed
 # plot_particle_momentum('g4bl.b_0.9T.pi+.64000.root.job_1_6000.80m.kineticEnergyCut_20.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=80., y_title='Particle Count per 1M Beam Particles', b_field=0.9, beam_momentum=64)
