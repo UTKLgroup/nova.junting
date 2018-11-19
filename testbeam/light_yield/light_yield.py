@@ -5,8 +5,9 @@ from datetime import datetime
 
 
 PDG = TDatabasePDG()
-FIGURE_DIR = '/Users/juntinghuang/beamer/20181108_testbeam_light_yield_all/figures'
-DATA_DIR = './data/scintillator'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20181116_testbeam_cerenkov_light/figures'
+DATA_DIR = './data/mineral_oil'
+# DATA_DIR = './data/scintillator'
 # DATA_DIR = './data/calibration'
 
 
@@ -257,8 +258,23 @@ def plot_spectrum(filename, **kwargs):
     rebin = kwargs.get('rebin', None)
     x_min = kwargs.get('x_min', None)
     x_max = kwargs.get('x_max', None)
+    calibration_constant = kwargs.get('calibration_constant', None)
+    find_peak = kwargs.get('find_peak', False)
+    start_time = kwargs.get('start_time', None)
+    end_time = kwargs.get('end_time', None)
 
-    h1 = get_spectrum(filename)
+    if calibration_constant is None:
+        h1 = get_spectrum(filename)
+    else:
+        h1 = get_spectrum(filename, scale=1. / calibration_constant)
+
+    print('total event count = {}'.format(h1.Integral()))
+    if start_time and end_time:
+        duration = (end_time - start_time).total_seconds() / 60. # minute
+        event_rate = h1.Integral() / duration                    # event per minute
+        print('duration = {} hour'.format(duration / 60.))
+        print('event_rate = {} per minute'.format(event_rate))
+
     if rebin:
         h1.Rebin(rebin)
 
@@ -275,9 +291,15 @@ def plot_spectrum(filename, **kwargs):
     h1.Draw('hist')
     if x_min is not None and x_max is not None:
         h1.GetXaxis().SetRangeUser(x_min, x_max)
-    poly_marker.Draw()
 
-    h1.GetXaxis().SetTitle('Charge (C)')
+    if find_peak:
+        poly_marker.Draw()
+
+    if not calibration_constant:
+        h1.GetXaxis().SetTitle('Charge (C)')
+    else:
+        h1.GetXaxis().SetTitle('NPE')
+
     h1.GetYaxis().SetTitle('Event Count')
     h1.GetYaxis().SetTitleOffset(1.5)
     # c1.Update()
@@ -853,6 +875,19 @@ def print_photon_count():
     print('sin2theta = {}'.format(sin2theta))
 
 
+# 20181116_testbeam_cerenkov_light
+gStyle.SetOptStat(0)
+calibration_constant = 8.854658242290205e-13 # C / PE
+# plot_spectrum('F1ch300068.txt', rebin=10, x_min=-0.02e-9, x_max=0.15e-9, calibration_constant=calibration_constant)
+# plot_spectrum('F1ch300069.txt', rebin=10, x_min=-10, x_max=60, calibration_constant=calibration_constant, find_peak=False,
+#               start_time=datetime(2018, 11, 15, 18, 48), end_time=datetime(2018, 11, 16, 13, 36))
+plot_spectra(rebin=10,
+             suffix='.mineral_oil',
+             calibration_constant=calibration_constant,
+             filenames=['../scintillator/F1ch300040.txt', 'F1ch300069.txt'],
+             filename_no_pedestals=['../scintillator/F1ch300039.txt', 'F1ch300069.txt'],
+             legend_txts=['Production', 'Mineral Oil'])
+
 # 20181108_testbeam_light_yield_all
 # calibration_constant = 8.854658242290205e-13 # C / PE
 # plot_spectra_ratio(rebin=10,
@@ -909,7 +944,7 @@ def print_photon_count():
 #                    y_axis_title_ratio='Ratio')
 
 # 20181018_testbeam_mineral_oil
-print_cherenkov_threshold()
+# print_cherenkov_threshold()
 # print_photon_count()
 
 # 20181005_testbeam_light_yield_setup
