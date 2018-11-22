@@ -491,8 +491,8 @@ class Beamline:
 
         self.write_target()
         self.write_collimator_us()
-        if not self.screen_shot:
-            self.write_virtual_disk()
+        # if not self.screen_shot:
+        #     self.write_virtual_disk()
         self.write_wc()
         self.write_magnet()
         self.write_collimator_ds()
