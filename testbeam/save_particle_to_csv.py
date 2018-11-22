@@ -17,8 +17,9 @@ def save_particle_to_csv(filename):
         track_count = 0
         for track in tf1.Get(key):
             track_count += 1
-            pass_all = track.TrackPresentstart_line and \
-                       track.TrackPresenttof_us and \
+            # pass_all = track.TrackPresentstart_line and \
+            #            track.TrackPresenttof_us and \
+            pass_all = track.TrackPresenttof_us and \
                        track.TrackPresentwire_chamber_1_detector and \
                        track.TrackPresentwire_chamber_2_detector and \
                        track.TrackPresentwire_chamber_3_detector and \
