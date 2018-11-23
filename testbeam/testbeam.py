@@ -1020,7 +1020,7 @@ def save_particle_momentum_csv(filename, x_min, x_max, **kwargs):
 
             h_all.Fill(momentum)
             if pid not in pid_hists:
-                pid_hists[pid] = TH1D('h_{}'.format(pid), 'h_{}'.format(pid), 50, x_min, x_max)
+                pid_hists[pid] = TH1D('h_{}'.format(pid), 'h_{}'.format(pid), bin_count, x_min, x_max)
                 pid_hists[pid].Fill(momentum)
             else:
                 pid_hists[pid].Fill(momentum)
@@ -1166,6 +1166,98 @@ def plot_particle_momentum(filename, x_min, x_max, **kwargs):
 
     c1.Update()
     c1.SaveAs('{}/plot_particle_momentum.{}.plot_noise_{}.normalization_factor_{}.pdf'.format(FIGURE_DIR, filename, plot_noise, normalization_factor))
+    input('Press any key to continue.')
+
+
+def plot_saved_particle_momentum(filename, **kwargs):
+    rebin = kwargs.get('rebin', 0)
+    log_y = kwargs.get('log_y', False)
+    y_max = kwargs.get('y_max', 0.)
+    y_min = kwargs.get('y_min', 0.001)
+    y_title = kwargs.get('y_title', 'Particle Count per 1M Beam Particles')
+    y_title_offset = kwargs.get('y_title_offset', 1.5)
+    b_field = kwargs.get('b_field', None)
+    beam_momentum = kwargs.get('beam_momentum', 64)
+
+    pid_hists = {}
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    h_all = tf.Get('h_all')
+    if rebin:
+        h_all.Rebin(rebin)
+    for key in tf.GetListOfKeys():
+        hist_name = key.GetName()
+        if hist_name == 'h_all':
+            continue
+        pid = int(hist_name.split('_')[1])
+        pid_hists[pid] = tf.Get(hist_name)
+        if rebin:
+            pid_hists[pid].Rebin(rebin)
+
+    if y_max == 0.:
+        for pid, hist in pid_hists.items():
+            if hist.GetMaximum() > y_max:
+                y_max = hist.GetMaximum()
+        y_max *= 1.2
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gStyle.SetOptStat(0)
+    if log_y:
+        gPad.SetLogy()
+
+    colors = [
+        kBlack,
+        kRed,
+        kBlue,
+        kMagenta + 1,
+        kGreen + 2,
+        kViolet + 2,
+        kAzure + 2,
+        kCyan + 2,
+        kTeal + 2,
+        kSpring + 2,
+        kYellow + 2,
+        kOrange + 2
+    ]
+
+    # lg1 = TLegend(0.55, 0.6, 0.80, 0.84)
+    lg1 = TLegend(0.64, 0.6, 0.80, 0.84)
+    set_legend_style(lg1)
+    lg1.SetTextSize(24)
+    for i, pid in enumerate(pid_hists.keys()):
+        if PDG.GetParticle(pid).Charge() == 0 or (PDG.GetParticle(pid).Charge() < 0. and b_field < 0.) or (PDG.GetParticle(pid).Charge() > 0. and b_field > 0.):
+            print('Wrong sign particles: pid = {}, count = {}, avg momentum = {}'.format(pid, pid_hists[pid].Integral(), pid_hists[pid].GetMean()))
+            continue
+
+        hist = pid_hists[pid]
+        set_h1_style(hist)
+        hist.SetLineColor(colors[i])
+
+        if i == 0:
+            hist.Draw('hist')
+            hist.GetXaxis().SetTitle('Momentum (MeV)')
+            hist.GetYaxis().SetTitle(y_title)
+            hist.GetYaxis().SetTitleOffset(y_title_offset)
+            hist.SetTitle('{} GeV Beam, B = {:.1f} T'.format(beam_momentum, b_field))
+            hist.GetYaxis().SetRangeUser(0 if not log_y else y_min, y_max)
+            hist.GetXaxis().SetRangeUser(0, 3500)
+        else:
+            hist.Draw('hist,sames')
+        lg1.AddEntry(hist, '{0} ({1:.1f})'.format(PDG.GetParticle(pid).GetName(), hist.Integral()), 'l')
+
+    latex = TLatex()
+    latex.SetNDC()
+    latex.SetTextFont(43)
+    latex.SetTextSize(24)
+    # x_latex = 0.56
+    x_latex = 0.65
+    latex.DrawLatex(x_latex, 0.42, 'rms = {:.0f} MeV'.format(h_all.GetRMS()))
+    latex.DrawLatex(x_latex, 0.48, 'mean = {:.0f} MeV'.format(h_all.GetMean()))
+    latex.DrawLatex(x_latex, 0.54, 'total count = {0:.1f}'.format(h_all.Integral()))
+    lg1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_saved_particle_momentum.{}.pdf'.format(FIGURE_DIR, filename))
     input('Press any key to continue.')
 
 
@@ -3064,7 +3156,7 @@ def plot_b_field():
 # plot_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=599.3, y_title='Particle Count per 1M Beam Particles', b_field=-0.9, beam_momentum=64)
 # save_particle_momentum_csv('g4bl.b_-0.9T.proton.64000.root.job_1_2000.40m.kineticEnergyCut_20.csv', 0, 3000, bin_count=300, normalization_factor=40.)
 # save_particle_momentum_csv('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv', 0, 3000, bin_count=300, normalization_factor=599.3)
-
+plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=2)
 
 # 20181115_testbeam_proton_secondary_beam
 # gStyle.SetOptStat(0)
