@@ -12,7 +12,7 @@ ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
-FIGURE_DIR = '/Users/juntinghuang/beamer/20181115_testbeam_proton_secondary_beam/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20181123_testbeam_beam_sim_high_stat/figures'
 DATA_DIR = './data'
 
 
@@ -998,6 +998,40 @@ def save_particle_to_csv(filename):
             f_fraction.write('1,{}\n'.format(','.join(list(map(str, noise_particle)))))
 
     pprint(pid_momentums)
+
+
+def save_particle_momentum_csv(filename, x_min, x_max, **kwargs):
+    bin_count = kwargs.get('bin_count', 50)
+    normalization_factor = kwargs.get('normalization_factor', 1.)
+
+    h_all = TH1D('h_all', 'h_all', bin_count, x_min, x_max)
+    pid_hists = {}
+    with open('{}/{}'.format(DATA_DIR, filename)) as f_csv:
+        for row in csv.reader(f_csv, delimiter=','):
+            is_noise = int(row[0])
+            if is_noise:
+                continue
+
+            pid = int(float(row[-2]))
+            px = float(row[-5])
+            py = float(row[-4])
+            pz = float(row[-3])
+            momentum = (px**2 + py**2 + pz**2)**0.5
+
+            h_all.Fill(momentum)
+            if pid not in pid_hists:
+                pid_hists[pid] = TH1D('h_{}'.format(pid), 'h_{}'.format(pid), 50, x_min, x_max)
+                pid_hists[pid].Fill(momentum)
+            else:
+                pid_hists[pid].Fill(momentum)
+
+    tf_out = TFile('{}/{}.hist.root'.format(DATA_DIR, filename), 'RECREATE')
+    for pid, hist in pid_hists.items():
+        hist.Scale(1. / normalization_factor)
+        hist.Write('h_{}'.format(pid))
+    h_all.Scale(1. / normalization_factor)
+    h_all.Write('h_all')
+    tf_out.Close()
 
 
 def plot_particle_momentum(filename, x_min, x_max, **kwargs):
@@ -3026,11 +3060,16 @@ def plot_b_field():
         input('Press any key to continue.')
 
 
+# 20181123_testbeam_beam_sim_high_stat
+# plot_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=599.3, y_title='Particle Count per 1M Beam Particles', b_field=-0.9, beam_momentum=64)
+# save_particle_momentum_csv('g4bl.b_-0.9T.proton.64000.root.job_1_2000.40m.kineticEnergyCut_20.csv', 0, 3000, bin_count=300, normalization_factor=40.)
+# save_particle_momentum_csv('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv', 0, 3000, bin_count=300, normalization_factor=599.3)
+
 
 # 20181115_testbeam_proton_secondary_beam
-gStyle.SetOptStat(0)
+# gStyle.SetOptStat(0)
 # plot_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_2000.40m.kineticEnergyCut_20.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=40., y_title='Particle Count per 1M Beam Particles', b_field=-0.9, beam_momentum=64)
-plot_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_6000.119.3m.kineticEnergyCut_20.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=119.3, y_title='Particle Count per 1M Beam Particles', b_field=-0.9, beam_momentum=64)
+# plot_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_6000.119.3m.kineticEnergyCut_20.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=119.3, y_title='Particle Count per 1M Beam Particles', b_field=-0.9, beam_momentum=64)
 # plot_b_field()
 
 # 20181105_testbeam_g4bl_speed
