@@ -881,12 +881,20 @@ calibration_constant = 8.854658242290205e-13 # C / PE
 # plot_spectrum('F1ch300068.txt', rebin=10, x_min=-0.02e-9, x_max=0.15e-9, calibration_constant=calibration_constant)
 # plot_spectrum('F1ch300069.txt', rebin=10, x_min=-10, x_max=60, calibration_constant=calibration_constant, find_peak=False,
 #               start_time=datetime(2018, 11, 15, 18, 48), end_time=datetime(2018, 11, 16, 13, 36))
-plot_spectra(rebin=10,
-             suffix='.mineral_oil',
-             calibration_constant=calibration_constant,
-             filenames=['../scintillator/F1ch300040.txt', 'F1ch300069.txt'],
-             filename_no_pedestals=['../scintillator/F1ch300039.txt', 'F1ch300069.txt'],
-             legend_txts=['Production', 'Mineral Oil'])
+# plot_spectra(rebin=10,
+#              suffix='.mineral_oil',
+#              calibration_constant=calibration_constant,
+#              filenames=['../scintillator/F1ch300040.txt', 'F1ch300069.txt'],
+#              filename_no_pedestals=['../scintillator/F1ch300039.txt', 'F1ch300069.txt'],
+#              legend_txts=['Production', 'Mineral Oil'])
+plot_spectrum('F1ch300070.txt', rebin=10, x_min=-10, x_max=60, calibration_constant=calibration_constant, find_peak=False,
+              start_time=datetime(2018, 11, 15, 18, 48), end_time=datetime(2018, 11, 19, 12, 51))
+# plot_spectra(rebin=10,
+#              suffix='.mineral_oil',
+#              calibration_constant=calibration_constant,
+#              filenames=['../scintillator/F1ch300040.txt', 'F1ch300070.txt'],
+#              filename_no_pedestals=['../scintillator/F1ch300039.txt', 'F1ch300070.txt'],
+#              legend_txts=['Production', 'Mineral Oil'])
 
 # 20181108_testbeam_light_yield_all
 # calibration_constant = 8.854658242290205e-13 # C / PE
