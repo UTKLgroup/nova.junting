@@ -1,4 +1,5 @@
 from rootalias import *
+from util import *
 from pprint import pprint
 import csv
 import math
@@ -3152,11 +3153,27 @@ def plot_b_field():
         input('Press any key to continue.')
 
 
+def split_rows(filename, split_size):
+    items = []
+    with open(filename) as f_in:
+        for row in csv.reader(f_in, delimiter=' '):
+            items = row
+            break
+    split_items = split_list(items, split_size)
+    filename_base = os.path.splitext(filename)[0]
+    for i, split_items in enumerate(split_items):
+        filename_out = '{}.{}.{}.txt'.format(filename_base, len(split_items), i)
+        with open(filename_out, 'w') as f_out:
+            f_out.write(' '.join(split_items))
+
+
 # 20181123_testbeam_beam_sim_high_stat
 # plot_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=599.3, y_title='Particle Count per 1M Beam Particles', b_field=-0.9, beam_momentum=64)
 # save_particle_momentum_csv('g4bl.b_-0.9T.proton.64000.root.job_1_2000.40m.kineticEnergyCut_20.csv', 0, 3000, bin_count=300, normalization_factor=40.)
 # save_particle_momentum_csv('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv', 0, 3000, bin_count=300, normalization_factor=599.3)
-plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=2)
+# plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=2)
+split_rows('data/b_-1.35T.pnfs2xrootd.txt', 5000)
+
 
 # 20181115_testbeam_proton_secondary_beam
 # gStyle.SetOptStat(0)
