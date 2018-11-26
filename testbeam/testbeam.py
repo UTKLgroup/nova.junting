@@ -3206,6 +3206,89 @@ def split_rows(filename, split_size):
             f_out.write(' '.join(split_items))
 
 
+def plot_particle_count_vs_b_field():
+    filenames = [
+        'g4bl.b_-0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+        'g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root',
+        'g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+        'g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root'
+    ]
+    b_fields = [-0.45, -0.9, -1.35, -1.8]
+    pids = [211, 2212, -11, -13, 321]
+    colors = [
+        kBlack,
+        kRed,
+        kBlue,
+        kMagenta + 1,
+        kGreen + 2
+    ]
+
+    tfs = []
+    for filename in filenames:
+        tfs.append(TFile('{}/{}'.format(DATA_DIR, filename)))
+
+    grs = []
+    for pid in pids:
+        particle_counts = []
+        for tf in tfs:
+            hist = tf.Get('h_{}'.format(pid))
+            particle_counts.append(float(hist.Integral()))
+        gr = TGraph(len(b_fields), np.array(b_fields), np.array(particle_counts))
+        set_graph_style(gr)
+        grs.append(gr)
+        # break
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetLogy()
+    gPad.SetGrid()
+
+    lg1 = TLegend(0.46, 0.18, 0.76, 0.42)
+    set_legend_style(lg1)
+
+    for i, gr in enumerate(grs):
+        gr.SetLineColor(colors[i])
+        gr.SetMarkerColor(colors[i])
+        if i == 0:
+            gr.Draw('APL')
+            gr.GetYaxis().SetRangeUser(0.005, 50.)
+            gr.GetXaxis().SetTitle('B Field (T)')
+            gr.GetYaxis().SetTitle('Good Particles per 1M Beam Particle')
+        else:
+            gr.Draw('PL,sames')
+        lg1.AddEntry(gr, PDG.GetParticle(pids[i]).GetName(), 'l')
+    lg1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_particle_count_vs_b_field.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
+def print_particle_count_vs_b_field():
+    filenames = [
+        'g4bl.b_-0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+        'g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root',
+        'g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+        'g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root'
+    ]
+    b_fields = [-0.45, -0.9, -1.35, -1.8]
+    pids = [211, 2212, -11, -13, 321]
+    tfs = []
+    for filename in filenames:
+        tfs.append(TFile('{}/{}'.format(DATA_DIR, filename)))
+
+    pid_particle_counts = []
+    for pid in pids:
+        particle_counts = []
+        for tf in tfs:
+            hist = tf.Get('h_{}'.format(pid))
+            particle_counts.append(float(hist.Integral()))
+        pid_particle_counts.append(particle_counts)
+
+    for i, pid in enumerate(pids):
+        print('{} & {}'.format(pid, pid_particle_counts[i]))
+
+
 # 20181123_testbeam_beam_sim_high_stat
 # plot_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=599.3, y_title='Particle Count per 1M Beam Particles', b_field=-0.9, beam_momentum=64)
 # save_particle_momentum_csv('g4bl.b_-0.9T.proton.64000.root.job_1_2000.40m.kineticEnergyCut_20.csv', 0, 3000, bin_count=300, normalization_factor=40.)
@@ -3224,7 +3307,9 @@ def split_rows(filename, split_size):
 # plot_saved_particle_momentum('g4bl.b_-0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root', b_field=-0.45, beam_momentum=64, log_y=True, rebin=2, x_max=1500.)
 # plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=2, x_min=500., x_max=2000.)
 # plot_saved_particle_momentum('g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root', b_field=-1.35, beam_momentum=64, log_y=True, rebin=2, x_min=1000, x_max=2500.)
-plot_saved_particle_momentum('g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root', b_field=-1.8, beam_momentum=64, log_y=True, rebin=2, x_min=1500., x_max=3000.)
+# plot_saved_particle_momentum('g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root', b_field=-1.8, beam_momentum=64, log_y=True, rebin=2, x_min=1500., x_max=3000.)
+# plot_particle_count_vs_b_field()
+print_particle_count_vs_b_field()
 
 # 20181115_testbeam_proton_secondary_beam
 # gStyle.SetOptStat(0)
