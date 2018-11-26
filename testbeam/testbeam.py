@@ -3172,8 +3172,10 @@ def split_rows(filename, split_size):
 # save_particle_momentum_csv('g4bl.b_-0.9T.proton.64000.root.job_1_2000.40m.kineticEnergyCut_20.csv', 0, 3000, bin_count=300, normalization_factor=40.)
 # save_particle_momentum_csv('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv', 0, 3000, bin_count=300, normalization_factor=599.3)
 # plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=2)
-split_rows('data/b_-1.35T.pnfs2xrootd.txt', 5000)
-
+# split_rows('data/b_-1.35T.pnfs2xrootd.txt', 5000)
+# split_rows('data/b_-1.8T.pnfs2xrootd.txt', 10000)
+# split_rows('data/b_-0.45T.pnfs2xrootd.txt', 10000)
+split_rows('data/b_0.9T.pnfs2xrootd.txt', 10000)
 
 # 20181115_testbeam_proton_secondary_beam
 # gStyle.SetOptStat(0)
