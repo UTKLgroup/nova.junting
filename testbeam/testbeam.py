@@ -1207,6 +1207,8 @@ def plot_saved_particle_momentum(filename, **kwargs):
     log_y = kwargs.get('log_y', False)
     y_max = kwargs.get('y_max', 0.)
     y_min = kwargs.get('y_min', 0.001)
+    x_min = kwargs.get('x_min', 0.)
+    x_max = kwargs.get('x_max', 3500.)
     y_title = kwargs.get('y_title', 'Particle Count per 1M Beam Particles')
     y_title_offset = kwargs.get('y_title_offset', 1.5)
     b_field = kwargs.get('b_field', None)
@@ -1257,11 +1259,16 @@ def plot_saved_particle_momentum(filename, **kwargs):
     lg1 = TLegend(0.64, 0.6, 0.80, 0.84)
     set_legend_style(lg1)
     lg1.SetTextSize(24)
-    for i, pid in enumerate(pid_hists.keys()):
+
+    pids = []
+    for pid in pid_hists.keys():
         if PDG.GetParticle(pid).Charge() == 0 or (PDG.GetParticle(pid).Charge() < 0. and b_field < 0.) or (PDG.GetParticle(pid).Charge() > 0. and b_field > 0.):
             print('Wrong sign particles: pid = {}, count = {}, avg momentum = {}'.format(pid, pid_hists[pid].Integral(), pid_hists[pid].GetMean()))
             continue
+        pids.append(pid)
+    pids = sorted(pids, key=abs)
 
+    for i, pid in enumerate(pids):
         hist = pid_hists[pid]
         set_h1_style(hist)
         hist.SetLineColor(colors[i])
@@ -1271,9 +1278,9 @@ def plot_saved_particle_momentum(filename, **kwargs):
             hist.GetXaxis().SetTitle('Momentum (MeV)')
             hist.GetYaxis().SetTitle(y_title)
             hist.GetYaxis().SetTitleOffset(y_title_offset)
-            hist.SetTitle('{} GeV Beam, B = {:.1f} T'.format(beam_momentum, b_field))
+            hist.SetTitle('{} GeV Beam, B = {:.2f} T'.format(beam_momentum, b_field))
             hist.GetYaxis().SetRangeUser(0 if not log_y else y_min, y_max)
-            hist.GetXaxis().SetRangeUser(0, 3500)
+            hist.GetXaxis().SetRangeUser(x_min, x_max)
         else:
             hist.Draw('hist,sames')
         lg1.AddEntry(hist, '{0} ({1:.1f})'.format(PDG.GetParticle(pid).GetName(), hist.Integral()), 'l')
@@ -3210,7 +3217,14 @@ def split_rows(filename, split_size):
 # split_rows('data/b_-1.35T.pnfs2xrootd.txt', 5000)
 # split_rows('data/b_-1.8T.pnfs2xrootd.txt', 10000)
 # split_rows('data/b_-0.45T.pnfs2xrootd.txt', 10000)
-split_rows('data/b_0.9T.pnfs2xrootd.txt', 10000)
+# split_rows('data/b_0.9T.pnfs2xrootd.txt', 10000)
+# save_particle_momentum_root('g4bl.b_-0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root', 0, 3000, bin_count=300, normalization_factor=800.)
+# save_particle_momentum_root('g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root', 0, 3000, bin_count=300, normalization_factor=800.)
+# save_particle_momentum_root('g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=600.)
+# plot_saved_particle_momentum('g4bl.b_-0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root', b_field=-0.45, beam_momentum=64, log_y=True, rebin=2, x_max=1500.)
+# plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=2, x_min=500., x_max=2000.)
+# plot_saved_particle_momentum('g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root', b_field=-1.35, beam_momentum=64, log_y=True, rebin=2, x_min=1000, x_max=2500.)
+plot_saved_particle_momentum('g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root', b_field=-1.8, beam_momentum=64, log_y=True, rebin=2, x_min=1500., x_max=3000.)
 
 # 20181115_testbeam_proton_secondary_beam
 # gStyle.SetOptStat(0)
