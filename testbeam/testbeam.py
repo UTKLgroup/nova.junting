@@ -1034,6 +1034,38 @@ def save_particle_momentum_csv(filename, x_min, x_max, **kwargs):
     tf_out.Close()
 
 
+def save_particle_momentum_root(filename, x_min, x_max, **kwargs):
+    bin_count = kwargs.get('bin_count', 50)
+    normalization_factor = kwargs.get('normalization_factor', 1.)
+
+    h_all = TH1D('h_all', 'h_all', bin_count, x_min, x_max)
+    pid_hists = {}
+
+    tf_in = TFile('{}/{}'.format(DATA_DIR, filename))
+    for particle in tf_in.Get('tree'):
+        if particle.is_noise:
+            continue
+        pid = int(particle.pdg_id)
+        px = particle.px
+        py = particle.py
+        pz = particle.pz
+        momentum = (px**2 + py**2 + pz**2)**0.5
+        h_all.Fill(momentum)
+        if pid not in pid_hists:
+            pid_hists[pid] = TH1D('h_{}'.format(pid), 'h_{}'.format(pid), bin_count, x_min, x_max)
+            pid_hists[pid].Fill(momentum)
+        else:
+            pid_hists[pid].Fill(momentum)
+
+    tf_out = TFile('{}/{}.hist.root'.format(DATA_DIR, filename), 'RECREATE')
+    for pid, hist in pid_hists.items():
+        hist.Scale(1. / normalization_factor)
+        hist.Write('h_{}'.format(pid))
+    h_all.Scale(1. / normalization_factor)
+    h_all.Write('h_all')
+    tf_out.Close()
+
+
 def plot_particle_momentum(filename, x_min, x_max, **kwargs):
     bin_count = kwargs.get('bin_count', 50)
     y_max = kwargs.get('y_max', 0.)
@@ -3156,7 +3188,11 @@ def plot_b_field():
 # plot_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=599.3, y_title='Particle Count per 1M Beam Particles', b_field=-0.9, beam_momentum=64)
 # save_particle_momentum_csv('g4bl.b_-0.9T.proton.64000.root.job_1_2000.40m.kineticEnergyCut_20.csv', 0, 3000, bin_count=300, normalization_factor=40.)
 # save_particle_momentum_csv('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv', 0, 3000, bin_count=300, normalization_factor=599.3)
-plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=2)
+# plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=2)
+# save_particle_momentum_root('g4bl.b_-0.9T.proton.64000.root.job_30000_32000.40m.kineticEnergyCut_20.root', 0, 3000, bin_count=300, normalization_factor=40.)
+# plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_30000_32000.40m.kineticEnergyCut_20.root.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=2)
+# plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_32000.639.3m.kineticEnergyCut_20.hadd.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=2)
+
 
 # 20181115_testbeam_proton_secondary_beam
 # gStyle.SetOptStat(0)
