@@ -3206,7 +3206,10 @@ def split_rows(filename, split_size):
             f_out.write(' '.join(split_items))
 
 
-def plot_particle_count_vs_b_field():
+def plot_particle_count_vs_b_field(**kwargs):
+    y_axis_title = kwargs.get('y_axis_title', 'Good Particles per 1M Beam Particle')
+    scaling_factor = kwargs.get('scaling_factor', None)
+
     filenames = [
         'g4bl.b_-0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
         'g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root',
@@ -3232,11 +3235,13 @@ def plot_particle_count_vs_b_field():
         particle_counts = []
         for tf in tfs:
             hist = tf.Get('h_{}'.format(pid))
-            particle_counts.append(float(hist.Integral()))
+            particle_count = float(hist.Integral())
+            if scaling_factor:
+                particle_count *= scaling_factor
+            particle_counts.append(particle_count)
         gr = TGraph(len(b_fields), np.array(b_fields), np.array(particle_counts))
         set_graph_style(gr)
         grs.append(gr)
-        # break
 
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
@@ -3252,15 +3257,17 @@ def plot_particle_count_vs_b_field():
         if i == 0:
             gr.Draw('APL')
             gr.GetYaxis().SetRangeUser(0.005, 50.)
+            if scaling_factor:
+                gr.GetYaxis().SetRangeUser(0.005 * scaling_factor, 50. * scaling_factor)
             gr.GetXaxis().SetTitle('B Field (T)')
-            gr.GetYaxis().SetTitle('Good Particles per 1M Beam Particle')
+            gr.GetYaxis().SetTitle(y_axis_title)
         else:
             gr.Draw('PL,sames')
         lg1.AddEntry(gr, PDG.GetParticle(pids[i]).GetName(), 'l')
     lg1.Draw()
 
     c1.Update()
-    c1.SaveAs('{}/plot_particle_count_vs_b_field.pdf'.format(FIGURE_DIR))
+    c1.SaveAs('{}/plot_particle_count_vs_b_field.scaling_factor_{}.pdf'.format(FIGURE_DIR, scaling_factor))
     input('Press any key to continue.')
 
 
@@ -3309,7 +3316,8 @@ def print_particle_count_vs_b_field():
 # plot_saved_particle_momentum('g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root', b_field=-1.35, beam_momentum=64, log_y=True, rebin=2, x_min=1000, x_max=2500.)
 # plot_saved_particle_momentum('g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root', b_field=-1.8, beam_momentum=64, log_y=True, rebin=2, x_min=1500., x_max=3000.)
 # plot_particle_count_vs_b_field()
-print_particle_count_vs_b_field()
+# print_particle_count_vs_b_field()
+plot_particle_count_vs_b_field(y_axis_title='Good Particles per Month (1M per Spill)', scaling_factor=60 * 24 * 30)
 
 # 20181115_testbeam_proton_secondary_beam
 # gStyle.SetOptStat(0)
