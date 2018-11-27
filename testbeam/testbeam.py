@@ -3279,21 +3279,39 @@ def print_particle_count_vs_b_field():
         'g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root'
     ]
     b_fields = [-0.45, -0.9, -1.35, -1.8]
+    b_field_strs = [str(b_field) for b_field in b_fields]
     pids = [211, 2212, -11, -13, 321]
+    pids = sorted(pids, key=abs)
     tfs = []
     for filename in filenames:
         tfs.append(TFile('{}/{}'.format(DATA_DIR, filename)))
 
-    pid_particle_counts = []
+    pid_infos = {}
     for pid in pids:
-        particle_counts = []
-        for tf in tfs:
+        pid_infos[pid] = {}
+        for i, tf in enumerate(tfs):
             hist = tf.Get('h_{}'.format(pid))
-            particle_counts.append(float(hist.Integral()))
-        pid_particle_counts.append(particle_counts)
+            b_field_str = str(b_field_strs[i])
+            pid_infos[pid][b_field_str] = {}
+            pid_infos[pid][b_field_str]['count'] = hist.Integral()
+            pid_infos[pid][b_field_str]['count_month'] = hist.Integral() * 60 * 24 * 30
+            pid_infos[pid][b_field_str]['mean'] = hist.GetMean()
+            pid_infos[pid][b_field_str]['rms'] = hist.GetRMS()
 
+    info_names = ['count', 'count_month', 'mean', 'rms']
     for i, pid in enumerate(pids):
-        print('{} & {}'.format(pid, pid_particle_counts[i]))
+        particle_name = PDG.GetParticle(pid).GetName()
+        print('\hline')
+        print('\hline')
+        for i, b_field_str in enumerate(b_field_strs):
+            row = ''
+            if i == 0:
+                row += '\\multirow{{4}}{{*}}{{{}}}'.format(particle_name)
+            row += '& ' + b_field_str
+            for info_name in info_names:
+                row += ' & \\SI{{{:.2E}}}{{}}'.format(pid_infos[pid][b_field_str][info_name])
+            row += ' \\\\'
+            print(row)
 
 
 # 20181123_testbeam_beam_sim_high_stat
@@ -3316,8 +3334,12 @@ def print_particle_count_vs_b_field():
 # plot_saved_particle_momentum('g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root', b_field=-1.35, beam_momentum=64, log_y=True, rebin=2, x_min=1000, x_max=2500.)
 # plot_saved_particle_momentum('g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root', b_field=-1.8, beam_momentum=64, log_y=True, rebin=2, x_min=1500., x_max=3000.)
 # plot_particle_count_vs_b_field()
-# print_particle_count_vs_b_field()
-plot_particle_count_vs_b_field(y_axis_title='Good Particles per Month (1M per Spill)', scaling_factor=60 * 24 * 30)
+print_particle_count_vs_b_field()
+# plot_particle_count_vs_b_field(y_axis_title='Good Particles per Month (1M per Spill)', scaling_factor=60 * 24 * 30)
+# save_particle_momentum_root('g4bl.b_0.9T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=800.)
+# save_particle_momentum_root('g4bl.b_1.8T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=799.92)
+# plot_saved_particle_momentum('g4bl.b_0.9T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root', b_field=0.9, beam_momentum=64, log_y=True, rebin=2, x_min=500., x_max=2000.)
+# plot_saved_particle_momentum('g4bl.b_1.8T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root.hist.root', b_field=1.8, beam_momentum=64, log_y=True, rebin=2, x_min=1500., x_max=3000.)
 
 # 20181115_testbeam_proton_secondary_beam
 # gStyle.SetOptStat(0)
