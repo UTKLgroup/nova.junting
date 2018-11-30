@@ -13,7 +13,7 @@ ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
-FIGURE_DIR = '/Users/juntinghuang/beamer/20181129_electron_gun_physics/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20181123_testbeam_beam_sim_high_stat/figures'
 DATA_DIR = './data'
 
 
@@ -3219,7 +3219,7 @@ def plot_particle_count_vs_b_field(**kwargs):
                                          'g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
                                          'g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root'])
     b_fields = kwargs.get('b_fields', [-0.45, -0.9, -1.35, -1.8])
-    pids = kwargs.get('pids', [211, 2212, -11, -13, 321])
+    pids = kwargs.get('pids', [-11, -13, 211, 321, 2212])
     suffix = kwargs.get('suffix', '')
 
     colors = [
@@ -3260,9 +3260,9 @@ def plot_particle_count_vs_b_field(**kwargs):
         gr.SetMarkerColor(colors[i])
         if i == 0:
             gr.Draw('APL')
-            gr.GetYaxis().SetRangeUser(0.005, 50.)
+            gr.GetYaxis().SetRangeUser(0.001, 50.)
             if scaling_factor:
-                gr.GetYaxis().SetRangeUser(0.005 * scaling_factor, 50. * scaling_factor)
+                gr.GetYaxis().SetRangeUser(0.001 * scaling_factor, 50. * scaling_factor)
             gr.GetXaxis().SetTitle('B Field (T)')
             gr.GetYaxis().SetTitle(y_axis_title)
         else:
@@ -3318,7 +3318,7 @@ def print_particle_count_vs_b_field(**kwargs):
 
 
 # 20181129_electron_gun_physics
-plot_birks_law()
+# plot_birks_law()
 
 # 20181123_testbeam_beam_sim_high_stat
 # plot_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=599.3, y_title='Particle Count per 1M Beam Particles', b_field=-0.9, beam_momentum=64)
@@ -3345,25 +3345,30 @@ plot_birks_law()
 # save_particle_momentum_root('g4bl.b_0.9T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=800.)
 # save_particle_momentum_root('g4bl.b_1.8T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=799.92)
 # save_particle_momentum_root('g4bl.b_0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=800.)
+# save_particle_momentum_root('g4bl.b_1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=800.)
 # plot_saved_particle_momentum('g4bl.b_0.9T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root', b_field=0.9, beam_momentum=64, log_y=True, rebin=2, x_min=500., x_max=2000.)
 # plot_saved_particle_momentum('g4bl.b_1.8T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root.hist.root', b_field=1.8, beam_momentum=64, log_y=True, rebin=2, x_min=1500., x_max=3000.)
-# plot_particle_count_vs_b_field(filenames=['g4bl.b_0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-#                                           'g4bl.b_0.9T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-#                                           'g4bl.b_1.8T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root.hist.root'],
-#                                b_fields=[0.45, 0.9, 1.8],
-#                                pids=[-211, -2212, 11, 13, -321],
+# plot_saved_particle_momentum('g4bl.b_0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root', b_field=0.45, beam_momentum=64, log_y=True, rebin=2, x_max=1500.)
+# plot_saved_particle_momentum('g4bl.b_1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root', b_field=1.35, beam_momentum=64, log_y=True, rebin=2, x_min=1000., x_max=2500.)
+filenames = ['g4bl.b_0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+             'g4bl.b_0.9T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+             'g4bl.b_1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+             'g4bl.b_1.8T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root.hist.root']
+b_fields = [0.45, 0.9, 1.35, 1.8]
+pids = [11, 13, -211, -321, -2212]
+# plot_particle_count_vs_b_field(filenames=filenames,
+#                                b_fields=b_fields,
+#                                pids=pids,
 #                                suffix='.b_positive')
-# plot_particle_count_vs_b_field(filenames=['g4bl.b_0.9T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-#                                           'g4bl.b_1.8T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root.hist.root'],
-#                                b_fields=[0.9, 1.8],
-#                                pids=[-211, -2212, 11, 13, -321],
-#                                suffix='.b_positive',
-#                                y_axis_title='Good Particles per Month (1M per Spill)',
-#                                scaling_factor=60 * 24 * 30)
-# print_particle_count_vs_b_field(filenames=['g4bl.b_0.9T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-#                                            'g4bl.b_1.8T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root.hist.root'],
-#                                 b_fields=[0.9, 1.8],
-#                                 pids=[-211, -2212, 11, 13, -321])
+plot_particle_count_vs_b_field(filenames=filenames,
+                               b_fields=b_fields,
+                               pids=pids,
+                               suffix='.b_positive',
+                               y_axis_title='Good Particles per Month (1M per Spill)',
+                               scaling_factor=60 * 24 * 30)
+# print_particle_count_vs_b_field(filenames=filenames,
+#                                 b_fields=b_fields,
+#                                 pids=pids)
 
 # 20181115_testbeam_proton_secondary_beam
 # gStyle.SetOptStat(0)
