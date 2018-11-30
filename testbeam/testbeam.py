@@ -13,7 +13,7 @@ ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
-FIGURE_DIR = '/Users/juntinghuang/beamer/20181123_testbeam_beam_sim_high_stat/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20181129_electron_gun_physics/figures'
 DATA_DIR = './data'
 
 
@@ -2519,10 +2519,14 @@ def print_radiation_length():
 
 
 def plot_birks_law():
-    dedxs = np.arange(0, 20, 0.1)
-    birks_constant = 0.0125     # g / MeV / cm2
-    density = 0.85              # g / cm3
+    # dedxs = np.arange(0, 20, 0.1)
+    # birks_constant = 0.0125     # g / MeV / cm2
+    dedxs = np.arange(0, 7, 0.1)
+    birks_constant = 0.01155    # g / MeV / cm2
+    density = 0.862             # g / cm3
     chou_constant = 0.
+
+    print('birks_constant / density = {}'.format(birks_constant / density))
 
     coeffs = []
     ones = []
@@ -2540,7 +2544,8 @@ def plot_birks_law():
     set_graph_style(gr_one)
 
     gr.GetXaxis().SetTitle('dE/dx (MeV / cm)')
-    gr.GetYaxis().SetTitle('1 / [1 + B(dE/dx) + C(dE/dx)^{2}]')
+    # gr.GetYaxis().SetTitle('1 / [1 + B(dE/dx) + C(dE/dx)^{2}]')
+    gr.GetYaxis().SetTitle('1 / [1 + B(dE/dx)]')
     gr.Draw('AL')
 
     c1.Update()
@@ -3312,6 +3317,9 @@ def print_particle_count_vs_b_field(**kwargs):
             print(row)
 
 
+# 20181129_electron_gun_physics
+plot_birks_law()
+
 # 20181123_testbeam_beam_sim_high_stat
 # plot_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=599.3, y_title='Particle Count per 1M Beam Particles', b_field=-0.9, beam_momentum=64)
 # save_particle_momentum_csv('g4bl.b_-0.9T.proton.64000.root.job_1_2000.40m.kineticEnergyCut_20.csv', 0, 3000, bin_count=300, normalization_factor=40.)
@@ -3336,13 +3344,15 @@ def print_particle_count_vs_b_field(**kwargs):
 # plot_particle_count_vs_b_field(y_axis_title='Good Particles per Month (1M per Spill)', scaling_factor=60 * 24 * 30)
 # save_particle_momentum_root('g4bl.b_0.9T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=800.)
 # save_particle_momentum_root('g4bl.b_1.8T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=799.92)
+# save_particle_momentum_root('g4bl.b_0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=800.)
 # plot_saved_particle_momentum('g4bl.b_0.9T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root', b_field=0.9, beam_momentum=64, log_y=True, rebin=2, x_min=500., x_max=2000.)
 # plot_saved_particle_momentum('g4bl.b_1.8T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root.hist.root', b_field=1.8, beam_momentum=64, log_y=True, rebin=2, x_min=1500., x_max=3000.)
-plot_particle_count_vs_b_field(filenames=['g4bl.b_0.9T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-                                          'g4bl.b_1.8T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root.hist.root'],
-                               b_fields=[0.9, 1.8],
-                               pids=[-211, -2212, 11, 13, -321],
-                               suffix='.b_positive')
+# plot_particle_count_vs_b_field(filenames=['g4bl.b_0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#                                           'g4bl.b_0.9T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#                                           'g4bl.b_1.8T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root.hist.root'],
+#                                b_fields=[0.45, 0.9, 1.8],
+#                                pids=[-211, -2212, 11, 13, -321],
+#                                suffix='.b_positive')
 # plot_particle_count_vs_b_field(filenames=['g4bl.b_0.9T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
 #                                           'g4bl.b_1.8T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root.hist.root'],
 #                                b_fields=[0.9, 1.8],
