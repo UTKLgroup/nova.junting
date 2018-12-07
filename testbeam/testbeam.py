@@ -3371,9 +3371,116 @@ def plot_beamline_sim_spill_timing():
     input('Press any key to continue.')
 
 
+def plot_detsim_momentum(filename):
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    h_electron = tf.Get('testbeamana/fMcMomentumElectron')
+    h_muon = tf.Get('testbeamana/fMcMomentumMuon')
+    h_pion = tf.Get('testbeamana/fMcMomentumPion')
+    h_kaon = tf.Get('testbeamana/fMcMomentumKaon')
+    h_proton = tf.Get('testbeamana/fMcMomentumProton')
+
+    h_particles = [h_electron, h_muon, h_pion, h_kaon, h_proton]
+    colors = [
+        kBlack,
+        kRed,
+        kBlue,
+        kMagenta + 1,
+        kGreen + 2
+    ]
+    legend_names = ['e+', 'mu+', 'pi+', 'K+', 'proton']
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetLogy()
+
+    y_max = 0.
+    for h_particle in h_particles:
+        h_particle.Scale(1. / 800.)
+        h_particle.Rebin(2)
+        if h_particle.GetMaximum() > y_max:
+            y_max = h_particle.GetMaximum()
+    y_max *= 1.2
+
+    lg1 = TLegend(0.64, 0.6, 0.80, 0.84)
+    set_legend_style(lg1)
+
+    for i, h_particle in enumerate(h_particles):
+        set_h1_style(h_particle)
+        h_particle.SetLineColor(colors[i])
+        if i == 0:
+            h_particle.GetXaxis().SetTitle('Momentum (GeV)')
+            h_particle.GetYaxis().SetTitle('Particle Count per 1M Beam Particle')
+            h_particle.Draw('hist')
+            h_particle.GetXaxis().SetRangeUser(1., 2.5)
+            h_particle.GetYaxis().SetRangeUser(1e-3, y_max)
+        else:
+            h_particle.Draw('hist,sames')
+
+        lg1.AddEntry(h_particle, legend_names[i], 'l')
+    lg1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_detsim_momentum.{}.pdf'.format(FIGURE_DIR, filename))
+    input('Press any key to continue.')
+
+
+def plot_detsim_fls_hit_gev(filename):
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    h_electron = tf.Get('testbeamana/fFlsHitGevElectron')
+    h_muon = tf.Get('testbeamana/fFlsHitGevMuon')
+    h_pion = tf.Get('testbeamana/fFlsHitGevPion')
+    h_kaon = tf.Get('testbeamana/fFlsHitGevKaon')
+    h_proton = tf.Get('testbeamana/fFlsHitGevProton')
+
+    h_particles = [h_electron, h_muon, h_pion, h_kaon, h_proton]
+    colors = [
+        kBlack,
+        kRed,
+        kBlue,
+        kMagenta + 1,
+        kGreen + 2
+    ]
+    legend_names = ['e+', 'mu+', 'pi+', 'K+', 'proton']
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+
+    y_max = 0.
+    for h_particle in [h_pion, h_proton]:
+        h_particle.Scale(1. / h_particle.Integral())
+        if h_particle.GetMaximum() > y_max:
+            y_max = h_particle.GetMaximum()
+    y_max *= 1.1
+
+    lg1 = TLegend(0.64, 0.6, 0.80, 0.84)
+    set_legend_style(lg1)
+
+    for i, h_particle in enumerate([h_pion, h_proton]):
+        set_h1_style(h_particle)
+        h_particle.SetLineColor(colors[i])
+
+        if i == 0:
+            h_particle.GetXaxis().SetRangeUser(0, 2)
+            h_particle.GetXaxis().SetTitle('Total Energy Deposit in Liquid Scintillator (GeV)')
+            h_particle.GetYaxis().SetTitle('Event Count')
+            h_particle.GetYaxis().SetRangeUser(0, y_max)
+            h_particle.Draw('hist')
+        else:
+            h_particle.Draw('hist,sames')
+        lg1.AddEntry(h_particle, ['pi+', 'proton'][i], 'l')
+    lg1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_detsim_fls_hit_gev.{}.pdf'.format(FIGURE_DIR, filename))
+    input('Press any key to continue.')
+
+
 # 20181203_testbeam_bridge_beam_detsim
+gStyle.SetOptStat(0)
 # plot_beamline_sim_global_timing()
-plot_beamline_sim_spill_timing()
+# plot_beamline_sim_spill_timing()
+# plot_detsim_momentum('testbeamana.g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root')
+plot_detsim_fls_hit_gev('testbeamana.g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root')
 
 # 20181129_electron_gun_physics
 # plot_birks_law()
