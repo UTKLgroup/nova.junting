@@ -74,19 +74,23 @@ def save_to_txt(filename):
             f_txt.write('0 {}\n'.format(len(event)))
             for particle in event:
                 f_txt.write(' '.join(map(str, particle)) + '\n')
-    call('scp {}/{} junting@novagpvm02.fnal.gov:/nova/app/users/junting/testbeam/det/'.format(DATA_DIR, txt_filename), shell=True)
+    # call('scp {}/{} junting@novagpvm02.fnal.gov:/nova/app/users/junting/testbeam/det/'.format(DATA_DIR, txt_filename), shell=True)
 
     event_count = len(events)
     multiple_particle_event_count = 0
     h1 = TH1D('h1', 'h1', 5, -0.5, 4.5)
-    for event in events:
+    for i, event in enumerate(events):
         h1.Fill(len(event))
-        if len(event) > 1:
+        if len(event) > 2:
             multiple_particle_event_count += 1
+            print('i = {}'.format(i))
+            print('len(event) = {}'.format(len(event)))
+
     print('event_count = {}'.format(event_count))
     print('multiple_particle_event_count = {}'.format(multiple_particle_event_count))
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
+    gPad.SetLogy()
     set_h1_style(h1)
     h1.GetXaxis().SetTitle('Particle Count per Event')
     h1.GetYaxis().SetTitle('Event Count')
