@@ -28,7 +28,8 @@ class Detector:
 
 
 class Beamline:
-    INCH = 25.4
+    INCH = 25.4                 # mm
+    FOOT = 304.8                # mm
     RADIAN_PER_DEGREE = pi / 180.
 
     def __init__(self, g4bl_filename='beamline.py.in'):
@@ -387,6 +388,7 @@ class Beamline:
         cherenkov_pmt_pipe_outer_radius = 273. / 2.
         cherenkov_pmt_pipe_inner_radius = 264. / 2.
         cherenkov_pmt_pipe_length = 846. - 324. / 2.
+        support_dimensions = [4.5 * Beamline.FOOT, 6. * Beamline.FOOT, 3. * Beamline.FOOT]
 
         # to align with the previous position for the upstream end (ftbf_drawing.pdf)
         # later engineer drawings (gsmith_F10059283.pdf) is not used
@@ -396,10 +398,12 @@ class Beamline:
         self.f_out.write('virtualdetector cherenkov radius={} length={} color=1,1,1 material=CARBON_DIOXIDE\n'.format(cherenkov_inner_radius, self.cherenkov.length))
         self.f_out.write('tubs cherenkov_pipe innerRadius={} outerRadius={} length={} color=0.74,0.34,0.09 material=STAINLESS-STEEL\n'.format(cherenkov_inner_radius, cherenkov_outer_radius, self.cherenkov.length))
         self.f_out.write('tubs cherenkov_pipe_pmt innerRadius={} outerRadius={} length={} color=0.74,0.34,0.09 material=STAINLESS-STEEL\n'.format(cherenkov_pmt_pipe_inner_radius, cherenkov_pmt_pipe_outer_radius, cherenkov_pmt_pipe_length))
+        self.f_out.write('box cherenkov_support height={} length={} width={} material=CONCRETE color=0,1,1 kill={}\n'.format(support_dimensions[0], support_dimensions[1], support_dimensions[2], self.kill))
 
         self.f_out.write('place cherenkov rename=cherenkov x={} y={} z={} rotation=y{}\n'.format(self.cherenkov.x, self.cherenkov.y, self.cherenkov.z, self.cherenkov.theta))
         self.f_out.write('place cherenkov_pipe rename=cherenkov_pipe x={} y={} z={} rotation=y{} kill={}\n'.format(self.cherenkov.x, self.cherenkov.y, self.cherenkov.z, self.cherenkov.theta, self.kill))
         self.f_out.write('place cherenkov_pipe_pmt rename=cherenkov_pipe_pmt x={} y={} z={} rotation=y{},x90 kill={}\n'.format(self.cherenkov.x, self.cherenkov.y - cherenkov_outer_radius - cherenkov_pmt_pipe_length / 2., self.cherenkov.z + self.cherenkov.length / 2. - cherenkov_pmt_pipe_outer_radius - 1.75 * Beamline.INCH, self.cherenkov.theta, self.kill))
+        self.f_out.write('place cherenkov_support x={} y={} z={} rotation=y{}\n'.format(self.cherenkov.x, self.cherenkov.y - cherenkov_outer_radius - support_dimensions[0] / 2., self.cherenkov.z, self.cherenkov.theta))
 
     def write_collimator_ds(self):
         # lariat
