@@ -131,9 +131,6 @@ class Beamline:
         collimator_us_position = Beamline.get_average([collimator_us_points[0], collimator_us_points[2], collimator_us_points[3], collimator_us_points[5]])
         self.collimator_us.set_zx([collimator_us_position[0] - origin[0], collimator_us_position[1] - origin[1]])
 
-        # self.shielding_block_1.set_zx()
-        # self.shielding_block_1.set_zx()
-
     def read_nova_dimension(self):
         top_points = Beamline.get_csv('digitize/nova.csv')
         self.nova.length = np.average([Beamline.get_distance(top_points[0], top_points[1]), Beamline.get_distance(top_points[2], top_points[3])])
@@ -456,9 +453,11 @@ class Beamline:
         self.f_out.write('  place shielding_block_concrete_top x={} y={} z={}\n'.format(0., cement_dimensions[0] / 2. + concrete_top_dimensions[0] / 2., z_shift))
         self.f_out.write('endgroup\n')
 
+        shielding_block_separation = 20. * Beamline.INCH
+        self.shielding_block_1.set_zx([self.magnet.z + 1200., self.magnet.x + steel_dimensions[2] / 2. + shielding_block_separation / 2.])
+        self.shielding_block_2.set_zx([self.magnet.z + 1200., self.magnet.x - steel_dimensions[2] / 2. - shielding_block_separation / 2.])
         self.f_out.write('place shielding_block rename=shielding_block_1 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_1.x, self.shielding_block_1.y, self.shielding_block_1.z, self.shielding_block_1.theta))
-        # self.f_out.write('place shielding_block_2 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_2.x, self.shielding_block_2.y, self.shielding_block_2.z, self.shielding_block_2.theta))
-
+        self.f_out.write('place shielding_block rename=shielding_block_2 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_2.x, self.shielding_block_2.y, self.shielding_block_2.z, self.shielding_block_2.theta))
 
     def write_housing(self):
         thickness = 10.
@@ -523,6 +522,7 @@ class Beamline:
         #     self.write_virtual_disk()
         self.write_wc()
         self.write_magnet()
+        self.write_shielding_block()
         self.write_collimator_ds()
         self.write_tof()
         self.write_cherenkov()
@@ -648,15 +648,15 @@ class Beamline:
         self.write_shielding_block()
 
 
-# beamline = Beamline()
+beamline = Beamline()
 # beamline.figure_dir = '/Users/juntinghuang/beamer/20180413_testbeam_120gev/figures'
 # beamline.plot_position()
 # beamline.screen_shot = True
 # beamline.read_cherenkov_dimension()
-# beamline.write()
+beamline.write()
 
 # beamline = Beamline('beamline.py.radiation.collimator.in')
 # beamline.write_radiation()
 
-beamline = Beamline('tmp/beamline.py.geometry_check.in')
-beamline.write_geometry_check()
+# beamline = Beamline('tmp/beamline.py.geometry_check.in')
+# beamline.write_geometry_check()

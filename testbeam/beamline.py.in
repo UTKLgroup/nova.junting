@@ -37,6 +37,18 @@ place wire_chamber rename=wire_chamber_3 x=-1354.35596 y=0.0 z=6822.489320000001
 place wire_chamber rename=wire_chamber_4 x=-1354.35596 y=0.0 z=10326.081044999999 rotation=y0.0
 genericbend M1 fieldHeight=88.89999999999999 fieldLength=1066.8 fieldWidth=450.84999999999997 kill=0 ironColor=1,0,0 ironHeight=762.0 ironLength=1066.8 ironWidth=1270.0
 place M1 By=$b_field x=-1354.35596 y=0.0 z=4723.200537006021 rotation=Y-8.0
+group shielding_block
+  box shielding_block_steel height=609.5999999999999 length=406.4 width=609.5999999999999 material=Fe color=0,1,1 kill=0
+  box shielding_block_cement height=609.5999999999999 length=406.4 width=609.5999999999999 material=CONCRETE color=0,1,1 kill=0
+  box shielding_block_concrete_bottom height=304.79999999999995 length=812.8 width=609.5999999999999 material=CONCRETE color=0,1,1 kill=0
+  box shielding_block_concrete_top height=101.6 length=812.8 width=609.5999999999999 material=CONCRETE color=0,1,1 kill=0
+  place shielding_block_steel x=0.0 y=0.0 z=203.2
+  place shielding_block_cement x=0.0 y=0.0 z=609.5999999999999
+  place shielding_block_concrete_bottom x=0.0 y=-457.19999999999993 z=406.4
+  place shielding_block_concrete_top x=0.0 y=355.59999999999997 z=406.4
+endgroup
+place shielding_block rename=shielding_block_1 x=-795.5559600000001 y=0.0 z=5923.200537006021 rotation=y0.0
+place shielding_block rename=shielding_block_2 x=-1913.15596 y=0.0 z=5923.200537006021 rotation=y0.0
 group collimator_ds
   box collimator_ds_bottom height=200.02499999999998 length=914.4 width=711.1999999999999 material=Fe color=0,1,1 kill=0
   box collimator_ds_middle height=209.54999999999998 length=914.4 width=276.22499999999997 material=Fe color=0,.8,1 kill=0
