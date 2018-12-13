@@ -430,7 +430,7 @@ class Beamline:
 
         self.f_out.write('group collimator_ds\n')
         self.f_out.write('  box collimator_ds_bottom height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_ds_bottom_dimensions[0], collimator_ds_bottom_dimensions[1], collimator_ds_bottom_dimensions[2], self.kill))
-        self.f_out.write('  box collimator_ds_middle height={} length={} width={} material=Fe color=0,.8,1 kill={}\n'.format(collimator_ds_middle_dimensions[0], collimator_ds_middle_dimensions[1], collimator_ds_middle_dimensions[2], self.kill))
+        self.f_out.write('  box collimator_ds_middle height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_ds_middle_dimensions[0], collimator_ds_middle_dimensions[1], collimator_ds_middle_dimensions[2], self.kill))
         self.f_out.write('  place collimator_ds_middle rename=+_middle_1 x={} y={} z={}\n'.format(collimator_ds_middle_1_positions[0], collimator_ds_middle_1_positions[1], collimator_ds_middle_1_positions[2]))
         self.f_out.write('  place collimator_ds_middle rename=+_middle_2 x={} y={} z={}\n'.format(collimator_ds_middle_2_positions[0], collimator_ds_middle_2_positions[1], collimator_ds_middle_2_positions[2]))
         self.f_out.write('  place collimator_ds_bottom rename=+_bottom x={} y={} z={}\n'.format(collimator_ds_bottom_positions[0], collimator_ds_bottom_positions[1], collimator_ds_bottom_positions[2]))
