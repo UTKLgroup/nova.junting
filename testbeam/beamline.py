@@ -13,7 +13,7 @@ class Detector:
         self.length = 10.
         self.width = 10.
         self.height = 10.
-        self.theta = 1.
+        self.theta = 0.
         self.aperture_width = 1.
         self.aperture_height = 1.
         self.color = kBlack
@@ -53,6 +53,8 @@ class Beamline:
         self.cherenkov = Detector('cherenkov counter')
         self.tof_ds = Detector('downstream TOF')
         self.nova = Detector('nova detector')
+        self.shielding_block_1 = Detector('shielding block 1')
+        self.shielding_block_2 = Detector('shielding block 2')
 
         self.detectors = [
             self.target,
@@ -128,6 +130,9 @@ class Beamline:
         collimator_us_points = Beamline.get_csv('digitize/collimator_us.csv')
         collimator_us_position = Beamline.get_average([collimator_us_points[0], collimator_us_points[2], collimator_us_points[3], collimator_us_points[5]])
         self.collimator_us.set_zx([collimator_us_position[0] - origin[0], collimator_us_position[1] - origin[1]])
+
+        # self.shielding_block_1.set_zx()
+        # self.shielding_block_1.set_zx()
 
     def read_nova_dimension(self):
         top_points = Beamline.get_csv('digitize/nova.csv')
@@ -432,6 +437,29 @@ class Beamline:
         self.f_out.write('endgroup\n')
         self.f_out.write('place collimator_ds x={} y={} z={} rotation=y{}\n'.format(self.collimator_ds.x, self.collimator_ds.y, self.collimator_ds.z, self.collimator_ds.theta))
 
+    def write_shielding_block(self):
+        steel_dimensions = [24. * Beamline.INCH, 16. * Beamline.INCH, 24. * Beamline.INCH]
+        cement_dimensions = [24. * Beamline.INCH, 16. * Beamline.INCH, 24. * Beamline.INCH]
+        concrete_bottom_dimensions = [12. * Beamline.INCH, 32. * Beamline.INCH, 24. * Beamline.INCH]
+        concrete_top_dimensions = [4. * Beamline.INCH, 32. * Beamline.INCH, 24. * Beamline.INCH]
+
+        self.f_out.write('group shielding_block\n')
+        self.f_out.write('  box shielding_block_steel height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(steel_dimensions[0], steel_dimensions[1], steel_dimensions[2], self.kill))
+        self.f_out.write('  box shielding_block_cement height={} length={} width={} material=CONCRETE color=0,1,1 kill={}\n'.format(cement_dimensions[0], cement_dimensions[1], cement_dimensions[2], self.kill))
+        self.f_out.write('  box shielding_block_concrete_bottom height={} length={} width={} material=CONCRETE color=0,1,1 kill={}\n'.format(concrete_bottom_dimensions[0], concrete_bottom_dimensions[1], concrete_bottom_dimensions[2], self.kill))
+        self.f_out.write('  box shielding_block_concrete_top height={} length={} width={} material=CONCRETE color=0,1,1 kill={}\n'.format(concrete_top_dimensions[0], concrete_top_dimensions[1], concrete_top_dimensions[2], self.kill))
+
+        z_shift = concrete_top_dimensions[1] / 2. # shift in z by half of the full length in z to avoid geometry conflict in the group
+        self.f_out.write('  place shielding_block_steel x={} y={} z={}\n'.format(0., 0., -steel_dimensions[1] / 2. + z_shift))
+        self.f_out.write('  place shielding_block_cement x={} y={} z={}\n'.format(0., 0., cement_dimensions[1] / 2. + z_shift))
+        self.f_out.write('  place shielding_block_concrete_bottom x={} y={} z={}\n'.format(0., -cement_dimensions[0] / 2. - concrete_bottom_dimensions[0] / 2., z_shift))
+        self.f_out.write('  place shielding_block_concrete_top x={} y={} z={}\n'.format(0., cement_dimensions[0] / 2. + concrete_top_dimensions[0] / 2., z_shift))
+        self.f_out.write('endgroup\n')
+
+        self.f_out.write('place shielding_block rename=shielding_block_1 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_1.x, self.shielding_block_1.y, self.shielding_block_1.z, self.shielding_block_1.theta))
+        # self.f_out.write('place shielding_block_2 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_2.x, self.shielding_block_2.y, self.shielding_block_2.z, self.shielding_block_2.theta))
+
+
     def write_housing(self):
         thickness = 10.
         radius = 3000.
@@ -606,22 +634,29 @@ class Beamline:
         # self.write_cherenkov()
 
         # magnet
-        self.magnet.x = 0.
-        self.magnet.y = 0.
-        self.magnet.z = 0.
-        self.magnet.theta = 0.
-        self.write_magnet()
+        # self.magnet.x = 0.
+        # self.magnet.y = 0.
+        # self.magnet.z = 0.
+        # self.magnet.theta = 0.
+        # self.write_magnet()
+
+        # shielding block
+        self.shielding_block_1.x = 0.
+        self.shielding_block_1.y = 0.
+        self.shielding_block_1.z = 0.
+        self.shielding_block_1.theta = 0.
+        self.write_shielding_block()
 
 
-beamline = Beamline()
+# beamline = Beamline()
 # beamline.figure_dir = '/Users/juntinghuang/beamer/20180413_testbeam_120gev/figures'
 # beamline.plot_position()
 # beamline.screen_shot = True
 # beamline.read_cherenkov_dimension()
-beamline.write()
+# beamline.write()
 
 # beamline = Beamline('beamline.py.radiation.collimator.in')
 # beamline.write_radiation()
 
-# beamline = Beamline('tmp/beamline.py.geometry_check.in')
-# beamline.write_geometry_check()
+beamline = Beamline('tmp/beamline.py.geometry_check.in')
+beamline.write_geometry_check()
