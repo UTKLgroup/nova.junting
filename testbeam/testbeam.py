@@ -3508,7 +3508,74 @@ def print_figure_tex():
 
 
 # testbeam_beamline_simulation
-print_figure_tex()
+# filenames = [
+#     'g4bl.b_-0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_-0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_-0.675T.proton.64000.root.job_1_20000.799.72m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root',
+#     'g4bl.b_-1.125T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_-1.575T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root'
+# ]
+# b_fields = [
+#     -0.225,
+#     -0.45,
+#     -0.675,
+#     -0.9,
+#     -1.125,
+#     -1.35,
+#     -1.575,
+#     -1.8
+# ]
+# pids = [-11, -13, 211, 321, 2212]
+# plot_particle_count_vs_b_field(filenames=filenames,
+#                                b_fields=b_fields,
+#                                pids=pids,
+#                                suffix='.b_negative')
+# plot_particle_count_vs_b_field(filenames=filenames,
+#                                b_fields=b_fields,
+#                                pids=pids,
+#                                suffix='.b_negative',
+#                                y_axis_title='Good Particles per Month (1M per Spill)',
+#                                scaling_factor=60 * 24 * 30)
+# print_particle_count_vs_b_field(filenames=filenames,
+#                                 b_fields=b_fields,
+#                                 pids=pids)
+filenames = [
+    # 'g4bl.b_0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+    'g4bl.b_0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+    'g4bl.b_0.675T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+    'g4bl.b_0.9T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+    'g4bl.b_1.125T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+    'g4bl.b_1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+    'g4bl.b_1.575T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+    'g4bl.b_1.8T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root.hist.root'
+]
+b_fields = [
+    # 0.225,
+    0.45,
+    0.675,
+    0.9,
+    1.125,
+    1.35,
+    1.575,
+    1.8]
+pids = [11, 13, -211, -321, -2212]
+plot_particle_count_vs_b_field(filenames=filenames,
+                               b_fields=b_fields,
+                               pids=pids,
+                               suffix='.b_positive')
+# plot_particle_count_vs_b_field(filenames=filenames,
+#                                b_fields=b_fields,
+#                                pids=pids,
+#                                suffix='.b_positive',
+#                                y_axis_title='Good Particles per Month (1M per Spill)',
+#                                scaling_factor=60 * 24 * 30)
+# print_particle_count_vs_b_field(filenames=filenames,
+#                                 b_fields=b_fields,
+#                                 pids=pids)
+# print_figure_tex()
 # save_particle_momentum_root('g4bl.b_-0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=800.)
 # save_particle_momentum_root('g4bl.b_0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=800.)
 # save_particle_momentum_root('g4bl.b_-0.675T.proton.64000.root.job_1_20000.799.72m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=799.72)
