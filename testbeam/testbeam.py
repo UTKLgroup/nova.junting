@@ -13,7 +13,7 @@ ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
-FIGURE_DIR = '/Users/juntinghuang/beamer/20181123_testbeam_beam_sim_high_stat/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20181203_testbeam_bridge_beam_detsim/figures'
 DATA_DIR = './data'
 
 
@@ -2519,10 +2519,14 @@ def print_radiation_length():
 
 
 def plot_birks_law():
-    dedxs = np.arange(0, 20, 0.1)
-    birks_constant = 0.0125     # g / MeV / cm2
-    density = 0.85              # g / cm3
+    # dedxs = np.arange(0, 20, 0.1)
+    # birks_constant = 0.0125     # g / MeV / cm2
+    dedxs = np.arange(0, 7, 0.1)
+    birks_constant = 0.01155    # g / MeV / cm2
+    density = 0.862             # g / cm3
     chou_constant = 0.
+
+    print('birks_constant / density = {}'.format(birks_constant / density))
 
     coeffs = []
     ones = []
@@ -2540,7 +2544,8 @@ def plot_birks_law():
     set_graph_style(gr_one)
 
     gr.GetXaxis().SetTitle('dE/dx (MeV / cm)')
-    gr.GetYaxis().SetTitle('1 / [1 + B(dE/dx) + C(dE/dx)^{2}]')
+    # gr.GetYaxis().SetTitle('1 / [1 + B(dE/dx) + C(dE/dx)^{2}]')
+    gr.GetYaxis().SetTitle('1 / [1 + B(dE/dx)]')
     gr.Draw('AL')
 
     c1.Update()
@@ -3209,15 +3214,14 @@ def split_rows(filename, split_size):
 def plot_particle_count_vs_b_field(**kwargs):
     y_axis_title = kwargs.get('y_axis_title', 'Good Particles per 1M Beam Particle')
     scaling_factor = kwargs.get('scaling_factor', None)
+    filenames = kwargs.get('filenames', ['g4bl.b_-0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+                                         'g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root',
+                                         'g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+                                         'g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root'])
+    b_fields = kwargs.get('b_fields', [-0.45, -0.9, -1.35, -1.8])
+    pids = kwargs.get('pids', [-11, -13, 211, 321, 2212])
+    suffix = kwargs.get('suffix', '')
 
-    filenames = [
-        'g4bl.b_-0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-        'g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root',
-        'g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-        'g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root'
-    ]
-    b_fields = [-0.45, -0.9, -1.35, -1.8]
-    pids = [211, 2212, -11, -13, 321]
     colors = [
         kBlack,
         kRed,
@@ -3256,9 +3260,9 @@ def plot_particle_count_vs_b_field(**kwargs):
         gr.SetMarkerColor(colors[i])
         if i == 0:
             gr.Draw('APL')
-            gr.GetYaxis().SetRangeUser(0.005, 50.)
+            gr.GetYaxis().SetRangeUser(0.001, 50.)
             if scaling_factor:
-                gr.GetYaxis().SetRangeUser(0.005 * scaling_factor, 50. * scaling_factor)
+                gr.GetYaxis().SetRangeUser(0.001 * scaling_factor, 50. * scaling_factor)
             gr.GetXaxis().SetTitle('B Field (T)')
             gr.GetYaxis().SetTitle(y_axis_title)
         else:
@@ -3267,34 +3271,219 @@ def plot_particle_count_vs_b_field(**kwargs):
     lg1.Draw()
 
     c1.Update()
-    c1.SaveAs('{}/plot_particle_count_vs_b_field.scaling_factor_{}.pdf'.format(FIGURE_DIR, scaling_factor))
+    c1.SaveAs('{}/plot_particle_count_vs_b_field.scaling_factor_{}{}.pdf'.format(FIGURE_DIR, scaling_factor, suffix))
     input('Press any key to continue.')
 
 
-def print_particle_count_vs_b_field():
-    filenames = [
-        'g4bl.b_-0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-        'g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root',
-        'g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-        'g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root'
-    ]
-    b_fields = [-0.45, -0.9, -1.35, -1.8]
-    pids = [211, 2212, -11, -13, 321]
+def print_particle_count_vs_b_field(**kwargs):
+    filenames = kwargs.get('filenames', ['g4bl.b_-0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+                                         'g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root',
+                                         'g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+                                         'g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root'])
+    b_fields = kwargs.get('b_fields', [-0.45, -0.9, -1.35, -1.8])
+    pids = kwargs.get('pids', [211, 2212, -11, -13, 321])
+
+    b_field_strs = [str(b_field) for b_field in b_fields]
+    pids = sorted(pids, key=abs)
     tfs = []
     for filename in filenames:
         tfs.append(TFile('{}/{}'.format(DATA_DIR, filename)))
 
-    pid_particle_counts = []
+    pid_infos = {}
     for pid in pids:
-        particle_counts = []
-        for tf in tfs:
+        pid_infos[pid] = {}
+        for i, tf in enumerate(tfs):
             hist = tf.Get('h_{}'.format(pid))
-            particle_counts.append(float(hist.Integral()))
-        pid_particle_counts.append(particle_counts)
+            b_field_str = str(b_field_strs[i])
+            pid_infos[pid][b_field_str] = {}
+            pid_infos[pid][b_field_str]['count'] = hist.Integral()
+            pid_infos[pid][b_field_str]['count_month'] = hist.Integral() * 60 * 24 * 30
+            pid_infos[pid][b_field_str]['mean'] = hist.GetMean()
+            pid_infos[pid][b_field_str]['rms'] = hist.GetRMS()
 
+    info_names = ['count', 'count_month', 'mean', 'rms']
     for i, pid in enumerate(pids):
-        print('{} & {}'.format(pid, pid_particle_counts[i]))
+        particle_name = PDG.GetParticle(pid).GetName()
+        print('\hline')
+        print('\hline')
+        for i, b_field_str in enumerate(b_field_strs):
+            row = ''
+            if i == 0:
+                row += '\\multirow{{{}}}{{*}}{{{}}}'.format(len(b_field_strs), particle_name)
+            row += '& ' + b_field_str
+            for info_name in info_names:
+                row += ' & \\SI{{{:.2E}}}{{}}'.format(pid_infos[pid][b_field_str][info_name])
+            row += ' \\\\'
+            print(row)
 
+
+def plot_beamline_sim_global_timing():
+    tf = TFile('{}/g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root'.format(DATA_DIR))
+
+    h1 = TH1D('h1', 'h1', 48000, 0, 48000)
+    for event in tf.Get('tree'):
+        if event.is_noise == 1:
+            continue
+        h1.Fill(event.t)
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    set_h1_style(h1)
+
+    h1.GetXaxis().SetRangeUser(0, 600)
+    h1.GetXaxis().SetTitle('Time (s)')
+    h1.GetYaxis().SetTitle('Good Particle Count per Second')
+    h1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_beamline_sim_global_timing.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
+def plot_beamline_sim_spill_timing():
+    beam_particle_count_per_spill = 1e6
+
+    tf = TFile('{}/g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root'.format(DATA_DIR))
+    h1 = TH1D('h1', 'h1', 50, 0, 5)
+
+    spill_number_max = 0
+    for event in tf.Get('tree'):
+        if event.is_noise == 1:
+            continue
+        spill_number = int(event.event_id / beam_particle_count_per_spill)
+        if spill_number > spill_number_max:
+            spill_number_max = spill_number
+        h1.Fill(event.t - 60. - spill_number * 60.)
+
+    print('spill_number_max = {}'.format(spill_number_max))
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    set_h1_style(h1)
+
+    h1.GetXaxis().SetRangeUser(0, 600)
+    h1.GetXaxis().SetTitle('Time (s)')
+    h1.GetYaxis().SetTitle('Good Particle Count')
+    h1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_beamline_sim_spill_timing.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
+def plot_detsim_momentum(filename):
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    h_electron = tf.Get('testbeamana/fMcMomentumElectron')
+    h_muon = tf.Get('testbeamana/fMcMomentumMuon')
+    h_pion = tf.Get('testbeamana/fMcMomentumPion')
+    h_kaon = tf.Get('testbeamana/fMcMomentumKaon')
+    h_proton = tf.Get('testbeamana/fMcMomentumProton')
+
+    h_particles = [h_electron, h_muon, h_pion, h_kaon, h_proton]
+    colors = [
+        kBlack,
+        kRed,
+        kBlue,
+        kMagenta + 1,
+        kGreen + 2
+    ]
+    legend_names = ['e+', 'mu+', 'pi+', 'K+', 'proton']
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetLogy()
+
+    y_max = 0.
+    for h_particle in h_particles:
+        h_particle.Scale(1. / 800.)
+        h_particle.Rebin(2)
+        if h_particle.GetMaximum() > y_max:
+            y_max = h_particle.GetMaximum()
+    y_max *= 1.2
+
+    lg1 = TLegend(0.64, 0.6, 0.80, 0.84)
+    set_legend_style(lg1)
+
+    for i, h_particle in enumerate(h_particles):
+        set_h1_style(h_particle)
+        h_particle.SetLineColor(colors[i])
+        if i == 0:
+            h_particle.GetXaxis().SetTitle('Momentum (GeV)')
+            h_particle.GetYaxis().SetTitle('Particle Count per 1M Beam Particle')
+            h_particle.Draw('hist')
+            h_particle.GetXaxis().SetRangeUser(1., 2.5)
+            h_particle.GetYaxis().SetRangeUser(1e-3, y_max)
+        else:
+            h_particle.Draw('hist,sames')
+
+        lg1.AddEntry(h_particle, legend_names[i], 'l')
+    lg1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_detsim_momentum.{}.pdf'.format(FIGURE_DIR, filename))
+    input('Press any key to continue.')
+
+
+def plot_detsim_fls_hit_gev(filename):
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    h_electron = tf.Get('testbeamana/fFlsHitGevElectron')
+    h_muon = tf.Get('testbeamana/fFlsHitGevMuon')
+    h_pion = tf.Get('testbeamana/fFlsHitGevPion')
+    h_kaon = tf.Get('testbeamana/fFlsHitGevKaon')
+    h_proton = tf.Get('testbeamana/fFlsHitGevProton')
+
+    h_particles = [h_electron, h_muon, h_pion, h_kaon, h_proton]
+    colors = [
+        kBlack,
+        kRed,
+        kBlue,
+        kMagenta + 1,
+        kGreen + 2
+    ]
+    legend_names = ['e+', 'mu+', 'pi+', 'K+', 'proton']
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+
+    y_max = 0.
+    for h_particle in [h_pion, h_proton]:
+        h_particle.Scale(1. / h_particle.Integral())
+        if h_particle.GetMaximum() > y_max:
+            y_max = h_particle.GetMaximum()
+    y_max *= 1.1
+
+    lg1 = TLegend(0.64, 0.6, 0.80, 0.84)
+    set_legend_style(lg1)
+
+    for i, h_particle in enumerate([h_pion, h_proton]):
+        set_h1_style(h_particle)
+        h_particle.SetLineColor(colors[i])
+
+        if i == 0:
+            h_particle.GetXaxis().SetRangeUser(0, 2)
+            h_particle.GetXaxis().SetTitle('Total Energy Deposit in Liquid Scintillator (GeV)')
+            h_particle.GetYaxis().SetTitle('Event Count')
+            h_particle.GetYaxis().SetRangeUser(0, y_max)
+            h_particle.Draw('hist')
+        else:
+            h_particle.Draw('hist,sames')
+        lg1.AddEntry(h_particle, ['pi+', 'proton'][i], 'l')
+    lg1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_detsim_fls_hit_gev.{}.pdf'.format(FIGURE_DIR, filename))
+    input('Press any key to continue.')
+
+
+# 20181203_testbeam_bridge_beam_detsim
+gStyle.SetOptStat(0)
+# plot_beamline_sim_global_timing()
+# plot_beamline_sim_spill_timing()
+# plot_detsim_momentum('testbeamana.g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root')
+plot_detsim_fls_hit_gev('testbeamana.g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root')
+
+# 20181129_electron_gun_physics
+# plot_birks_law()
 
 # 20181123_testbeam_beam_sim_high_stat
 # plot_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv', 700, 1800, title='64 GeV Secondary Beam', y_max=0., bin_count=11, y_title_offset=1.4, normalization_factor=599.3, y_title='Particle Count per 1M Beam Particles', b_field=-0.9, beam_momentum=64)
@@ -3317,7 +3506,34 @@ def print_particle_count_vs_b_field():
 # plot_saved_particle_momentum('g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root', b_field=-1.8, beam_momentum=64, log_y=True, rebin=2, x_min=1500., x_max=3000.)
 # plot_particle_count_vs_b_field()
 # print_particle_count_vs_b_field()
-plot_particle_count_vs_b_field(y_axis_title='Good Particles per Month (1M per Spill)', scaling_factor=60 * 24 * 30)
+# plot_particle_count_vs_b_field(y_axis_title='Good Particles per Month (1M per Spill)', scaling_factor=60 * 24 * 30)
+# save_particle_momentum_root('g4bl.b_0.9T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=800.)
+# save_particle_momentum_root('g4bl.b_1.8T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=799.92)
+# save_particle_momentum_root('g4bl.b_0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=800.)
+# save_particle_momentum_root('g4bl.b_1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=800.)
+# plot_saved_particle_momentum('g4bl.b_0.9T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root', b_field=0.9, beam_momentum=64, log_y=True, rebin=2, x_min=500., x_max=2000.)
+# plot_saved_particle_momentum('g4bl.b_1.8T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root.hist.root', b_field=1.8, beam_momentum=64, log_y=True, rebin=2, x_min=1500., x_max=3000.)
+# plot_saved_particle_momentum('g4bl.b_0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root', b_field=0.45, beam_momentum=64, log_y=True, rebin=2, x_max=1500.)
+# plot_saved_particle_momentum('g4bl.b_1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root', b_field=1.35, beam_momentum=64, log_y=True, rebin=2, x_min=1000., x_max=2500.)
+# filenames = ['g4bl.b_0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#              'g4bl.b_0.9T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#              'g4bl.b_1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#              'g4bl.b_1.8T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root.hist.root']
+# b_fields = [0.45, 0.9, 1.35, 1.8]
+# pids = [11, 13, -211, -321, -2212]
+# plot_particle_count_vs_b_field(filenames=filenames,
+#                                b_fields=b_fields,
+#                                pids=pids,
+#                                suffix='.b_positive')
+# plot_particle_count_vs_b_field(filenames=filenames,
+#                                b_fields=b_fields,
+#                                pids=pids,
+#                                suffix='.b_positive',
+#                                y_axis_title='Good Particles per Month (1M per Spill)',
+#                                scaling_factor=60 * 24 * 30)
+# print_particle_count_vs_b_field(filenames=filenames,
+#                                 b_fields=b_fields,
+#                                 pids=pids)
 
 # 20181115_testbeam_proton_secondary_beam
 # gStyle.SetOptStat(0)

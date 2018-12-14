@@ -25,6 +25,9 @@ from ROOT import Particle
 
 
 def save_particle_to_root(filename):
+    filename_base, filename_ext = os.path.splitext(filename)
+    tf_out = TFile('{}.trigger{}'.format(filename_base, filename_ext), 'RECREATE')
+
     tree = TTree('tree', 'tree')
     particle = Particle()
     tree.Branch('particle', particle, 'is_noise/I:event_id:track_id:t_tof_us/F:t_tof_ds:x:y:z:t:px:py:pz:pdg_id:parent_id')
@@ -73,8 +76,7 @@ def save_particle_to_root(filename):
                 tree.Fill()
     tf_in.Close()
 
-    filename_base, filename_ext = os.path.splitext(filename)
-    tf_out = TFile('{}.trigger{}'.format(filename_base, filename_ext), 'RECREATE')
+    tf_out.cd()
     tree.Write()
     tf_out.Close()
 

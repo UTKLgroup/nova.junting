@@ -876,8 +876,8 @@ def print_photon_count():
 
 
 # 20181116_testbeam_cerenkov_light
-gStyle.SetOptStat(0)
-calibration_constant = 8.854658242290205e-13 # C / PE
+# gStyle.SetOptStat(0)
+# calibration_constant = 8.854658242290205e-13 # C / PE
 # plot_spectrum('F1ch300068.txt', rebin=10, x_min=-0.02e-9, x_max=0.15e-9, calibration_constant=calibration_constant)
 # plot_spectrum('F1ch300069.txt', rebin=10, x_min=-10, x_max=60, calibration_constant=calibration_constant, find_peak=False,
 #               start_time=datetime(2018, 11, 15, 18, 48), end_time=datetime(2018, 11, 16, 13, 36))
@@ -887,8 +887,8 @@ calibration_constant = 8.854658242290205e-13 # C / PE
 #              filenames=['../scintillator/F1ch300040.txt', 'F1ch300069.txt'],
 #              filename_no_pedestals=['../scintillator/F1ch300039.txt', 'F1ch300069.txt'],
 #              legend_txts=['Production', 'Mineral Oil'])
-plot_spectrum('F1ch300070.txt', rebin=10, x_min=-10, x_max=60, calibration_constant=calibration_constant, find_peak=False,
-              start_time=datetime(2018, 11, 15, 18, 48), end_time=datetime(2018, 11, 19, 12, 51))
+# plot_spectrum('F1ch300070.txt', rebin=10, x_min=-10, x_max=60, calibration_constant=calibration_constant, find_peak=False,
+#               start_time=datetime(2018, 11, 15, 18, 48), end_time=datetime(2018, 11, 19, 12, 51))
 # plot_spectra(rebin=10,
 #              suffix='.mineral_oil',
 #              calibration_constant=calibration_constant,
@@ -952,7 +952,7 @@ plot_spectrum('F1ch300070.txt', rebin=10, x_min=-10, x_max=60, calibration_const
 #                    y_axis_title_ratio='Ratio')
 
 # 20181018_testbeam_mineral_oil
-# print_cherenkov_threshold()
+print_cherenkov_threshold()
 # print_photon_count()
 
 # 20181005_testbeam_light_yield_setup

@@ -21,6 +21,8 @@ place collimator_us_aperture rename=collimator_us_aperture_1 x=-1.31631742066042
 place collimator_us_aperture rename=collimator_us_aperture_2 x=-431.89631742066047 y=0.0 z=755.396 rotation=y-17.97
 place collimator_us_plate rename=collimator_us_top_1 x=-216.60631742066045 y=91.313 z=755.396
 place collimator_us_plate rename=collimator_us_top_2 x=-216.60631742066045 y=223.13899999999998 z=755.396
+virtualdetector start_line radius=1750.0 length=1.0 material=Air color=0.9,0.9,0.7
+place start_line rotation=y-16.0 x=-399.6741659346488 y=0.0 z=1393.8294591105623
 group wire_chamber
   virtualdetector wire_chamber_detector height=125.0 length=25.0 width=128.0 color=0,1,0
   box wire_chamber_frame_vertical height=254.0 length=25.0 width=63.0 color=1,0,1 kill=0 material=Al
@@ -37,9 +39,21 @@ place wire_chamber rename=wire_chamber_3 x=-1354.35596 y=0.0 z=6822.489320000001
 place wire_chamber rename=wire_chamber_4 x=-1354.35596 y=0.0 z=10326.081044999999 rotation=y0.0
 genericbend M1 fieldHeight=88.89999999999999 fieldLength=1066.8 fieldWidth=450.84999999999997 kill=0 ironColor=1,0,0 ironHeight=762.0 ironLength=1066.8 ironWidth=1270.0
 place M1 By=$b_field x=-1354.35596 y=0.0 z=4723.200537006021 rotation=Y-8.0
+group shielding_block
+  box shielding_block_steel height=609.5999999999999 length=406.4 width=609.5999999999999 material=Fe color=0,1,1 kill=0
+  box shielding_block_cement height=609.5999999999999 length=406.4 width=609.5999999999999 material=CONCRETE color=0,1,1 kill=0
+  box shielding_block_concrete_bottom height=304.79999999999995 length=812.8 width=609.5999999999999 material=CONCRETE color=0,1,1 kill=0
+  box shielding_block_concrete_top height=101.6 length=812.8 width=609.5999999999999 material=CONCRETE color=0,1,1 kill=0
+  place shielding_block_steel x=0.0 y=0.0 z=203.2
+  place shielding_block_cement x=0.0 y=0.0 z=609.5999999999999
+  place shielding_block_concrete_bottom x=0.0 y=-457.19999999999993 z=406.4
+  place shielding_block_concrete_top x=0.0 y=355.59999999999997 z=406.4
+endgroup
+place shielding_block rename=shielding_block_1 x=-795.5559600000001 y=0.0 z=5923.200537006021 rotation=y0.0
+place shielding_block rename=shielding_block_2 x=-1913.15596 y=0.0 z=5923.200537006021 rotation=y0.0
 group collimator_ds
   box collimator_ds_bottom height=200.02499999999998 length=914.4 width=711.1999999999999 material=Fe color=0,1,1 kill=0
-  box collimator_ds_middle height=209.54999999999998 length=914.4 width=276.22499999999997 material=Fe color=0,.8,1 kill=0
+  box collimator_ds_middle height=209.54999999999998 length=914.4 width=276.22499999999997 material=Fe color=0,1,1 kill=0
   place collimator_ds_middle rename=+_middle_1 x=217.48749999999998 y=0.0 z=457.2
   place collimator_ds_middle rename=+_middle_2 x=-217.48749999999998 y=0.0 z=457.2
   place collimator_ds_bottom rename=+_bottom x=0.0 y=204.78749999999997 z=457.2
@@ -53,8 +67,10 @@ place tof_ds rename=tof_ds x=-1354.35596 y=0.0 z=14424.79831 rotation=y0.0
 virtualdetector cherenkov radius=157.5 length=2925.0 color=1,1,1 material=CARBON_DIOXIDE
 tubs cherenkov_pipe innerRadius=157.5 outerRadius=162.0 length=2925.0 color=0.74,0.34,0.09 material=STAINLESS-STEEL
 tubs cherenkov_pipe_pmt innerRadius=132.0 outerRadius=136.5 length=684.0 color=0.74,0.34,0.09 material=STAINLESS-STEEL
+box cherenkov_support height=1371.6000000000001 length=1828.8000000000002 width=914.4000000000001 material=CONCRETE color=0,1,1 kill=0
 place cherenkov rename=cherenkov x=-1354.35596 y=0.0 z=12212.219835 rotation=y0.0
 place cherenkov_pipe rename=cherenkov_pipe x=-1354.35596 y=0.0 z=12212.219835 rotation=y0.0 kill=0
 place cherenkov_pipe_pmt rename=cherenkov_pipe_pmt x=-1354.35596 y=-504.0 z=13493.769835 rotation=y0.0,x90 kill=0
+place cherenkov_support x=-1354.35596 y=-847.8000000000001 z=12212.219835 rotation=y0.0
 virtualdetector nova height=2606.1905036738476 length=10.0 width=2606.1905036738476 color=0.39,0.39,0.39
 place nova rename=nova x=-1354.35596 y=0.0 z=14648.66998 rotation=y0.0
