@@ -13,7 +13,8 @@ ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
-FIGURE_DIR = '/Users/juntinghuang/Desktop/nova/testbeam/doc/testbeam_beamline_simulation/figures'
+# FIGURE_DIR = '/Users/juntinghuang/Desktop/nova/testbeam/doc/testbeam_beamline_simulation/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20181213_testbeam_shielding_noise_particle/figures'
 DATA_DIR = './data'
 
 
@@ -3506,6 +3507,81 @@ def print_figure_tex():
         # print('    \\caption{{$B = \SI{{{:.3f}}}{{T}}$}}'.format(b_field))
         print('  \\end{subfigure}')
 
+
+def plot_noise_particle_root(filename, **kwargs):
+    log_y = kwargs.get('log_y', False)
+    show_boundary = kwargs.get('show_boundary', False)
+
+    width = 2606.2 / 10.       # cm
+    half_width = width / 2.    # cm
+    x0 = -1354.4 / 10.         # cm
+    y0 = 0.
+    margin = 20.
+    pid_y_x_hists = {}
+    pid_momentum_x_hists = {}
+
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    for particle in tf.Get('tree'):
+        if not particle.is_noise:
+            continue
+        pid = int(particle.pdg_id)
+        px = particle.px
+        py = particle.py
+        pz = particle.pz
+        momentum = (px**2 + py**2 + pz**2)**0.5
+        x = particle.x
+        y = particle.y
+        z = particle.z
+        if pid not in pid_y_x_hists:
+            pid_y_x_hists[pid] = TH2D('h_y_x_{}'.format(pid), 'h_y_x_{}'.format(pid), 100, x0 - half_width - margin, x0 + half_width + margin, 100, y0 - half_width - margin, y0 + half_width + margin)
+        if pid not in pid_momentum_x_hists:
+            pid_momentum_x_hists[pid] = TH2D('h_momentum_x_{}'.format(pid), 'h_momentum_x_{}'.format(pid), 100, x0 - half_width - margin, x0 + half_width + margin, 100, 0, 3000)
+        pid_y_x_hists[pid].Fill(x / 10., y / 10.)
+        pid_momentum_x_hists[pid].Fill(x / 10., momentum)
+
+    c1 = TCanvas('c1', 'c1', 800, 800)
+    set_margin()
+    set_h2_color_style()
+    gPad.SetRightMargin(0.15)
+
+    for pid, h1 in pid_y_x_hists.items():
+        set_h2_style(h1)
+        h1.Draw('colz')
+
+        if show_boundary:
+            tl_left = TLine(x0 - half_width, y0 - half_width, x0 - half_width, y0 + half_width)
+            tl_right = TLine(x0 + half_width, y0 - half_width, x0 + half_width, y0 + half_width)
+            tl_top = TLine(x0 - half_width, y0 + half_width, x0 + half_width, y0 + half_width)
+            tl_bottom = TLine(x0 - half_width, y0 - half_width, x0 + half_width, y0 - half_width)
+            tls = [tl_left, tl_right, tl_top, tl_bottom]
+            for tl in tls:
+                tl.SetLineColor(kRed)
+                tl.SetLineWidth(3)
+                tl.Draw()
+
+        h1.GetXaxis().SetTitle('X (cm)')
+        h1.GetYaxis().SetTitle('Y (cm)')
+        h1.GetXaxis().SetTitleOffset(1.8)
+        h1.GetYaxis().SetTitleOffset(2.)
+        c1.Update()
+        c1.SaveAs('{}/plot_noise_particle_root.y_x.{}.pid_{}.pdf'.format(FIGURE_DIR, filename, PDG.GetParticle(pid).GetName()))
+
+    # for pid, h1 in pid_momentum_x_hists.items():
+    #     set_h2_style(h1)
+    #     h1.Draw('colz')
+    #     h1.GetXaxis().SetTitle('X (cm)')
+    #     h1.GetYaxis().SetTitle('Momentum (MeV)')
+    #     h1.GetXaxis().SetTitleOffset(1.8)
+    #     h1.GetYaxis().SetTitleOffset(2.)
+    #     c1.Update()
+    #     c1.SaveAs('{}/plot_noise_particle_root.momentum_x.{}.pid_{}.pdf'.format(FIGURE_DIR, filename, PDG.GetParticle(pid).GetName()))
+    # input('Press any key to continue.')
+
+
+# 20181213_testbeam_shielding_noise_particle
+# gStyle.SetOptStat(0)
+# plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding.root', show_boundary=True)
+# plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root', show_boundary=True)
 
 # testbeam_beamline_simulation
 # filenames = [
