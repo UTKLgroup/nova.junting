@@ -13,7 +13,7 @@ ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
-FIGURE_DIR = '/Users/juntinghuang/beamer/20181203_testbeam_bridge_beam_detsim/figures'
+FIGURE_DIR = '/Users/juntinghuang/Desktop/nova/testbeam/doc/testbeam_beamline_simulation/figures'
 DATA_DIR = './data'
 
 
@@ -1278,7 +1278,7 @@ def plot_saved_particle_momentum(filename, **kwargs):
             hist.GetXaxis().SetTitle('Momentum (MeV)')
             hist.GetYaxis().SetTitle(y_title)
             hist.GetYaxis().SetTitleOffset(y_title_offset)
-            hist.SetTitle('{} GeV Beam, B = {:.2f} T'.format(beam_momentum, b_field))
+            hist.SetTitle('{} GeV Beam, B = {:.3f} T'.format(beam_momentum, b_field))
             hist.GetYaxis().SetRangeUser(0 if not log_y else y_min, y_max)
             hist.GetXaxis().SetRangeUser(x_min, x_max)
         else:
@@ -3474,13 +3474,64 @@ def plot_detsim_fls_hit_gev(filename):
     c1.SaveAs('{}/plot_detsim_fls_hit_gev.{}.pdf'.format(FIGURE_DIR, filename))
     input('Press any key to continue.')
 
+def print_figure_tex():
+    figures = ['plot_saved_particle_momentum.g4bl.b_-0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root.pdf',
+               'plot_saved_particle_momentum.g4bl.b_-0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root.pdf',
+               'plot_saved_particle_momentum.g4bl.b_-0.675T.proton.64000.root.job_1_20000.799.72m.kineticEnergyCut_20.root.hist.root.pdf',
+               'plot_saved_particle_momentum.g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root.pdf',
+               'plot_saved_particle_momentum.g4bl.b_-1.125T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root.pdf',
+               'plot_saved_particle_momentum.g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root.pdf',
+               'plot_saved_particle_momentum.g4bl.b_-1.575T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root.pdf',
+               'plot_saved_particle_momentum.g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root.pdf',
+               'plot_saved_particle_momentum.g4bl.b_0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root.pdf',
+               'plot_saved_particle_momentum.g4bl.b_0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root.pdf',
+               'plot_saved_particle_momentum.g4bl.b_0.675T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root.pdf',
+               'plot_saved_particle_momentum.g4bl.b_0.9T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root.pdf',
+               'plot_saved_particle_momentum.g4bl.b_1.125T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root.pdf',
+               'plot_saved_particle_momentum.g4bl.b_1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root.pdf',
+               'plot_saved_particle_momentum.g4bl.b_1.575T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root.pdf',
+               'plot_saved_particle_momentum.g4bl.b_1.8T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root.hist.root.pdf']
+
+    figures = ['{' + figure.replace('.pdf', '}.pdf') for figure in figures]
+    # print('figures = {}'.format(figures))
+
+    b_fields = [-0.225, -0.45, -0.675, -0.9, -1.125, -1.35, -1.575, -1.8, 0.225, 0.45, 0.675, 0.9, 1.125, 1.35, 1.575, 1.8]
+
+    for i, b_field in enumerate(b_fields):
+        if b_field < 0.:
+            continue
+        print('  \\begin{subfigure}[c]{0.49\\textwidth}')
+        print('    \\centering')
+        print('    \\includegraphics[width=0.9\\textwidth]{{figures/{}}}'.format(figures[i]))
+        # print('    \\caption{{$B = \SI{{{:.3f}}}{{T}}$}}'.format(b_field))
+        print('  \\end{subfigure}')
+
+
+# testbeam_beamline_simulation
+print_figure_tex()
+# save_particle_momentum_root('g4bl.b_-0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=800.)
+# save_particle_momentum_root('g4bl.b_0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=800.)
+# save_particle_momentum_root('g4bl.b_-0.675T.proton.64000.root.job_1_20000.799.72m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=799.72)
+# save_particle_momentum_root('g4bl.b_0.675T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=800.)
+# save_particle_momentum_root('g4bl.b_-1.125T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=800.)
+# save_particle_momentum_root('g4bl.b_1.125T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=800.)
+# save_particle_momentum_root('g4bl.b_-1.575T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=800.)
+# save_particle_momentum_root('g4bl.b_1.575T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=800.)
+# plot_saved_particle_momentum('g4bl.b_-0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root', b_field=-0.225, beam_momentum=64, log_y=True, rebin=2, x_min=0., x_max=1000.)
+# plot_saved_particle_momentum('g4bl.b_0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root', b_field=0.225, beam_momentum=64, log_y=True, rebin=2, x_min=0., x_max=1000.)
+# plot_saved_particle_momentum('g4bl.b_-0.675T.proton.64000.root.job_1_20000.799.72m.kineticEnergyCut_20.root.hist.root', b_field=-0.675, beam_momentum=64, log_y=True, rebin=2, x_min=250., x_max=2000.)
+# plot_saved_particle_momentum('g4bl.b_0.675T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root', b_field=0.675, beam_momentum=64, log_y=True, rebin=2, x_min=250., x_max=2000.)
+# plot_saved_particle_momentum('g4bl.b_-1.125T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root', b_field=-1.125, beam_momentum=64, log_y=True, rebin=2, x_min=750., x_max=2500.)
+# plot_saved_particle_momentum('g4bl.b_1.125T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root', b_field=1.125, beam_momentum=64, log_y=True, rebin=2, x_min=750., x_max=2500.)
+# plot_saved_particle_momentum('g4bl.b_-1.575T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root', b_field=-1.575, beam_momentum=64, log_y=True, rebin=2, x_min=1250., x_max=3000.)
+# plot_saved_particle_momentum('g4bl.b_1.575T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root', b_field=1.575, beam_momentum=64, log_y=True, rebin=2, x_min=1250., x_max=3000.)
 
 # 20181203_testbeam_bridge_beam_detsim
-gStyle.SetOptStat(0)
+# gStyle.SetOptStat(0)
 # plot_beamline_sim_global_timing()
 # plot_beamline_sim_spill_timing()
 # plot_detsim_momentum('testbeamana.g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root')
-plot_detsim_fls_hit_gev('testbeamana.g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root')
+# plot_detsim_fls_hit_gev('testbeamana.g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root')
 
 # 20181129_electron_gun_physics
 # plot_birks_law()
