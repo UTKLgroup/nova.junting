@@ -3201,8 +3201,9 @@ def split_rows(filename, split_size):
     items = []
     with open(filename) as f_in:
         for row in csv.reader(f_in, delimiter=' '):
-            items = row
-            break
+            # items = row
+            # break
+            items.extend(row)
     split_items = split_list(items, split_size)
     filename_base = os.path.splitext(filename)[0]
     for i, split_items in enumerate(split_items):
