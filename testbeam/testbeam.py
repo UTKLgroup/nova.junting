@@ -13,8 +13,8 @@ ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
-FIGURE_DIR = '/Users/juntinghuang/Desktop/nova/testbeam/doc/testbeam_beamline_simulation/figures'
-# FIGURE_DIR = '/Users/juntinghuang/beamer/20181213_testbeam_shielding_noise_particle/figures'
+# FIGURE_DIR = '/Users/juntinghuang/Desktop/nova/testbeam/doc/testbeam_beamline_simulation/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20181213_testbeam_shielding_noise_particle/figures'
 DATA_DIR = './data'
 
 
@@ -1225,6 +1225,7 @@ def plot_saved_particle_momentum(filename, **kwargs):
     y_title_offset = kwargs.get('y_title_offset', 1.5)
     b_field = kwargs.get('b_field', None)
     beam_momentum = kwargs.get('beam_momentum', 64)
+    noise_particle = kwargs.get('noise_particle', False)
 
     pid_hists = {}
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
@@ -1267,14 +1268,21 @@ def plot_saved_particle_momentum(filename, **kwargs):
         kOrange + 2
     ]
 
-    # lg1 = TLegend(0.55, 0.6, 0.80, 0.84)
     lg1 = TLegend(0.64, 0.6, 0.80, 0.84)
     set_legend_style(lg1)
     lg1.SetTextSize(24)
+    if noise_particle:
+        lg1.SetNColumns(2)
+        lg1.SetX1(0.2)
+        lg1.SetX2(0.85)
+        lg1.SetY1(0.66)
+        lg1.SetY2(0.87)
+        lg1.SetTextSize(20)
+        c1.SetCanvasSize(800, 800);
 
     pids = []
     for pid in pid_hists.keys():
-        if PDG.GetParticle(pid).Charge() == 0 or (PDG.GetParticle(pid).Charge() < 0. and b_field < 0.) or (PDG.GetParticle(pid).Charge() > 0. and b_field > 0.):
+        if not noise_particle and (PDG.GetParticle(pid).Charge() == 0 or (PDG.GetParticle(pid).Charge() < 0. and b_field < 0.) or (PDG.GetParticle(pid).Charge() > 0. and b_field > 0.)):
             print('Wrong sign particles: pid = {}, count = {}, avg momentum = {}'.format(pid, pid_hists[pid].Integral(), pid_hists[pid].GetMean()))
             continue
         pids.append(pid)
@@ -1295,18 +1303,18 @@ def plot_saved_particle_momentum(filename, **kwargs):
             hist.GetXaxis().SetRangeUser(x_min, x_max)
         else:
             hist.Draw('hist,sames')
-        lg1.AddEntry(hist, '{0} ({1:.1f})'.format(PDG.GetParticle(pid).GetName(), hist.Integral()), 'l')
+        lg1.AddEntry(hist, '{0} ({1:.1E})'.format(PDG.GetParticle(pid).GetName(), hist.Integral()), 'l')
 
-    latex = TLatex()
-    latex.SetNDC()
-    latex.SetTextFont(43)
-    latex.SetTextSize(24)
-    # x_latex = 0.56
-    x_latex = 0.65
-    latex.DrawLatex(x_latex, 0.42, 'rms = {:.0f} MeV'.format(h_all.GetRMS()))
-    latex.DrawLatex(x_latex, 0.48, 'mean = {:.0f} MeV'.format(h_all.GetMean()))
-    latex.DrawLatex(x_latex, 0.54, 'total count = {0:.1f}'.format(h_all.Integral()))
     lg1.Draw()
+    if not noise_particle:
+        latex = TLatex()
+        latex.SetNDC()
+        latex.SetTextFont(43)
+        latex.SetTextSize(24)
+        x_latex = 0.65
+        latex.DrawLatex(x_latex, 0.42, 'rms = {:.0f} MeV'.format(h_all.GetRMS()))
+        latex.DrawLatex(x_latex, 0.48, 'mean = {:.0f} MeV'.format(h_all.GetMean()))
+        latex.DrawLatex(x_latex, 0.54, 'total count = {0:.1f}'.format(h_all.Integral()))
 
     c1.Update()
     c1.SaveAs('{}/plot_saved_particle_momentum.{}.pdf'.format(FIGURE_DIR, filename))
@@ -3611,7 +3619,10 @@ def plot_noise_particle_root(filename, **kwargs):
 # gStyle.SetOptStat(0)
 # plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding.root', show_boundary=True)
 # plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root', show_boundary=True)
-save_particle_momentum_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root', 0, 20000, bin_count=2000, normalization_factor=199.98, noise_particle=True)
+# save_particle_momentum_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=True)
+# save_particle_momentum_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root', 0, 20000, bin_count=2000, normalization_factor=199.98, noise_particle=True)
+# plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=5, x_min=0, x_max=20000, noise_particle=True)
+plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding.root.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=5, x_min=0, x_max=20000, noise_particle=True)
 
 # testbeam_beamline_simulation
 # filenames = [
