@@ -1039,14 +1039,25 @@ def save_particle_momentum_csv(filename, x_min, x_max, **kwargs):
 def save_particle_momentum_root(filename, x_min, x_max, **kwargs):
     bin_count = kwargs.get('bin_count', 50)
     normalization_factor = kwargs.get('normalization_factor', 1.)
+    noise_particle = kwargs.get('noise_particle', False)
 
     h_all = TH1D('h_all', 'h_all', bin_count, x_min, x_max)
     pid_hists = {}
 
     tf_in = TFile('{}/{}'.format(DATA_DIR, filename))
-    for particle in tf_in.Get('tree'):
-        if particle.is_noise:
+    tree = tf_in.Get('tree')
+    particle_count_total = tree.GetEntries()
+    particle_count = 0
+    for particle in tree:
+        particle_count += 1
+        if particle_count % 1e6 == 0:
+            print('particle_count = {} / {} ({:.1f}%)'.format(particle_count, particle_count_total, particle_count / particle_count_total * 100.))
+
+        if not noise_particle and particle.is_noise:
             continue
+        if noise_particle and not particle.is_noise:
+            continue
+
         pid = int(particle.pdg_id)
         px = particle.px
         py = particle.py
@@ -3600,6 +3611,7 @@ def plot_noise_particle_root(filename, **kwargs):
 # gStyle.SetOptStat(0)
 # plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding.root', show_boundary=True)
 # plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root', show_boundary=True)
+save_particle_momentum_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root', 0, 20000, bin_count=2000, normalization_factor=199.98, noise_particle=True)
 
 # testbeam_beamline_simulation
 # filenames = [
@@ -3636,31 +3648,31 @@ def plot_noise_particle_root(filename, **kwargs):
 # print_particle_count_vs_b_field(filenames=filenames,
 #                                 b_fields=b_fields,
 #                                 pids=pids)
-filenames = [
-    'g4bl.b_0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_0.675T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_0.9T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_1.125T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    # 'g4bl.b_1.35T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_1.35T.proton.64000.root.job_1_40000.1599.76m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_1.575T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_1.8T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root.hist.root'
-]
-b_fields = [
-    0.225,
-    0.45,
-    0.675,
-    0.9,
-    1.125,
-    1.35,
-    1.575,
-    1.8]
-pids = [11, 13, -211, -321, -2212]
-plot_particle_count_vs_b_field(filenames=filenames,
-                               b_fields=b_fields,
-                               pids=pids,
-                               suffix='.b_positive')
+# filenames = [
+#     'g4bl.b_0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_0.675T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_0.9T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_1.125T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     # 'g4bl.b_1.35T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_1.35T.proton.64000.root.job_1_40000.1599.76m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_1.575T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_1.8T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root.hist.root'
+# ]
+# b_fields = [
+#     0.225,
+#     0.45,
+#     0.675,
+#     0.9,
+#     1.125,
+#     1.35,
+#     1.575,
+#     1.8]
+# pids = [11, 13, -211, -321, -2212]
+# plot_particle_count_vs_b_field(filenames=filenames,
+#                                b_fields=b_fields,
+#                                pids=pids,
+#                                suffix='.b_positive')
 # plot_particle_count_vs_b_field(filenames=filenames,
 #                                b_fields=b_fields,
 #                                pids=pids,
