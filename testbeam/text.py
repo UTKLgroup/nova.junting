@@ -2,10 +2,10 @@ from ROOT import TDatabasePDG
 from rootalias import *
 from math import pi, cos, sin
 from subprocess import call
+import argparse
+import os
 
 
-DATA_DIR = './data'
-FIGURE_DIR = '/Users/juntinghuang/beamer/20181203_testbeam_bridge_beam_detsim/figures'
 PDG = TDatabasePDG()
 EVENT_TIME_DURATION = 50.e3         # ns, 50 us per event
 
@@ -21,10 +21,8 @@ def rotate_y(x, z, degree):
     return x, z
 
 
-def save_to_txt(filename, **kwargs):
-    include_noise = kwargs.get('include_noise', False)
-
-    f_beam = TFile('{}/{}'.format(DATA_DIR, filename))
+def save_to_txt(filename, include_noise, save_plot):
+    f_beam = TFile(filename)
     particles = []
     tree = f_beam.Get('tree')
     particle_count_total = tree.GetEntries()
@@ -60,6 +58,7 @@ def save_to_txt(filename, **kwargs):
             x, y, z, t
         ]
         particles.append(particle)
+    f_beam.Close()
 
     particles = sorted(particles, key=lambda x: x[-1])
     events = []
@@ -82,42 +81,42 @@ def save_to_txt(filename, **kwargs):
             particle[-1] -= event_start_time
             event_particles.append(particle)
 
+    data_dir = os.path.dirname(filename)
+    filename = os.path.basename(filename)
     txt_filename = 'text_gen.{}.txt'.format(filename)
-    with open ('{}/{}'.format(DATA_DIR, txt_filename), 'w') as f_txt:
+    with open ('{}/{}'.format(data_dir, txt_filename), 'w') as f_txt:
         for event in events:
             f_txt.write('0 {}\n'.format(len(event)))
             for particle in event:
                 particle.pop(0)
                 f_txt.write(' '.join(map(str, particle)) + '\n')
-    # call('scp {}/{} junting@novagpvm02.fnal.gov:/nova/app/users/junting/testbeam/det/'.format(DATA_DIR, txt_filename), shell=True)
+    # call('scp {}/{} junting@novagpvm02.fnal.gov:/nova/app/users/junting/testbeam/det/'.format(data_dir, txt_filename), shell=True)
 
-    event_count = len(events)
-    multiple_particle_event_count = 0
-    h1 = TH1D('h1', 'h1', 10, -0.5, 9.5)
-    for i, event in enumerate(events):
-        h1.Fill(len(event))
-        if len(event) > 2:
-            multiple_particle_event_count += 1
-            print('i = {}'.format(i))
-            print('len(event) = {}'.format(len(event)))
-
-    print('event_count = {}'.format(event_count))
-    print('multiple_particle_event_count = {}'.format(multiple_particle_event_count))
-    c1 = TCanvas('c1', 'c1', 800, 600)
-    set_margin()
-    gPad.SetLogy()
-    set_h1_style(h1)
-    h1.GetXaxis().SetTitle('Particle Count per Event')
-    h1.GetYaxis().SetTitle('Event Count')
-    h1.GetYaxis().SetMaxDigits(3)
-    h1.Draw()
-    c1.Update()
-    c1.SaveAs('{}/save_to_txt.{}.pdf'.format(FIGURE_DIR, filename))
-    input('Press any key to continue.')
+    if save_plot:
+        event_count = len(events)
+        multiple_particle_event_count = 0
+        f_det = TFile('{}/text_gen.{}.root'.format(data_dir, filename), 'RECREATE')
+        h1 = TH1D('h1', 'h1', 100, -0.5, 99.5)
+        for i, event in enumerate(events):
+            h1.Fill(len(event))
+            if len(event) > 2:
+                multiple_particle_event_count += 1
+                # print('i = {}'.format(i))
+                # print('len(event) = {}'.format(len(event)))
+        print('event_count = {}'.format(event_count))
+        print('multiple_particle_event_count = {}'.format(multiple_particle_event_count))
+        h1.Write('h_particle_count_per_event')
+        f_det.Close()
 
 
 if __name__ == '__main__':
-    gStyle.SetOptStat(0)
-    # save_to_txt('g4bl.b_-0.9T.proton.64000.root.job_30000_32000.40m.kineticEnergyCut_20.root')
-    # save_to_txt('g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root')
-    save_to_txt('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root', include_noise=True)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-f', '--filename', type=str, help='input filename', required=True)
+    parser.add_argument('-s', '--save_plot', help='save particle count per event', action='store_true')
+    parser.add_argument('-n', '--include_noise', help='include noise', action='store_true')
+
+    args = parser.parse_args()
+    print('args.filename = {}'.format(args.filename))
+    print('args.save_plot = {}'.format(args.save_plot))
+    print('args.include_noise = {}'.format(args.include_noise))
+    save_to_txt(args.filename, args.include_noise, args.save_plot)

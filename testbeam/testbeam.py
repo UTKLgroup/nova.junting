@@ -3615,6 +3615,23 @@ def plot_noise_particle_root(filename, **kwargs):
     # input('Press any key to continue.')
 
 
+def plot_det_sim_particle_count_per_event(filename):
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    h1 = tf.Get('h_particle_count_per_event')
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetLogy()
+    set_h1_style(h1)
+    h1.GetXaxis().SetTitle('Particle Count per Event')
+    h1.GetYaxis().SetTitle('Event Count')
+    h1.GetYaxis().SetMaxDigits(3)
+    h1.Draw()
+    c1.Update()
+    c1.SaveAs('{}/save_to_txt.{}.pdf'.format(FIGURE_DIR, filename))
+    input('Press any key to continue.')
+
+
 # 20181213_testbeam_shielding_noise_particle
 # gStyle.SetOptStat(0)
 # plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding.root', show_boundary=True)
@@ -3622,7 +3639,9 @@ def plot_noise_particle_root(filename, **kwargs):
 # save_particle_momentum_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=True)
 # save_particle_momentum_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root', 0, 20000, bin_count=2000, normalization_factor=199.98, noise_particle=True)
 # plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=5, x_min=0, x_max=20000, noise_particle=True)
-plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding.root.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=5, x_min=0, x_max=20000, noise_particle=True)
+# plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding.root.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=5, x_min=0, x_max=20000, noise_particle=True)
+gStyle.SetOptStat('emr')
+plot_det_sim_particle_count_per_event('text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root.root')
 
 # testbeam_beamline_simulation
 # filenames = [
