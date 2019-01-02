@@ -93,9 +93,8 @@ def save_to_txt(filename, include_noise, save_plot):
     # call('scp {}/{} junting@novagpvm02.fnal.gov:/nova/app/users/junting/testbeam/det/'.format(data_dir, txt_filename), shell=True)
 
     if save_plot:
-        event_count = len(events)
-        multiple_particle_event_count = 0
         f_det = TFile('{}/text_gen.{}.root'.format(data_dir, filename), 'RECREATE')
+        multiple_particle_event_count = 0
         h1 = TH1D('h1', 'h1', 100, -0.5, 99.5)
         for i, event in enumerate(events):
             h1.Fill(len(event))
@@ -103,7 +102,7 @@ def save_to_txt(filename, include_noise, save_plot):
                 multiple_particle_event_count += 1
                 # print('i = {}'.format(i))
                 # print('len(event) = {}'.format(len(event)))
-        print('event_count = {}'.format(event_count))
+        print('len(events) = {}'.format(len(events)))
         print('multiple_particle_event_count = {}'.format(multiple_particle_event_count))
         h1.Write('h_particle_count_per_event')
         f_det.Close()

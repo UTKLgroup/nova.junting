@@ -3627,6 +3627,10 @@ def plot_det_sim_particle_count_per_event(filename):
     h1.GetYaxis().SetTitle('Event Count')
     h1.GetYaxis().SetMaxDigits(3)
     h1.Draw()
+
+    c1.Update()
+    draw_statbox(h1)
+
     c1.Update()
     c1.SaveAs('{}/save_to_txt.{}.pdf'.format(FIGURE_DIR, filename))
     input('Press any key to continue.')
