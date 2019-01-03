@@ -1287,7 +1287,7 @@ def plot_saved_particle_momentum(filename, **kwargs):
             print('Wrong sign particles: pid = {}, count = {}, avg momentum = {}'.format(pid, pid_hists[pid].Integral(), pid_hists[pid].GetMean()))
             continue
         pids.append(pid)
-    pids = sorted(pids, key=abs)
+    pids = sorted(pids, key=lambda x: (abs(x), np.sign(x)))
 
     for i, pid in enumerate(pids):
         hist = pid_hists[pid]
@@ -3685,12 +3685,12 @@ def compare_det_sim_particle_count_per_event(filename_1, filename_2):
 # save_particle_momentum_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=True)
 # plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=5, x_min=0, x_max=20000, noise_particle=True)
 # plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding.root.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=5, x_min=0, x_max=20000, noise_particle=True)
-# plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=5, x_min=0, x_max=20000, noise_particle=True)
-gStyle.SetOptStat('nemr')
+plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=5, x_min=0, x_max=20000, noise_particle=True)
+# gStyle.SetOptStat('nemr')
 # plot_det_sim_particle_count_per_event('text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root.root')
 # plot_det_sim_particle_count_per_event('text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root.root')
-compare_det_sim_particle_count_per_event('text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root.root',
-                                         'text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root.root')
+# compare_det_sim_particle_count_per_event('text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root.root',
+                                         # 'text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root.root')
 
 # testbeam_beamline_simulation
 # filenames = [
