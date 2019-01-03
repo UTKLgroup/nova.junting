@@ -1039,14 +1039,25 @@ def save_particle_momentum_csv(filename, x_min, x_max, **kwargs):
 def save_particle_momentum_root(filename, x_min, x_max, **kwargs):
     bin_count = kwargs.get('bin_count', 50)
     normalization_factor = kwargs.get('normalization_factor', 1.)
+    noise_particle = kwargs.get('noise_particle', False)
 
     h_all = TH1D('h_all', 'h_all', bin_count, x_min, x_max)
     pid_hists = {}
 
     tf_in = TFile('{}/{}'.format(DATA_DIR, filename))
-    for particle in tf_in.Get('tree'):
-        if particle.is_noise:
+    tree = tf_in.Get('tree')
+    particle_count_total = tree.GetEntries()
+    particle_count = 0
+    for particle in tree:
+        particle_count += 1
+        if particle_count % 1e6 == 0:
+            print('particle_count = {} / {} ({:.1f}%)'.format(particle_count, particle_count_total, particle_count / particle_count_total * 100.))
+
+        if not noise_particle and particle.is_noise:
             continue
+        if noise_particle and not particle.is_noise:
+            continue
+
         pid = int(particle.pdg_id)
         px = particle.px
         py = particle.py
@@ -1214,6 +1225,7 @@ def plot_saved_particle_momentum(filename, **kwargs):
     y_title_offset = kwargs.get('y_title_offset', 1.5)
     b_field = kwargs.get('b_field', None)
     beam_momentum = kwargs.get('beam_momentum', 64)
+    noise_particle = kwargs.get('noise_particle', False)
 
     pid_hists = {}
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
@@ -1246,24 +1258,32 @@ def plot_saved_particle_momentum(filename, **kwargs):
         kRed,
         kBlue,
         kMagenta + 1,
-        kGreen + 2,
-        kViolet + 2,
-        kAzure + 2,
-        kCyan + 2,
-        kTeal + 2,
-        kSpring + 2,
+        kGreen + 1,
+        kViolet + 1,
         kYellow + 2,
-        kOrange + 2
+        kOrange + 2,
+        kAzure - 7,
+        kCyan + 2,
+        kPink - 8,
+        kSpring + 9,
+        kTeal + 2
     ]
 
-    # lg1 = TLegend(0.55, 0.6, 0.80, 0.84)
     lg1 = TLegend(0.64, 0.6, 0.80, 0.84)
     set_legend_style(lg1)
     lg1.SetTextSize(24)
+    if noise_particle:
+        lg1.SetNColumns(2)
+        lg1.SetX1(0.2)
+        lg1.SetX2(0.85)
+        lg1.SetY1(0.66)
+        lg1.SetY2(0.87)
+        lg1.SetTextSize(20)
+        c1.SetCanvasSize(800, 800);
 
     pids = []
     for pid in pid_hists.keys():
-        if PDG.GetParticle(pid).Charge() == 0 or (PDG.GetParticle(pid).Charge() < 0. and b_field < 0.) or (PDG.GetParticle(pid).Charge() > 0. and b_field > 0.):
+        if not noise_particle and (PDG.GetParticle(pid).Charge() == 0 or (PDG.GetParticle(pid).Charge() < 0. and b_field < 0.) or (PDG.GetParticle(pid).Charge() > 0. and b_field > 0.)):
             print('Wrong sign particles: pid = {}, count = {}, avg momentum = {}'.format(pid, pid_hists[pid].Integral(), pid_hists[pid].GetMean()))
             continue
         pids.append(pid)
@@ -1284,18 +1304,18 @@ def plot_saved_particle_momentum(filename, **kwargs):
             hist.GetXaxis().SetRangeUser(x_min, x_max)
         else:
             hist.Draw('hist,sames')
-        lg1.AddEntry(hist, '{0} ({1:.1f})'.format(PDG.GetParticle(pid).GetName(), hist.Integral()), 'l')
+        lg1.AddEntry(hist, '{0} ({1:.1E})'.format(PDG.GetParticle(pid).GetName(), hist.Integral()), 'l')
 
-    latex = TLatex()
-    latex.SetNDC()
-    latex.SetTextFont(43)
-    latex.SetTextSize(24)
-    # x_latex = 0.56
-    x_latex = 0.65
-    latex.DrawLatex(x_latex, 0.42, 'rms = {:.0f} MeV'.format(h_all.GetRMS()))
-    latex.DrawLatex(x_latex, 0.48, 'mean = {:.0f} MeV'.format(h_all.GetMean()))
-    latex.DrawLatex(x_latex, 0.54, 'total count = {0:.1f}'.format(h_all.Integral()))
     lg1.Draw()
+    if not noise_particle:
+        latex = TLatex()
+        latex.SetNDC()
+        latex.SetTextFont(43)
+        latex.SetTextSize(24)
+        x_latex = 0.65
+        latex.DrawLatex(x_latex, 0.42, 'rms = {:.0f} MeV'.format(h_all.GetRMS()))
+        latex.DrawLatex(x_latex, 0.48, 'mean = {:.0f} MeV'.format(h_all.GetMean()))
+        latex.DrawLatex(x_latex, 0.54, 'total count = {0:.1f}'.format(h_all.Integral()))
 
     c1.Update()
     c1.SaveAs('{}/plot_saved_particle_momentum.{}.pdf'.format(FIGURE_DIR, filename))
@@ -3241,7 +3261,13 @@ def plot_particle_count_vs_b_field(**kwargs):
         particle_counts = []
         for tf in tfs:
             hist = tf.Get('h_{}'.format(pid))
-            particle_count = float(hist.Integral())
+            particle_count = 0.
+            try:
+                particle_count = float(hist.Integral())
+            except AttributeError as err:
+                print('pid = {}'.format(pid))
+                print(err)
+
             if scaling_factor:
                 particle_count *= scaling_factor
             particle_counts.append(particle_count)
@@ -3296,12 +3322,23 @@ def print_particle_count_vs_b_field(**kwargs):
         pid_infos[pid] = {}
         for i, tf in enumerate(tfs):
             hist = tf.Get('h_{}'.format(pid))
+            count = 0.
+            mean = 0.
+            rms = 0.
+            try:
+                count = hist.Integral()
+                mean = hist.GetMean()
+                rms = hist.GetRMS()
+            except AttributeError as err:
+                print('pid = {}'.format(pid))
+                print(err)
+
             b_field_str = str(b_field_strs[i])
             pid_infos[pid][b_field_str] = {}
-            pid_infos[pid][b_field_str]['count'] = hist.Integral()
-            pid_infos[pid][b_field_str]['count_month'] = hist.Integral() * 60 * 24 * 30
-            pid_infos[pid][b_field_str]['mean'] = hist.GetMean()
-            pid_infos[pid][b_field_str]['rms'] = hist.GetRMS()
+            pid_infos[pid][b_field_str]['count'] = count
+            pid_infos[pid][b_field_str]['count_month'] = count * 60 * 24 * 30
+            pid_infos[pid][b_field_str]['mean'] = mean
+            pid_infos[pid][b_field_str]['rms'] = rms
 
     info_names = ['count', 'count_month', 'mean', 'rms']
     for i, pid in enumerate(pids):
@@ -3490,7 +3527,7 @@ def print_figure_tex():
                'plot_saved_particle_momentum.g4bl.b_0.675T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root.pdf',
                'plot_saved_particle_momentum.g4bl.b_0.9T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root.pdf',
                'plot_saved_particle_momentum.g4bl.b_1.125T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root.pdf',
-               'plot_saved_particle_momentum.g4bl.b_1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root.pdf',
+               'plot_saved_particle_momentum.g4bl.b_1.35T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root.hist.root.pdf',
                'plot_saved_particle_momentum.g4bl.b_1.575T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root.pdf',
                'plot_saved_particle_momentum.g4bl.b_1.8T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root.hist.root.pdf']
 
@@ -3522,7 +3559,15 @@ def plot_noise_particle_root(filename, **kwargs):
     pid_momentum_x_hists = {}
 
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    tree = tf.Get('tree')
+    particle_count_total = tree.GetEntries()
+    particle_count = 0
+
     for particle in tf.Get('tree'):
+        particle_count += 1
+        if particle_count % 1e6 == 0:
+            print('particle_count = {} / {} ({:.1f}%)'.format(particle_count, particle_count_total, particle_count / particle_count_total * 100.))
+
         if not particle.is_noise:
             continue
         pid = int(particle.pdg_id)
@@ -3579,10 +3624,73 @@ def plot_noise_particle_root(filename, **kwargs):
     # input('Press any key to continue.')
 
 
+def plot_det_sim_particle_count_per_event(filename):
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    h1 = tf.Get('h_particle_count_per_event')
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetLogy()
+    set_h1_style(h1)
+    h1.GetXaxis().SetTitle('Particle Count per Event')
+    h1.GetYaxis().SetTitle('Event Count')
+    h1.GetYaxis().SetMaxDigits(3)
+    h1.Draw()
+
+    c1.Update()
+    draw_statbox(h1)
+
+    c1.Update()
+    c1.SaveAs('{}/save_to_txt.{}.pdf'.format(FIGURE_DIR, filename))
+    input('Press any key to continue.')
+
+
+def compare_det_sim_particle_count_per_event(filename_1, filename_2):
+    tf1 = TFile('{}/{}'.format(DATA_DIR, filename_1))
+    h1 = tf1.Get('h_particle_count_per_event')
+
+    tf2 = TFile('{}/{}'.format(DATA_DIR, filename_2))
+    h2 = tf2.Get('h_particle_count_per_event')
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetLogy()
+    set_h1_style(h1)
+    h1.GetXaxis().SetTitle('Particle Count per Event')
+    h1.GetYaxis().SetTitle('Event Count')
+    h1.GetYaxis().SetMaxDigits(3)
+    h1.SetName('No Shielding')
+    h1.Draw()
+
+    set_h1_style(h2)
+    h2.SetLineColor(kRed + 1)
+    h2.SetName('With Shielding')
+    h2.Draw('sames')
+
+    c1.Update()
+    draw_statboxes(h1, h2)
+
+    c1.Update()
+    c1.SaveAs('{}/compare_det_sim_particle_count_per_event.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
 # 20181213_testbeam_shielding_noise_particle
 # gStyle.SetOptStat(0)
 # plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding.root', show_boundary=True)
 # plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root', show_boundary=True)
+# plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root', show_boundary=True)
+# save_particle_momentum_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=True)
+# save_particle_momentum_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root', 0, 20000, bin_count=2000, normalization_factor=199.98, noise_particle=True)
+# save_particle_momentum_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=True)
+# plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=5, x_min=0, x_max=20000, noise_particle=True)
+# plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding.root.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=5, x_min=0, x_max=20000, noise_particle=True)
+# plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=5, x_min=0, x_max=20000, noise_particle=True)
+gStyle.SetOptStat('nemr')
+# plot_det_sim_particle_count_per_event('text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root.root')
+# plot_det_sim_particle_count_per_event('text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root.root')
+compare_det_sim_particle_count_per_event('text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root.root',
+                                         'text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root.root')
 
 # testbeam_beamline_simulation
 # filenames = [
@@ -3619,30 +3727,31 @@ def plot_noise_particle_root(filename, **kwargs):
 # print_particle_count_vs_b_field(filenames=filenames,
 #                                 b_fields=b_fields,
 #                                 pids=pids)
-filenames = [
-    # 'g4bl.b_0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_0.675T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_0.9T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_1.125T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_1.575T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_1.8T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root.hist.root'
-]
-b_fields = [
-    # 0.225,
-    0.45,
-    0.675,
-    0.9,
-    1.125,
-    1.35,
-    1.575,
-    1.8]
-pids = [11, 13, -211, -321, -2212]
-plot_particle_count_vs_b_field(filenames=filenames,
-                               b_fields=b_fields,
-                               pids=pids,
-                               suffix='.b_positive')
+# filenames = [
+#     'g4bl.b_0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_0.675T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_0.9T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_1.125T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     # 'g4bl.b_1.35T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_1.35T.proton.64000.root.job_1_40000.1599.76m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_1.575T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_1.8T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root.hist.root'
+# ]
+# b_fields = [
+#     0.225,
+#     0.45,
+#     0.675,
+#     0.9,
+#     1.125,
+#     1.35,
+#     1.575,
+#     1.8]
+# pids = [11, 13, -211, -321, -2212]
+# plot_particle_count_vs_b_field(filenames=filenames,
+#                                b_fields=b_fields,
+#                                pids=pids,
+#                                suffix='.b_positive')
 # plot_particle_count_vs_b_field(filenames=filenames,
 #                                b_fields=b_fields,
 #                                pids=pids,
@@ -3653,6 +3762,10 @@ plot_particle_count_vs_b_field(filenames=filenames,
 #                                 b_fields=b_fields,
 #                                 pids=pids)
 # print_figure_tex()
+# save_particle_momentum_root('g4bl.b_1.35T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=799.92)
+# plot_saved_particle_momentum('g4bl.b_1.35T.proton.64000.root.job_1_20000.799.92m.kineticEnergyCut_20.root.hist.root', b_field=1.35, beam_momentum=64, log_y=True, rebin=2, x_min=1000., x_max=2500.)
+# save_particle_momentum_root('g4bl.b_1.35T.proton.64000.root.job_1_40000.1599.76m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=1599.76)
+# plot_saved_particle_momentum('g4bl.b_1.35T.proton.64000.root.job_1_40000.1599.76m.kineticEnergyCut_20.root.hist.root', b_field=1.35, beam_momentum=64, log_y=True, rebin=2, x_min=1000., x_max=2500.)
 # save_particle_momentum_root('g4bl.b_-0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=800.)
 # save_particle_momentum_root('g4bl.b_0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=800.)
 # save_particle_momentum_root('g4bl.b_-0.675T.proton.64000.root.job_1_20000.799.72m.kineticEnergyCut_20.root', 0, 5000, bin_count=500, normalization_factor=799.72)
