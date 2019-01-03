@@ -457,9 +457,13 @@ class Beamline:
         self.f_out.write('  place shielding_block_concrete_top x={} y={} z={}\n'.format(0., cement_dimensions[0] / 2. + concrete_top_dimensions[0] / 2., z_shift))
         self.f_out.write('endgroup\n')
 
-        shielding_block_separation = 20. * Beamline.INCH
-        self.shielding_block_1.set_zx([self.magnet.z + 1200., self.magnet.x + steel_dimensions[2] / 2. + shielding_block_separation / 2.])
-        self.shielding_block_2.set_zx([self.magnet.z + 1200., self.magnet.x - steel_dimensions[2] / 2. - shielding_block_separation / 2.])
+        # shielding_block_separation = 20. * Beamline.INCH
+        # self.shielding_block_1.set_zx([self.magnet.z + 1200., self.magnet.x + steel_dimensions[2] / 2. + shielding_block_separation / 2.])
+        # self.shielding_block_2.set_zx([self.magnet.z + 1200., self.magnet.x - steel_dimensions[2] / 2. - shielding_block_separation / 2.])
+        shielding_block_separation = 28. * Beamline.INCH
+        self.shielding_block_1.set_zx([self.collimator_ds.z, self.collimator_ds.x + steel_dimensions[2] / 2. + shielding_block_separation / 2.])
+        self.shielding_block_2.set_zx([self.collimator_ds.z, self.collimator_ds.x - steel_dimensions[2] / 2. - shielding_block_separation / 2.])
+
         self.f_out.write('place shielding_block rename=shielding_block_1 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_1.x, self.shielding_block_1.y, self.shielding_block_1.z, self.shielding_block_1.theta))
         self.f_out.write('place shielding_block rename=shielding_block_2 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_2.x, self.shielding_block_2.y, self.shielding_block_2.z, self.shielding_block_2.theta))
 
