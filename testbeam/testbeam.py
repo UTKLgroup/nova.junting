@@ -3559,7 +3559,15 @@ def plot_noise_particle_root(filename, **kwargs):
     pid_momentum_x_hists = {}
 
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    tree = tf.Get('tree')
+    particle_count_total = tree.GetEntries()
+    particle_count = 0
+
     for particle in tf.Get('tree'):
+        particle_count += 1
+        if particle_count % 1e6 == 0:
+            print('particle_count = {} / {} ({:.1f}%)'.format(particle_count, particle_count_total, particle_count / particle_count_total * 100.))
+
         if not particle.is_noise:
             continue
         pid = int(particle.pdg_id)
@@ -3637,16 +3645,52 @@ def plot_det_sim_particle_count_per_event(filename):
     input('Press any key to continue.')
 
 
+def compare_det_sim_particle_count_per_event(filename_1, filename_2):
+    tf1 = TFile('{}/{}'.format(DATA_DIR, filename_1))
+    h1 = tf1.Get('h_particle_count_per_event')
+
+    tf2 = TFile('{}/{}'.format(DATA_DIR, filename_2))
+    h2 = tf2.Get('h_particle_count_per_event')
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetLogy()
+    set_h1_style(h1)
+    h1.GetXaxis().SetTitle('Particle Count per Event')
+    h1.GetYaxis().SetTitle('Event Count')
+    h1.GetYaxis().SetMaxDigits(3)
+    h1.SetName('No Shielding')
+    h1.Draw()
+
+    set_h1_style(h2)
+    h2.SetLineColor(kRed + 1)
+    h2.SetName('With Shielding')
+    h2.Draw('sames')
+
+    c1.Update()
+    draw_statboxes(h1, h2)
+
+    c1.Update()
+    c1.SaveAs('{}/compare_det_sim_particle_count_per_event.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
 # 20181213_testbeam_shielding_noise_particle
-gStyle.SetOptStat(0)
+# gStyle.SetOptStat(0)
 # plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding.root', show_boundary=True)
 # plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root', show_boundary=True)
+# plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root', show_boundary=True)
 # save_particle_momentum_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=True)
 # save_particle_momentum_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root', 0, 20000, bin_count=2000, normalization_factor=199.98, noise_particle=True)
+# save_particle_momentum_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=True)
 # plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=5, x_min=0, x_max=20000, noise_particle=True)
-plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding.root.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=5, x_min=0, x_max=20000, noise_particle=True)
-# gStyle.SetOptStat('emr')
+# plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding.root.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=5, x_min=0, x_max=20000, noise_particle=True)
+# plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=5, x_min=0, x_max=20000, noise_particle=True)
+gStyle.SetOptStat('nemr')
 # plot_det_sim_particle_count_per_event('text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root.root')
+# plot_det_sim_particle_count_per_event('text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root.root')
+compare_det_sim_particle_count_per_event('text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root.root',
+                                         'text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root.root')
 
 # testbeam_beamline_simulation
 # filenames = [
