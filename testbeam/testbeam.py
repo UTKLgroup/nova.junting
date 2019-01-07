@@ -3645,33 +3645,49 @@ def plot_det_sim_particle_count_per_event(filename):
     input('Press any key to continue.')
 
 
-def compare_det_sim_particle_count_per_event(filename_1, filename_2):
-    tf1 = TFile('{}/{}'.format(DATA_DIR, filename_1))
-    h1 = tf1.Get('h_particle_count_per_event')
-
-    tf2 = TFile('{}/{}'.format(DATA_DIR, filename_2))
-    h2 = tf2.Get('h_particle_count_per_event')
+def compare_det_sim_particle_count_per_event(filenames, hist_names, colors, suffix):
+    h1s = []
+    for filename in filenames:
+        tf1 = TFile('{}/{}'.format(DATA_DIR, filename))
+        h1 = tf1.Get('h_particle_count_per_event')
+        h1.SetDirectory(0)
+        h1s.append(h1)
 
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
     gPad.SetLogy()
-    set_h1_style(h1)
-    h1.GetXaxis().SetTitle('Particle Count per Event')
-    h1.GetYaxis().SetTitle('Event Count')
-    h1.GetYaxis().SetMaxDigits(3)
-    h1.SetName('No Shielding')
-    h1.Draw()
+    gPad.SetLogx()
 
-    set_h1_style(h2)
-    h2.SetLineColor(kRed + 1)
-    h2.SetName('With Shielding')
-    h2.Draw('sames')
+    for i, h1 in enumerate(h1s):
+        set_h1_style(h1)
+        h1.SetName(hist_names[i])
+        h1.SetLineColor(colors[i])
+        if i == 0:
+            h1.GetXaxis().SetTitle('Particle Count per Event')
+            h1.GetYaxis().SetTitle('Event Count')
+            h1.GetYaxis().SetMaxDigits(3)
+            h1.GetXaxis().SetRangeUser(0.1, 200)
+            h1.GetYaxis().SetRangeUser(0.1, 1e4)
+            h1.Draw()
+        else:
+            print('i = {}'.format(i))
+            h1.Draw('sames')
+        print('h1.GetName() = {}'.format(h1.GetName()))
 
     c1.Update()
-    draw_statboxes(h1, h2)
+    if len(filenames) == 2:
+        draw_statboxes([h1s[1], h1s[0]],
+                       width=0.18, height=0.15,
+                       corner_x=0.2, corner_y=0.3,
+                       gap_y=0.02)
+    elif len(filenames) == 3:
+        draw_statboxes([h1s[2], h1s[1], h1s[0]],
+                       width=0.18, height=0.15,
+                       corner_x=0.2, corner_y=0.2,
+                       gap_y=0.02)
 
     c1.Update()
-    c1.SaveAs('{}/compare_det_sim_particle_count_per_event.pdf'.format(FIGURE_DIR))
+    c1.SaveAs('{}/compare_det_sim_particle_count_per_event.{}.pdf'.format(FIGURE_DIR, suffix))
     input('Press any key to continue.')
 
 
@@ -3680,17 +3696,31 @@ def compare_det_sim_particle_count_per_event(filename_1, filename_2):
 # plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding.root', show_boundary=True)
 # plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root', show_boundary=True)
 # plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root', show_boundary=True)
+# plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_3.root', show_boundary=True)
 # save_particle_momentum_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=True)
 # save_particle_momentum_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root', 0, 20000, bin_count=2000, normalization_factor=199.98, noise_particle=True)
 # save_particle_momentum_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=True)
+# save_particle_momentum_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_3.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=True)
 # plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=5, x_min=0, x_max=20000, noise_particle=True)
 # plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding.root.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=5, x_min=0, x_max=20000, noise_particle=True)
-plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=5, x_min=0, x_max=20000, noise_particle=True)
+# plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=5, x_min=0, x_max=20000, noise_particle=True)
+# plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_3.root.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=5, x_min=0, x_max=20000, noise_particle=True)
 # gStyle.SetOptStat('nemr')
 # plot_det_sim_particle_count_per_event('text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root.root')
 # plot_det_sim_particle_count_per_event('text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root.root')
 # compare_det_sim_particle_count_per_event('text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root.root',
                                          # 'text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root.root')
+compare_det_sim_particle_count_per_event(['text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root.root',
+                                          'text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root.root'],
+                                         ['No Shielding', '2 Shielding Blocks'],
+                                         [kBlack, kRed + 1],
+                                         'two')
+# compare_det_sim_particle_count_per_event(['text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root.root',
+#                                           'text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root.root',
+#                                           'text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_3.root.root'],
+#                                          ['No Shielding', '2 Shielding Blocks', '3 Shielding Blocks'],
+#                                          [kBlack, kRed + 1, kBlue + 1],
+#                                          'three')
 
 # testbeam_beamline_simulation
 # filenames = [

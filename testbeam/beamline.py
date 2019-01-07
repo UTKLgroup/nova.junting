@@ -466,6 +466,7 @@ class Beamline:
 
         self.f_out.write('place shielding_block rename=shielding_block_1 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_1.x, self.shielding_block_1.y, self.shielding_block_1.z, self.shielding_block_1.theta))
         self.f_out.write('place shielding_block rename=shielding_block_2 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_2.x, self.shielding_block_2.y, self.shielding_block_2.z, self.shielding_block_2.theta))
+        self.f_out.write('place shielding_block rename=shielding_block_3 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_1.x + concrete_top_dimensions[2], self.shielding_block_1.y, self.shielding_block_1.z, self.shielding_block_1.theta))
 
     def write_housing(self):
         thickness = 10.
@@ -659,7 +660,7 @@ class Beamline:
 beamline = Beamline()
 # beamline.figure_dir = '/Users/juntinghuang/beamer/20180413_testbeam_120gev/figures'
 # beamline.plot_position()
-# beamline.screen_shot = True
+beamline.screen_shot = True
 # beamline.read_cherenkov_dimension()
 beamline.write()
 
