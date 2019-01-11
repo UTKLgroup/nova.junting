@@ -3691,6 +3691,47 @@ def compare_det_sim_particle_count_per_event(filenames, hist_names, colors, suff
     input('Press any key to continue.')
 
 
+def get_saved_particle_count(filename):
+    pid_particle_counts = {}
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    for key in tf.GetListOfKeys():
+        hist_name = key.GetName()
+        if hist_name == 'h_all':
+            continue
+        pid = int(hist_name.split('_')[1])
+        pid_particle_counts[pid] = tf.Get(hist_name).Integral()
+
+    return pid_particle_counts
+
+
+def print_saved_particle_count(**kwargs):
+    noise_particle = kwargs.get('noise_particle', True)
+
+    config_pid_counts = [get_saved_particle_count('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root.hist.root'),
+                         get_saved_particle_count('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root.hist.root'),
+                         get_saved_particle_count('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_3.root.hist.root')]
+
+    pids = []
+    for pid in config_pid_counts[0].keys():
+        if not noise_particle and (PDG.GetParticle(pid).Charge() == 0 or (PDG.GetParticle(pid).Charge() < 0. and b_field < 0.) or (PDG.GetParticle(pid).Charge() > 0. and b_field > 0.)):
+            print('Wrong sign particles: pid = {}, count = {}, avg momentum = {}'.format(pid, pid_hists[pid].Integral(), pid_hists[pid].GetMean()))
+            continue
+        pids.append(pid)
+    pids = sorted(pids, key=lambda x: (abs(x), np.sign(x)))
+
+    for pid in pids:
+        row = '{} & {}'.format(str(pid), PDG.GetParticle(pid).GetName())
+        for i, config_pid_count in enumerate(config_pid_counts):
+            row += ' & {:.1E}'.format(config_pid_count[pid])
+            if i == len(config_pid_counts) - 1:
+                row += ' & {:.0f}\%'.format((config_pid_count[pid] - config_pid_counts[0][pid]) / config_pid_counts[0][pid] * 100.)
+
+        row += ' \\\\'
+        print(row)
+        # print('row = {}'.format(row))
+        # break
+
+
 # 20181213_testbeam_shielding_noise_particle
 # gStyle.SetOptStat(0)
 # plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding.root', show_boundary=True)
@@ -3710,17 +3751,18 @@ def compare_det_sim_particle_count_per_event(filenames, hist_names, colors, suff
 # plot_det_sim_particle_count_per_event('text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root.root')
 # compare_det_sim_particle_count_per_event('text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root.root',
                                          # 'text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root.root')
-compare_det_sim_particle_count_per_event(['text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root.root',
-                                          'text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root.root'],
-                                         ['No Shielding', '2 Shielding Blocks'],
-                                         [kBlack, kRed + 1],
-                                         'two')
+# compare_det_sim_particle_count_per_event(['text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root.root',
+#                                           'text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root.root'],
+#                                          ['No Shielding', '2 Shielding Blocks'],
+#                                          [kBlack, kRed + 1],
+#                                          'two')
 # compare_det_sim_particle_count_per_event(['text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root.root',
 #                                           'text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root.root',
 #                                           'text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_3.root.root'],
 #                                          ['No Shielding', '2 Shielding Blocks', '3 Shielding Blocks'],
 #                                          [kBlack, kRed + 1, kBlue + 1],
 #                                          'three')
+print_saved_particle_count()
 
 # testbeam_beamline_simulation
 # filenames = [
