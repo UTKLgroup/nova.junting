@@ -660,7 +660,7 @@ class Beamline:
 beamline = Beamline()
 # beamline.figure_dir = '/Users/juntinghuang/beamer/20180413_testbeam_120gev/figures'
 # beamline.plot_position()
-beamline.screen_shot = True
+# beamline.screen_shot = True
 # beamline.read_cherenkov_dimension()
 beamline.write()
 

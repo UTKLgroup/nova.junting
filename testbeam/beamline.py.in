@@ -4,7 +4,6 @@ param histoFile=beam.root
 g4ui when=4 "/vis/viewer/set/viewpointVector 0 1 0"
 g4ui when=4 "/vis/viewer/zoom 1.5"
 g4ui when=4 "/vis/viewer/set/style wireframe"
-g4ui when=4 "/vis/viewer/set/background 1 1 1"
 beam gaussian particle=$particle firstEvent=$first lastEvent=$last sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=$momentum
 trackcuts kineticEnergyCut=20 keep=gamma,pi0,pi+,pi-,kaon+,kaon-,mu+,mu-,e+,e-,proton,anti_proton
 box slab height=31.75 length=209.55 width=6.35 material=Cu color=1,0.01,0.01
@@ -22,6 +21,8 @@ place collimator_us_aperture rename=collimator_us_aperture_1 x=-1.31631742066042
 place collimator_us_aperture rename=collimator_us_aperture_2 x=-431.89631742066047 y=0.0 z=755.396 rotation=y-17.97
 place collimator_us_plate rename=collimator_us_top_1 x=-216.60631742066045 y=91.313 z=755.396
 place collimator_us_plate rename=collimator_us_top_2 x=-216.60631742066045 y=223.13899999999998 z=755.396
+virtualdetector start_line radius=1750.0 length=1.0 material=Air color=0.9,0.9,0.7
+place start_line rotation=y-16.0 x=-399.6741659346488 y=0.0 z=1393.8294591105623
 group wire_chamber
   virtualdetector wire_chamber_detector height=125.0 length=25.0 width=128.0 color=0,1,0
   box wire_chamber_frame_vertical height=254.0 length=25.0 width=63.0 color=1,0,1 kill=0 material=Al
