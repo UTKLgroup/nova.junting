@@ -56,6 +56,7 @@ class Beamline:
         self.nova = Detector('nova detector')
         self.shielding_block_1 = Detector('shielding block 1')
         self.shielding_block_2 = Detector('shielding block 2')
+        self.shielding_block_3 = Detector('shielding block 3')
 
         self.detectors = [
             self.target,
@@ -466,7 +467,9 @@ class Beamline:
 
         self.f_out.write('place shielding_block rename=shielding_block_1 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_1.x, self.shielding_block_1.y, self.shielding_block_1.z, self.shielding_block_1.theta))
         self.f_out.write('place shielding_block rename=shielding_block_2 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_2.x, self.shielding_block_2.y, self.shielding_block_2.z, self.shielding_block_2.theta))
-        self.f_out.write('place shielding_block rename=shielding_block_3 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_1.x + concrete_top_dimensions[2], self.shielding_block_1.y, self.shielding_block_1.z, self.shielding_block_1.theta))
+        # self.f_out.write('place shielding_block rename=shielding_block_3 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_1.x + concrete_top_dimensions[2], self.shielding_block_1.y, self.shielding_block_1.z, self.shielding_block_1.theta))
+        self.shielding_block_3.set_zx([2700. - (15.24 - 8.36) * Beamline.INCH + concrete_top_dimensions[1] / 2., 0.])
+        self.f_out.write('place shielding_block rename=shielding_block_3 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_3.x, self.shielding_block_3.y, self.shielding_block_3.z, self.shielding_block_3.theta))
 
     def write_housing(self):
         thickness = 10.

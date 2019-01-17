@@ -51,7 +51,7 @@ group shielding_block
 endgroup
 place shielding_block rename=shielding_block_1 x=-693.9559600000002 y=0.0 z=9415.66956 rotation=y0.0
 place shielding_block rename=shielding_block_2 x=-2014.75596 y=0.0 z=9415.66956 rotation=y0.0
-place shielding_block rename=shielding_block_3 x=-84.35596000000032 y=0.0 z=9415.66956 rotation=y0.0
+place shielding_block rename=shielding_block_3 x=0.0 y=0.0 z=2931.648 rotation=y0.0
 group collimator_ds
   box collimator_ds_bottom height=200.02499999999998 length=914.4 width=711.1999999999999 material=Fe color=0,1,1 kill=0
   box collimator_ds_middle height=209.54999999999998 length=914.4 width=276.22499999999997 material=Fe color=0,1,1 kill=0
