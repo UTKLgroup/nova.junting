@@ -18,6 +18,9 @@ spillduration = 4.2
 OrbitsInSpill = spillduration / orbitlength
 filledbatches = (1,2,3,4,5,6) # (out of BatchesPerOrbit)
 
+print('orbitlength = {}'.format(orbitlength))
+print('OrbitsInSpill = {}'.format(OrbitsInSpill))
+
 # Function to return a time during the spill, weighted to get the
 # time structure of the Fermilab Test Beam Facility's beam
 def RandomOffsetSeconds ():
@@ -37,10 +40,13 @@ def RandomOffsetSeconds ():
     # exit loop when we finally get the right range
     return offset
 
-
-figure_dir = '/Users/juntinghuang/beamer/20171211_test_beam_geometry/figures'
+# figure_dir = '/Users/juntinghuang/beamer/20171211_test_beam_geometry/figures'
+figure_dir = '/Users/juntinghuang/beamer/20190116_testbeam_shielding_upstream/figures'
 h1 = TH1D('h1', 'h1', 600, -1, 5)
-for i in range(300000):
+total_count = 300000
+for i in range(total_count):
+    if i % 1e4 == 0:
+        print('i = {} / {}'.format(i, total_count))
     h1.Fill(RandomOffsetSeconds())
 
 c1 = TCanvas('c1', 'c1', 800, 600)
