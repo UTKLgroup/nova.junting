@@ -14,7 +14,7 @@ INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
 # FIGURE_DIR = '/Users/juntinghuang/Desktop/nova/testbeam/doc/testbeam_beamline_simulation/figures'
-FIGURE_DIR = '/Users/juntinghuang/beamer/20181213_testbeam_shielding_noise_particle/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20190116_testbeam_shielding_upstream/figures'
 DATA_DIR = './data'
 
 
@@ -3731,6 +3731,8 @@ def print_saved_particle_count(**kwargs):
         # print('row = {}'.format(row))
         # break
 
+# 20190116_testbeam_shielding_upstream
+plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_4.root', show_boundary=True)
 
 # 20181213_testbeam_shielding_noise_particle
 # gStyle.SetOptStat(0)
@@ -3762,7 +3764,7 @@ def print_saved_particle_count(**kwargs):
 #                                          ['No Shielding', '2 Shielding Blocks', '3 Shielding Blocks'],
 #                                          [kBlack, kRed + 1, kBlue + 1],
 #                                          'three')
-print_saved_particle_count()
+# print_saved_particle_count()
 
 # testbeam_beamline_simulation
 # filenames = [
