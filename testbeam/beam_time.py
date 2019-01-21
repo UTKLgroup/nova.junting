@@ -27,6 +27,7 @@ def RandomOffsetSeconds ():
     subspillduration = spillduration/subspillcount
     subspilltimewindow_early = jobsinspill * subspillduration
     subspilltimewindow_late = subspilltimewindow_early + subspillduration
+
     offset = -1
     while offset < subspilltimewindow_early or offset >= subspilltimewindow_late:
         BucketInBatch = random.randint(1,BucketsPerBatch-1)
@@ -37,26 +38,33 @@ def RandomOffsetSeconds ():
         offset += bucketcenterspacing * float(BucketInBatch)
         offset += batchlength * BatchInOrbit
         offset += orbitlength * OrbitInSpill
-    # exit loop when we finally get the right range
+
     return offset
 
+
+def get_offset_bucket():
+    BucketInBatch = random.randint(1, BucketsPerBatch - 1)
+    offset = random.gauss(0, bucketwidth)
+    offset += bucketcenterspacing * float(BucketInBatch)
+    return offset * 1.e9
+
 # figure_dir = '/Users/juntinghuang/beamer/20171211_test_beam_geometry/figures'
+# h1 = TH1D('h1', 'h1', 600, -1, 5)
 figure_dir = '/Users/juntinghuang/beamer/20190116_testbeam_shielding_upstream/figures'
-h1 = TH1D('h1', 'h1', 600, -1, 5)
-total_count = 300000
+h1 = TH1D('h1', 'h1', 1880, 0, 188)
+total_count = 3000000
 for i in range(total_count):
     if i % 1e4 == 0:
         print('i = {} / {}'.format(i, total_count))
-    h1.Fill(RandomOffsetSeconds())
+    # h1.Fill(RandomOffsetSeconds())
+    h1.Fill(get_offset_bucket())
 
 c1 = TCanvas('c1', 'c1', 800, 600)
-# gStyle.SetOptStat('emr')
 gStyle.SetOptStat(0)
 set_margin()
 set_h1_style(h1)
-h1.GetXaxis().SetTitle('Time (s)')
-h1.GetYaxis().SetTitle('Pion Count')
-
+h1.GetXaxis().SetTitle('Time (ns)')
+h1.GetYaxis().SetTitle('Proton Count')
 h1.Draw()
 
 c1.Update()
