@@ -41,7 +41,7 @@ class Beamline:
         # self.kill = 1
         self.kill = 0
         self.magnet_by = -0.9    # B field in tesla
-        self.distance_target_to_ground = 324. / 2. + 4.5 * Beamline.FOOT
+        self.distance_target_to_ground = 83. * Beamline.INCH # estimated height of the beam pipe center with respect to the ground
 
         self.target = Detector('target')
         self.collimator_us = Detector('upstream collimator')
@@ -468,10 +468,10 @@ class Beamline:
         self.shielding_block_3.set_zx([2700. - (15.24 - 8.36) * Beamline.INCH + concrete_top_dimensions[1] / 2., 0.])
 
         # the distance from ground to the top of the shielding block is 2.7m
-        # y_shift = (2700. - 16. * Beamline.INCH) - self.distance_target_to_ground
-        # self.shielding_block_1.y += y_shift
-        # self.shielding_block_2.y += y_shift
-        # self.shielding_block_3.y += y_shift
+        y_shift = (2700. - 16. * Beamline.INCH) - self.distance_target_to_ground
+        self.shielding_block_1.y += y_shift
+        self.shielding_block_2.y += y_shift
+        self.shielding_block_3.y += y_shift
 
         self.f_out.write('place shielding_block rename=shielding_block_1 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_1.x, self.shielding_block_1.y, self.shielding_block_1.z, self.shielding_block_1.theta))
         self.f_out.write('place shielding_block rename=shielding_block_2 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_2.x, self.shielding_block_2.y, self.shielding_block_2.z, self.shielding_block_2.theta))
