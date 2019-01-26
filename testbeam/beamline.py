@@ -465,7 +465,7 @@ class Beamline:
         shielding_block_separation = 28. * Beamline.INCH
         self.shielding_block_1.set_zx([self.collimator_ds.z, self.collimator_ds.x + steel_dimensions[2] / 2. + shielding_block_separation / 2.])
         self.shielding_block_2.set_zx([self.collimator_ds.z, self.collimator_ds.x - steel_dimensions[2] / 2. - shielding_block_separation / 2.])
-        self.shielding_block_3.set_zx([2700. - (15.24 - 8.36) * Beamline.INCH + concrete_top_dimensions[1] / 2., (7.47 * Beamline.INCH + 460.) - (420. + 12. * Beamline.INCH)])
+        self.shielding_block_3.set_zx([2700. - (58. - 42.76 - 8.36) * Beamline.INCH + concrete_top_dimensions[1] / 2., (7.47 * Beamline.INCH + 460.) - (420. + 12. * Beamline.INCH)])
 
         # the distance from ground to the top of the shielding block is 2.7m
         y_shift = (2700. - 16. * Beamline.INCH) - self.distance_target_to_ground
