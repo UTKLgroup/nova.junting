@@ -464,7 +464,9 @@ class Beamline:
         # self.shielding_block_2.set_zx([self.magnet.z + 1200., self.magnet.x - steel_dimensions[2] / 2. - shielding_block_separation / 2.])
         shielding_block_separation = 28. * Beamline.INCH
         self.shielding_block_1.set_zx([self.collimator_ds.z, self.collimator_ds.x + steel_dimensions[2] / 2. + shielding_block_separation / 2.])
-        self.shielding_block_2.set_zx([self.collimator_ds.z, self.collimator_ds.x - steel_dimensions[2] / 2. - shielding_block_separation / 2.])
+        # self.shielding_block_2.set_zx([self.collimator_ds.z, self.collimator_ds.x - steel_dimensions[2] / 2. - shielding_block_separation / 2.])
+        self.shielding_block_2.set_zx([self.wc_3.z, self.wc_3.x - 17.676 * Beamline.INCH - steel_dimensions[2] / 2.])
+        # self.shielding_block_3.set_zx([self.shielding_block_1.z, self.shielding_block_1.x + concrete_top_dimensions[2]])
         self.shielding_block_3.set_zx([2700. - (58. - 42.76 - 8.36) * Beamline.INCH + concrete_top_dimensions[1] / 2., (7.47 * Beamline.INCH + 460.) - (420. + 12. * Beamline.INCH)])
 
         # the distance from ground to the top of the shielding block is 2.7m
@@ -474,8 +476,7 @@ class Beamline:
         self.shielding_block_3.y += y_shift
 
         self.f_out.write('place shielding_block rename=shielding_block_1 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_1.x, self.shielding_block_1.y, self.shielding_block_1.z, self.shielding_block_1.theta))
-        # self.f_out.write('place shielding_block rename=shielding_block_2 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_2.x, self.shielding_block_2.y, self.shielding_block_2.z, self.shielding_block_2.theta))
-        # self.f_out.write('place shielding_block rename=shielding_block_3 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_1.x + concrete_top_dimensions[2], self.shielding_block_1.y, self.shielding_block_1.z, self.shielding_block_1.theta))
+        self.f_out.write('place shielding_block rename=shielding_block_2 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_2.x, self.shielding_block_2.y, self.shielding_block_2.z, self.shielding_block_2.theta))
         self.f_out.write('place shielding_block rename=shielding_block_3 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_3.x, self.shielding_block_3.y, self.shielding_block_3.z, self.shielding_block_3.theta))
 
     def write_housing(self):
