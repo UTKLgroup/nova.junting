@@ -14,7 +14,7 @@ INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
 # FIGURE_DIR = '/Users/juntinghuang/Desktop/nova/testbeam/doc/testbeam_beamline_simulation/figures'
-FIGURE_DIR = '/Users/juntinghuang/beamer/20190116_testbeam_shielding_upstream/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20190126_testbeam_shielding_upstream/figures'
 DATA_DIR = './data'
 
 
@@ -1245,7 +1245,10 @@ def plot_saved_particle_momentum(filename, **kwargs):
         for pid, hist in pid_hists.items():
             if hist.GetMaximum() > y_max:
                 y_max = hist.GetMaximum()
-        y_max *= 1.2
+        if log_y:
+            y_max *= 5
+        else:
+            y_max *= 1.2
 
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
@@ -1274,8 +1277,8 @@ def plot_saved_particle_momentum(filename, **kwargs):
     lg1.SetTextSize(24)
     if noise_particle:
         lg1.SetNColumns(2)
-        lg1.SetX1(0.2)
-        lg1.SetX2(0.85)
+        lg1.SetX1(0.24)
+        lg1.SetX2(0.88)
         lg1.SetY1(0.66)
         lg1.SetY2(0.87)
         lg1.SetTextSize(20)
@@ -3706,10 +3709,15 @@ def get_saved_particle_count(filename):
 
 def print_saved_particle_count(**kwargs):
     noise_particle = kwargs.get('noise_particle', True)
+    filenames = kwargs.get('filenames', [
+        'g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root.hist.root',
+        'g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root.hist.root',
+        'g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_3.root.hist.root'
+    ])
 
-    config_pid_counts = [get_saved_particle_count('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_9999.199.98m.no_shielding.root.hist.root'),
-                         get_saved_particle_count('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_2.root.hist.root'),
-                         get_saved_particle_count('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_3.root.hist.root')]
+    config_pid_counts = []
+    for filename in filenames:
+        config_pid_counts.append(get_saved_particle_count(filename))
 
     pids = []
     for pid in config_pid_counts[0].keys():
@@ -3720,7 +3728,8 @@ def print_saved_particle_count(**kwargs):
     pids = sorted(pids, key=lambda x: (abs(x), np.sign(x)))
 
     for pid in pids:
-        row = '{} & {}'.format(str(pid), PDG.GetParticle(pid).GetName())
+        # row = '{} & {}'.format(str(pid), PDG.GetParticle(pid).GetName())
+        row = PDG.GetParticle(pid).GetName()
         for i, config_pid_count in enumerate(config_pid_counts):
             row += ' & {:.1E}'.format(config_pid_count[pid])
             if i == len(config_pid_counts) - 1:
@@ -3731,8 +3740,24 @@ def print_saved_particle_count(**kwargs):
         # print('row = {}'.format(row))
         # break
 
-# 20190116_testbeam_shielding_upstream
-plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_4.root', show_boundary=True)
+# 20190126_testbeam_shielding_upstream
+gStyle.SetOptStat(0)
+filenames = [
+    'g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.no_shielding_2.root',
+    'g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_5.root',
+    'g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_6.root',
+    # 'g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_7.root',
+    'g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_8.root'
+]
+# print_saved_particle_count(filenames=[filename + '.hist.root' for filename in filenames])
+for filename in filenames:
+    # plot_noise_particle_root(filename, show_boundary=True)
+    # save_particle_momentum_root(filename, 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=True)
+    plot_saved_particle_momentum(filename + '.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=20, x_min=0, x_max=20000, y_min=1.e-2, noise_particle=True)
+    # break
+
+# 20190116_testbeam_timing_structure
+# plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_4.root', show_boundary=True)
 
 # 20181213_testbeam_shielding_noise_particle
 # gStyle.SetOptStat(0)
