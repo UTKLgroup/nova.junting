@@ -479,7 +479,7 @@ class Beamline:
         self.shielding_block_2.set_zx([self.wc_3.z, self.wc_3.x - 17.676 * Beamline.INCH - self.shielding_block.width / 2.])
         # self.shielding_block_3.set_zx([self.shielding_block_1.z, self.shielding_block_1.x + self.shielding_block.width])
         self.shielding_block_3.set_zx([2700. - (self.collimator_us.length - (42.76 + 8.36) * Beamline.INCH) + self.shielding_block.length / 2., (7.47 * Beamline.INCH + 460.) - (420. + 12. * Beamline.INCH)])
-        self.shielding_block_4.set_zx([self.collimator_ds.z - self.collimator_ds.length / 2. + 15.647 * Beamline.INCH + self.shielding_block.length / 2.), self.collimator_ds.x - self.shielding_block.width / 2. - self.collimator_ds.width / 2.])
+        self.shielding_block_4.set_zx([self.collimator_ds.z - self.collimator_ds.length / 2. + 15.647 * Beamline.INCH + self.shielding_block.length / 2., self.collimator_ds.x - self.shielding_block.width / 2. - self.collimator_ds.width / 2.])
 
         # the distance from ground to the top of the shielding block is 2.7m
         y_shift = (2700. - 16. * Beamline.INCH) - self.distance_target_to_ground
@@ -491,7 +491,7 @@ class Beamline:
         self.f_out.write('place shielding_block rename=shielding_block_1 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_1.x, self.shielding_block_1.y, self.shielding_block_1.z, self.shielding_block_1.theta))
         self.f_out.write('place shielding_block rename=shielding_block_2 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_2.x, self.shielding_block_2.y, self.shielding_block_2.z, self.shielding_block_2.theta))
         self.f_out.write('place shielding_block rename=shielding_block_3 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_3.x, self.shielding_block_3.y, self.shielding_block_3.z, self.shielding_block_3.theta))
-        # self.f_out.write('place shielding_block rename=shielding_block_4 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_4.x, self.shielding_block_4.y, self.shielding_block_4.z, self.shielding_block_4.theta))
+        self.f_out.write('place shielding_block rename=shielding_block_4 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_4.x, self.shielding_block_4.y, self.shielding_block_4.z, self.shielding_block_4.theta))
 
     def write_housing(self):
         thickness = 10.
