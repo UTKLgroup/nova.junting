@@ -55,9 +55,11 @@ class Beamline:
         self.cherenkov = Detector('cherenkov counter')
         self.tof_ds = Detector('downstream TOF')
         self.nova = Detector('nova detector')
+        self.shielding_block = Detector('shielding block')
         self.shielding_block_1 = Detector('shielding block 1')
         self.shielding_block_2 = Detector('shielding block 2')
         self.shielding_block_3 = Detector('shielding block 3')
+        self.shielding_block_4 = Detector('shielding block 4')
 
         self.detectors = [
             self.target,
@@ -297,6 +299,9 @@ class Beamline:
         for collimator_us_part in collimator_us_parts:
             collimator_us_part[0] += x_offset
 
+        self.collimator_us.length = collimator_us_base_dimensions[1]
+        self.collimator_us.width = collimator_us_base_dimensions[2]
+
         self.f_out.write('box collimator_us_base height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_us_base_dimensions[0], collimator_us_base_dimensions[1], collimator_us_base_dimensions[2], self.kill))
         self.f_out.write('box collimator_us_plate height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_us_plate_dimensions[0], collimator_us_plate_dimensions[1], collimator_us_plate_dimensions[2], self.kill))
         self.f_out.write('box collimator_us_aperture height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_us_aperture_dimensions[0], collimator_us_aperture_dimensions[1], collimator_us_aperture_dimensions[2], self.kill))
@@ -429,6 +434,9 @@ class Beamline:
         collimator_ds_top_positions = [0., -aperture_height / 2 - collimator_ds_bottom_dimensions[0] / 2., collimator_length / 2.]
 
         self.collimator_ds.theta = self.us_theta + self.ds_theta
+        self.collimator_ds.width = collimator_width
+        self.collimator_ds.length = collimator_length
+        self.collimator_ds.height = collimator_height
 
         self.f_out.write('group collimator_ds\n')
         self.f_out.write('  box collimator_ds_bottom height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_ds_bottom_dimensions[0], collimator_ds_bottom_dimensions[1], collimator_ds_bottom_dimensions[2], self.kill))
@@ -459,25 +467,31 @@ class Beamline:
         self.f_out.write('  place shielding_block_concrete_top x={} y={} z={}\n'.format(0., cement_dimensions[0] / 2. + concrete_top_dimensions[0] / 2., z_shift))
         self.f_out.write('endgroup\n')
 
+        self.shielding_block.height = concrete_top_dimensions[0] + steel_dimensions[0] + concrete_bottom_dimensions[0]
+        self.shielding_block.length = concrete_top_dimensions[1]
+        self.shielding_block.width = concrete_top_dimensions[2]
+
         # shielding_block_separation = 20. * Beamline.INCH
-        # self.shielding_block_1.set_zx([self.magnet.z + 1200., self.magnet.x + steel_dimensions[2] / 2. + shielding_block_separation / 2.])
-        # self.shielding_block_2.set_zx([self.magnet.z + 1200., self.magnet.x - steel_dimensions[2] / 2. - shielding_block_separation / 2.])
-        shielding_block_separation = 28. * Beamline.INCH
-        self.shielding_block_1.set_zx([self.collimator_ds.z, self.collimator_ds.x + steel_dimensions[2] / 2. + shielding_block_separation / 2.])
-        # self.shielding_block_2.set_zx([self.collimator_ds.z, self.collimator_ds.x - steel_dimensions[2] / 2. - shielding_block_separation / 2.])
-        self.shielding_block_2.set_zx([self.wc_3.z, self.wc_3.x - 17.676 * Beamline.INCH - steel_dimensions[2] / 2.])
-        # self.shielding_block_3.set_zx([self.shielding_block_1.z, self.shielding_block_1.x + concrete_top_dimensions[2]])
-        self.shielding_block_3.set_zx([2700. - (58. - 42.76 - 8.36) * Beamline.INCH + concrete_top_dimensions[1] / 2., (7.47 * Beamline.INCH + 460.) - (420. + 12. * Beamline.INCH)])
+        # self.shielding_block_1.set_zx([self.magnet.z + 1200., self.magnet.x + self.shielding_block.width / 2. + shielding_block_separation / 2.])
+        # self.shielding_block_2.set_zx([self.magnet.z + 1200., self.magnet.x - self.shielding_block.width / 2. - shielding_block_separation / 2.])
+        self.shielding_block_1.set_zx([self.collimator_ds.z, self.collimator_ds.x + self.shielding_block.width / 2. + self.collimator_ds.width / 2.])
+        # self.shielding_block_2.set_zx([self.collimator_ds.z, self.collimator_ds.x - self.shielding_block.width / 2. - self.collimator_ds.width / 2.])
+        self.shielding_block_2.set_zx([self.wc_3.z, self.wc_3.x - 17.676 * Beamline.INCH - self.shielding_block.width / 2.])
+        # self.shielding_block_3.set_zx([self.shielding_block_1.z, self.shielding_block_1.x + self.shielding_block.width])
+        self.shielding_block_3.set_zx([2700. - (self.collimator_us.length - (42.76 + 8.36) * Beamline.INCH) + self.shielding_block.length / 2., (7.47 * Beamline.INCH + 460.) - (420. + 12. * Beamline.INCH)])
+        self.shielding_block_4.set_zx([self.collimator_ds.z - self.collimator_ds.length / 2. + 15.647 * Beamline.INCH + self.shielding_block.length / 2.), self.collimator_ds.x - self.shielding_block.width / 2. - self.collimator_ds.width / 2.])
 
         # the distance from ground to the top of the shielding block is 2.7m
         y_shift = (2700. - 16. * Beamline.INCH) - self.distance_target_to_ground
         self.shielding_block_1.y += y_shift
         self.shielding_block_2.y += y_shift
         self.shielding_block_3.y += y_shift
+        self.shielding_block_4.y += y_shift
 
         self.f_out.write('place shielding_block rename=shielding_block_1 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_1.x, self.shielding_block_1.y, self.shielding_block_1.z, self.shielding_block_1.theta))
         self.f_out.write('place shielding_block rename=shielding_block_2 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_2.x, self.shielding_block_2.y, self.shielding_block_2.z, self.shielding_block_2.theta))
         self.f_out.write('place shielding_block rename=shielding_block_3 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_3.x, self.shielding_block_3.y, self.shielding_block_3.z, self.shielding_block_3.theta))
+        # self.f_out.write('place shielding_block rename=shielding_block_4 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_4.x, self.shielding_block_4.y, self.shielding_block_4.z, self.shielding_block_4.theta))
 
     def write_housing(self):
         thickness = 10.
@@ -542,14 +556,13 @@ class Beamline:
             self.write_virtual_disk()
         self.write_wc()
         self.write_magnet()
-        self.write_shielding_block()
         self.write_collimator_ds()
         self.write_tof()
         self.write_cherenkov()
         self.write_nova_plane()
+        self.write_shielding_block()
         # self.write_nova()       # for radiation study
         # self.write_housing()    # for radiation study
-
 
     def write_radiation(self):
         self.kill = 1
