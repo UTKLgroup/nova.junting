@@ -95,16 +95,20 @@ def save_to_txt(filename, include_noise, save_plot):
     if save_plot:
         f_det = TFile('{}/text_gen.{}.root'.format(data_dir, filename), 'RECREATE')
         multiple_particle_event_count = 0
-        h1 = TH1D('h1', 'h1', 100, -0.5, 99.5)
+        h_count = TH1D('h_count', 'h_count', 100, -0.5, 99.5)
+        h_timing = TH1D('h_timing', 'h_timing', 5000, 0., 50.e3) # ns
         for i, event in enumerate(events):
-            h1.Fill(len(event))
+            h_count.Fill(len(event))
             if len(event) > 2:
                 multiple_particle_event_count += 1
                 # print('i = {}'.format(i))
                 # print('len(event) = {}'.format(len(event)))
+            for particle in event:
+                h_timing.Fill(particle[-1])
         print('len(events) = {}'.format(len(events)))
         print('multiple_particle_event_count = {}'.format(multiple_particle_event_count))
-        h1.Write('h_particle_count_per_event')
+        h_count.Write('h_particle_count_per_event')
+        h_timing.Write('h_timing')
         f_det.Close()
 
 
