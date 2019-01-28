@@ -99,7 +99,7 @@ def save_to_txt(filename, include_noise, save_plot):
         h_timing = TH1D('h_timing', 'h_timing', 5000, 0., 50.e3) # ns
         for i, event in enumerate(events):
             h_count.Fill(len(event))
-            if len(event) > 2:
+            if len(event) > 1:
                 multiple_particle_event_count += 1
                 # print('i = {}'.format(i))
                 # print('len(event) = {}'.format(len(event)))

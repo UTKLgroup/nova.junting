@@ -14,7 +14,8 @@ INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
 # FIGURE_DIR = '/Users/juntinghuang/Desktop/nova/testbeam/doc/testbeam_beamline_simulation/figures'
-FIGURE_DIR = '/Users/juntinghuang/beamer/20190126_testbeam_shielding_upstream/figures'
+# FIGURE_DIR = '/Users/juntinghuang/beamer/20190126_testbeam_shielding_upstream/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20190116_testbeam_timing_structure/figures'
 DATA_DIR = './data'
 
 
@@ -3669,7 +3670,7 @@ def compare_det_sim_particle_count_per_event(filenames, hist_names, colors, suff
             h1.GetXaxis().SetTitle('Particle Count per Event')
             h1.GetYaxis().SetTitle('Event Count')
             h1.GetYaxis().SetMaxDigits(3)
-            h1.GetXaxis().SetRangeUser(0.1, 200)
+            h1.GetXaxis().SetRangeUser(0.1, 50)
             h1.GetYaxis().SetRangeUser(0.1, 1e4)
             h1.Draw()
         else:
@@ -3687,6 +3688,11 @@ def compare_det_sim_particle_count_per_event(filenames, hist_names, colors, suff
         draw_statboxes([h1s[2], h1s[1], h1s[0]],
                        width=0.18, height=0.15,
                        corner_x=0.2, corner_y=0.2,
+                       gap_y=0.02)
+    elif len(filenames) == 4:
+        draw_statboxes([h1s[3], h1s[2], h1s[1], h1s[0]],
+                       width=0.15, height=0.12,
+                       corner_x=0.2, corner_y=0.18,
                        gap_y=0.02)
 
     c1.Update()
@@ -3740,24 +3746,55 @@ def print_saved_particle_count(**kwargs):
         # print('row = {}'.format(row))
         # break
 
+
+def plot_particle_timing_detector_event():
+    tf = TFile('data/text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.no_shielding_2.root.root')
+    h_timing = tf.Get('h_timing')
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetLogy()
+
+    set_h1_style(h_timing)
+    h_timing.SetLineColor(kRed)
+    h_timing.GetXaxis().SetTitle('Time (ns)')
+    h_timing.GetYaxis().SetTitle('Number of Particles')
+    h_timing.Draw()
+    c1.Update()
+    draw_statbox(h_timing)
+
+    c1.Update()
+    c1.SaveAs('{}/plot_particle_timing_detector_event.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
 # 20190126_testbeam_shielding_upstream
-gStyle.SetOptStat(0)
-filenames = [
-    'g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.no_shielding_2.root',
-    'g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_5.root',
-    'g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_6.root',
-    # 'g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_7.root',
-    'g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_8.root'
-]
+# gStyle.SetOptStat(0)
+# filenames = [
+#     'g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.no_shielding_2.root',
+#     'g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_5.root',
+#     'g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_6.root',
+#     # 'g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_7.root',
+#     'g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_8.root'
+# ]
 # print_saved_particle_count(filenames=[filename + '.hist.root' for filename in filenames])
-for filename in filenames:
-    # plot_noise_particle_root(filename, show_boundary=True)
-    # save_particle_momentum_root(filename, 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=True)
-    plot_saved_particle_momentum(filename + '.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=20, x_min=0, x_max=20000, y_min=1.e-2, noise_particle=True)
-    # break
+# for filename in filenames:
+#     # plot_noise_particle_root(filename, show_boundary=True)
+#     # save_particle_momentum_root(filename, 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=True)
+#     plot_saved_particle_momentum(filename + '.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=20, x_min=0, x_max=20000, y_min=1.e-2, noise_particle=True)
+#     # break
+# gStyle.SetOptStat('nemr')
+# compare_det_sim_particle_count_per_event(['text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.no_shielding_2.root.root',
+#                                           'text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_5.root.root',
+#                                           'text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_6.root.root',
+#                                           'text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_8.root.root'],
+#                                          ['No Shielding', '2 Blocks', '3 Blocks (w.c. 3)', '3 Blocks (ds. col.)'],
+#                                          [kBlack, kRed, kBlue, kGreen + 2],
+#                                          'four')
 
 # 20190116_testbeam_timing_structure
-# plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_4.root', show_boundary=True)
+gStyle.SetOptStat('emr')
+plot_particle_timing_detector_event()
 
 # 20181213_testbeam_shielding_noise_particle
 # gStyle.SetOptStat(0)
