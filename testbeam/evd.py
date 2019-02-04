@@ -29,8 +29,8 @@ def take_screen_shot(figure_dir, prefix, timestamp):
     filename += 'pdf'
     x0 = 180
     y0 = 420
-    width = 1070
-    height = 240
+    width = 1130
+    height = 250
     call('screencapture -x -t pdf -R{},{},{},{} {}/{}'.format(x0, y0, width, height, figure_dir, filename), shell=True)
 
 
