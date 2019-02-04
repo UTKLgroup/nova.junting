@@ -42,6 +42,8 @@ class Beamline:
         self.kill = 0
         self.magnet_by = -0.9    # B field in tesla
         self.distance_target_to_ground = 83. * Beamline.INCH # estimated height of the beam pipe center with respect to the ground
+        self.wire_chamber_support_length = 12.061 * Beamline.INCH
+        self.grating_upstream_edge_z = 298.211 * Beamline.INCH
 
         self.target = Detector('target')
         self.collimator_us = Detector('upstream collimator')
@@ -339,6 +341,9 @@ class Beamline:
         self.wc_3.theta = self.us_theta + self.ds_theta
         self.wc_4.theta = self.us_theta + self.ds_theta
 
+        # place wire chamber 3 by the upstream edge of the grating
+        self.wc_3.z = self.grating_upstream_edge_z - self.wire_chamber_support_length / 2.
+
         self.f_out.write('group wire_chamber\n')
         self.f_out.write('  virtualdetector wire_chamber_detector height={} length={} width={} color=0,1,0\n'.format(wire_chamber_detector_dimensions[0], wire_chamber_detector_dimensions[1], wire_chamber_detector_dimensions[2]))
         self.f_out.write('  box wire_chamber_frame_vertical height={} length={} width={} color=1,0,1 kill={} material=Al\n'.format(wire_chamber_frame_vertical_dimensions[0], wire_chamber_frame_vertical_dimensions[1], wire_chamber_frame_vertical_dimensions[2], self.kill))
@@ -476,7 +481,8 @@ class Beamline:
         # self.shielding_block_2.set_zx([self.magnet.z + 1200., self.magnet.x - self.shielding_block.width / 2. - shielding_block_separation / 2.])
         self.shielding_block_1.set_zx([self.collimator_ds.z, self.collimator_ds.x + self.shielding_block.width / 2. + self.collimator_ds.width / 2.])
         # self.shielding_block_2.set_zx([self.collimator_ds.z, self.collimator_ds.x - self.shielding_block.width / 2. - self.collimator_ds.width / 2.])
-        self.shielding_block_2.set_zx([self.wc_3.z, self.wc_3.x - 17.676 * Beamline.INCH - self.shielding_block.width / 2.])
+        # self.shielding_block_2.set_zx([self.wc_3.z, self.wc_3.x - 17.676 * Beamline.INCH - self.shielding_block.width / 2.])
+        self.shielding_block_2.set_zx([self.wc_3.z - self.wire_chamber_support_length / 2. - self.shielding_block.length / 2., self.wc_3.x - 5.789 * Beamline.INCH - self.shielding_block.width / 2.])
         # self.shielding_block_3.set_zx([self.shielding_block_1.z, self.shielding_block_1.x + self.shielding_block.width])
         self.shielding_block_3.set_zx([2700. - (self.collimator_us.length - (42.76 + 8.36) * Beamline.INCH) + self.shielding_block.length / 2., (7.47 * Beamline.INCH + 460.) - (420. + 12. * Beamline.INCH)])
         self.shielding_block_4.set_zx([self.collimator_ds.z - self.collimator_ds.length / 2. + 15.647 * Beamline.INCH + self.shielding_block.length / 2., self.collimator_ds.x - self.shielding_block.width / 2. - self.collimator_ds.width / 2.])
@@ -491,7 +497,7 @@ class Beamline:
         self.f_out.write('place shielding_block rename=shielding_block_1 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_1.x, self.shielding_block_1.y, self.shielding_block_1.z, self.shielding_block_1.theta))
         self.f_out.write('place shielding_block rename=shielding_block_2 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_2.x, self.shielding_block_2.y, self.shielding_block_2.z, self.shielding_block_2.theta))
         self.f_out.write('place shielding_block rename=shielding_block_3 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_3.x, self.shielding_block_3.y, self.shielding_block_3.z, self.shielding_block_3.theta))
-        self.f_out.write('place shielding_block rename=shielding_block_4 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_4.x, self.shielding_block_4.y, self.shielding_block_4.z, self.shielding_block_4.theta))
+        # self.f_out.write('place shielding_block rename=shielding_block_4 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_4.x, self.shielding_block_4.y, self.shielding_block_4.z, self.shielding_block_4.theta))
 
     def write_housing(self):
         thickness = 10.

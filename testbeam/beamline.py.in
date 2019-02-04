@@ -35,7 +35,7 @@ group wire_chamber
 endgroup
 place wire_chamber rename=wire_chamber_1 x=-491.51939604891317 y=0.0 z=1714.13184120894 rotation=y-16.0
 place wire_chamber rename=wire_chamber_2 x=-910.5721743366385 y=0.0 z=3175.542552941215 rotation=y-16.0
-place wire_chamber rename=wire_chamber_3 x=-1354.35596 y=0.0 z=6822.489320000001 rotation=y0.0
+place wire_chamber rename=wire_chamber_3 x=-1354.35596 y=0.0 z=7421.3847000000005 rotation=y0.0
 place wire_chamber rename=wire_chamber_4 x=-1354.35596 y=0.0 z=10326.081044999999 rotation=y0.0
 genericbend M1 fieldHeight=88.89999999999999 fieldLength=1066.8 fieldWidth=450.84999999999997 kill=0 ironColor=1,0,0 ironHeight=762.0 ironLength=1066.8 ironWidth=1270.0
 place M1 By=$b_field x=-1354.35596 y=0.0 z=4723.200537006021 rotation=Y-8.0
@@ -73,6 +73,5 @@ group shielding_block
   place shielding_block_concrete_top x=0.0 y=355.59999999999997 z=406.4
 endgroup
 place shielding_block rename=shielding_block_1 x=-693.9559600000002 y=185.4000000000001 z=9415.66956 rotation=y0.0
-place shielding_block rename=shielding_block_2 x=-2108.12636 y=185.4000000000001 z=6822.489320000001 rotation=y0.0
+place shielding_block rename=shielding_block_2 x=-1806.19656 y=185.4000000000001 z=6861.810000000001 rotation=y0.0
 place shielding_block rename=shielding_block_3 x=-75.06200000000001 y=185.4000000000001 z=2931.648 rotation=y0.0
-place shielding_block rename=shielding_block_4 x=-2014.75596 y=185.4000000000001 z=9762.30336 rotation=y0.0
