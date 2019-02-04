@@ -4,9 +4,11 @@ from util import *
 from pprint import pprint
 
 
-slide_name = '20171215_tdslicer_summary'
+# slide_name = '20171215_tdslicer_summary'
+slide_name = '20190128_slicer_fd_containment'
 figure_dir = '/Users/juntinghuang/beamer/{}/figures'.format(slide_name)
 data_dir = 'data/{}'.format(slide_name)
+
 
 def plot(**kwargs):
     hist_name = kwargs.get('hist_name', 'NumSlices')
@@ -1306,6 +1308,16 @@ def plot_th2(**kwargs):
 
 
 # run
+# 20190128_slicer_fd_containment
+# plot(root_filename='slicer_fd_genie_nonswap.root', hist_name='fNuCompleteness', statbox_position='left', log_y=True)
+# plot(root_filename='SlicerAna_hist.root', hist_name='fNuCompleteness', statbox_position='left', log_y=True)
+# plot(root_filename='SlicerAna_hist.test.root', hist_name='fNuCompleteness', statbox_position='left', log_y=True)
+# plot(root_filename='SlicerAna_hist.test.root', hist_name='fNuCompletenessNueContainment', statbox_position='left', log_y=True)
+# plot(root_filename='SlicerAna_hist.test.root', hist_name='fNuCompletenessNumuContainment', statbox_position='left', log_y=True)
+plot(root_filename='SlicerAna_hist.test.root', hist_name='fNuPurityByRecoHitGeV', statbox_position='left', log_y=True)
+# plot(root_filename='SlicerAna_hist.test.root', hist_name='fNuPurityByRecoHitGeVNueContainment', statbox_position='left', log_y=True)
+# plot(root_filename='SlicerAna_hist.test.root', hist_name='fNuPurityByRecoHitCountNueContainment', statbox_position='left', log_y=True)
+
 # 20171215_tdslicer_summary
 # fd cry
 # plot_th2(data_dir='data/20171215_tdslicer_merging_short_tracks', root_filename='fd_cry_zscale_50_tscale_60_mincell_4.root', slicerana='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5])
