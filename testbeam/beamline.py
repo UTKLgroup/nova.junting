@@ -479,7 +479,8 @@ class Beamline:
         # shielding_block_separation = 20. * Beamline.INCH
         # self.shielding_block_1.set_zx([self.magnet.z + 1200., self.magnet.x + self.shielding_block.width / 2. + shielding_block_separation / 2.])
         # self.shielding_block_2.set_zx([self.magnet.z + 1200., self.magnet.x - self.shielding_block.width / 2. - shielding_block_separation / 2.])
-        self.shielding_block_1.set_zx([self.collimator_ds.z, self.collimator_ds.x + self.shielding_block.width / 2. + self.collimator_ds.width / 2.])
+        # self.shielding_block_1.set_zx([self.collimator_ds.z, self.collimator_ds.x + self.shielding_block.width / 2. + self.collimator_ds.width / 2.])
+        self.shielding_block_1.set_zx([self.wc_3.z - self.wire_chamber_support_length / 2. - self.shielding_block.length / 2., self.wc_3.x + 5.789 * Beamline.INCH + self.shielding_block.width / 2.])
         # self.shielding_block_2.set_zx([self.collimator_ds.z, self.collimator_ds.x - self.shielding_block.width / 2. - self.collimator_ds.width / 2.])
         # self.shielding_block_2.set_zx([self.wc_3.z, self.wc_3.x - 17.676 * Beamline.INCH - self.shielding_block.width / 2.])
         self.shielding_block_2.set_zx([self.wc_3.z - self.wire_chamber_support_length / 2. - self.shielding_block.length / 2., self.wc_3.x - 5.789 * Beamline.INCH - self.shielding_block.width / 2.])

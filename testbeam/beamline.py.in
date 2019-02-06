@@ -72,6 +72,6 @@ group shielding_block
   place shielding_block_concrete_bottom x=0.0 y=-457.19999999999993 z=406.4
   place shielding_block_concrete_top x=0.0 y=355.59999999999997 z=406.4
 endgroup
-place shielding_block rename=shielding_block_1 x=-693.9559600000002 y=185.4000000000001 z=9415.66956 rotation=y0.0
+place shielding_block rename=shielding_block_1 x=-902.5153600000001 y=185.4000000000001 z=6861.810000000001 rotation=y0.0
 place shielding_block rename=shielding_block_2 x=-1806.19656 y=185.4000000000001 z=6861.810000000001 rotation=y0.0
 place shielding_block rename=shielding_block_3 x=-75.06200000000001 y=185.4000000000001 z=2931.648 rotation=y0.0
