@@ -14,8 +14,7 @@ INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
 # FIGURE_DIR = '/Users/juntinghuang/Desktop/nova/testbeam/doc/testbeam_beamline_simulation/figures'
-# FIGURE_DIR = '/Users/juntinghuang/beamer/20190126_testbeam_shielding_upstream/figures'
-FIGURE_DIR = '/Users/juntinghuang/beamer/20190116_testbeam_timing_structure/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20190204_testbeam_shielding_east/figures'
 DATA_DIR = './data'
 
 
@@ -3768,6 +3767,11 @@ def plot_particle_timing_detector_event():
     input('Press any key to continue.')
 
 
+# 20190204_testbeam_shielding_east
+gStyle.SetOptStat(0)
+# plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_9.root', show_boundary=True)
+plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root', show_boundary=True)
+
 # 20190126_testbeam_shielding_upstream
 # gStyle.SetOptStat(0)
 # filenames = [
@@ -3793,8 +3797,8 @@ def plot_particle_timing_detector_event():
 #                                          'four')
 
 # 20190116_testbeam_timing_structure
-gStyle.SetOptStat('emr')
-plot_particle_timing_detector_event()
+# gStyle.SetOptStat('emr')
+# plot_particle_timing_detector_event()
 
 # 20181213_testbeam_shielding_noise_particle
 # gStyle.SetOptStat(0)
