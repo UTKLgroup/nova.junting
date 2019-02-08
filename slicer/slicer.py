@@ -6,7 +6,8 @@ from pprint import pprint
 
 # slide_name = '20171215_tdslicer_summary'
 slide_name = '20190128_slicer_fd_containment'
-figure_dir = '/Users/juntinghuang/beamer/{}/figures'.format(slide_name)
+# figure_dir = '/Users/juntinghuang/beamer/{}/figures'.format(slide_name)
+figure_dir = '/Users/juntinghuang/Desktop/nova/slicer/doc/TDSlicerTecnhote/figures'
 data_dir = 'data/{}'.format(slide_name)
 
 
@@ -20,7 +21,8 @@ def plot(**kwargs):
     y_title = kwargs.get('y_title')
     rebin = kwargs.get('rebin')
     normalize = kwargs.get('normalize', False)
-    statbox_position = kwargs.get('statbox_position', 'right')
+    statbox_corner_x = kwargs.get('statbox_corner_x', 0.2)
+    statbox_corner_y = kwargs.get('statbox_corner_y', 0.42)
     root_filename = kwargs.get('root_filename')
     square_canvas = kwargs.get('square_canvas', False)
 
@@ -63,7 +65,7 @@ def plot(**kwargs):
     h_td.Draw('hist,sames')
 
     c1.Update()
-    draw_statboxes(h_td, h_4d, position=statbox_position)
+    draw_statboxes([h_td, h_4d], corner_x=statbox_corner_x, corner_y=statbox_corner_y)
 
     c1.Update()
     c1.SaveAs('{}/plot.{}.{}.pdf'.format(figure_dir, root_filename, hist_name))
@@ -1307,28 +1309,99 @@ def plot_th2(**kwargs):
     input('Press any key to continue.')
 
 
+def print_figure_of_merit_fd_genie(**kwargs):
+    root_filename = kwargs.get('root_filename', 'slicer_fd_genie_nonswap.root')
+    containment = kwargs.get('containment', '')
+
+    f_slicer = TFile('{}/{}'.format(data_dir, root_filename))
+
+    print('\n\\hline')
+    print('\\hline')
+    print('% containment = {}'.format(containment))
+    containment_tex = None
+    if containment == '':
+        containment_tex = 'no containment'
+    elif containment == 'NueContainment':
+        containment_tex = '$\\nu_e$ containment'
+    elif containment == 'NumuContainment':
+        containment_tex = '$\\nu_\\mu$ containment'
+
+    hist_names = ['fNuCompleteness', 'fNuPurityByRecoHitGeV', 'fNuPurityByRecoHitCount']
+    hist_tex_names = ['mean completeness', 'mean purity (Equation \\ref{eq:purity_gev})', 'mean purity (Equation \\ref{eq:purity_count})']
+    for i, hist_name in enumerate(hist_names):
+        hist_name = hist_name + containment
+        h_td = f_slicer.Get('tdslicerana/{}'.format(hist_name))
+        h_4d = f_slicer.Get('slicerana/{}'.format(hist_name))
+        print('{} & {} & {:.3f} & {:.3f} \\\\'.format('\\multirow{{6}}{{*}}{{{}}}'.format(containment_tex) if i == 0 else '', hist_tex_names[i], h_4d.GetMean(), h_td.GetMean()))
+
+    hist_names = ['fNuCompletenessVsPurityByRecoHitGeV', 'fNuCompletenessVsPurityByRecoHitCount']
+    hist_tex_names = ['good slice count (Equation \\ref{eq:purity_gev})', 'good slice count (Equation \\ref{eq:purity_count})']
+    for i, hist_name in enumerate(hist_names):
+        hist_name = hist_name + containment
+        h_td = f_slicer.Get('tdslicerana/{}'.format(hist_name))
+        h_4d = f_slicer.Get('slicerana/{}'.format(hist_name))
+        good_slice_count_4d = h_4d.Integral(h_4d.GetXaxis().FindBin(0.9),
+                                            h_4d.GetXaxis().FindBin(1.),
+                                            h_4d.GetYaxis().FindBin(0.9),
+                                            h_4d.GetYaxis().FindBin(1.))
+        good_slice_count_td = h_td.Integral(h_td.GetXaxis().FindBin(0.9),
+                                            h_td.GetXaxis().FindBin(1.),
+                                            h_td.GetYaxis().FindBin(0.9),
+                                            h_td.GetYaxis().FindBin(1.))
+        print(' & {} & {:.0f} & {:.0f} \\\\'.format(hist_tex_names[i], good_slice_count_4d, good_slice_count_td))
+
+    hist_names = ['fSliceCountWithNu']
+    hist_tex_names = ['fraction of events with one neutrino slice']
+    for i, hist_name in enumerate(hist_names):
+        hist_name = hist_name + containment
+        h_td = f_slicer.Get('tdslicerana/{}'.format(hist_name))
+        h_4d = f_slicer.Get('slicerana/{}'.format(hist_name))
+
+        fraction_one_nu_slice_td = h_td.GetBinContent(h_td.GetXaxis().FindBin(1.)) / h_td.Integral() * 100.
+        fraction_one_nu_slice_4d = h_4d.GetBinContent(h_4d.GetXaxis().FindBin(1.)) / h_4d.Integral() * 100.
+        print(' & {} & {:.1f}\% & {:.1f}\% \\\\'.format(hist_tex_names[i], fraction_one_nu_slice_4d, fraction_one_nu_slice_td))
+
+
 # run
 # 20190128_slicer_fd_containment
 # plot(root_filename='slicer_fd_genie_nonswap.root', hist_name='fNuCompleteness', statbox_position='left', log_y=True)
 # plot(root_filename='SlicerAna_hist.root', hist_name='fNuCompleteness', statbox_position='left', log_y=True)
 filename = 'slicer_fd_genie_nonswap.root'
+print_figure_of_merit_fd_genie(root_filename=filename, containment='')
+print_figure_of_merit_fd_genie(root_filename=filename, containment='NueContainment')
+print_figure_of_merit_fd_genie(root_filename=filename, containment='NumuContainment')
+#
 # plot(root_filename=filename, hist_name='fNuCompleteness', statbox_position='left', log_y=True)
 # plot(root_filename=filename, hist_name='fNuPurityByRecoHitGeV', statbox_position='left', log_y=True)
 # plot(root_filename=filename, hist_name='fNuPurityByRecoHitCount', statbox_position='left', log_y=True)
-# plot_th2(root_filename=filename, hist_name='fNuCompletenessVsPurityByRecoHitGeV', slicerana='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5], square_canvas=True)
-# plot_th2(root_filename=filename, hist_name='fNuCompletenessVsPurityByRecoHitCount', slicerana='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5], square_canvas=True)
-
+# plot_th2(root_filename=filename, hist_name='fNuCompletenessVsPurityByRecoHitGeV', slicer='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5], square_canvas=True)
+# plot_th2(root_filename=filename, hist_name='fNuCompletenessVsPurityByRecoHitCount', slicer='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5], square_canvas=True)
+#
 # plot(root_filename=filename, hist_name='fNuCompletenessNueContainment', statbox_position='left', log_y=True)
 # plot(root_filename=filename, hist_name='fNuPurityByRecoHitGeVNueContainment', statbox_position='left', log_y=True)
 # plot(root_filename=filename, hist_name='fNuPurityByRecoHitCountNueContainment', statbox_position='left', log_y=True)
-# plot_th2(root_filename=filename, hist_name='fNuCompletenessVsPurityByRecoHitGeVNueContainment', slicerana='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5], square_canvas=True)
-# plot_th2(root_filename=filename, hist_name='fNuCompletenessVsPurityByRecoHitCountNueContainment', slicerana='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5], square_canvas=True)
-
-plot(root_filename=filename, hist_name='fNuCompletenessNumuContainment', statbox_position='left', log_y=True)
-plot(root_filename=filename, hist_name='fNuPurityByRecoHitGeVNumuContainment', statbox_position='left', log_y=True)
-plot(root_filename=filename, hist_name='fNuPurityByRecoHitCountNumuContainment', statbox_position='left', log_y=True)
-plot_th2(root_filename=filename, hist_name='fNuCompletenessVsPurityByRecoHitGeVNumuContainment', slicerana='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5], square_canvas=True)
-plot_th2(root_filename=filename, hist_name='fNuCompletenessVsPurityByRecoHitCountNumuContainment', slicerana='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5], square_canvas=True)
+# plot_th2(root_filename=filename, hist_name='fNuCompletenessVsPurityByRecoHitGeVNueContainment', slicer='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5], square_canvas=True)
+# plot_th2(root_filename=filename, hist_name='fNuCompletenessVsPurityByRecoHitCountNueContainment', slicer='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5], square_canvas=True)
+#
+# plot(root_filename=filename, hist_name='fNuCompletenessNumuContainment', statbox_position='left', log_y=True)
+# plot(root_filename=filename, hist_name='fNuPurityByRecoHitGeVNumuContainment', statbox_position='left', log_y=True)
+# plot(root_filename=filename, hist_name='fNuPurityByRecoHitCountNumuContainment', statbox_position='left', log_y=True)
+# plot_th2(root_filename=filename, hist_name='fNuCompletenessVsPurityByRecoHitGeVNumuContainment', slicer='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5], square_canvas=True)
+# plot_th2(root_filename=filename, hist_name='fNuCompletenessVsPurityByRecoHitCountNumuContainment', slicer='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5], square_canvas=True)
+#
+# plot_th2(root_filename=filename, hist_name='fNuCompletenessVsPurityByRecoHitGeV', slicer='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5], square_canvas=True)
+# plot_th2(root_filename=filename, hist_name='fNuCompletenessVsPurityByRecoHitGeV', slicer='slicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5], square_canvas=True)
+# plot_th2(root_filename=filename, hist_name='fNuCompletenessVsPurityByRecoHitGeVNueContainment', slicer='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5], square_canvas=True)
+# plot_th2(root_filename=filename, hist_name='fNuCompletenessVsPurityByRecoHitGeVNueContainment', slicer='slicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5], square_canvas=True)
+# plot_th2(root_filename=filename, hist_name='fNuCompletenessVsPurityByRecoHitGeVNumuContainment', slicer='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5], square_canvas=True)
+# plot_th2(root_filename=filename, hist_name='fNuCompletenessVsPurityByRecoHitGeVNumuContainment', slicer='slicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5], square_canvas=True)
+#
+# plot(root_filename=filename, hist_name='fSliceCountWithNuNueContainment', statbox_corner_x=0.63, statbox_corner_y=0.42, x_min=-0.5, x_max=3, x_title='Number of Slices With Contributions from #nu', y_title='Event Count', square_canvas=True)
+# plot(root_filename=filename, hist_name='fSliceCountNoNuNueContainment', statbox_corner_x=0.63, statbox_corner_y=0.42, x_min=-0.5, x_max=15.5, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count', square_canvas=True)
+# plot(root_filename=filename, hist_name='fSliceCountWithNuNumuContainment', statbox_corner_x=0.63, statbox_corner_y=0.42, x_min=-0.5, x_max=3, x_title='Number of Slices With Contributions from #nu', y_title='Event Count', square_canvas=True)
+# plot(root_filename=filename, hist_name='fSliceCountNoNuNumuContainment', statbox_corner_x=0.63, statbox_corner_y=0.42, x_min=-0.5, x_max=15.5, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count', square_canvas=True)
+# plot(root_filename=filename, hist_name='fSliceCountWithNu', statbox_corner_x=0.63, statbox_corner_y=0.42, x_min=-0.5, x_max=3, x_title='Number of Slices With Contributions from #nu', y_title='Event Count', square_canvas=True)
+# plot(root_filename=filename, hist_name='fSliceCountNoNu', statbox_corner_x=0.2, statbox_corner_y=0.42, x_min=10, x_max=100, x_title='Number of Slices With No Contribution from #nu', y_title='Event Count', square_canvas=True)
 
 # 20171215_tdslicer_summary
 # fd cry
