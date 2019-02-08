@@ -1311,12 +1311,24 @@ def plot_th2(**kwargs):
 # 20190128_slicer_fd_containment
 # plot(root_filename='slicer_fd_genie_nonswap.root', hist_name='fNuCompleteness', statbox_position='left', log_y=True)
 # plot(root_filename='SlicerAna_hist.root', hist_name='fNuCompleteness', statbox_position='left', log_y=True)
-# plot(root_filename='SlicerAna_hist.test.root', hist_name='fNuCompleteness', statbox_position='left', log_y=True)
-# plot(root_filename='SlicerAna_hist.test.root', hist_name='fNuCompletenessNueContainment', statbox_position='left', log_y=True)
-# plot(root_filename='SlicerAna_hist.test.root', hist_name='fNuCompletenessNumuContainment', statbox_position='left', log_y=True)
-plot(root_filename='SlicerAna_hist.test.root', hist_name='fNuPurityByRecoHitGeV', statbox_position='left', log_y=True)
-# plot(root_filename='SlicerAna_hist.test.root', hist_name='fNuPurityByRecoHitGeVNueContainment', statbox_position='left', log_y=True)
-# plot(root_filename='SlicerAna_hist.test.root', hist_name='fNuPurityByRecoHitCountNueContainment', statbox_position='left', log_y=True)
+filename = 'slicer_fd_genie_nonswap.root'
+# plot(root_filename=filename, hist_name='fNuCompleteness', statbox_position='left', log_y=True)
+# plot(root_filename=filename, hist_name='fNuPurityByRecoHitGeV', statbox_position='left', log_y=True)
+# plot(root_filename=filename, hist_name='fNuPurityByRecoHitCount', statbox_position='left', log_y=True)
+# plot_th2(root_filename=filename, hist_name='fNuCompletenessVsPurityByRecoHitGeV', slicerana='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5], square_canvas=True)
+# plot_th2(root_filename=filename, hist_name='fNuCompletenessVsPurityByRecoHitCount', slicerana='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5], square_canvas=True)
+
+# plot(root_filename=filename, hist_name='fNuCompletenessNueContainment', statbox_position='left', log_y=True)
+# plot(root_filename=filename, hist_name='fNuPurityByRecoHitGeVNueContainment', statbox_position='left', log_y=True)
+# plot(root_filename=filename, hist_name='fNuPurityByRecoHitCountNueContainment', statbox_position='left', log_y=True)
+# plot_th2(root_filename=filename, hist_name='fNuCompletenessVsPurityByRecoHitGeVNueContainment', slicerana='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5], square_canvas=True)
+# plot_th2(root_filename=filename, hist_name='fNuCompletenessVsPurityByRecoHitCountNueContainment', slicerana='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5], square_canvas=True)
+
+plot(root_filename=filename, hist_name='fNuCompletenessNumuContainment', statbox_position='left', log_y=True)
+plot(root_filename=filename, hist_name='fNuPurityByRecoHitGeVNumuContainment', statbox_position='left', log_y=True)
+plot(root_filename=filename, hist_name='fNuPurityByRecoHitCountNumuContainment', statbox_position='left', log_y=True)
+plot_th2(root_filename=filename, hist_name='fNuCompletenessVsPurityByRecoHitGeVNumuContainment', slicerana='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5], square_canvas=True)
+plot_th2(root_filename=filename, hist_name='fNuCompletenessVsPurityByRecoHitCountNumuContainment', slicerana='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5], square_canvas=True)
 
 # 20171215_tdslicer_summary
 # fd cry
