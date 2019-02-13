@@ -5,7 +5,8 @@ from pprint import pprint
 
 
 # slide_name = '20171215_tdslicer_summary'
-slide_name = '20190128_slicer_fd_containment'
+# slide_name = '20190128_slicer_fd_containment'
+slide_name = '20171215_tdslicer_merging_short_tracks'
 # figure_dir = '/Users/juntinghuang/beamer/{}/figures'.format(slide_name)
 figure_dir = '/Users/juntinghuang/Desktop/nova/slicer/doc/TDSlicerTecnhote/figures'
 data_dir = 'data/{}'.format(slide_name)
@@ -1362,14 +1363,57 @@ def print_figure_of_merit_fd_genie(**kwargs):
         print(' & {} & {:.1f}\% & {:.1f}\% & {:.1f}\% \\\\'.format(hist_tex_names[i], fraction_one_nu_slice_4d, fraction_one_nu_slice_td, (fraction_one_nu_slice_td - fraction_one_nu_slice_4d) / fraction_one_nu_slice_4d * 100.))
 
 
+def print_figure_of_merit_fd_cry(**kwargs):
+    root_filename = kwargs.get('root_filename', 'slicer_fd_genie_nonswap.root')
+
+    f_slicer = TFile('{}/{}'.format(data_dir, root_filename))
+    threshold = 0.95
+
+    print('\n\\hline')
+    print('\\hline')
+    hist_names = ['SliceCompleteness', 'SlicePurity']
+    hist_tex_names = [
+        ['mean completeness', 'fraction of slices with completeness $> 0.95$'],
+        ['mean purity', 'fraction of slices with purity $> 0.95$']
+    ]
+    for i, hist_name in enumerate(hist_names):
+        h_td = f_slicer.Get('tdslicerana/{}'.format(hist_name))
+        h_4d = f_slicer.Get('slicerana/{}'.format(hist_name))
+        fraction_td = h_td.Integral(h_td.GetXaxis().FindBin(threshold), h_td.GetXaxis().FindBin(1.)) / h_td.Integral()
+        fraction_4d = h_4d.Integral(h_4d.GetXaxis().FindBin(threshold), h_4d.GetXaxis().FindBin(1.)) / h_4d.Integral()
+        print('{} & {:.3f} & {:.3f} & {:.1f}\% \\\\'.format(hist_tex_names[i][0], h_4d.GetMean(), h_td.GetMean(), (h_td.GetMean() - h_4d.GetMean()) / h_4d.GetMean() * 100.))
+        print('{} & {:.3f} & {:.3f} & {:.1f}\% \\\\'.format(hist_tex_names[i][1], fraction_4d, fraction_td, (fraction_td - fraction_4d) / fraction_4d * 100.))
+
+    hist_names = ['SliceCompletenessVsPurity']
+    hist_tex_names = ['fraction of slices with completeness $> 0.95$ and purity $> 0.95$']
+    for i, hist_name in enumerate(hist_names):
+        h_td = f_slicer.Get('tdslicerana/{}'.format(hist_name))
+        h_4d = f_slicer.Get('slicerana/{}'.format(hist_name))
+        good_slice_count_4d = h_4d.Integral(h_4d.GetXaxis().FindBin(threshold),
+                                            h_4d.GetXaxis().FindBin(1.),
+                                            h_4d.GetYaxis().FindBin(threshold),
+                                            h_4d.GetYaxis().FindBin(1.)) / h_4d.Integral()
+        good_slice_count_td = h_td.Integral(h_td.GetXaxis().FindBin(threshold),
+                                            h_td.GetXaxis().FindBin(1.),
+                                            h_td.GetYaxis().FindBin(threshold),
+                                            h_td.GetYaxis().FindBin(1.)) / h_td.Integral()
+        print('{} & {:.3f} & {:.3f} & {:.1f}\% \\\\'.format(hist_tex_names[i], good_slice_count_4d, good_slice_count_td, (good_slice_count_td - good_slice_count_4d) / good_slice_count_4d * 100.))
+
+
 # run
 # 20190128_slicer_fd_containment
+filename = 'fd_cry_zscale_50_tscale_60_mincell_4.root'
+# plot_th2(data_dir='data/20171215_tdslicer_merging_short_tracks', root_filename=filename, slicerana='tdslicerana', x_title='Purity', y_title='Completeness', log_z=True, name='TDSlicer', stat_box=[0.2, 0.45, 0.2, 0.5])
+# plot(root_filename=filename, hist_name='SlicePurity', statbox_position='left', log_y=True)
+# plot(root_filename=filename, hist_name='SliceCompleteness', statbox_position='top', log_y=True)
+print_figure_of_merit_fd_cry(root_filename=filename)
+#
 # plot(root_filename='slicer_fd_genie_nonswap.root', hist_name='fNuCompleteness', statbox_position='left', log_y=True)
 # plot(root_filename='SlicerAna_hist.root', hist_name='fNuCompleteness', statbox_position='left', log_y=True)
-filename = 'slicer_fd_genie_nonswap.root'
-print_figure_of_merit_fd_genie(root_filename=filename, containment='')
-print_figure_of_merit_fd_genie(root_filename=filename, containment='NueContainment')
-print_figure_of_merit_fd_genie(root_filename=filename, containment='NumuContainment')
+# filename = 'slicer_fd_genie_nonswap.root'
+# print_figure_of_merit_fd_genie(root_filename=filename, containment='')
+# print_figure_of_merit_fd_genie(root_filename=filename, containment='NueContainment')
+# print_figure_of_merit_fd_genie(root_filename=filename, containment='NumuContainment')
 #
 # plot(root_filename=filename, hist_name='fNuCompleteness', statbox_position='left', log_y=True)
 # plot(root_filename=filename, hist_name='fNuPurityByRecoHitGeV', statbox_position='left', log_y=True)
