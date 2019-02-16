@@ -14,7 +14,7 @@ INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
 # FIGURE_DIR = '/Users/juntinghuang/Desktop/nova/testbeam/doc/testbeam_beamline_simulation/figures'
-FIGURE_DIR = '/Users/juntinghuang/beamer/20190204_testbeam_shielding_east/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20190215_testbeam_helium_momentum_resolution/figures'
 DATA_DIR = './data'
 
 
@@ -3767,10 +3767,41 @@ def plot_particle_timing_detector_event():
     input('Press any key to continue.')
 
 
+def print_momentum_resolution():
+    b_field = 0.9                        # tesla
+    b_field_length = 42. * INCH_TO_METER # m
+    theta = 16. * DEGREE_TO_RADIAN       # radian
+
+    medium_length = 48. * INCH_TO_METER # m
+    radiation_length_helium = 5671.     # m
+    radiation_length_air = 304.         # m
+    # radiation_length = radiation_length_air
+    radiation_length = radiation_length_helium
+
+    particle_name = 'proton'
+    # particle_name = 'pi+'
+    mass = PDG.GetParticle(particle_name).Mass() * 1000. # MeV
+    momentum = b_field * b_field_length * SPEED_OF_LIGHT / theta * 1.e-6 # MeV
+    beta = momentum / (momentum**2 + mass**2)**0.5
+    charge_number = 1.
+
+    dtheta = 13.6 / (beta * momentum) * charge_number * (medium_length / radiation_length)**0.5 * (1. + 0.038 * log(medium_length / radiation_length * charge_number**2 / beta**2))
+    dp = b_field * b_field_length * SPEED_OF_LIGHT / theta**2 * dtheta * 1.e-6
+
+    print('mass = {}'.format(mass))
+    print('momentum = {}'.format(momentum))
+    print('dp = {}'.format(dp))
+    print('dp / momentum = {}'.format(dp / momentum))
+
+
+# 20190215_testbeam_helium_momentum_resolution
+print_momentum_resolution()
+# print_radiation_length()
+
 # 20190204_testbeam_shielding_east
-gStyle.SetOptStat(0)
+# gStyle.SetOptStat(0)
 # plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_9.root', show_boundary=True)
-plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root', show_boundary=True)
+# plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root', show_boundary=True)
 
 # 20190126_testbeam_shielding_upstream
 # gStyle.SetOptStat(0)
