@@ -14,7 +14,7 @@ INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
 # FIGURE_DIR = '/Users/juntinghuang/Desktop/nova/testbeam/doc/testbeam_beamline_simulation/figures'
-FIGURE_DIR = '/Users/juntinghuang/beamer/20190204_testbeam_shielding_east/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20190215_testbeam_helium_momentum_resolution/figures'
 DATA_DIR = './data'
 
 
@@ -3767,10 +3767,109 @@ def plot_particle_timing_detector_event():
     input('Press any key to continue.')
 
 
+def print_momentum_resolution():
+    b_field = 0.9                        # tesla
+    b_field_length = 42. * INCH_TO_METER # m
+    theta = 16. * DEGREE_TO_RADIAN       # radian
+
+    medium_length = 48. * INCH_TO_METER # m
+    radiation_length_helium = 5671.     # m
+    radiation_length_air = 304.         # m
+    radiation_length = radiation_length_air
+    # radiation_length = radiation_length_helium
+
+    particle_name = 'proton'
+    # particle_name = 'pi+'
+    # particle_name = 'e+'
+    mass = PDG.GetParticle(particle_name).Mass() * 1000. # MeV
+    momentum = b_field * b_field_length * SPEED_OF_LIGHT / theta * 1.e-6 # MeV
+    beta = momentum / (momentum**2 + mass**2)**0.5
+    charge_number = 1.
+
+    dtheta = 13.6 / (beta * momentum) * charge_number * (medium_length / radiation_length)**0.5 * (1. + 0.038 * log(medium_length / radiation_length * charge_number**2 / beta**2))
+    dp = b_field * b_field_length * SPEED_OF_LIGHT / theta**2 * dtheta * 1.e-6
+
+    print('mass = {}'.format(mass))
+    print('momentum = {}'.format(momentum))
+    print('medium_length = {}'.format(medium_length))
+    print('dp = {}'.format(dp))
+    print('dp / momentum = {}'.format(dp / momentum))
+
+
+def get_momentum_resolution(b_field, particle_name, radiation_length):
+    b_field_length = 42. * INCH_TO_METER # m
+    theta = 16. * DEGREE_TO_RADIAN       # radian
+    medium_length = 48. * INCH_TO_METER  # m
+
+    mass = PDG.GetParticle(particle_name).Mass() * 1000. # MeV
+    momentum = b_field * b_field_length * SPEED_OF_LIGHT / theta * 1.e-6 # MeV
+    beta = momentum / (momentum**2 + mass**2)**0.5
+    charge_number = 1.
+
+    dtheta = 13.6 / (beta * momentum) * charge_number * (medium_length / radiation_length)**0.5 * (1. + 0.038 * log(medium_length / radiation_length * charge_number**2 / beta**2))
+    dp = b_field * b_field_length * SPEED_OF_LIGHT / theta**2 * dtheta * 1.e-6
+
+    return dp / momentum
+
+
+def plot_momentum_resolution(medium):
+    radiation_length_helium = 5671.     # m
+    radiation_length_air = 304.         # m
+
+    radiation_length = None
+    if medium == 'air':
+        radiation_length = radiation_length_air
+    elif medium == 'helium':
+        radiation_length = radiation_length_helium
+
+    b_fields = np.arange(0.2, 2., 0.01)
+    particle_names = ['proton', 'K+', 'pi+', 'mu+', 'e+']
+    colors = [kBlack, kBlue, kRed, kGreen + 1, kMagenta + 1]
+
+    grs = []
+    for particle_name in particle_names:
+        momentum_resolutions = []
+        for b_field in b_fields:
+            momentum_resolutions.append(get_momentum_resolution(b_field, particle_name, radiation_length) * 100.)
+        gr = TGraph(len(b_fields), np.array(b_fields), np.array(momentum_resolutions))
+        grs.append(gr)
+
+    c1 = TCanvas('c1', 'c1', 600, 600)
+    set_margin()
+    gPad.SetGrid()
+
+    lg1 = TLegend(0.55, 0.53, 0.95, 0.83)
+    set_legend_style(lg1)
+
+    for i, gr in enumerate(grs):
+        set_graph_style(gr)
+        gr.SetLineColor(colors[i])
+        lg1.AddEntry(gr, particle_names[i], 'l')
+        if i == 0:
+            gr.Draw('AL')
+            gr.GetXaxis().SetRangeUser(0.2, 2)
+            gr.GetXaxis().SetTitle('B Field (T)')
+            gr.GetYaxis().SetTitle('Momentum Resolution dp/p (%)')
+            gr.GetYaxis().SetTitleOffset(1.4)
+        gr.Draw('L, sames')
+
+    lg1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_momentum_resolution.{}.pdf'.format(FIGURE_DIR, medium))
+    input('Press any key to continue.')
+
+
+# 20190215_testbeam_helium_momentum_resolution
+# print_radiation_length()
+print_momentum_resolution()
+# plot_momentum_resolution('air')
+# plot_momentum_resolution('helium')
+
 # 20190204_testbeam_shielding_east
-gStyle.SetOptStat(0)
+# gStyle.SetOptStat(0)
 # plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_9.root', show_boundary=True)
-plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root', show_boundary=True)
+# plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root', show_boundary=True)
 
 # 20190126_testbeam_shielding_upstream
 # gStyle.SetOptStat(0)
