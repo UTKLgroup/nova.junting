@@ -1328,26 +1328,30 @@ def print_figure_of_merit_fd_genie(**kwargs):
         containment_tex = '$\\nu_\\mu$ containment'
 
     hist_names = ['fNuCompleteness', 'fNuPurityByRecoHitGeV', 'fNuPurityByRecoHitCount']
-    hist_tex_names = ['mean completeness', 'mean purity (Equation \\ref{eq:purity_gev})', 'mean purity (Equation \\ref{eq:purity_count})']
-    # threshold = 0.95
-    # hist_tex_names = [
-    #     ['mean completeness', 'fraction of slices with completeness $>0.95$'],
-    #     ['mean purity (Equation \\ref{eq:purity_gev})', 'fraction of slices with completeness $>0.95$ (Equation \\ref{eq:purity_gev})'],
-    #     ['mean purity (Equation \\ref{eq:purity_count})', 'fraction of slices with purity $>0.95$ (Equation \\ref{eq:purity_count})']
-    # ]
+    # hist_tex_names = ['mean completeness', 'mean purity (Equation \\ref{eq:purity_gev})', 'mean purity (Equation \\ref{eq:purity_count})']
+    threshold = 0.95
+    hist_tex_names = [
+        ['mean completeness', 'fraction of slices with completeness $>0.95$'],
+        ['mean purity (Equation \\ref{eq:purity_gev})', 'fraction of slices with purity $>0.95$ (Equation \\ref{eq:purity_gev})'],
+        ['mean purity (Equation \\ref{eq:purity_count})', 'fraction of slices with purity $>0.95$ (Equation \\ref{eq:purity_count})']
+    ]
     for i, hist_name in enumerate(hist_names):
         hist_name = hist_name + containment
         h_td = f_slicer.Get('tdslicerana/{}'.format(hist_name))
         h_4d = f_slicer.Get('slicerana/{}'.format(hist_name))
-        print('{} & {} & {:.3f} & {:.3f} & {:.1f}\% \\\\'.format('\\multirow{{6}}{{*}}{{{}}}'.format(containment_tex) if i == 0 else '', hist_tex_names[i], h_4d.GetMean(), h_td.GetMean(), (h_td.GetMean() - h_4d.GetMean()) / h_4d.GetMean() * 100.))
+        # print('{} & {} & {:.3f} & {:.3f} & {:.1f}\% \\\\'.format('\\multirow{{6}}{{*}}{{{}}}'.format(containment_tex) if i == 0 else '', hist_tex_names[i], h_4d.GetMean(), h_td.GetMean(), (h_td.GetMean() - h_4d.GetMean()) / h_4d.GetMean() * 100.))
 
-        # fraction_td = h_td.Integral(h_td.GetXaxis().FindBin(threshold), h_td.GetXaxis().FindBin(1.)) / h_td.Integral()
-        # fraction_4d = h_4d.Integral(h_4d.GetXaxis().FindBin(threshold), h_4d.GetXaxis().FindBin(1.)) / h_4d.Integral()
-        # print('{} & {} & {:.3f} & {:.3f} & {:.1f}\% \\\\'.format('\\multirow{{8}}{{*}}{{{}}}'.format(containment_tex) if i == 0 else '', hist_tex_names[i][0], h_4d.GetMean(), h_td.GetMean(), (h_td.GetMean() - h_4d.GetMean()) / h_4d.GetMean() * 100.))
-        # print('{} & {} & {:.3f} & {:.3f} & {:.1f}\% \\\\'.format('\\multirow{{8}}{{*}}{{{}}}'.format(containment_tex) if i == 0 else '', hist_tex_names[i][1], fraction_4d, fraction_td, (fraction_td - fraction_4d) / fraction_4d * 100.))
+        fraction_td = h_td.Integral(h_td.GetXaxis().FindBin(threshold), h_td.GetXaxis().FindBin(1.)) / h_td.Integral()
+        fraction_4d = h_4d.Integral(h_4d.GetXaxis().FindBin(threshold), h_4d.GetXaxis().FindBin(1.)) / h_4d.Integral()
+        print('{} & {} & {:.3f} & {:.3f} & {:.1f}\% \\\\'.format('\\multirow{{9}}{{*}}{{{}}}'.format(containment_tex) if i == 0 else '', hist_tex_names[i][0], h_4d.GetMean(), h_td.GetMean(), (h_td.GetMean() - h_4d.GetMean()) / h_4d.GetMean() * 100.))
+        print('& {} & {:.3f} & {:.3f} & {:.1f}\% \\\\'.format(hist_tex_names[i][1], fraction_4d, fraction_td, (fraction_td - fraction_4d) / fraction_4d * 100.))
+
+        if i == 0:
+            print('\cline{2-5}')
 
     hist_names = ['fNuCompletenessVsPurityByRecoHitGeV', 'fNuCompletenessVsPurityByRecoHitCount']
     hist_tex_names = ['good slice count (Equation \\ref{eq:purity_gev})', 'good slice count (Equation \\ref{eq:purity_count})']
+    print('\cline{2-5}')
     for i, hist_name in enumerate(hist_names):
         hist_name = hist_name + containment
         h_td = f_slicer.Get('tdslicerana/{}'.format(hist_name))
@@ -1364,6 +1368,7 @@ def print_figure_of_merit_fd_genie(**kwargs):
 
     hist_names = ['fSliceCountWithNu']
     hist_tex_names = ['fraction of events with one neutrino slice']
+    print('\cline{2-5}')
     for i, hist_name in enumerate(hist_names):
         hist_name = hist_name + containment
         h_td = f_slicer.Get('tdslicerana/{}'.format(hist_name))
@@ -1424,8 +1429,8 @@ filename = 'slicer_fd_genie_nonswap.root'
 # plot(root_filename='SlicerAna_hist.root', hist_name='fNuCompleteness', statbox_position='left', log_y=True)
 #
 print_figure_of_merit_fd_genie(root_filename=filename, containment='')
-# print_figure_of_merit_fd_genie(root_filename=filename, containment='NueContainment')
-# print_figure_of_merit_fd_genie(root_filename=filename, containment='NumuContainment')
+print_figure_of_merit_fd_genie(root_filename=filename, containment='NueContainment')
+print_figure_of_merit_fd_genie(root_filename=filename, containment='NumuContainment')
 #
 # plot(root_filename=filename, hist_name='fNuCompleteness', statbox_position='left', log_y=True)
 # plot(root_filename=filename, hist_name='fNuPurityByRecoHitGeV', statbox_position='left', log_y=True)
