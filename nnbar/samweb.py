@@ -9,5 +9,5 @@ with open('get-metadata.json', 'w') as f_json:
             filename = row[0]
             meta_data = json.loads(check_output('samweb get-metadata --json --locations {}'.format(filename), shell=True))
             f_json.write(json.dumps(meta_data) + '\n')
-            if i == 100:
+            if i % 100 == 0:
                 print('i = {}'.format(i))
