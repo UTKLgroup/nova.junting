@@ -11,7 +11,7 @@ import json
 import datetime
 
 
-FIGURE_DIR = '/Users/juntinghuang/beamer/20181115_nnbar_data_quality/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20190220_nnbar_data_quality/figures'
 DATA_DIR = './data'
 
 SECOND_IN_YEAR = 3.16           # 1.e7 s / year
@@ -1373,6 +1373,7 @@ def plot_ddt_exposure(filename, **kwargs):
 
     exposure = 0.
     subrun_start_times = []
+    filename_samwebs = set()
     with open('{}/{}'.format(DATA_DIR, filename)) as f_json:
         for i, row in enumerate(f_json.readlines()):
             row = json.loads(row)
@@ -1384,6 +1385,13 @@ def plot_ddt_exposure(filename, **kwargs):
 
             if event_count == 0:
                 continue
+
+            filename_samweb = row['file_name']
+            if filename_samweb not in filename_samwebs:
+                filename_samwebs.add(filename_samweb)
+            else:
+                continue
+
             subrun_start = row['Online.SubRunStartTime']
             subrun_end = row['Online.SubRunEndTime']
             file_size = row['file_size'] / 1.e9
@@ -1424,11 +1432,17 @@ def plot_ddt_exposure(filename, **kwargs):
         # input('Press any key to continue.')
         # break
 
-# 20181115_nnbar_data_quality
+# 20190220_nnbar_data_quality
 gStyle.SetOptStat(0)
-plot_ddt_exposure('get-metadata.2018_11_15.json',
+plot_ddt_exposure('get-metadata.json',
                   datetime_start=datetime.datetime(2018, 7, 31),
-                  datetime_end=datetime.datetime(2018, 11, 15))
+                  datetime_end=datetime.datetime(2019, 2, 20))
+
+# 20181115_nnbar_data_quality
+# gStyle.SetOptStat(0)
+# plot_ddt_exposure('get-metadata.2018_11_15.json',
+#                   datetime_start=datetime.datetime(2018, 7, 31),
+#                   datetime_end=datetime.datetime(2018, 11, 15))
 
 # 20180920_nnbar_exposure
 # gStyle.SetOptStat(0)
