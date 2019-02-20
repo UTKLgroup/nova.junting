@@ -407,6 +407,8 @@ class Beamline:
 
         # the distance between wire chamber 4 and the upstream end of the Cerenkov counter is about 48 inches
         self.cherenkov.z = self.wc_4.z + 48. * Beamline.INCH + self.cherenkov.length / 2.
+        cherenkov_end_to_support_edge_distance = 3.625 * Beamline.INCH
+        cherenkov_to_support_distance = 6.125 * Beamline.INCH
 
         self.f_out.write('virtualdetector cherenkov radius={} length={} color=1,1,1 material=CARBON_DIOXIDE\n'.format(cherenkov_inner_radius, self.cherenkov.length))
         self.f_out.write('tubs cherenkov_pipe innerRadius={} outerRadius={} length={} color=0.74,0.34,0.09 material=STAINLESS-STEEL\n'.format(cherenkov_inner_radius, cherenkov_outer_radius, self.cherenkov.length))
@@ -416,7 +418,7 @@ class Beamline:
         self.f_out.write('place cherenkov rename=cherenkov x={} y={} z={} rotation=y{}\n'.format(self.cherenkov.x, self.cherenkov.y, self.cherenkov.z, self.cherenkov.theta))
         self.f_out.write('place cherenkov_pipe rename=cherenkov_pipe x={} y={} z={} rotation=y{} kill={}\n'.format(self.cherenkov.x, self.cherenkov.y, self.cherenkov.z, self.cherenkov.theta, self.kill))
         self.f_out.write('place cherenkov_pipe_pmt rename=cherenkov_pipe_pmt x={} y={} z={} rotation=y{},x90 kill={}\n'.format(self.cherenkov.x, self.cherenkov.y - cherenkov_outer_radius - cherenkov_pmt_pipe_length / 2., self.cherenkov.z + self.cherenkov.length / 2. - cherenkov_pmt_pipe_outer_radius - 1.75 * Beamline.INCH, self.cherenkov.theta, self.kill))
-        self.f_out.write('place cherenkov_support x={} y={} z={} rotation=y{}\n'.format(self.cherenkov.x, self.cherenkov.y - cherenkov_outer_radius - support_dimensions[0] / 2., self.cherenkov.z - self.cherenkov.length / 2. + 3.625 * Beamline.INCH + support_dimensions[1] / 2., self.cherenkov.theta))
+        self.f_out.write('place cherenkov_support x={} y={} z={} rotation=y{}\n'.format(self.cherenkov.x, self.cherenkov.y - cherenkov_outer_radius - cherenkov_to_support_distance - support_dimensions[0] / 2., self.cherenkov.z - self.cherenkov.length / 2. + cherenkov_end_to_support_edge_distance + support_dimensions[1] / 2., self.cherenkov.theta))
 
     def write_collimator_ds(self):
         # lariat
