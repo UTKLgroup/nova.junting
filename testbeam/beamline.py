@@ -375,6 +375,9 @@ class Beamline:
         tof_ds_dimensions = [150., 20., 150.]
         self.tof_ds.theta = self.us_theta + self.ds_theta
 
+        # the downstream tof is about 2.375 inches to the front surface of the NOvA test beam detector
+        self.tof_ds.z = self.nova.z - 2.375 * Beamline.INCH
+
         self.f_out.write('virtualdetector tof_us  height={} length={} width={} material=LUCITE color=0.05,0.05,0.93\n'.format(tof_us_dimensions[0], tof_us_dimensions[1], tof_us_dimensions[2]))
         self.f_out.write('place tof_us rename=tof_us x={} y={} z={} rotation=y{}\n'.format(self.tof_us.x, self.tof_us.y, self.tof_us.z, self.tof_us.theta))
         self.f_out.write('virtualdetector tof_ds height={} length={} width={} material=LUCITE color=0.05,0.05,0.93\n'.format(tof_ds_dimensions[0], tof_ds_dimensions[1], tof_ds_dimensions[2]))
@@ -402,10 +405,8 @@ class Beamline:
         cherenkov_pmt_pipe_length = 846. - 324. / 2.
         support_dimensions = [4.5 * Beamline.FOOT, 6. * Beamline.FOOT, 3. * Beamline.FOOT]
 
-        # to align with the previous position for the upstream end (ftbf_drawing.pdf)
-        # later engineer drawings (gsmith_F10059283.pdf) is not used
-        # for no justifications for the positions there either
-        self.cherenkov.z += 500.
+        # the distance between wire chamber 4 and the upstream end of the Cerenkov counter is about 48 inches
+        self.cherenkov.z = self.wc_4.z + 48. * Beamline.INCH + self.cherenkov.length / 2.
 
         self.f_out.write('virtualdetector cherenkov radius={} length={} color=1,1,1 material=CARBON_DIOXIDE\n'.format(cherenkov_inner_radius, self.cherenkov.length))
         self.f_out.write('tubs cherenkov_pipe innerRadius={} outerRadius={} length={} color=0.74,0.34,0.09 material=STAINLESS-STEEL\n'.format(cherenkov_inner_radius, cherenkov_outer_radius, self.cherenkov.length))
@@ -415,7 +416,7 @@ class Beamline:
         self.f_out.write('place cherenkov rename=cherenkov x={} y={} z={} rotation=y{}\n'.format(self.cherenkov.x, self.cherenkov.y, self.cherenkov.z, self.cherenkov.theta))
         self.f_out.write('place cherenkov_pipe rename=cherenkov_pipe x={} y={} z={} rotation=y{} kill={}\n'.format(self.cherenkov.x, self.cherenkov.y, self.cherenkov.z, self.cherenkov.theta, self.kill))
         self.f_out.write('place cherenkov_pipe_pmt rename=cherenkov_pipe_pmt x={} y={} z={} rotation=y{},x90 kill={}\n'.format(self.cherenkov.x, self.cherenkov.y - cherenkov_outer_radius - cherenkov_pmt_pipe_length / 2., self.cherenkov.z + self.cherenkov.length / 2. - cherenkov_pmt_pipe_outer_radius - 1.75 * Beamline.INCH, self.cherenkov.theta, self.kill))
-        self.f_out.write('place cherenkov_support x={} y={} z={} rotation=y{}\n'.format(self.cherenkov.x, self.cherenkov.y - cherenkov_outer_radius - support_dimensions[0] / 2., self.cherenkov.z, self.cherenkov.theta))
+        self.f_out.write('place cherenkov_support x={} y={} z={} rotation=y{}\n'.format(self.cherenkov.x, self.cherenkov.y - cherenkov_outer_radius - support_dimensions[0] / 2., self.cherenkov.z - self.cherenkov.length / 2. + 3.625 * Beamline.INCH + support_dimensions[1] / 2., self.cherenkov.theta))
 
     def write_collimator_ds(self):
         # lariat
