@@ -14,7 +14,7 @@ INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
 # FIGURE_DIR = '/Users/juntinghuang/Desktop/nova/testbeam/doc/testbeam_beamline_simulation/figures'
-FIGURE_DIR = '/Users/juntinghuang/beamer/20190215_testbeam_helium_momentum_resolution/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20190220_testbeam_sim_intro/figures'
 DATA_DIR = './data'
 
 
@@ -1070,7 +1070,7 @@ def save_particle_momentum_root(filename, x_min, x_max, **kwargs):
         else:
             pid_hists[pid].Fill(momentum)
 
-    tf_out = TFile('{}/{}.hist.root'.format(DATA_DIR, filename), 'RECREATE')
+    tf_out = TFile('{}/{}.noise_particle_{}.hist.root'.format(DATA_DIR, filename, noise_particle), 'RECREATE')
     for pid, hist in pid_hists.items():
         hist.Scale(1. / normalization_factor)
         hist.Write('h_{}'.format(pid))
@@ -1250,7 +1250,7 @@ def plot_saved_particle_momentum(filename, **kwargs):
         else:
             y_max *= 1.2
 
-    c1 = TCanvas('c1', 'c1', 800, 600)
+    c1 = TCanvas('c1', 'c1', 800, 800)
     set_margin()
     gStyle.SetOptStat(0)
     if log_y:
@@ -1272,7 +1272,7 @@ def plot_saved_particle_momentum(filename, **kwargs):
         kTeal + 2
     ]
 
-    lg1 = TLegend(0.64, 0.6, 0.80, 0.84)
+    lg1 = TLegend(0.6, 0.6, 0.76, 0.84)
     set_legend_style(lg1)
     lg1.SetTextSize(24)
     if noise_particle:
@@ -1282,7 +1282,7 @@ def plot_saved_particle_momentum(filename, **kwargs):
         lg1.SetY1(0.66)
         lg1.SetY2(0.87)
         lg1.SetTextSize(20)
-        c1.SetCanvasSize(800, 800);
+        # c1.SetCanvasSize(800, 800);
 
     pids = []
     for pid in pid_hists.keys():
@@ -1315,7 +1315,7 @@ def plot_saved_particle_momentum(filename, **kwargs):
         latex.SetNDC()
         latex.SetTextFont(43)
         latex.SetTextSize(24)
-        x_latex = 0.65
+        x_latex = 0.61
         latex.DrawLatex(x_latex, 0.42, 'rms = {:.0f} MeV'.format(h_all.GetRMS()))
         latex.DrawLatex(x_latex, 0.48, 'mean = {:.0f} MeV'.format(h_all.GetMean()))
         latex.DrawLatex(x_latex, 0.54, 'total count = {0:.1f}'.format(h_all.Integral()))
@@ -3246,6 +3246,8 @@ def plot_particle_count_vs_b_field(**kwargs):
     b_fields = kwargs.get('b_fields', [-0.45, -0.9, -1.35, -1.8])
     pids = kwargs.get('pids', [-11, -13, 211, 321, 2212])
     suffix = kwargs.get('suffix', '')
+    canvas_width = kwargs.get('canvas_width', 800)
+    canvas_height = kwargs.get('canvas_height', 600)
 
     colors = [
         kBlack,
@@ -3278,7 +3280,7 @@ def plot_particle_count_vs_b_field(**kwargs):
         set_graph_style(gr)
         grs.append(gr)
 
-    c1 = TCanvas('c1', 'c1', 800, 600)
+    c1 = TCanvas('c1', 'c1', canvas_width, canvas_height)
     set_margin()
     gPad.SetLogy()
     gPad.SetGrid()
@@ -3296,6 +3298,8 @@ def plot_particle_count_vs_b_field(**kwargs):
                 gr.GetYaxis().SetRangeUser(0.001 * scaling_factor, 50. * scaling_factor)
             gr.GetXaxis().SetTitle('B Field (T)')
             gr.GetYaxis().SetTitle(y_axis_title)
+            if canvas_height == 800:
+                gr.GetYaxis().SetTitleOffset(2.)
         else:
             gr.Draw('PL,sames')
         lg1.AddEntry(gr, PDG.GetParticle(pids[i]).GetName(), 'l')
@@ -3627,17 +3631,22 @@ def plot_noise_particle_root(filename, **kwargs):
     # input('Press any key to continue.')
 
 
-def plot_det_sim_particle_count_per_event(filename):
+def plot_det_sim_particle_count_per_event(filename, **kwargs):
+    x_max = kwargs.get('x_max', None)
+
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
     h1 = tf.Get('h_particle_count_per_event')
 
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
     gPad.SetLogy()
+    gPad.SetLogx()
     set_h1_style(h1)
     h1.GetXaxis().SetTitle('Particle Count per Event')
     h1.GetYaxis().SetTitle('Event Count')
     h1.GetYaxis().SetMaxDigits(3)
+    if x_max:
+        h1.GetXaxis().SetRangeUser(0.5, x_max)
     h1.Draw()
 
     c1.Update()
@@ -3860,9 +3869,43 @@ def plot_momentum_resolution(medium):
     input('Press any key to continue.')
 
 
+# 20190220_testbeam_sim_intro
+# gStyle.SetOptStat('emr')
+# save_particle_momentum_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=True)
+# save_particle_momentum_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=False)
+# plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root.noise_particle_True.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=10, x_min=0, x_max=20000, y_min=1.e-2, noise_particle=True)
+# plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root.noise_particle_False.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, x_min=500, x_max=2000, y_max=3., noise_particle=False)
+# plot_det_sim_particle_count_per_event('text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root.root', x_max=10)
+filenames = [
+    'g4bl.b_-0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+    'g4bl.b_-0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+    'g4bl.b_-0.675T.proton.64000.root.job_1_20000.799.72m.kineticEnergyCut_20.root.hist.root',
+    'g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root',
+    'g4bl.b_-1.125T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+    'g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+    'g4bl.b_-1.575T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+    'g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root'
+]
+b_fields = [
+    -0.225,
+    -0.45,
+    -0.675,
+    -0.9,
+    -1.125,
+    -1.35,
+    -1.575,
+    -1.8
+]
+pids = [-11, -13, 211, 321, 2212]
+plot_particle_count_vs_b_field(filenames=filenames,
+                               b_fields=b_fields,
+                               pids=pids,
+                               suffix='.b_negative',
+                               canvas_height=800)
+
 # 20190215_testbeam_helium_momentum_resolution
 # print_radiation_length()
-print_momentum_resolution()
+# print_momentum_resolution()
 # plot_momentum_resolution('air')
 # plot_momentum_resolution('helium')
 
