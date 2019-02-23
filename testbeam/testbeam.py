@@ -14,7 +14,8 @@ INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
 # FIGURE_DIR = '/Users/juntinghuang/Desktop/nova/testbeam/doc/testbeam_beamline_simulation/figures'
-FIGURE_DIR = '/Users/juntinghuang/beamer/20190215_testbeam_helium_momentum_resolution/figures'
+# FIGURE_DIR = '/Users/juntinghuang/beamer/20190215_testbeam_helium_momentum_resolution/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20190220_testbeam_sim_intro/figures'
 DATA_DIR = './data'
 
 
@@ -3249,6 +3250,9 @@ def plot_particle_count_vs_b_field(**kwargs):
     canvas_width = kwargs.get('canvas_width', 800)
     canvas_height = kwargs.get('canvas_height', 600)
 
+    b_field_sign = np.sign(b_fields[0])
+    b_fields = list(map(abs, b_fields))
+
     colors = [
         kBlack,
         kRed,
@@ -3297,11 +3301,13 @@ def plot_particle_count_vs_b_field(**kwargs):
             if scaling_factor:
                 gr.GetYaxis().SetRangeUser(0.001 * scaling_factor, 50. * scaling_factor)
             gr.GetXaxis().SetTitle('B Field (T)')
+            if b_field_sign < 0:
+                gr.GetXaxis().SetTitle('B Field (#minusT)')
             gr.GetYaxis().SetTitle(y_axis_title)
             if canvas_height == 800:
                 gr.GetYaxis().SetTitleOffset(2.)
         else:
-            gr.Draw('PL,sames')
+            gr.Draw('PL')
         lg1.AddEntry(gr, PDG.GetParticle(pids[i]).GetName(), 'l')
     lg1.Draw()
 
@@ -3905,39 +3911,39 @@ def get_radiation_length_helium_pipe():
 # plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root.noise_particle_True.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=10, x_min=0, x_max=20000, y_min=1.e-2, noise_particle=True)
 # plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root.noise_particle_False.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, x_min=500, x_max=2000, y_max=3., noise_particle=False)
 # plot_det_sim_particle_count_per_event('text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root.root', x_max=10)
-# filenames = [
-#     'g4bl.b_-0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-#     'g4bl.b_-0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-#     'g4bl.b_-0.675T.proton.64000.root.job_1_20000.799.72m.kineticEnergyCut_20.root.hist.root',
-#     'g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root',
-#     'g4bl.b_-1.125T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-#     'g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-#     'g4bl.b_-1.575T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-#     'g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root'
-# ]
-# b_fields = [
-#     -0.225,
-#     -0.45,
-#     -0.675,
-#     -0.9,
-#     -1.125,
-#     -1.35,
-#     -1.575,
-#     -1.8
-# ]
-# pids = [-11, -13, 211, 321, 2212]
-# plot_particle_count_vs_b_field(filenames=filenames,
-#                                b_fields=b_fields,
-#                                pids=pids,
-#                                suffix='.b_negative',
-#                                canvas_height=800)
+filenames = [
+    'g4bl.b_-0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+    'g4bl.b_-0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+    'g4bl.b_-0.675T.proton.64000.root.job_1_20000.799.72m.kineticEnergyCut_20.root.hist.root',
+    'g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root',
+    'g4bl.b_-1.125T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+    'g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+    'g4bl.b_-1.575T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+    'g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root'
+]
+b_fields = [
+    -0.225,
+    -0.45,
+    -0.675,
+    -0.9,
+    -1.125,
+    -1.35,
+    -1.575,
+    -1.8
+]
+pids = [-11, -13, 211, 321, 2212]
+plot_particle_count_vs_b_field(filenames=filenames,
+                               b_fields=b_fields,
+                               pids=pids,
+                               suffix='.b_negative',
+                               canvas_height=800)
 
 # 20190215_testbeam_helium_momentum_resolution
 # print_radiation_length()
 # print_momentum_resolution()
 # plot_momentum_resolution('air')
 # plot_momentum_resolution('helium')
-plot_momentum_resolution('helium_pipe')
+# plot_momentum_resolution('helium_pipe')
 
 # 20190204_testbeam_shielding_east
 # gStyle.SetOptStat(0)
