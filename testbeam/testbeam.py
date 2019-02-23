@@ -14,7 +14,7 @@ INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
 # FIGURE_DIR = '/Users/juntinghuang/Desktop/nova/testbeam/doc/testbeam_beamline_simulation/figures'
-FIGURE_DIR = '/Users/juntinghuang/beamer/20190220_testbeam_sim_intro/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20190215_testbeam_helium_momentum_resolution/figures'
 DATA_DIR = './data'
 
 
@@ -3824,12 +3824,15 @@ def get_momentum_resolution(b_field, particle_name, radiation_length):
 def plot_momentum_resolution(medium):
     radiation_length_helium = 5671.     # m
     radiation_length_air = 304.         # m
+    radiation_length_helium_pipe = get_radiation_length_helium_pipe()
 
     radiation_length = None
     if medium == 'air':
         radiation_length = radiation_length_air
     elif medium == 'helium':
         radiation_length = radiation_length_helium
+    elif medium == 'helium_pipe':
+        radiation_length = radiation_length_helium_pipe
 
     b_fields = np.arange(0.2, 2., 0.01)
     particle_names = ['proton', 'K+', 'pi+', 'mu+', 'e+']
@@ -3869,6 +3872,32 @@ def plot_momentum_resolution(medium):
     input('Press any key to continue.')
 
 
+def get_radiation_length_helium_pipe():
+    density_helium = 0.1664     # kg/m-3
+    density_mylar = 1.4e3       # kg/m-3
+
+    length_mylar = 100.e-6      # m
+    length_helium = 1.22        # m
+
+    radiation_length_helium = 5671.     # m
+    radiation_length_mylar = 0.2854     # m
+
+    mass_fraction_helium = length_helium * density_helium / (length_helium * density_helium + length_mylar * density_mylar)
+    mass_fraction_mylar = length_mylar * density_mylar / (length_helium * density_helium + length_mylar * density_mylar)
+
+    length_fraction_helium = length_helium / (length_helium + length_mylar)
+    length_fraction_mylar = length_mylar / (length_helium + length_mylar)
+
+    # radiation_length_helium_pipe = 1. / (mass_fraction_helium / radiation_length_helium + mass_fraction_mylar / radiation_length_mylar)
+    radiation_length_helium_pipe = 1. / (length_fraction_helium / radiation_length_helium + length_fraction_mylar / radiation_length_mylar)
+
+    print('mass_fraction_helium = {}'.format(mass_fraction_helium))
+    print('mass_fraction_mylar = {}'.format(mass_fraction_mylar))
+    print('radiation_length_helium_pipe = {}'.format(radiation_length_helium_pipe))
+
+    return radiation_length_helium_pipe
+
+
 # 20190220_testbeam_sim_intro
 # gStyle.SetOptStat('emr')
 # save_particle_momentum_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=True)
@@ -3876,38 +3905,39 @@ def plot_momentum_resolution(medium):
 # plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root.noise_particle_True.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=10, x_min=0, x_max=20000, y_min=1.e-2, noise_particle=True)
 # plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root.noise_particle_False.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, x_min=500, x_max=2000, y_max=3., noise_particle=False)
 # plot_det_sim_particle_count_per_event('text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root.root', x_max=10)
-filenames = [
-    'g4bl.b_-0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_-0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_-0.675T.proton.64000.root.job_1_20000.799.72m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root',
-    'g4bl.b_-1.125T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_-1.575T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root'
-]
-b_fields = [
-    -0.225,
-    -0.45,
-    -0.675,
-    -0.9,
-    -1.125,
-    -1.35,
-    -1.575,
-    -1.8
-]
-pids = [-11, -13, 211, 321, 2212]
-plot_particle_count_vs_b_field(filenames=filenames,
-                               b_fields=b_fields,
-                               pids=pids,
-                               suffix='.b_negative',
-                               canvas_height=800)
+# filenames = [
+#     'g4bl.b_-0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_-0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_-0.675T.proton.64000.root.job_1_20000.799.72m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root',
+#     'g4bl.b_-1.125T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_-1.575T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root'
+# ]
+# b_fields = [
+#     -0.225,
+#     -0.45,
+#     -0.675,
+#     -0.9,
+#     -1.125,
+#     -1.35,
+#     -1.575,
+#     -1.8
+# ]
+# pids = [-11, -13, 211, 321, 2212]
+# plot_particle_count_vs_b_field(filenames=filenames,
+#                                b_fields=b_fields,
+#                                pids=pids,
+#                                suffix='.b_negative',
+#                                canvas_height=800)
 
 # 20190215_testbeam_helium_momentum_resolution
 # print_radiation_length()
 # print_momentum_resolution()
 # plot_momentum_resolution('air')
 # plot_momentum_resolution('helium')
+plot_momentum_resolution('helium_pipe')
 
 # 20190204_testbeam_shielding_east
 # gStyle.SetOptStat(0)
