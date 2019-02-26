@@ -15,7 +15,7 @@ DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
 # FIGURE_DIR = '/Users/juntinghuang/Desktop/nova/testbeam/doc/testbeam_beamline_simulation/figures'
 # FIGURE_DIR = '/Users/juntinghuang/beamer/20190215_testbeam_helium_momentum_resolution/figures'
-FIGURE_DIR = '/Users/juntinghuang/beamer/20190220_testbeam_sim_intro/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20190226_testbeam_cerenkov_cosmic/figures'
 DATA_DIR = './data'
 
 
@@ -3904,6 +3904,90 @@ def get_radiation_length_helium_pipe():
     return radiation_length_helium_pipe
 
 
+def plot_cherenkov_index_of_refaction_air():
+    names = ['pi+', 'mu+', 'e+']
+    colors = [kBlue + 1, kGreen + 2, kRed + 1]
+    masses = list(map(lambda x: PDG.GetParticle(x).Mass(), names)) # GeV
+    eta = 4.1e-4                  # atm-1, for CO2
+
+    momentums = np.arange(0.01, 20, 0.01)
+    rrefraction_indexs = []
+    for i, mass in enumerate(masses):
+        refraction_indexs = []
+        for momentum in momentums:
+            # pressure = 1. / eta * ((1 + (mass / momentum)**2)**0.5 - 1.)
+            refraction_index = (1 + (mass / momentum)**2)**0.5
+            refraction_indexs.append(refraction_index)
+        rrefraction_indexs.append(refraction_indexs)
+
+    grs = []
+    for i in range(len(rrefraction_indexs)):
+        gr = TGraph(len(momentums), np.array(momentums), np.array(rrefraction_indexs[i]))
+        set_graph_style(gr)
+        grs.append(gr)
+
+    refraction_index_one_atm = eta * 1. + 1.;
+    one_atm_refraction_indexs = [refraction_index_one_atm for i in range(len(momentums))]
+    gr_one_atm = TGraph(len(momentums), np.array(momentums), np.array(one_atm_refraction_indexs))
+
+    refraction_index_one_atm_air = 1.0003
+    # refraction_index_one_atm_nitrogen = 1.0003
+    one_atm_air_refraction_indexs = [refraction_index_one_atm_air for i in range(len(momentums))]
+    gr_one_atm_air = TGraph(len(momentums), np.array(momentums), np.array(one_atm_air_refraction_indexs))
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetGrid()
+    gPad.SetLeftMargin(0.2)
+
+    lg1 = TLegend(0.53, 0.58, 0.88, 0.86)
+    set_legend_style(lg1)
+
+    for i in range(len(names)):
+        grs[i].SetLineColor(colors[i])
+        lg1.AddEntry(grs[i], '{} threshold'.format(names[i]), 'l')
+
+        if i == 0:
+            grs[0].Draw('AL')
+            grs[0].GetXaxis().SetRangeUser(0., 20)
+            grs[0].GetYaxis().SetRangeUser(1., 1.0010)
+            grs[0].GetYaxis().SetDecimals()
+            grs[0].GetYaxis().SetTitleOffset(2)
+            grs[0].GetYaxis().SetTitle('Index of Refraction')
+            grs[0].GetXaxis().SetTitle('Momentum (GeV)')
+        grs[i].Draw('sames,L')
+
+    set_graph_style(gr_one_atm)
+    gr_one_atm.SetLineStyle(9)
+    gr_one_atm.SetLineColor(kBlue)
+    gr_one_atm.SetLineWidth(2)
+    gr_one_atm.Draw('L')
+    lg1.AddEntry(gr_one_atm, 'CO_{2} at 1 atm ', 'l')
+
+    set_graph_style(gr_one_atm_air)
+    gr_one_atm_air.SetLineStyle(10)
+    gr_one_atm_air.SetLineColor(kRed)
+    gr_one_atm_air.SetLineWidth(2)
+    gr_one_atm_air.Draw('L')
+    lg1.AddEntry(gr_one_atm_air, 'air at 1 atm ', 'l')
+
+    # latex = TLatex()
+    # latex.SetNDC()
+    # latex.SetTextFont(43)
+    # latex.SetTextSize(28)
+    # latex.DrawLatex(0.5, 0.25, '1 atm')
+
+    lg1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_cherenkov_index_of_refaction_air.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
+# 20190226_testbeam_cerenkov_cosmic
+plot_cherenkov_index_of_refaction_air()
+
+
 # 20190220_testbeam_sim_intro
 # gStyle.SetOptStat('emr')
 # save_particle_momentum_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=True)
@@ -3911,32 +3995,32 @@ def get_radiation_length_helium_pipe():
 # plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root.noise_particle_True.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=10, x_min=0, x_max=20000, y_min=1.e-2, noise_particle=True)
 # plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root.noise_particle_False.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, x_min=500, x_max=2000, y_max=3., noise_particle=False)
 # plot_det_sim_particle_count_per_event('text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root.root', x_max=10)
-filenames = [
-    'g4bl.b_-0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_-0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_-0.675T.proton.64000.root.job_1_20000.799.72m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root',
-    'g4bl.b_-1.125T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_-1.575T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root'
-]
-b_fields = [
-    -0.225,
-    -0.45,
-    -0.675,
-    -0.9,
-    -1.125,
-    -1.35,
-    -1.575,
-    -1.8
-]
-pids = [-11, -13, 211, 321, 2212]
-plot_particle_count_vs_b_field(filenames=filenames,
-                               b_fields=b_fields,
-                               pids=pids,
-                               suffix='.b_negative',
-                               canvas_height=800)
+# filenames = [
+#     'g4bl.b_-0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_-0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_-0.675T.proton.64000.root.job_1_20000.799.72m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root',
+#     'g4bl.b_-1.125T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_-1.575T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root'
+# ]
+# b_fields = [
+#     -0.225,
+#     -0.45,
+#     -0.675,
+#     -0.9,
+#     -1.125,
+#     -1.35,
+#     -1.575,
+#     -1.8
+# ]
+# pids = [-11, -13, 211, 321, 2212]
+# plot_particle_count_vs_b_field(filenames=filenames,
+#                                b_fields=b_fields,
+#                                pids=pids,
+#                                suffix='.b_negative',
+#                                canvas_height=800)
 
 # 20190215_testbeam_helium_momentum_resolution
 # print_radiation_length()
