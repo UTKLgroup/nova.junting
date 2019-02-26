@@ -3882,7 +3882,7 @@ def get_radiation_length_helium_pipe():
     density_helium = 0.1664     # kg/m-3
     density_mylar = 1.4e3       # kg/m-3
 
-    length_mylar = 100.e-6      # m
+    length_mylar = 152.4e-6     # m
     length_helium = 1.22        # m
 
     radiation_length_helium = 5671.     # m
@@ -3940,7 +3940,7 @@ def plot_cherenkov_index_of_refaction_air():
     gPad.SetGrid()
     gPad.SetLeftMargin(0.2)
 
-    lg1 = TLegend(0.53, 0.58, 0.88, 0.86)
+    lg1 = TLegend(0.51, 0.56, 0.86, 0.86)
     set_legend_style(lg1)
 
     for i in range(len(names)):
@@ -3969,7 +3969,7 @@ def plot_cherenkov_index_of_refaction_air():
     gr_one_atm_air.SetLineColor(kRed)
     gr_one_atm_air.SetLineWidth(2)
     gr_one_atm_air.Draw('L')
-    lg1.AddEntry(gr_one_atm_air, 'air at 1 atm ', 'l')
+    lg1.AddEntry(gr_one_atm_air, 'air / N_{2} at 1 atm ', 'l')
 
     # latex = TLatex()
     # latex.SetNDC()
@@ -3986,7 +3986,6 @@ def plot_cherenkov_index_of_refaction_air():
 
 # 20190226_testbeam_cerenkov_cosmic
 plot_cherenkov_index_of_refaction_air()
-
 
 # 20190220_testbeam_sim_intro
 # gStyle.SetOptStat('emr')
