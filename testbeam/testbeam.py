@@ -5,6 +5,7 @@ import csv
 import math
 from math import pi, cos, sin, atan, sqrt, log, exp
 import numpy as np
+from datetime import datetime
 
 
 PDG = TDatabasePDG()
@@ -14,7 +15,6 @@ INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
 # FIGURE_DIR = '/Users/juntinghuang/Desktop/nova/testbeam/doc/testbeam_beamline_simulation/figures'
-# FIGURE_DIR = '/Users/juntinghuang/beamer/20190215_testbeam_helium_momentum_resolution/figures'
 FIGURE_DIR = '/Users/juntinghuang/beamer/20190226_testbeam_cerenkov_cosmic/figures'
 DATA_DIR = './data'
 
@@ -3984,8 +3984,61 @@ def plot_cherenkov_index_of_refaction_air():
     input('Press any key to continue.')
 
 
+def plot_cerenkov_trigger_rate_vs_threshold():
+    thresholds = [100.1, 80.0, 50.1, 39.9, 35.0, 29.9]
+    start_times = [
+        datetime(2019, 2, 27, 15, 44, 51),
+        datetime(2019, 2, 27, 15, 58, 25),
+        datetime(2019, 2, 27, 16, 5, 23),
+        datetime(2019, 2, 27, 16, 43, 12),
+        datetime(2019, 2, 27, 16, 33, 26),
+        datetime(2019, 2, 27, 16, 23, 16),
+    ]
+
+    end_times = [
+        datetime(2019, 2, 27, 15, 46, 28),
+        datetime(2019, 2, 27, 16, 0, 47),
+        datetime(2019, 2, 27, 16, 8, 34),
+        datetime(2019, 2, 27, 16, 46, 9),
+        datetime(2019, 2, 27, 16, 36, 10),
+        datetime(2019, 2, 27, 16, 27, 44),
+    ]
+
+    trigger_counts = [
+        43, 76, 181, 235, 332, 553
+    ]
+
+    durations = []              # minute
+    for i in range(len(start_times)):
+        durations.append((end_times[i] - start_times[i]).total_seconds() / 60.)
+    trigger_counts = list(map(float, trigger_counts))
+
+    avg_duration = sum(durations) / len(durations)
+    print('avg_duration = {}'.format(avg_duration))
+
+    rates = []
+    trigger_rates = []
+    for i, duration in enumerate(durations):
+        trigger_rates.append(trigger_counts[i] / durations[i])
+
+    gr = TGraph(len(thresholds), np.array(thresholds), np.array(trigger_rates))
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetGrid()
+
+    set_graph_style(gr)
+    gr.Draw('AL')
+    gr.GetXaxis().SetTitle('Threshold (mV)')
+    gr.GetYaxis().SetTitle('Average Trigger Count per Minute')
+
+    c1.Update()
+    c1.SaveAs('{}/plot_cerenkov_trigger_rate_vs_threshold.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
 # 20190226_testbeam_cerenkov_cosmic
-plot_cherenkov_index_of_refaction_air()
+# plot_cherenkov_index_of_refaction_air()
+plot_cerenkov_trigger_rate_vs_threshold()
 
 # 20190220_testbeam_sim_intro
 # gStyle.SetOptStat('emr')
