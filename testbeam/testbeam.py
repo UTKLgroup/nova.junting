@@ -4089,6 +4089,16 @@ def plot_cerenkov_adc_spectrum(filename):
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
     h1 = tf.Get('cerenkovana/fHitAdcPerEvent')
 
+    h1.GetXaxis().SetRangeUser(4.5e4, 7.e4)
+    spectrum = TSpectrum()
+    spectrum.Search(h1, 3)
+    poly_marker = h1.GetListOfFunctions().FindObject('TPolyMarker')
+    peak_xs = spectrum.GetPositionX()
+    peak_ys = spectrum.GetPositionY()
+    peak_count = spectrum.GetNPeaks()
+    for i in range(peak_count):
+        print('peak_xs[i] = {}'.format(peak_xs[i]))
+
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
     gPad.SetLogy()
@@ -4097,10 +4107,29 @@ def plot_cerenkov_adc_spectrum(filename):
     h1.Draw()
     h1.GetXaxis().SetTitle('ADC per Event')
     h1.GetYaxis().SetTitle('Event Count')
+    h1.GetXaxis().SetRangeUser(0., 1.e5)
     h1.SetLineColor(kBlack)
-
     c1.Update()
     draw_statbox(h1, y1=0.7, x1=0.7)
+
+    peak_cut = 4.3e4
+    line = TLine(peak_cut, 0.5, peak_cut, 100)
+    arrow = TArrow(peak_cut, 100, peak_cut + 1e4, 100, 0.03)
+    arrow.SetAngle(60)
+    for ll in [line, arrow]:
+        ll.SetLineWidth(2)
+        ll.SetLineStyle(7)
+        ll.SetLineColor(kRed)
+        ll.Draw()
+    event_count = h1.Integral(h1.FindBin(peak_cut), h1.GetNbinsX())
+    print('event_count = {}'.format(event_count))
+
+    tex = TLatex()
+    tex.SetTextFont(43)
+    tex.SetTextSize(25)
+    tex.SetTextAlign(12)
+    tex.DrawLatex(4.25e4, 210, '{:.0f} events'.format(event_count))
+    tex.DrawLatex(5e4, 20, 'peak ADC: {:.1E}'.format(peak_xs[0]))
 
     c1.Update()
     c1.SaveAs('{}/plot_cerenkov_adc_spectrum.pdf'.format(FIGURE_DIR))
