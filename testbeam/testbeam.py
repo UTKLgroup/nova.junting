@@ -4036,9 +4036,84 @@ def plot_cerenkov_trigger_rate_vs_threshold():
     input('Press any key to continue.')
 
 
+def plot_cerenkov_pulse(filename):
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    h1 = tf.Get('Event9/Channel2')
+
+    adcs = []
+    time_ticks = []
+    for i in range(1, h1.GetNbinsX() + 1):
+        adcs.append(h1.GetBinContent(i))
+        time_ticks.append(float(i))
+    gr = TGraph(len(time_ticks), np.array(time_ticks), np.array(adcs))
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+
+    set_graph_style(gr)
+    gr.Draw('AL')
+    gr.GetXaxis().SetRangeUser(0, 1024)
+    gr.GetXaxis().SetTitle('Time Tick')
+    gr.GetYaxis().SetTitle('ADC')
+    gr.GetYaxis().SetTitleOffset(1.5)
+
+    c1.Update()
+    c1.SaveAs('{}/plot_cerenkov_pulse.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
+def plot_cerenkov_hit_count_per_event(filename):
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    h1 = tf.Get('cerenkovana/fHitCountPerEvent')
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetLogy()
+
+    set_h1_style(h1)
+    h1.Draw()
+    h1.GetXaxis().SetRangeUser(0, 5)
+    h1.GetXaxis().SetTitle('Pulse Count per Event')
+    h1.GetYaxis().SetTitle('Event Count')
+    h1.SetLineColor(kBlack)
+
+    c1.Update()
+    draw_statbox(h1, y1=0.7, x1=0.7)
+
+    c1.Update()
+    c1.SaveAs('{}/plot_cerenkov_hit_count_per_event.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
+def plot_cerenkov_adc_spectrum(filename):
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    h1 = tf.Get('cerenkovana/fHitAdcPerEvent')
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetLogy()
+
+    set_h1_style(h1)
+    h1.Draw()
+    h1.GetXaxis().SetTitle('ADC per Event')
+    h1.GetYaxis().SetTitle('Event Count')
+    h1.SetLineColor(kBlack)
+
+    c1.Update()
+    draw_statbox(h1, y1=0.7, x1=0.7)
+
+    c1.Update()
+    c1.SaveAs('{}/plot_cerenkov_adc_spectrum.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
 # 20190226_testbeam_cerenkov_cosmic
+gStyle.SetOptStat('emr')
 # plot_cherenkov_index_of_refaction_air()
-plot_cerenkov_trigger_rate_vs_threshold()
+# plot_cerenkov_trigger_rate_vs_threshold()
+# plot_cerenkov_pulse('V1742Analysis.root')
+# plot_cerenkov_hit_count_per_event('cerenkovana.root')
+plot_cerenkov_adc_spectrum('cerenkovana.root')
 
 # 20190220_testbeam_sim_intro
 # gStyle.SetOptStat('emr')
