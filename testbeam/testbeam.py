@@ -4036,7 +4036,10 @@ def plot_cerenkov_trigger_rate_vs_threshold():
     input('Press any key to continue.')
 
 
-def plot_cerenkov_pulse(filename):
+def plot_cerenkov_pulse(filename, **kwargs):
+    gate_min = kwargs.get('gate_min', None)
+    gate_max = kwargs.get('gate_max', None)
+
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
     h1 = tf.Get('Event9/Channel2')
 
@@ -4053,9 +4056,27 @@ def plot_cerenkov_pulse(filename):
     set_graph_style(gr)
     gr.Draw('AL')
     gr.GetXaxis().SetRangeUser(0, 1024)
-    gr.GetXaxis().SetTitle('Time Tick')
+    gr.GetXaxis().SetTitle('Time Tick (200 ps)')
     gr.GetYaxis().SetTitle('ADC')
     gr.GetYaxis().SetTitleOffset(1.5)
+
+    c1.Update()
+    if gate_min:
+        line_min = TLine(gate_min, gPad.GetUymin(), gate_min, gPad.GetUymax())
+        line_min.Draw()
+    if gate_max:
+        line_max = TLine(gate_max, gPad.GetUymin(), gate_max, gPad.GetUymax())
+        line_max.Draw()
+    for line in [line_min, line_max]:
+        line.SetLineWidth(2)
+        line.SetLineStyle(2)
+        line.SetLineColor(kBlue)
+
+
+    lg1 = TLegend(0.65, 0.18, 1, 0.28)
+    set_legend_style(lg1)
+    lg1.AddEntry(line_min, 'gate', 'l')
+    lg1.Draw()
 
     c1.Update()
     c1.SaveAs('{}/plot_cerenkov_pulse.{}.pdf'.format(FIGURE_DIR, filename))
@@ -4237,24 +4258,24 @@ def plot_cerenkov_calibration_constant_vs_light_level():
 
 
 # 20190226_testbeam_cerenkov_cosmic
-gStyle.SetOptStat('emr')
+# gStyle.SetOptStat('emr')
 # gStyle.SetOptFit(1)
-plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_1.root', x_min=10e3, x_max=70e3)
+# plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_1.root', x_min=10e3, x_max=70e3)
 # plot_cerenkov_calibration_constant_vs_light_level()
 # plot_cherenkov_index_of_refaction_air()
-# plot_cerenkov_trigger_rate_vs_threshold()
+plot_cerenkov_trigger_rate_vs_threshold()
 # plot_cerenkov_pulse('V1742Analysis.root')
 # plot_cerenkov_hit_count_per_event('cerenkovana.root')
 # plot_cerenkov_adc_spectrum('cerenkovana.root')
 # plot_cerenkov_adc_spectrum('cerenkovana.gate.root')
 # plot_cerenkov_hit_count_per_event('cerenkovana.calibration_run_1.root')
 # plot_cerenkov_hit_count_per_event('cerenkovana.calibration_run_4.root')
-# plot_cerenkov_pulse('V1742Analysis.calibration_run_1.root')
+# plot_cerenkov_pulse('V1742Analysis.calibration_run_1.root', gate_min=151, gate_max=1024)
 # plot_cerenkov_pulse('V1742Analysis.calibration_run_2.root')
 # plot_cerenkov_pulse('V1742Analysis.calibration_run_3.root')
 # plot_cerenkov_pulse('V1742Analysis.calibration_run_4.root')
 # plot_cerenkov_pulse('V1742Analysis.calibration_run_5.root')
-# plot_cerenkov_pulse('V1742Analysis.cosmic_run_1.root')
+# plot_cerenkov_pulse('V1742Analysis.cosmic_run_1.root', gate_min=200, gate_max=600)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_1.root', x_min=-5e3, x_max=40e3)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_1.root', x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_1.root', adc_method='pulse')
