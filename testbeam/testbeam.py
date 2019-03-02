@@ -4058,7 +4058,7 @@ def plot_cerenkov_pulse(filename):
     gr.GetYaxis().SetTitleOffset(1.5)
 
     c1.Update()
-    c1.SaveAs('{}/plot_cerenkov_pulse.pdf'.format(FIGURE_DIR))
+    c1.SaveAs('{}/plot_cerenkov_pulse.{}.pdf'.format(FIGURE_DIR, filename))
     input('Press any key to continue.')
 
 
@@ -4085,19 +4085,78 @@ def plot_cerenkov_hit_count_per_event(filename):
     input('Press any key to continue.')
 
 
-def plot_cerenkov_adc_spectrum(filename):
-    tf = TFile('{}/{}'.format(DATA_DIR, filename))
-    h1 = tf.Get('cerenkovana/fHitAdcPerEvent')
+def plot_cerenkov_adc_spectrum(filename, **kwargs):
+    adc_method = kwargs.get('adc_method', 'gate')
+    x_min = kwargs.get('x_min', -5.e3)
+    x_max = kwargs.get('x_max', 200.e3)
+    calibration_constant = kwargs.get('calibration_constant', None)
 
-    h1.GetXaxis().SetRangeUser(4.5e4, 7.e4)
-    spectrum = TSpectrum()
-    spectrum.Search(h1, 3)
-    poly_marker = h1.GetListOfFunctions().FindObject('TPolyMarker')
-    peak_xs = spectrum.GetPositionX()
-    peak_ys = spectrum.GetPositionY()
-    peak_count = spectrum.GetNPeaks()
-    for i in range(peak_count):
-        print('peak_xs[i] = {}'.format(peak_xs[i]))
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    h1 = tf.Get('cerenkovana/{}'.format('fHitAdcPerEventByGate' if adc_method == 'gate' else 'fHitAdcPerEvent'))
+
+    if calibration_constant:
+        h_calibrate = TH1D('h_calibrate', 'h_calibrate', h1.GetNbinsX(), h1.GetBinLowEdge(1) * calibration_constant, h1.GetBinLowEdge(h1.GetNbinsX() + 1) * calibration_constant)
+        for i in range(1, h1.GetNbinsX() + 1):
+            h_calibrate.SetBinContent(i, h1.GetBinContent(i))
+        h1 = h_calibrate
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    # gPad.SetLogy()
+
+    set_h1_style(h1)
+    h1.Draw()
+    h1.GetXaxis().SetTitle('ADC per Event')
+    if calibration_constant:
+        h1.GetXaxis().SetTitle('NPE per Event')
+    h1.GetYaxis().SetTitle('Event Count')
+    h1.GetYaxis().SetTitleOffset(1.5)
+    h1.GetXaxis().SetRangeUser(x_min, x_max)
+    h1.SetLineColor(kBlack)
+    c1.Update()
+    draw_statbox(h1, y1=0.7, x1=0.7)
+
+    # h1.GetXaxis().SetRangeUser(4.5e4, 7.e4)
+    # spectrum = TSpectrum()
+    # spectrum.Search(h1, 3)
+    # poly_marker = h1.GetListOfFunctions().FindObject('TPolyMarker')
+    # peak_xs = spectrum.GetPositionX()
+    # peak_ys = spectrum.GetPositionY()
+    # peak_count = spectrum.GetNPeaks()
+    # for i in range(peak_count):
+    #     print('peak_xs[i] = {}'.format(peak_xs[i]))
+
+    # peak_cut = 4.3e4
+    # line = TLine(peak_cut, 0.5, peak_cut, 100)
+    # arrow = TArrow(peak_cut, 100, peak_cut + 1e4, 100, 0.03)
+    # arrow.SetAngle(60)
+    # for ll in [line, arrow]:
+    #     ll.SetLineWidth(2)
+    #     ll.SetLineStyle(7)
+    #     ll.SetLineColor(kRed)
+    #     ll.Draw()
+    # event_count = h1.Integral(h1.FindBin(peak_cut), h1.GetNbinsX())
+    # print('event_count = {}'.format(event_count))
+
+    # tex = TLatex()
+    # tex.SetTextFont(43)
+    # tex.SetTextSize(25)
+    # tex.SetTextAlign(12)
+    # tex.DrawLatex(4.25e4, 210, '{:.0f} events'.format(event_count))
+    # tex.DrawLatex(5e4, 20, 'peak ADC: {:.1E}'.format(peak_xs[0]))
+
+    c1.Update()
+    c1.SaveAs('{}/plot_cerenkov_adc_spectrum.{}.calibrate_{}.pdf'.format(FIGURE_DIR, filename, True if calibration_constant else False))
+    input('Press any key to continue.')
+
+
+def plot_cerenkov_adc_spectrum_calibration(filename, **kwargs):
+    adc_method = kwargs.get('adc_method', 'gate')
+    x_min = kwargs.get('x_min', 5.e3)
+    x_max = kwargs.get('x_max', 200.e3)
+
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    h1 = tf.Get('cerenkovana/{}'.format('fHitAdcPerEventByGate' if adc_method == 'gate' else 'fHitAdcPerEvent'))
 
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
@@ -4107,42 +4166,108 @@ def plot_cerenkov_adc_spectrum(filename):
     h1.Draw()
     h1.GetXaxis().SetTitle('ADC per Event')
     h1.GetYaxis().SetTitle('Event Count')
-    h1.GetXaxis().SetRangeUser(0., 1.e5)
+    h1.GetXaxis().SetRangeUser(x_min, x_max)
     h1.SetLineColor(kBlack)
     c1.Update()
-    draw_statbox(h1, y1=0.7, x1=0.7)
+    draw_statbox(h1, y1=0.5, x1=0.58)
 
-    peak_cut = 4.3e4
-    line = TLine(peak_cut, 0.5, peak_cut, 100)
-    arrow = TArrow(peak_cut, 100, peak_cut + 1e4, 100, 0.03)
-    arrow.SetAngle(60)
-    for ll in [line, arrow]:
-        ll.SetLineWidth(2)
-        ll.SetLineStyle(7)
-        ll.SetLineColor(kRed)
-        ll.Draw()
-    event_count = h1.Integral(h1.FindBin(peak_cut), h1.GetNbinsX())
-    print('event_count = {}'.format(event_count))
-
-    tex = TLatex()
-    tex.SetTextFont(43)
-    tex.SetTextSize(25)
-    tex.SetTextAlign(12)
-    tex.DrawLatex(4.25e4, 210, '{:.0f} events'.format(event_count))
-    tex.DrawLatex(5e4, 20, 'peak ADC: {:.1E}'.format(peak_xs[0]))
+    h1.Fit('gaus')
+    npe = (h1.GetMean() / h1.GetRMS())**2
+    calibration_constant = npe / h1.GetMean()
+    print('npe = {}'.format(npe))
+    print('calibration_constant = {}'.format(calibration_constant))
 
     c1.Update()
-    c1.SaveAs('{}/plot_cerenkov_adc_spectrum.pdf'.format(FIGURE_DIR))
+    c1.SaveAs('{}/plot_cerenkov_adc_spectrum_calibration.{}.pdf'.format(FIGURE_DIR, filename))
+    input('Press any key to continue.')
+
+
+def plot_cerenkov_calibration_constant_vs_light_level():
+    filenames = [
+        'cerenkovana.calibration_run_5.root',
+        'cerenkovana.calibration_run_1.root',
+        'cerenkovana.calibration_run_2.root',
+        'cerenkovana.calibration_run_3.root',
+        'cerenkovana.calibration_run_4.root',
+    ]
+
+    pulse_widths = [9.2, 9.4, 9.6, 9.8, 10.0]
+
+    calibration_constants = []
+    adc_means = []
+    npes = []
+    for filename in filenames:
+        tf = TFile('{}/{}'.format(DATA_DIR, filename))
+        h1 = tf.Get('cerenkovana/fHitAdcPerEventByGate')
+        h1.GetXaxis().SetRangeUser(5e3, 200.e3)
+
+        mean = h1.GetMean()
+        sigma = h1.GetRMS()
+        # f1 = TF1('f1', 'gaus')
+        # h1.Fit('f1')
+        # mean = f1.GetParameter(1)
+        # sigma = f1.GetParameter(2)
+
+        npe = (mean / sigma)**2
+        calibration_constant = npe / mean
+        npes.append(npe)
+        calibration_constants.append(calibration_constant)
+        adc_means.append(h1.GetMean())
+        tf.Close()
+
+    gr = TGraph(len(adc_means), np.array(adc_means), np.array(calibration_constants))
+    # gr = TGraph(len(npes), np.array(npes), np.array(calibration_constants))
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+
+    set_graph_style(gr)
+    gr.Draw('AP')
+    gr.GetYaxis().SetMaxDigits(3)
+    gr.GetYaxis().SetRangeUser(3e-3, 3.7e-3)
+    gr.GetXaxis().SetTitle('Mean ADC')
+    gr.GetYaxis().SetTitle('NPE / ADC')
+    gr.Fit('pol0')
+
+    gStyle.SetStatW(0.26)
+    gStyle.SetStatH(0.25)
+
+    c1.Update()
+    c1.SaveAs('{}/plot_cerenkov_calibration_constant_vs_light_level.pdf'.format(FIGURE_DIR))
     input('Press any key to continue.')
 
 
 # 20190226_testbeam_cerenkov_cosmic
 gStyle.SetOptStat('emr')
+# gStyle.SetOptFit(1)
+plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_1.root', x_min=10e3, x_max=70e3)
+# plot_cerenkov_calibration_constant_vs_light_level()
 # plot_cherenkov_index_of_refaction_air()
 # plot_cerenkov_trigger_rate_vs_threshold()
 # plot_cerenkov_pulse('V1742Analysis.root')
 # plot_cerenkov_hit_count_per_event('cerenkovana.root')
-plot_cerenkov_adc_spectrum('cerenkovana.root')
+# plot_cerenkov_adc_spectrum('cerenkovana.root')
+# plot_cerenkov_adc_spectrum('cerenkovana.gate.root')
+# plot_cerenkov_hit_count_per_event('cerenkovana.calibration_run_1.root')
+# plot_cerenkov_hit_count_per_event('cerenkovana.calibration_run_4.root')
+# plot_cerenkov_pulse('V1742Analysis.calibration_run_1.root')
+# plot_cerenkov_pulse('V1742Analysis.calibration_run_2.root')
+# plot_cerenkov_pulse('V1742Analysis.calibration_run_3.root')
+# plot_cerenkov_pulse('V1742Analysis.calibration_run_4.root')
+# plot_cerenkov_pulse('V1742Analysis.calibration_run_5.root')
+# plot_cerenkov_pulse('V1742Analysis.cosmic_run_1.root')
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_1.root', x_min=-5e3, x_max=40e3)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_1.root', x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_1.root', adc_method='pulse')
+# plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_1.root')
+# plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_2.root')
+# plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_3.root')
+# plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_4.root')
+# plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_5.root')
+# plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_1.root', adc_method='pulse')
+# plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_2.root', adc_method='pulse')
+# plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_3.root', adc_method='pulse')
+# plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_4.root', adc_method='pulse')
+# plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_5.root', adc_method='pulse')
 
 # 20190220_testbeam_sim_intro
 # gStyle.SetOptStat('emr')
