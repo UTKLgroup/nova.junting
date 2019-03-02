@@ -4038,6 +4038,9 @@ def plot_cerenkov_trigger_rate_vs_threshold():
         avg_event_count_per_fragment = tf.Get('cerenkovana/fAvgEventCountPerFragment').GetBinContent(1)
         trigger_rates.append(avg_event_count_per_fragment / fragment_duration)
 
+        total_fragment_count = tf.Get('cerenkovana/fEventCountPerFragment').GetEntries()
+        print('total_fragment_count = {}'.format(total_fragment_count))
+
     gr = TGraph(len(thresholds), np.array(thresholds), np.array(trigger_rates))
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
@@ -4045,6 +4048,7 @@ def plot_cerenkov_trigger_rate_vs_threshold():
 
     set_graph_style(gr)
     gr.Draw('APL')
+    gr.GetYaxis().SetRangeUser(0, 17)
     gr.GetXaxis().SetTitle('Threshold (mV)')
     gr.GetYaxis().SetTitle('Trigger Rate (Hz)')
 
@@ -4128,6 +4132,7 @@ def plot_cerenkov_adc_spectrum(filename, **kwargs):
     x_min = kwargs.get('x_min', -5.e3)
     x_max = kwargs.get('x_max', 200.e3)
     calibration_constant = kwargs.get('calibration_constant', None)
+    log_y = kwargs.get('log_y', False)
 
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
     h1 = tf.Get('cerenkovana/{}'.format('fHitAdcPerEventByGate' if adc_method == 'gate' else 'fHitAdcPerEvent'))
@@ -4136,11 +4141,19 @@ def plot_cerenkov_adc_spectrum(filename, **kwargs):
         h_calibrate = TH1D('h_calibrate', 'h_calibrate', h1.GetNbinsX(), h1.GetBinLowEdge(1) * calibration_constant, h1.GetBinLowEdge(h1.GetNbinsX() + 1) * calibration_constant)
         for i in range(1, h1.GetNbinsX() + 1):
             h_calibrate.SetBinContent(i, h1.GetBinContent(i))
+        h_calibrate.SetEntries(h1.GetEntries())
         h1 = h_calibrate
 
-    c1 = TCanvas('c1', 'c1', 800, 600)
+    h_event_count_per_fragment = tf.Get('cerenkovana/fEventCountPerFragment')
+    fragment_count = h_event_count_per_fragment.GetEntries()
+    exposure = fragment_count / 60. # hour
+    print('fragment_count = {}'.format(fragment_count))
+    print('exposure = {} hour'.format(exposure))
+
+    c1 = TCanvas('c1', 'c1', 800, 800)
     set_margin()
-    # gPad.SetLogy()
+    if log_y:
+        gPad.SetLogy()
 
     set_h1_style(h1)
     h1.Draw()
@@ -4148,7 +4161,7 @@ def plot_cerenkov_adc_spectrum(filename, **kwargs):
     if calibration_constant:
         h1.GetXaxis().SetTitle('NPE per Event')
     h1.GetYaxis().SetTitle('Event Count')
-    h1.GetYaxis().SetTitleOffset(1.5)
+    h1.GetYaxis().SetTitleOffset(2)
     h1.GetXaxis().SetRangeUser(x_min, x_max)
     h1.SetLineColor(kBlack)
     c1.Update()
@@ -4184,7 +4197,7 @@ def plot_cerenkov_adc_spectrum(filename, **kwargs):
     # tex.DrawLatex(5e4, 20, 'peak ADC: {:.1E}'.format(peak_xs[0]))
 
     c1.Update()
-    c1.SaveAs('{}/plot_cerenkov_adc_spectrum.{}.calibrate_{}.pdf'.format(FIGURE_DIR, filename, True if calibration_constant else False))
+    c1.SaveAs('{}/plot_cerenkov_adc_spectrum.{}.calibrate_{}.log_y_{}.pdf'.format(FIGURE_DIR, filename, True if calibration_constant else False, log_y))
     input('Press any key to continue.')
 
 
@@ -4280,7 +4293,7 @@ def plot_cerenkov_calibration_constant_vs_light_level():
 # plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_1.root', x_min=10e3, x_max=70e3)
 # plot_cerenkov_calibration_constant_vs_light_level()
 # plot_cherenkov_index_of_refaction_air()
-plot_cerenkov_trigger_rate_vs_threshold()
+# plot_cerenkov_trigger_rate_vs_threshold()
 # plot_cerenkov_pulse('V1742Analysis.root')
 # plot_cerenkov_hit_count_per_event('cerenkovana.root')
 # plot_cerenkov_adc_spectrum('cerenkovana.root')
@@ -4294,7 +4307,13 @@ plot_cerenkov_trigger_rate_vs_threshold()
 # plot_cerenkov_pulse('V1742Analysis.calibration_run_5.root')
 # plot_cerenkov_pulse('V1742Analysis.cosmic_run_1.root', gate_min=200, gate_max=600)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_1.root', x_min=-5e3, x_max=40e3)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_1.root', x_min=-5e3, x_max=150e3, log_y=True)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_1.root', x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_1.root', x_min=-16.81, x_max=504.3, calibration_constant=3.362e-3, log_y=True)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2328.root', x_min=-5e3, x_max=40e3)
+plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2328.root', x_min=-5e3, x_max=150e3, log_y=True)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2328.root', x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2328.root', x_min=-16.81, x_max=504.3, calibration_constant=3.362e-3, log_y=True)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_1.root', adc_method='pulse')
 # plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_1.root')
 # plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_2.root')
