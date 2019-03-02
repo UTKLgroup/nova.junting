@@ -3985,41 +3985,58 @@ def plot_cherenkov_index_of_refaction_air():
 
 
 def plot_cerenkov_trigger_rate_vs_threshold():
-    thresholds = [100.1, 80.0, 50.1, 39.9, 35.0, 29.9]
-    start_times = [
-        datetime(2019, 2, 27, 15, 44, 51),
-        datetime(2019, 2, 27, 15, 58, 25),
-        datetime(2019, 2, 27, 16, 5, 23),
-        datetime(2019, 2, 27, 16, 43, 12),
-        datetime(2019, 2, 27, 16, 33, 26),
-        datetime(2019, 2, 27, 16, 23, 16),
+    # thresholds = [100.1, 80.0, 50.1, 39.9, 35.0, 29.9]
+    # start_times = [
+    #     datetime(2019, 2, 27, 15, 44, 51),
+    #     datetime(2019, 2, 27, 15, 58, 25),
+    #     datetime(2019, 2, 27, 16, 5, 23),
+    #     datetime(2019, 2, 27, 16, 43, 12),
+    #     datetime(2019, 2, 27, 16, 33, 26),
+    #     datetime(2019, 2, 27, 16, 23, 16),
+    # ]
+    # end_times = [
+    #     datetime(2019, 2, 27, 15, 46, 28),
+    #     datetime(2019, 2, 27, 16, 0, 47),
+    #     datetime(2019, 2, 27, 16, 8, 34),
+    #     datetime(2019, 2, 27, 16, 46, 9),
+    #     datetime(2019, 2, 27, 16, 36, 10),
+    #     datetime(2019, 2, 27, 16, 27, 44),
+    # ]
+    # trigger_counts = [
+    #     43, 76, 181, 235, 332, 553
+    # ]
+    # durations = []              # minute
+    # for i in range(len(start_times)):
+    #     durations.append((end_times[i] - start_times[i]).total_seconds() / 60.)
+    # avg_duration = sum(durations) / len(durations)
+    # print('avg_duration = {}'.format(avg_duration))
+    # trigger_counts = list(map(float, trigger_counts))
+    # trigger_rates = []
+    # for i, duration in enumerate(durations):
+    #     trigger_rates.append(trigger_counts[i] / durations[i])
+
+    fragment_duration = 40.         # s
+    threshold_run_numbers = [
+        (100.1, 2321),
+        (80.0, 2322),
+        (50.1, 2323),
+        (39.9, 2327),
+        (35.0, 2326),
+        (29.9, 2325),
+        # (30.0, 2368),
+        # (35.0, 2369),
     ]
-
-    end_times = [
-        datetime(2019, 2, 27, 15, 46, 28),
-        datetime(2019, 2, 27, 16, 0, 47),
-        datetime(2019, 2, 27, 16, 8, 34),
-        datetime(2019, 2, 27, 16, 46, 9),
-        datetime(2019, 2, 27, 16, 36, 10),
-        datetime(2019, 2, 27, 16, 27, 44),
-    ]
-
-    trigger_counts = [
-        43, 76, 181, 235, 332, 553
-    ]
-
-    durations = []              # minute
-    for i in range(len(start_times)):
-        durations.append((end_times[i] - start_times[i]).total_seconds() / 60.)
-    trigger_counts = list(map(float, trigger_counts))
-
-    avg_duration = sum(durations) / len(durations)
-    print('avg_duration = {}'.format(avg_duration))
-
-    rates = []
+    threshold_run_numbers = sorted(threshold_run_numbers, key=lambda x: x[0])
+    thresholds = []
     trigger_rates = []
-    for i, duration in enumerate(durations):
-        trigger_rates.append(trigger_counts[i] / durations[i])
+    for threshold_run_number in threshold_run_numbers:
+        threshold = threshold_run_number[0]
+        thresholds.append(threshold)
+
+        run_number = threshold_run_number[1]
+        tf = TFile('{}/cerenkovana.cosmic_threshold_run_{}.root'.format(DATA_DIR, run_number))
+        avg_event_count_per_fragment = tf.Get('cerenkovana/fAvgEventCountPerFragment').GetBinContent(1)
+        trigger_rates.append(avg_event_count_per_fragment / fragment_duration)
 
     gr = TGraph(len(thresholds), np.array(thresholds), np.array(trigger_rates))
     c1 = TCanvas('c1', 'c1', 800, 600)
@@ -4027,9 +4044,9 @@ def plot_cerenkov_trigger_rate_vs_threshold():
     gPad.SetGrid()
 
     set_graph_style(gr)
-    gr.Draw('AL')
+    gr.Draw('APL')
     gr.GetXaxis().SetTitle('Threshold (mV)')
-    gr.GetYaxis().SetTitle('Average Trigger Count per Minute')
+    gr.GetYaxis().SetTitle('Trigger Rate (Hz)')
 
     c1.Update()
     c1.SaveAs('{}/plot_cerenkov_trigger_rate_vs_threshold.pdf'.format(FIGURE_DIR))
