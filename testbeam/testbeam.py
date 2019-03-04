@@ -4154,6 +4154,7 @@ def plot_cerenkov_adc_spectrum(filename, **kwargs):
     set_margin()
     if log_y:
         gPad.SetLogy()
+    gPad.SetGrid()
 
     set_h1_style(h1)
     h1.Draw()
@@ -4288,7 +4289,7 @@ def plot_cerenkov_calibration_constant_vs_light_level():
 
 
 # 20190226_testbeam_cerenkov_cosmic
-# gStyle.SetOptStat('emr')
+gStyle.SetOptStat('emr')
 # gStyle.SetOptFit(1)
 # plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_1.root', x_min=10e3, x_max=70e3)
 # plot_cerenkov_calibration_constant_vs_light_level()
@@ -4311,9 +4312,13 @@ def plot_cerenkov_calibration_constant_vs_light_level():
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_1.root', x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_1.root', x_min=-16.81, x_max=504.3, calibration_constant=3.362e-3, log_y=True)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2328.root', x_min=-5e3, x_max=40e3)
-plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2328.root', x_min=-5e3, x_max=150e3, log_y=True)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2328.root', x_min=-5e3, x_max=150e3, log_y=True)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2328.root', x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2328.root', x_min=-16.81, x_max=504.3, calibration_constant=3.362e-3, log_y=True)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2379.root', x_min=-5e3, x_max=40e3)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2379.root', x_min=-5e3, x_max=150e3, log_y=True)
+plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2379.root', x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2379.root', x_min=-16.81, x_max=504.3, calibration_constant=3.362e-3, log_y=True)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_1.root', adc_method='pulse')
 # plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_1.root')
 # plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_2.root')
