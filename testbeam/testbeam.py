@@ -1594,7 +1594,9 @@ def plot_cherenkov_index_of_refaction():
 
 
 def get_cherenkov_photon_count():
-    index_of_refraction = 1.0004
+    index_of_refraction = 1.0004 # CO2
+    # index_of_refraction = 1.000035 # helium
+    # index_of_refraction = 1.0003 # N2
     beta = 1.
     theta = math.acos(1. / index_of_refraction / beta) * 180. / pi
     sin_square_theta = 1. - (1. / index_of_refraction / beta)**2.
@@ -3932,13 +3934,17 @@ def plot_cherenkov_index_of_refaction_air():
 
     refraction_index_one_atm_air = 1.0003
     # refraction_index_one_atm_nitrogen = 1.0003
+    refraction_index_one_atm_helium = 1.000035
     one_atm_air_refraction_indexs = [refraction_index_one_atm_air for i in range(len(momentums))]
     gr_one_atm_air = TGraph(len(momentums), np.array(momentums), np.array(one_atm_air_refraction_indexs))
+    one_atm_helium_refraction_indexs = [refraction_index_one_atm_helium for i in range(len(momentums))]
+    gr_one_atm_helium = TGraph(len(momentums), np.array(momentums), np.array(one_atm_helium_refraction_indexs))
 
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
     gPad.SetGrid()
     gPad.SetLeftMargin(0.2)
+    # gPad.SetLogx()
 
     lg1 = TLegend(0.51, 0.56, 0.86, 0.86)
     set_legend_style(lg1)
@@ -3970,6 +3976,13 @@ def plot_cherenkov_index_of_refaction_air():
     gr_one_atm_air.SetLineWidth(2)
     gr_one_atm_air.Draw('L')
     lg1.AddEntry(gr_one_atm_air, 'air / N_{2} at 1 atm ', 'l')
+
+    set_graph_style(gr_one_atm_helium)
+    gr_one_atm_helium.SetLineStyle(3)
+    gr_one_atm_helium.SetLineColor(kMagenta + 1)
+    gr_one_atm_helium.SetLineWidth(2)
+    gr_one_atm_helium.Draw('L')
+    lg1.AddEntry(gr_one_atm_helium, 'helium at 1 atm ', 'l')
 
     # latex = TLatex()
     # latex.SetNDC()
@@ -4289,7 +4302,7 @@ def plot_cerenkov_calibration_constant_vs_light_level():
 
 
 # 20190226_testbeam_cerenkov_cosmic
-gStyle.SetOptStat('emr')
+# gStyle.SetOptStat('emr')
 # gStyle.SetOptFit(1)
 # plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_1.root', x_min=10e3, x_max=70e3)
 # plot_cerenkov_calibration_constant_vs_light_level()
@@ -4317,7 +4330,7 @@ gStyle.SetOptStat('emr')
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2328.root', x_min=-16.81, x_max=504.3, calibration_constant=3.362e-3, log_y=True)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2379.root', x_min=-5e3, x_max=40e3)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2379.root', x_min=-5e3, x_max=150e3, log_y=True)
-plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2379.root', x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2379.root', x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2379.root', x_min=-16.81, x_max=504.3, calibration_constant=3.362e-3, log_y=True)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_1.root', adc_method='pulse')
 # plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_1.root')
@@ -4757,7 +4770,7 @@ plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2379.root', x_min=-16.81, x_m
 
 # 20180309_testbeam_cherenkov
 # plot_cherenkov_index_of_refaction()
-# get_cherenkov_photon_count()
+get_cherenkov_photon_count()
 
 # 20180308_testbeam_kalman_filter
 # test_1d_kalman()
