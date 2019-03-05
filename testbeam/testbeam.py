@@ -4301,9 +4301,82 @@ def plot_cerenkov_calibration_constant_vs_light_level():
     input('Press any key to continue.')
 
 
+def compare_cerenkov_adc_spectra(filenames, **kwargs):
+    adc_method = kwargs.get('adc_method', 'gate')
+    x_min = kwargs.get('x_min', -5.e3)
+    x_max = kwargs.get('x_max', 200.e3)
+    calibration_constant = kwargs.get('calibration_constant', None)
+    log_y = kwargs.get('log_y', False)
+    colors = [kRed, kBlue]
+
+    h1s = []
+    for filename in filenames:
+        tf = TFile('{}/{}'.format(DATA_DIR, filename))
+        h1 = tf.Get('cerenkovana/{}'.format('fHitAdcPerEventByGate' if adc_method == 'gate' else 'fHitAdcPerEvent'))
+        h1.SetDirectory(0)
+
+        h_event_count_per_fragment = tf.Get('cerenkovana/fEventCountPerFragment')
+        fragment_count = h_event_count_per_fragment.GetEntries()
+        exposure = fragment_count / 60. # hour
+        print('fragment_count = {}'.format(fragment_count))
+        print('exposure = {} hour'.format(exposure))
+
+        # h1.Scale(1. / h1.Integral())
+        # h1.Scale(1. / h1.GetMaximum())
+        h1.Scale(1. / exposure)
+
+        print('h1.Integral() = {}'.format(h1.Integral()))
+
+        h1s.append(h1)
+
+    print('len(h1s) = {}'.format(len(h1s)))
+
+    if calibration_constant:
+        for j, h1 in enumerate(h1s):
+            h_calibrate = TH1D('h_calibrate', 'h_calibrate', h1.GetNbinsX(), h1.GetBinLowEdge(1) * calibration_constant, h1.GetBinLowEdge(h1.GetNbinsX() + 1) * calibration_constant)
+            for i in range(1, h1.GetNbinsX() + 1):
+                h_calibrate.SetBinContent(i, h1.GetBinContent(i))
+                h_calibrate.SetEntries(h1.GetEntries())
+            h1s[j] = h_calibrate
+
+    c1 = TCanvas('c1', 'c1', 800, 800)
+    set_margin()
+    if log_y:
+        gPad.SetLogy()
+    gPad.SetGrid()
+
+    y_max = 0.
+    for i, h1 in enumerate(h1s):
+        if h1.GetMaximum() > y_max:
+            y_max = h1.GetMaximum()
+
+    for i, h1 in enumerate(h1s):
+        set_h1_style(h1)
+        h1.SetLineColor(colors[i])
+
+        if i == 0:
+            h1.Draw()
+            h1.GetXaxis().SetTitle('ADC per Event')
+            if calibration_constant:
+                h1.GetXaxis().SetTitle('NPE per Event')
+            h1.GetYaxis().SetTitle('Event Count')
+            h1.GetYaxis().SetTitleOffset(2)
+            h1.GetXaxis().SetRangeUser(x_min, x_max)
+            h1.GetXaxis().SetRangeUser(x_min, x_max)
+            h1.GetYaxis().SetRangeUser(1.e-1, y_max * 1.1)
+            # c1.Update()
+            # draw_statbox(h1, y1=0.7, x1=0.7)
+        h1.Draw('sames')
+
+    c1.Update()
+    c1.SaveAs('{}/compare_cerenkov_adc_spectra.{}.calibrate_{}.log_y_{}.pdf'.format(FIGURE_DIR, filename, True if calibration_constant else False, log_y))
+    input('Press any key to continue.')
+
+
 # 20190226_testbeam_cerenkov_cosmic
 # gStyle.SetOptStat('emr')
 # gStyle.SetOptFit(1)
+compare_cerenkov_adc_spectra(['cerenkovana.cosmic_run_2379.root', 'cerenkovana.cosmic_run_2388.root'], x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
 # plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_1.root', x_min=10e3, x_max=70e3)
 # plot_cerenkov_calibration_constant_vs_light_level()
 # plot_cherenkov_index_of_refaction_air()
@@ -4332,6 +4405,8 @@ def plot_cerenkov_calibration_constant_vs_light_level():
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2379.root', x_min=-5e3, x_max=150e3, log_y=True)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2379.root', x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2379.root', x_min=-16.81, x_max=504.3, calibration_constant=3.362e-3, log_y=True)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2388.root', x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2388.root', x_min=-16.81, x_max=504.3, calibration_constant=3.362e-3, log_y=True)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_1.root', adc_method='pulse')
 # plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_1.root')
 # plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_2.root')
@@ -4770,7 +4845,7 @@ def plot_cerenkov_calibration_constant_vs_light_level():
 
 # 20180309_testbeam_cherenkov
 # plot_cherenkov_index_of_refaction()
-get_cherenkov_photon_count()
+# get_cherenkov_photon_count()
 
 # 20180308_testbeam_kalman_filter
 # test_1d_kalman()
