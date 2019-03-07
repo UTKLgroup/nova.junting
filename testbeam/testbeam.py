@@ -15,7 +15,7 @@ INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
 # FIGURE_DIR = '/Users/juntinghuang/Desktop/nova/testbeam/doc/testbeam_beamline_simulation/figures'
-FIGURE_DIR = '/Users/juntinghuang/beamer/20190226_testbeam_cerenkov_cosmic/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20190306_testbeam_tof_pmt_calibration/figures'
 DATA_DIR = './data'
 
 
@@ -4107,7 +4107,7 @@ def plot_cerenkov_pulse(filename, **kwargs):
         line.SetLineColor(kBlue)
 
 
-    lg1 = TLegend(0.65, 0.18, 1, 0.28)
+    lg1 = TLegend(0.7, 0.18, 0.98, 0.28)
     set_legend_style(lg1)
     lg1.AddEntry(line_min, 'gate', 'l')
     lg1.Draw()
@@ -4216,6 +4216,8 @@ def plot_cerenkov_adc_spectrum(filename, **kwargs):
 
 
 def plot_cerenkov_adc_spectrum_calibration(filename, **kwargs):
+    adc_to_coulomb = 1./4096. / 50 * 0.2e-9 # coulomb
+
     adc_method = kwargs.get('adc_method', 'gate')
     x_min = kwargs.get('x_min', 5.e3)
     x_max = kwargs.get('x_max', 200.e3)
@@ -4234,13 +4236,24 @@ def plot_cerenkov_adc_spectrum_calibration(filename, **kwargs):
     h1.GetXaxis().SetRangeUser(x_min, x_max)
     h1.SetLineColor(kBlack)
     c1.Update()
-    draw_statbox(h1, y1=0.5, x1=0.58)
+    draw_statbox(h1, y1=0.78, x1=0.6)
 
     h1.Fit('gaus')
     npe = (h1.GetMean() / h1.GetRMS())**2
     calibration_constant = npe / h1.GetMean()
+    gain = h1.GetMean() * adc_to_coulomb / (npe * 1.602e-19)
+
     print('npe = {}'.format(npe))
     print('calibration_constant = {}'.format(calibration_constant))
+    print('gain = {}'.format(gain))
+
+    latex = TLatex()
+    latex.SetNDC()
+    latex.SetTextFont(43)
+    latex.SetTextSize(28)
+    latex.DrawLatex(0.5, 0.67, 'NPE = {:.1f}'.format(npe))
+    latex.DrawLatex(0.5, 0.60, 'calib. = {:.1E} PE / ADC'.format(calibration_constant))
+    latex.DrawLatex(0.5, 0.53, 'gain = {:.1E}'.format(gain))
 
     c1.Update()
     c1.SaveAs('{}/plot_cerenkov_adc_spectrum_calibration.{}.pdf'.format(FIGURE_DIR, filename))
@@ -4372,11 +4385,21 @@ def compare_cerenkov_adc_spectra(filenames, **kwargs):
     c1.SaveAs('{}/compare_cerenkov_adc_spectra.{}.calibrate_{}.log_y_{}.pdf'.format(FIGURE_DIR, filename, True if calibration_constant else False, log_y))
     input('Press any key to continue.')
 
+# 20190306_testbeam_tof_pmt_calibration
+gStyle.SetOptStat('emr')
+# plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_tof_run_2408.root', x_min=-2000, x_max=70e3)
+# plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_tof_run_2409.root', x_min=-2000, x_max=70e3)
+# plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_tof_run_2410.root', x_min=-2000, x_max=70e3)
+# plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_tof_run_2411.root', x_min=-2000, x_max=100e3)
+# plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_tof_run_2412.root', x_min=-2000, x_max=30e3)
+# plot_cerenkov_pulse('V1742Analysis.run_2411_0001.root', gate_min=450, gate_max=580)
+# plot_cerenkov_pulse('V1742Analysis.run_2411_0001.root', gate_min=450, gate_max=700)
 
 # 20190226_testbeam_cerenkov_cosmic
 # gStyle.SetOptStat('emr')
 # gStyle.SetOptFit(1)
-compare_cerenkov_adc_spectra(['cerenkovana.cosmic_run_2379.root', 'cerenkovana.cosmic_run_2388.root'], x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
+# compare_cerenkov_adc_spectra(['cerenkovana.cosmic_run_2395.root', 'cerenkovana.cosmic_run_2388.root'], x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
+# compare_cerenkov_adc_spectra(['cerenkovana.cosmic_run_2379.root', 'cerenkovana.cosmic_run_2388.root'], x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
 # plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_1.root', x_min=10e3, x_max=70e3)
 # plot_cerenkov_calibration_constant_vs_light_level()
 # plot_cherenkov_index_of_refaction_air()
@@ -4407,6 +4430,7 @@ compare_cerenkov_adc_spectra(['cerenkovana.cosmic_run_2379.root', 'cerenkovana.c
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2379.root', x_min=-16.81, x_max=504.3, calibration_constant=3.362e-3, log_y=True)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2388.root', x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2388.root', x_min=-16.81, x_max=504.3, calibration_constant=3.362e-3, log_y=True)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2395.root', x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_1.root', adc_method='pulse')
 # plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_1.root')
 # plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_2.root')
