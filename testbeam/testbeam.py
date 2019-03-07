@@ -4320,7 +4320,8 @@ def compare_cerenkov_adc_spectra(filenames, **kwargs):
     x_max = kwargs.get('x_max', 200.e3)
     calibration_constant = kwargs.get('calibration_constant', None)
     log_y = kwargs.get('log_y', False)
-    colors = [kRed, kBlue]
+    colors = kwargs.get('colors', [kRed, kBlue, kGreen + 2])
+    legend_texts = kwargs.get('legend_texts', ['a', 'b', 'c'])
 
     h1s = []
     for filename in filenames:
@@ -4363,9 +4364,13 @@ def compare_cerenkov_adc_spectra(filenames, **kwargs):
         if h1.GetMaximum() > y_max:
             y_max = h1.GetMaximum()
 
+    lg1 = TLegend(0.35, 0.7, 0.55, 0.88)
+    set_legend_style(lg1)
+
     for i, h1 in enumerate(h1s):
         set_h1_style(h1)
         h1.SetLineColor(colors[i])
+        lg1.AddEntry(h1, legend_texts[i], 'l')
 
         if i == 0:
             h1.Draw()
@@ -4381,12 +4386,15 @@ def compare_cerenkov_adc_spectra(filenames, **kwargs):
             # draw_statbox(h1, y1=0.7, x1=0.7)
         h1.Draw('sames')
 
+    lg1.Draw()
+
     c1.Update()
     c1.SaveAs('{}/compare_cerenkov_adc_spectra.{}.calibrate_{}.log_y_{}.pdf'.format(FIGURE_DIR, filename, True if calibration_constant else False, log_y))
+    c1.SaveAs('{}/compare_cerenkov_adc_spectra.{}.calibrate_{}.log_y_{}.png'.format(FIGURE_DIR, filename, True if calibration_constant else False, log_y))
     input('Press any key to continue.')
 
 # 20190306_testbeam_tof_pmt_calibration
-gStyle.SetOptStat('emr')
+# gStyle.SetOptStat('emr')
 # plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_tof_run_2408.root', x_min=-2000, x_max=70e3)
 # plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_tof_run_2409.root', x_min=-2000, x_max=70e3)
 # plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_tof_run_2410.root', x_min=-2000, x_max=70e3)
@@ -4398,6 +4406,10 @@ gStyle.SetOptStat('emr')
 # 20190226_testbeam_cerenkov_cosmic
 # gStyle.SetOptStat('emr')
 # gStyle.SetOptFit(1)
+gStyle.SetOptStat(0)
+compare_cerenkov_adc_spectra(['cerenkovana.cosmic_run_2388.root', 'cerenkovana.cosmic_run_2395.root', 'cerenkovana.cosmic_run_2414.root'],
+                             x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3,
+                             legend_texts=['plastic wraps (ineffective)', 'cap Swageloks', '+ tape LED ports + Tedlar cover'])
 # compare_cerenkov_adc_spectra(['cerenkovana.cosmic_run_2395.root', 'cerenkovana.cosmic_run_2388.root'], x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
 # compare_cerenkov_adc_spectra(['cerenkovana.cosmic_run_2379.root', 'cerenkovana.cosmic_run_2388.root'], x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
 # plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_1.root', x_min=10e3, x_max=70e3)
