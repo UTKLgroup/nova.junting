@@ -15,7 +15,7 @@ INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
 # FIGURE_DIR = '/Users/juntinghuang/Desktop/nova/testbeam/doc/testbeam_beamline_simulation/figures'
-FIGURE_DIR = '/Users/juntinghuang/beamer/20190306_testbeam_tof_pmt_calibration/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20190311_testbeam_seal_cerenkov/figures'
 DATA_DIR = './data'
 
 
@@ -4324,7 +4324,7 @@ def compare_cerenkov_adc_spectra(filenames, **kwargs):
     legend_texts = kwargs.get('legend_texts', ['a', 'b', 'c'])
 
     h1s = []
-    for filename in filenames:
+    for i, filename in enumerate(filenames):
         tf = TFile('{}/{}'.format(DATA_DIR, filename))
         h1 = tf.Get('cerenkovana/{}'.format('fHitAdcPerEventByGate' if adc_method == 'gate' else 'fHitAdcPerEvent'))
         h1.SetDirectory(0)
@@ -4332,15 +4332,18 @@ def compare_cerenkov_adc_spectra(filenames, **kwargs):
         h_event_count_per_fragment = tf.Get('cerenkovana/fEventCountPerFragment')
         fragment_count = h_event_count_per_fragment.GetEntries()
         exposure = fragment_count / 60. # hour
-        print('fragment_count = {}'.format(fragment_count))
+        event_count = h1.Integral()
+        event_rate = event_count / (fragment_count * 40.)
+
+        print('\nlegend_texts[i] = {}'.format(legend_texts[i]))
         print('exposure = {} hour'.format(exposure))
+        print('event_count = {}'.format(event_count))
+        print('fragment_count = {}'.format(fragment_count))
+        print('event_rate = {} Hz'.format(event_rate))
 
         # h1.Scale(1. / h1.Integral())
         # h1.Scale(1. / h1.GetMaximum())
         h1.Scale(1. / exposure)
-
-        print('h1.Integral() = {}'.format(h1.Integral()))
-
         h1s.append(h1)
 
     print('len(h1s) = {}'.format(len(h1s)))
@@ -4353,7 +4356,7 @@ def compare_cerenkov_adc_spectra(filenames, **kwargs):
                 h_calibrate.SetEntries(h1.GetEntries())
             h1s[j] = h_calibrate
 
-    c1 = TCanvas('c1', 'c1', 800, 800)
+    c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
     if log_y:
         gPad.SetLogy()
@@ -4364,7 +4367,7 @@ def compare_cerenkov_adc_spectra(filenames, **kwargs):
         if h1.GetMaximum() > y_max:
             y_max = h1.GetMaximum()
 
-    lg1 = TLegend(0.35, 0.7, 0.55, 0.88)
+    lg1 = TLegend(0.35, 0.88 - 0.06 * len(filenames), 0.55, 0.88)
     set_legend_style(lg1)
 
     for i, h1 in enumerate(h1s):
@@ -4377,8 +4380,8 @@ def compare_cerenkov_adc_spectra(filenames, **kwargs):
             h1.GetXaxis().SetTitle('ADC per Event')
             if calibration_constant:
                 h1.GetXaxis().SetTitle('NPE per Event')
-            h1.GetYaxis().SetTitle('Event Count')
-            h1.GetYaxis().SetTitleOffset(2)
+            h1.GetYaxis().SetTitle('Event Count / Running Hour')
+            h1.GetYaxis().SetTitleOffset(1.5)
             h1.GetXaxis().SetRangeUser(x_min, x_max)
             h1.GetXaxis().SetRangeUser(x_min, x_max)
             h1.GetYaxis().SetRangeUser(1.e-1, y_max * 1.1)
@@ -4393,6 +4396,20 @@ def compare_cerenkov_adc_spectra(filenames, **kwargs):
     c1.SaveAs('{}/compare_cerenkov_adc_spectra.{}.calibrate_{}.log_y_{}.png'.format(FIGURE_DIR, filename, True if calibration_constant else False, log_y))
     input('Press any key to continue.')
 
+
+# 20190311_testbeam_seal_cerenkov
+gStyle.SetOptStat(0)
+compare_cerenkov_adc_spectra(['cerenkovana.cosmic_run_2388.root',
+                              'cerenkovana.cosmic_run_2395.root',
+                              'cerenkovana.cosmic_run_2414.root',
+                              'cerenkovana.cosmic_run_2423.root'],
+                             x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3,
+                             colors=[kRed, kBlue, kGreen + 2, kMagenta + 1],
+                             legend_texts=['plastic wraps (ineffective)',
+                                           'cap Swageloks',
+                                           '+ tape LED ports + Tedlar cover',
+                                           'Tedlar window'])
+
 # 20190306_testbeam_tof_pmt_calibration
 # gStyle.SetOptStat('emr')
 # plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_tof_run_2408.root', x_min=-2000, x_max=70e3)
@@ -4406,10 +4423,10 @@ def compare_cerenkov_adc_spectra(filenames, **kwargs):
 # 20190226_testbeam_cerenkov_cosmic
 # gStyle.SetOptStat('emr')
 # gStyle.SetOptFit(1)
-gStyle.SetOptStat(0)
-compare_cerenkov_adc_spectra(['cerenkovana.cosmic_run_2388.root', 'cerenkovana.cosmic_run_2395.root', 'cerenkovana.cosmic_run_2414.root'],
-                             x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3,
-                             legend_texts=['plastic wraps (ineffective)', 'cap Swageloks', '+ tape LED ports + Tedlar cover'])
+# gStyle.SetOptStat(0)
+# compare_cerenkov_adc_spectra(['cerenkovana.cosmic_run_2388.root', 'cerenkovana.cosmic_run_2395.root', 'cerenkovana.cosmic_run_2414.root'],
+#                              x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3,
+#                              legend_texts=['plastic wraps (ineffective)', 'cap Swageloks', '+ tape LED ports + Tedlar cover'])
 # compare_cerenkov_adc_spectra(['cerenkovana.cosmic_run_2395.root', 'cerenkovana.cosmic_run_2388.root'], x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
 # compare_cerenkov_adc_spectra(['cerenkovana.cosmic_run_2379.root', 'cerenkovana.cosmic_run_2388.root'], x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
 # plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_1.root', x_min=10e3, x_max=70e3)
