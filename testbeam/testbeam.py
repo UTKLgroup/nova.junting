@@ -15,7 +15,7 @@ INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
 # FIGURE_DIR = '/Users/juntinghuang/Desktop/nova/testbeam/doc/testbeam_beamline_simulation/figures'
-FIGURE_DIR = '/Users/juntinghuang/beamer/20190311_testbeam_seal_cerenkov/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20190312_testbeam_cerenkov_cosmic_trigger/figures'
 DATA_DIR = './data'
 
 
@@ -4073,9 +4073,13 @@ def plot_cerenkov_trigger_rate_vs_threshold():
 def plot_cerenkov_pulse(filename, **kwargs):
     gate_min = kwargs.get('gate_min', None)
     gate_max = kwargs.get('gate_max', None)
+    spill = kwargs.get('spill', 1)
+    event = kwargs.get('event', 0)
+    channel = kwargs.get('channel', 2)
 
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
-    h1 = tf.Get('Event9/Channel2')
+    # h1 = tf.Get('Event9/Channel2')
+    h1 = tf.Get('Spill{}/Event{}/Channel{}'.format(spill, event, channel))
 
     adcs = []
     time_ticks = []
@@ -4094,26 +4098,24 @@ def plot_cerenkov_pulse(filename, **kwargs):
     gr.GetYaxis().SetTitle('ADC')
     gr.GetYaxis().SetTitleOffset(1.5)
 
-    c1.Update()
-    if gate_min:
+    if gate_min and gate_max:
+        c1.Update()
         line_min = TLine(gate_min, gPad.GetUymin(), gate_min, gPad.GetUymax())
-        line_min.Draw()
-    if gate_max:
         line_max = TLine(gate_max, gPad.GetUymin(), gate_max, gPad.GetUymax())
-        line_max.Draw()
-    for line in [line_min, line_max]:
-        line.SetLineWidth(2)
-        line.SetLineStyle(2)
-        line.SetLineColor(kBlue)
 
+        for line in [line_min, line_max]:
+            line.Draw()
+            line.SetLineWidth(2)
+            line.SetLineStyle(2)
+            line.SetLineColor(kBlue)
 
-    lg1 = TLegend(0.7, 0.18, 0.98, 0.28)
-    set_legend_style(lg1)
-    lg1.AddEntry(line_min, 'gate', 'l')
-    lg1.Draw()
+        lg1 = TLegend(0.7, 0.18, 0.98, 0.28)
+        set_legend_style(lg1)
+        lg1.AddEntry(line_min, 'gate', 'l')
+        lg1.Draw()
 
     c1.Update()
-    c1.SaveAs('{}/plot_cerenkov_pulse.{}.pdf'.format(FIGURE_DIR, filename))
+    c1.SaveAs('{}/plot_cerenkov_pulse.{}.spill_{}.event_{}.channel_{}.pdf'.format(FIGURE_DIR, filename, spill, event, channel))
     input('Press any key to continue.')
 
 
@@ -4146,6 +4148,8 @@ def plot_cerenkov_adc_spectrum(filename, **kwargs):
     x_max = kwargs.get('x_max', 200.e3)
     calibration_constant = kwargs.get('calibration_constant', None)
     log_y = kwargs.get('log_y', False)
+    canvas_width = kwargs.get('canvas_width', 800)
+    canvas_height = kwargs.get('canvas_height', 800)
 
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
     h1 = tf.Get('cerenkovana/{}'.format('fHitAdcPerEventByGate' if adc_method == 'gate' else 'fHitAdcPerEvent'))
@@ -4160,10 +4164,14 @@ def plot_cerenkov_adc_spectrum(filename, **kwargs):
     h_event_count_per_fragment = tf.Get('cerenkovana/fEventCountPerFragment')
     fragment_count = h_event_count_per_fragment.GetEntries()
     exposure = fragment_count / 60. # hour
+    event_count = h1.Integral(h1.FindBin(5.), h1.GetNbinsX())
+    event_rate = event_count / (fragment_count * 40.)
     print('fragment_count = {}'.format(fragment_count))
     print('exposure = {} hour'.format(exposure))
+    print('event_count = {}'.format(event_count))
+    print('event_rate = {} Hz'.format(event_rate))
 
-    c1 = TCanvas('c1', 'c1', 800, 800)
+    c1 = TCanvas('c1', 'c1', canvas_width, canvas_height)
     set_margin()
     if log_y:
         gPad.SetLogy()
@@ -4175,7 +4183,8 @@ def plot_cerenkov_adc_spectrum(filename, **kwargs):
     if calibration_constant:
         h1.GetXaxis().SetTitle('NPE per Event')
     h1.GetYaxis().SetTitle('Event Count')
-    h1.GetYaxis().SetTitleOffset(2)
+    if canvas_height >= 800:
+        h1.GetYaxis().SetTitleOffset(2)
     h1.GetXaxis().SetRangeUser(x_min, x_max)
     h1.SetLineColor(kBlack)
     c1.Update()
@@ -4397,18 +4406,25 @@ def compare_cerenkov_adc_spectra(filenames, **kwargs):
     input('Press any key to continue.')
 
 
+# 20190312_testbeam_cerenkov_cosmic_trigger
+gStyle.SetOptStat('emr')
+# plot_cerenkov_pulse('V1742Analysis.run_2430_0001.root', spill=12, event=1, gate_min=250, gate_max=550)
+# plot_cerenkov_pulse('V1742Analysis.run_2430_0001.root', spill=16, event=1, gate_min=250, gate_max=550)
+# plot_cerenkov_pulse('V1742Analysis.run_2430_0001.root', spill=26, event=1, gate_min=250, gate_max=550)
+plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2430.root', x_min=-16.81, x_max=100., calibration_constant=3.362e-3, log_y=True, canvas_height=600)
+
 # 20190311_testbeam_seal_cerenkov
-gStyle.SetOptStat(0)
-compare_cerenkov_adc_spectra(['cerenkovana.cosmic_run_2388.root',
-                              'cerenkovana.cosmic_run_2395.root',
-                              'cerenkovana.cosmic_run_2414.root',
-                              'cerenkovana.cosmic_run_2423.root'],
-                             x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3,
-                             colors=[kRed, kBlue, kGreen + 2, kMagenta + 1],
-                             legend_texts=['plastic wraps (ineffective)',
-                                           'cap Swageloks',
-                                           '+ tape LED ports + Tedlar cover',
-                                           'Tedlar window'])
+# gStyle.SetOptStat(0)
+# compare_cerenkov_adc_spectra(['cerenkovana.cosmic_run_2388.root',
+#                               'cerenkovana.cosmic_run_2395.root',
+#                               'cerenkovana.cosmic_run_2414.root',
+#                               'cerenkovana.cosmic_run_2423.root'],
+#                              x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3,
+#                              colors=[kRed, kBlue, kGreen + 2, kMagenta + 1],
+#                              legend_texts=['plastic wraps (ineffective)',
+#                                            'cap Swageloks',
+#                                            '+ tape LED ports + Tedlar cover',
+#                                            'Tedlar window'])
 
 # 20190306_testbeam_tof_pmt_calibration
 # gStyle.SetOptStat('emr')
