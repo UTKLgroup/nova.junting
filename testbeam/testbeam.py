@@ -4411,7 +4411,9 @@ gStyle.SetOptStat('emr')
 # plot_cerenkov_pulse('V1742Analysis.run_2430_0001.root', spill=12, event=1, gate_min=250, gate_max=550)
 # plot_cerenkov_pulse('V1742Analysis.run_2430_0001.root', spill=16, event=1, gate_min=250, gate_max=550)
 # plot_cerenkov_pulse('V1742Analysis.run_2430_0001.root', spill=26, event=1, gate_min=250, gate_max=550)
-plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2430.root', x_min=-16.81, x_max=100., calibration_constant=3.362e-3, log_y=True, canvas_height=600)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2430.root', x_min=-16.81, x_max=100., calibration_constant=3.362e-3, log_y=True, canvas_height=600)
+plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2430.root', x_min=-5e3, x_max=30e3, log_y=True, canvas_height=800)
+plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2431.root', x_min=-5e3, x_max=30e3, log_y=True, canvas_height=800)
 
 # 20190311_testbeam_seal_cerenkov
 # gStyle.SetOptStat(0)
