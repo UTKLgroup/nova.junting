@@ -18,9 +18,7 @@ gROOT.ProcessLine(
     Float_t pz; \
     Float_t pdg_id; \
     Float_t parent_id; \
-
     Int_t spill_number; \
-
     Bool_t present_tof_us; \
     Float_t x_tof_us; \
     Float_t y_tof_us; \
@@ -29,7 +27,6 @@ gROOT.ProcessLine(
     Float_t px_tof_us; \
     Float_t py_tof_us; \
     Float_t pz_tof_us; \
-
     Bool_t present_wire_chamber_1; \
     Float_t x_wire_chamber_1; \
     Float_t y_wire_chamber_1; \
@@ -38,7 +35,6 @@ gROOT.ProcessLine(
     Float_t px_wire_chamber_1; \
     Float_t py_wire_chamber_1; \
     Float_t pz_wire_chamber_1; \
-
     Bool_t present_wire_chamber_2; \
     Float_t x_wire_chamber_2; \
     Float_t y_wire_chamber_2; \
@@ -47,7 +43,6 @@ gROOT.ProcessLine(
     Float_t px_wire_chamber_2; \
     Float_t py_wire_chamber_2; \
     Float_t pz_wire_chamber_2; \
-
     Bool_t present_wire_chamber_3; \
     Float_t x_wire_chamber_3; \
     Float_t y_wire_chamber_3; \
@@ -56,7 +51,6 @@ gROOT.ProcessLine(
     Float_t px_wire_chamber_3; \
     Float_t py_wire_chamber_3; \
     Float_t pz_wire_chamber_3; \
-
     Bool_t present_wire_chamber_4; \
     Float_t x_wire_chamber_4; \
     Float_t y_wire_chamber_4; \
@@ -65,7 +59,6 @@ gROOT.ProcessLine(
     Float_t px_wire_chamber_4; \
     Float_t py_wire_chamber_4; \
     Float_t pz_wire_chamber_4; \
-
     Bool_t present_cherenkov; \
     Float_t x_cherenkov; \
     Float_t y_cherenkov; \
@@ -74,7 +67,6 @@ gROOT.ProcessLine(
     Float_t px_cherenkov; \
     Float_t py_cherenkov; \
     Float_t pz_cherenkov; \
-
     Bool_t present_tof_ds; \
     Float_t x_tof_ds; \
     Float_t y_tof_ds; \
@@ -93,7 +85,16 @@ def save_particle_to_root(filename):
 
     tree = TTree('tree', 'tree')
     particle = Particle()
-    tree.Branch('particle', particle, 'is_noise/I:event_id:track_id:t_tof_us/F:t_tof_ds:x:y:z:t:px:py:pz:pdg_id:parent_id')
+    tree.Branch('particle', particle,
+                'is_noise/I:event_id:track_id:x/F:y:z:t:px:py:pz:pdg_id:parent_id:' +
+                'spill_number/I:' +
+                'present_tof_us/O:x_tof_us/F:y_tof_us:z_tof_us:t_tof_us:px_tof_us:py_tof_us:pz_tof_us:' +
+                'present_wire_chamber_1/O:x_wire_chamber_1/F:y_wire_chamber_1:z_wire_chamber_1:t_wire_chamber_1:px_wire_chamber_1:py_wire_chamber_1:pz_wire_chamber_1:' +
+                'present_wire_chamber_2/O:x_wire_chamber_2/F:y_wire_chamber_2:z_wire_chamber_2:t_wire_chamber_2:px_wire_chamber_2:py_wire_chamber_2:pz_wire_chamber_2:' +
+                'present_wire_chamber_3/O:x_wire_chamber_3/F:y_wire_chamber_3:z_wire_chamber_3:t_wire_chamber_3:px_wire_chamber_3:py_wire_chamber_3:pz_wire_chamber_3:' +
+                'present_wire_chamber_4/O:x_wire_chamber_4/F:y_wire_chamber_4:z_wire_chamber_4:t_wire_chamber_4:px_wire_chamber_4:py_wire_chamber_4:pz_wire_chamber_4:' +
+                'present_cherenkov/O:x_cherenkov/F:y_cherenkov:z_cherenkov:t_cherenkov:px_cherenkov:py_cherenkov:pz_cherenkov:' +
+                'present_tof_ds/O:x_tof_ds/F:y_tof_ds:z_tof_ds:t_tof_ds:px_tof_ds:py_tof_ds:pz_tof_ds')
 
     tf_in = TFile(filename)
     pid_momentums = {}
