@@ -4431,8 +4431,80 @@ def get_pulse_spill_numbers(filename, **kwargs):
     return spill_numbers
 
 
+def plot_dndx_vs_time_of_flight():
+    # index_of_refraction = 1.0004 # CO2
+    # index_of_refraction = 1.000035 # helium
+    index_of_refraction = 1.0003 # N2
+
+    cerenkov_length = 2.925    # m
+    trigger_distance = 4.6      # m
+    pmt_quantum_efficiency = 0.2
+    time_of_flight_max = trigger_distance / (SPEED_OF_LIGHT / index_of_refraction) * 1.e9 # ns
+    time_of_flight_min = trigger_distance / SPEED_OF_LIGHT * 1.e9 # ns
+    time_of_flight_count = 100.
+    time_of_flight_delta = (time_of_flight_max - time_of_flight_min) / time_of_flight_count
+    time_of_flight_epsilon = time_of_flight_min / 1.e5
+
+    print('time_of_flight_min = {}'.format(time_of_flight_min))
+    print('time_of_flight_max = {}'.format(time_of_flight_max))
+    print('time_of_flight_delta = {}'.format(time_of_flight_delta))
+
+    time_of_flights = []        # ns
+    dns = []
+    dndxs = []
+    momentums = []
+    for time_of_flight in np.arange(time_of_flight_min + time_of_flight_epsilon, time_of_flight_max, time_of_flight_delta):
+        time_of_flights.append(time_of_flight) # ns
+
+        time_of_flight *= 1.e-9 # s
+        beta = (trigger_distance / time_of_flight) / SPEED_OF_LIGHT
+        gamma = 1. / (1 - beta**2)**0.5
+        mass = PDG.GetParticle('mu+').Mass()
+        momentum = beta * gamma * mass # GeV
+        momentums.append(momentum)
+
+        theta = math.acos(1. / index_of_refraction / beta) * 180. / pi
+        sin_square_theta = 1. - (1. / index_of_refraction / beta)**2.
+        dndx = 2. * pi * 1. / 137. * sin_square_theta * pmt_quantum_efficiency * (1. / 300 - 1. / 500.) * 1.e9
+        dn = dndx * cerenkov_length
+        dndxs.append(dndx)
+        dns.append(dn)
+
+    # gr1 = TGraph(len(dns), np.array(time_of_flights), np.array(dndxs))
+    gr_tof = TGraph(len(dns), np.array(time_of_flights), np.array(dns))
+    gr_gev = TGraph(len(dns), np.array(momentums), np.array(dns))
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetGrid()
+    set_graph_style(gr_tof)
+    gr_tof.Draw('AL')
+    gr_tof.GetXaxis().SetTitle('Time of Flight (ns)')
+    gr_tof.GetYaxis().SetTitle('NPE')
+    c1.Update()
+    c1.SaveAs('{}/plot_dndx_vs_time_of_flight.tof.pdf'.format(FIGURE_DIR))
+
+    c2 = TCanvas('c2', 'c2', 800, 600)
+    set_margin()
+    gPad.SetGrid()
+    set_graph_style(gr_gev)
+    gr_gev.Draw('AL')
+    gr_gev.GetXaxis().SetTitle('Muon Momentum (GeV)')
+    gr_gev.GetYaxis().SetTitle('NPE')
+    c2.Update()
+    c2.SaveAs('{}/plot_dndx_vs_time_of_flight.gev.pdf'.format(FIGURE_DIR))
+
+    input('Press any key to continue.')
+
+    # print('theta = {} degree'.format(theta))
+    # print('sin_square_theta = {}'.format(sin_square_theta))
+    # print('dndx = {}'.format(dndx))
+    # print('dn = {}'.format(dn))
+
+
 # 20190312_testbeam_cerenkov_cosmic_trigger
-gStyle.SetOptStat('emr')
+# gStyle.SetOptStat('emr')
+plot_dndx_vs_time_of_flight()
 # plot_cerenkov_pulse('V1742Analysis.run_2430_0001.root', spill=12, event=1, gate_min=250, gate_max=550)
 # plot_cerenkov_pulse('V1742Analysis.run_2430_0001.root', spill=16, event=1, gate_min=250, gate_max=550)
 # plot_cerenkov_pulse('V1742Analysis.run_2430_0001.root', spill=26, event=1, gate_min=250, gate_max=550)
@@ -4443,9 +4515,9 @@ gStyle.SetOptStat('emr')
 # print('spills = {}'.format(spills))
 # for spill in [350]:
 # for spill in [289]:
-for spill in [350, 289, 161, 389]:
+# for spill in [350, 289, 161, 389]:
 # for spill in spills:
-    plot_cerenkov_pulse('V1742Analysis.run_2440.root', spill=spill, event=1, channel=5, gate_min=200, gate_max=800)
+    # plot_cerenkov_pulse('V1742Analysis.run_2440.root', spill=spill, event=1, channel=5, gate_min=200, gate_max=800)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2440.root', x_min=-16.81, x_max=600., calibration_constant=3.362e-3, log_y=True, canvas_height=600)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2440.root', x_min=-5e3, x_max=1000.e3, log_y=True, canvas_height=600)
 
