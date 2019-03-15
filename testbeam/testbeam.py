@@ -4109,7 +4109,8 @@ def plot_cerenkov_pulse(filename, **kwargs):
             line.SetLineStyle(2)
             line.SetLineColor(kBlue)
 
-        lg1 = TLegend(0.7, 0.18, 0.98, 0.28)
+        # lg1 = TLegend(0.7, 0.18, 0.98, 0.28)
+        lg1 = TLegend(0.75, 0.18, 0.9, 0.28)
         set_legend_style(lg1)
         lg1.AddEntry(line_min, 'gate', 'l')
         lg1.Draw()
@@ -4164,7 +4165,10 @@ def plot_cerenkov_adc_spectrum(filename, **kwargs):
     h_event_count_per_fragment = tf.Get('cerenkovana/fEventCountPerFragment')
     fragment_count = h_event_count_per_fragment.GetEntries()
     exposure = fragment_count / 60. # hour
-    event_count = h1.Integral(h1.FindBin(5.), h1.GetNbinsX())
+    # event_count = h1.Integral(h1.FindBin(5.), h1.GetNbinsX())
+    # event_count = h1.Integral(h1.FindBin(50.), h1.GetNbinsX())
+    # event_count = h1.Integral(h1.FindBin(20.e3), h1.GetNbinsX())
+    event_count = h1.Integral(h1.FindBin(2), h1.GetNbinsX())
     event_rate = event_count / (fragment_count * 40.)
     print('fragment_count = {}'.format(fragment_count))
     print('exposure = {} hour'.format(exposure))
@@ -4406,14 +4410,44 @@ def compare_cerenkov_adc_spectra(filenames, **kwargs):
     input('Press any key to continue.')
 
 
+def get_pulse_spill_numbers(filename, **kwargs):
+    calibration_constant = kwargs.get('calibration_constant', 1.)
+
+    spill_numbers = []
+    subrun_number_pulse_adcs = []
+
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    for pulse in tf.Get('cerenkovana/fPulseTree'):
+        spill_numbers.append(pulse.fSubRunNumber)
+        subrun_number_pulse_adcs.append([pulse.fSubRunNumber, pulse.fPulseAdc])
+
+    subrun_number_pulse_adcs = sorted(subrun_number_pulse_adcs, key=lambda x: x[1])
+    for subrun_number_pulse_adc in subrun_number_pulse_adcs:
+        subrun_number = subrun_number_pulse_adc[0]
+        pulse_adc = subrun_number_pulse_adc[1]
+        pulse_npe = subrun_number_pulse_adc[1] * calibration_constant
+        print('subrun_number = {}, adc = {}, pulse_npe = {}'.format(subrun_number, pulse_adc, pulse_npe))
+
+    return spill_numbers
+
+
 # 20190312_testbeam_cerenkov_cosmic_trigger
 gStyle.SetOptStat('emr')
 # plot_cerenkov_pulse('V1742Analysis.run_2430_0001.root', spill=12, event=1, gate_min=250, gate_max=550)
 # plot_cerenkov_pulse('V1742Analysis.run_2430_0001.root', spill=16, event=1, gate_min=250, gate_max=550)
 # plot_cerenkov_pulse('V1742Analysis.run_2430_0001.root', spill=26, event=1, gate_min=250, gate_max=550)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2430.root', x_min=-16.81, x_max=100., calibration_constant=3.362e-3, log_y=True, canvas_height=600)
-plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2430.root', x_min=-5e3, x_max=30e3, log_y=True, canvas_height=800)
-plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2431.root', x_min=-5e3, x_max=30e3, log_y=True, canvas_height=800)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2430.root', x_min=-5e3, x_max=30e3, log_y=True, canvas_height=800)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2431.root', x_min=-5e3, x_max=30e3, log_y=True, canvas_height=800)
+# spills = get_pulse_spill_numbers('cerenkovana.cosmic_run_2440.root', calibration_constant=3.362e-3)
+# print('spills = {}'.format(spills))
+# for spill in [350]:
+# for spill in [289]:
+for spill in [350, 289, 161, 389]:
+# for spill in spills:
+    plot_cerenkov_pulse('V1742Analysis.run_2440.root', spill=spill, event=1, channel=5, gate_min=200, gate_max=800)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2440.root', x_min=-16.81, x_max=600., calibration_constant=3.362e-3, log_y=True, canvas_height=600)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2440.root', x_min=-5e3, x_max=1000.e3, log_y=True, canvas_height=600)
 
 # 20190311_testbeam_seal_cerenkov
 # gStyle.SetOptStat(0)
