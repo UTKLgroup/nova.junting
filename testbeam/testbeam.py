@@ -15,7 +15,7 @@ INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
 # FIGURE_DIR = '/Users/juntinghuang/Desktop/nova/testbeam/doc/testbeam_beamline_simulation/figures'
-FIGURE_DIR = '/Users/juntinghuang/beamer/20190226_testbeam_cerenkov_cosmic/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20190312_testbeam_cerenkov_cosmic_trigger/figures'
 DATA_DIR = './data'
 
 
@@ -1594,7 +1594,9 @@ def plot_cherenkov_index_of_refaction():
 
 
 def get_cherenkov_photon_count():
-    index_of_refraction = 1.0004
+    index_of_refraction = 1.0004 # CO2
+    # index_of_refraction = 1.000035 # helium
+    # index_of_refraction = 1.0003 # N2
     beta = 1.
     theta = math.acos(1. / index_of_refraction / beta) * 180. / pi
     sin_square_theta = 1. - (1. / index_of_refraction / beta)**2.
@@ -3932,13 +3934,17 @@ def plot_cherenkov_index_of_refaction_air():
 
     refraction_index_one_atm_air = 1.0003
     # refraction_index_one_atm_nitrogen = 1.0003
+    refraction_index_one_atm_helium = 1.000035
     one_atm_air_refraction_indexs = [refraction_index_one_atm_air for i in range(len(momentums))]
     gr_one_atm_air = TGraph(len(momentums), np.array(momentums), np.array(one_atm_air_refraction_indexs))
+    one_atm_helium_refraction_indexs = [refraction_index_one_atm_helium for i in range(len(momentums))]
+    gr_one_atm_helium = TGraph(len(momentums), np.array(momentums), np.array(one_atm_helium_refraction_indexs))
 
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
     gPad.SetGrid()
     gPad.SetLeftMargin(0.2)
+    # gPad.SetLogx()
 
     lg1 = TLegend(0.51, 0.56, 0.86, 0.86)
     set_legend_style(lg1)
@@ -3970,6 +3976,13 @@ def plot_cherenkov_index_of_refaction_air():
     gr_one_atm_air.SetLineWidth(2)
     gr_one_atm_air.Draw('L')
     lg1.AddEntry(gr_one_atm_air, 'air / N_{2} at 1 atm ', 'l')
+
+    set_graph_style(gr_one_atm_helium)
+    gr_one_atm_helium.SetLineStyle(3)
+    gr_one_atm_helium.SetLineColor(kMagenta + 1)
+    gr_one_atm_helium.SetLineWidth(2)
+    gr_one_atm_helium.Draw('L')
+    lg1.AddEntry(gr_one_atm_helium, 'helium at 1 atm ', 'l')
 
     # latex = TLatex()
     # latex.SetNDC()
@@ -4057,19 +4070,28 @@ def plot_cerenkov_trigger_rate_vs_threshold():
     input('Press any key to continue.')
 
 
-def plot_cerenkov_pulse(filename, **kwargs):
-    gate_min = kwargs.get('gate_min', None)
-    gate_max = kwargs.get('gate_max', None)
-
-    tf = TFile('{}/{}'.format(DATA_DIR, filename))
-    h1 = tf.Get('Event9/Channel2')
-
+def get_graph_from_th1(h1):
     adcs = []
     time_ticks = []
     for i in range(1, h1.GetNbinsX() + 1):
         adcs.append(h1.GetBinContent(i))
         time_ticks.append(float(i))
-    gr = TGraph(len(time_ticks), np.array(time_ticks), np.array(adcs))
+    return TGraph(len(time_ticks), np.array(time_ticks), np.array(adcs))
+
+
+def plot_cerenkov_pulse(filename, **kwargs):
+    gate_min = kwargs.get('gate_min', None)
+    gate_max = kwargs.get('gate_max', None)
+    spill = kwargs.get('spill', 1)
+    event = kwargs.get('event', 0)
+    channel = kwargs.get('channel', 2)
+    trigger_channels = kwargs.get('trigger_channels', None)
+    y_min = kwargs.get('y_min', None)
+    y_max = kwargs.get('y_max', None)
+    legend_ndcs = kwargs.get('legend_ndcs', [0.4, 0.22, 0.53, 0.45])
+
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    gr = get_graph_from_th1(tf.Get('Spill{}/Event{}/Channel{}'.format(spill, event, channel)))
 
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
@@ -4080,27 +4102,42 @@ def plot_cerenkov_pulse(filename, **kwargs):
     gr.GetXaxis().SetTitle('Time Tick (200 ps)')
     gr.GetYaxis().SetTitle('ADC')
     gr.GetYaxis().SetTitleOffset(1.5)
+    if y_min is not None and y_max is not None:
+        gr.GetYaxis().SetRangeUser(y_min, y_max)
 
-    c1.Update()
-    if gate_min:
-        line_min = TLine(gate_min, gPad.GetUymin(), gate_min, gPad.GetUymax())
-        line_min.Draw()
-    if gate_max:
-        line_max = TLine(gate_max, gPad.GetUymin(), gate_max, gPad.GetUymax())
-        line_max.Draw()
-    for line in [line_min, line_max]:
-        line.SetLineWidth(2)
-        line.SetLineStyle(2)
-        line.SetLineColor(kBlue)
-
-
-    lg1 = TLegend(0.65, 0.18, 1, 0.28)
+    lg1 = TLegend(legend_ndcs[0], legend_ndcs[1], legend_ndcs[2], legend_ndcs[3])
     set_legend_style(lg1)
-    lg1.AddEntry(line_min, 'gate', 'l')
+    lg1.AddEntry(gr, 'Cerenkov', 'l')
     lg1.Draw()
 
+    if gate_min and gate_max:
+        c1.Update()
+        line_min = TLine(gate_min, gPad.GetUymin(), gate_min, gPad.GetUymax())
+        line_max = TLine(gate_max, gPad.GetUymin(), gate_max, gPad.GetUymax())
+        for line in [line_min, line_max]:
+            line.Draw()
+            line.SetLineWidth(2)
+            line.SetLineStyle(2)
+            line.SetLineColor(kBlue)
+        lg1.AddEntry(line_min, 'gate', 'l')
+
+    if trigger_channels:
+        gr_trigger_1 = get_graph_from_th1(tf.Get('Spill{}/Event{}/Channel{}'.format(spill, event, trigger_channels[0])))
+        gr_trigger_2 = get_graph_from_th1(tf.Get('Spill{}/Event{}/Channel{}'.format(spill, event, trigger_channels[1])))
+
+        set_graph_style(gr_trigger_1)
+        gr_trigger_1.SetLineColor(kRed)
+        gr_trigger_1.Draw('L,sames')
+
+        set_graph_style(gr_trigger_2)
+        gr_trigger_2.SetLineColor(kBlue)
+        gr_trigger_2.Draw('L,sames')
+
+        lg1.AddEntry(gr_trigger_1, 'downstream trigger', 'l')
+        lg1.AddEntry(gr_trigger_2, 'upstream trigger', 'l')
+
     c1.Update()
-    c1.SaveAs('{}/plot_cerenkov_pulse.{}.pdf'.format(FIGURE_DIR, filename))
+    c1.SaveAs('{}/plot_cerenkov_pulse.{}.spill_{}.event_{}.channel_{}{}.pdf'.format(FIGURE_DIR, filename, spill, event, channel, '.trigger' if trigger_channels else ''))
     input('Press any key to continue.')
 
 
@@ -4133,6 +4170,8 @@ def plot_cerenkov_adc_spectrum(filename, **kwargs):
     x_max = kwargs.get('x_max', 200.e3)
     calibration_constant = kwargs.get('calibration_constant', None)
     log_y = kwargs.get('log_y', False)
+    canvas_width = kwargs.get('canvas_width', 800)
+    canvas_height = kwargs.get('canvas_height', 800)
 
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
     h1 = tf.Get('cerenkovana/{}'.format('fHitAdcPerEventByGate' if adc_method == 'gate' else 'fHitAdcPerEvent'))
@@ -4147,13 +4186,21 @@ def plot_cerenkov_adc_spectrum(filename, **kwargs):
     h_event_count_per_fragment = tf.Get('cerenkovana/fEventCountPerFragment')
     fragment_count = h_event_count_per_fragment.GetEntries()
     exposure = fragment_count / 60. # hour
+    # event_count = h1.Integral(h1.FindBin(5.), h1.GetNbinsX())
+    # event_count = h1.Integral(h1.FindBin(50.), h1.GetNbinsX())
+    # event_count = h1.Integral(h1.FindBin(20.e3), h1.GetNbinsX())
+    event_count = h1.Integral(h1.FindBin(2), h1.GetNbinsX())
+    event_rate = event_count / (fragment_count * 40.)
     print('fragment_count = {}'.format(fragment_count))
     print('exposure = {} hour'.format(exposure))
+    print('event_count = {}'.format(event_count))
+    print('event_rate = {} Hz'.format(event_rate))
 
-    c1 = TCanvas('c1', 'c1', 800, 800)
+    c1 = TCanvas('c1', 'c1', canvas_width, canvas_height)
     set_margin()
     if log_y:
         gPad.SetLogy()
+    gPad.SetGrid()
 
     set_h1_style(h1)
     h1.Draw()
@@ -4161,7 +4208,8 @@ def plot_cerenkov_adc_spectrum(filename, **kwargs):
     if calibration_constant:
         h1.GetXaxis().SetTitle('NPE per Event')
     h1.GetYaxis().SetTitle('Event Count')
-    h1.GetYaxis().SetTitleOffset(2)
+    if canvas_height >= 800:
+        h1.GetYaxis().SetTitleOffset(2)
     h1.GetXaxis().SetRangeUser(x_min, x_max)
     h1.SetLineColor(kBlack)
     c1.Update()
@@ -4202,6 +4250,8 @@ def plot_cerenkov_adc_spectrum(filename, **kwargs):
 
 
 def plot_cerenkov_adc_spectrum_calibration(filename, **kwargs):
+    adc_to_coulomb = 1./4096. / 50 * 0.2e-9 # coulomb
+
     adc_method = kwargs.get('adc_method', 'gate')
     x_min = kwargs.get('x_min', 5.e3)
     x_max = kwargs.get('x_max', 200.e3)
@@ -4220,13 +4270,24 @@ def plot_cerenkov_adc_spectrum_calibration(filename, **kwargs):
     h1.GetXaxis().SetRangeUser(x_min, x_max)
     h1.SetLineColor(kBlack)
     c1.Update()
-    draw_statbox(h1, y1=0.5, x1=0.58)
+    draw_statbox(h1, y1=0.78, x1=0.6)
 
     h1.Fit('gaus')
     npe = (h1.GetMean() / h1.GetRMS())**2
     calibration_constant = npe / h1.GetMean()
+    gain = h1.GetMean() * adc_to_coulomb / (npe * 1.602e-19)
+
     print('npe = {}'.format(npe))
     print('calibration_constant = {}'.format(calibration_constant))
+    print('gain = {}'.format(gain))
+
+    latex = TLatex()
+    latex.SetNDC()
+    latex.SetTextFont(43)
+    latex.SetTextSize(28)
+    latex.DrawLatex(0.5, 0.67, 'NPE = {:.1f}'.format(npe))
+    latex.DrawLatex(0.5, 0.60, 'calib. = {:.1E} PE / ADC'.format(calibration_constant))
+    latex.DrawLatex(0.5, 0.53, 'gain = {:.1E}'.format(gain))
 
     c1.Update()
     c1.SaveAs('{}/plot_cerenkov_adc_spectrum_calibration.{}.pdf'.format(FIGURE_DIR, filename))
@@ -4287,9 +4348,234 @@ def plot_cerenkov_calibration_constant_vs_light_level():
     input('Press any key to continue.')
 
 
+def compare_cerenkov_adc_spectra(filenames, **kwargs):
+    adc_method = kwargs.get('adc_method', 'gate')
+    x_min = kwargs.get('x_min', -5.e3)
+    x_max = kwargs.get('x_max', 200.e3)
+    calibration_constant = kwargs.get('calibration_constant', None)
+    log_y = kwargs.get('log_y', False)
+    colors = kwargs.get('colors', [kRed, kBlue, kGreen + 2])
+    legend_texts = kwargs.get('legend_texts', ['a', 'b', 'c'])
+
+    h1s = []
+    for i, filename in enumerate(filenames):
+        tf = TFile('{}/{}'.format(DATA_DIR, filename))
+        h1 = tf.Get('cerenkovana/{}'.format('fHitAdcPerEventByGate' if adc_method == 'gate' else 'fHitAdcPerEvent'))
+        h1.SetDirectory(0)
+
+        h_event_count_per_fragment = tf.Get('cerenkovana/fEventCountPerFragment')
+        fragment_count = h_event_count_per_fragment.GetEntries()
+        exposure = fragment_count / 60. # hour
+        event_count = h1.Integral()
+        event_rate = event_count / (fragment_count * 40.)
+
+        print('\nlegend_texts[i] = {}'.format(legend_texts[i]))
+        print('exposure = {} hour'.format(exposure))
+        print('event_count = {}'.format(event_count))
+        print('fragment_count = {}'.format(fragment_count))
+        print('event_rate = {} Hz'.format(event_rate))
+
+        # h1.Scale(1. / h1.Integral())
+        # h1.Scale(1. / h1.GetMaximum())
+        h1.Scale(1. / exposure)
+        h1s.append(h1)
+
+    print('len(h1s) = {}'.format(len(h1s)))
+
+    if calibration_constant:
+        for j, h1 in enumerate(h1s):
+            h_calibrate = TH1D('h_calibrate', 'h_calibrate', h1.GetNbinsX(), h1.GetBinLowEdge(1) * calibration_constant, h1.GetBinLowEdge(h1.GetNbinsX() + 1) * calibration_constant)
+            for i in range(1, h1.GetNbinsX() + 1):
+                h_calibrate.SetBinContent(i, h1.GetBinContent(i))
+                h_calibrate.SetEntries(h1.GetEntries())
+            h1s[j] = h_calibrate
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    if log_y:
+        gPad.SetLogy()
+    gPad.SetGrid()
+
+    y_max = 0.
+    for i, h1 in enumerate(h1s):
+        if h1.GetMaximum() > y_max:
+            y_max = h1.GetMaximum()
+
+    lg1 = TLegend(0.35, 0.88 - 0.06 * len(filenames), 0.55, 0.88)
+    set_legend_style(lg1)
+
+    for i, h1 in enumerate(h1s):
+        set_h1_style(h1)
+        h1.SetLineColor(colors[i])
+        lg1.AddEntry(h1, legend_texts[i], 'l')
+
+        if i == 0:
+            h1.Draw()
+            h1.GetXaxis().SetTitle('ADC per Event')
+            if calibration_constant:
+                h1.GetXaxis().SetTitle('NPE per Event')
+            h1.GetYaxis().SetTitle('Event Count / Running Hour')
+            h1.GetYaxis().SetTitleOffset(1.5)
+            h1.GetXaxis().SetRangeUser(x_min, x_max)
+            h1.GetXaxis().SetRangeUser(x_min, x_max)
+            h1.GetYaxis().SetRangeUser(1.e-1, y_max * 1.1)
+            # c1.Update()
+            # draw_statbox(h1, y1=0.7, x1=0.7)
+        h1.Draw('sames')
+
+    lg1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/compare_cerenkov_adc_spectra.{}.calibrate_{}.log_y_{}.pdf'.format(FIGURE_DIR, filename, True if calibration_constant else False, log_y))
+    c1.SaveAs('{}/compare_cerenkov_adc_spectra.{}.calibrate_{}.log_y_{}.png'.format(FIGURE_DIR, filename, True if calibration_constant else False, log_y))
+    input('Press any key to continue.')
+
+
+def get_pulse_spill_numbers(filename, **kwargs):
+    calibration_constant = kwargs.get('calibration_constant', 1.)
+
+    spill_numbers = []
+    subrun_number_pulse_adcs = []
+
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    for pulse in tf.Get('cerenkovana/fPulseTree'):
+        spill_numbers.append(pulse.fSubRunNumber)
+        subrun_number_pulse_adcs.append([pulse.fSubRunNumber, pulse.fPulseAdc])
+
+    subrun_number_pulse_adcs = sorted(subrun_number_pulse_adcs, key=lambda x: x[1])
+    for subrun_number_pulse_adc in subrun_number_pulse_adcs:
+        subrun_number = subrun_number_pulse_adc[0]
+        pulse_adc = subrun_number_pulse_adc[1]
+        pulse_npe = subrun_number_pulse_adc[1] * calibration_constant
+        print('subrun_number = {}, adc = {}, pulse_npe = {}'.format(subrun_number, pulse_adc, pulse_npe))
+
+    return spill_numbers
+
+
+def plot_dndx_vs_time_of_flight():
+    # index_of_refraction = 1.0004 # CO2
+    # index_of_refraction = 1.000035 # helium
+    index_of_refraction = 1.0003 # N2
+
+    cerenkov_length = 2.925    # m
+    trigger_distance = 4.6      # m
+    pmt_quantum_efficiency = 0.2
+    time_of_flight_max = trigger_distance / (SPEED_OF_LIGHT / index_of_refraction) * 1.e9 # ns
+    time_of_flight_min = trigger_distance / SPEED_OF_LIGHT * 1.e9 # ns
+    time_of_flight_count = 100.
+    time_of_flight_delta = (time_of_flight_max - time_of_flight_min) / time_of_flight_count
+    time_of_flight_epsilon = time_of_flight_min / 1.e5
+
+    print('time_of_flight_min = {}'.format(time_of_flight_min))
+    print('time_of_flight_max = {}'.format(time_of_flight_max))
+    print('time_of_flight_delta = {}'.format(time_of_flight_delta))
+
+    time_of_flights = []        # ns
+    dns = []
+    dndxs = []
+    momentums = []
+    for time_of_flight in np.arange(time_of_flight_min + time_of_flight_epsilon, time_of_flight_max, time_of_flight_delta):
+        time_of_flights.append(time_of_flight) # ns
+
+        time_of_flight *= 1.e-9 # s
+        beta = (trigger_distance / time_of_flight) / SPEED_OF_LIGHT
+        gamma = 1. / (1 - beta**2)**0.5
+        mass = PDG.GetParticle('mu+').Mass()
+        momentum = beta * gamma * mass # GeV
+        momentums.append(momentum)
+
+        theta = math.acos(1. / index_of_refraction / beta) * 180. / pi
+        sin_square_theta = 1. - (1. / index_of_refraction / beta)**2.
+        dndx = 2. * pi * 1. / 137. * sin_square_theta * pmt_quantum_efficiency * (1. / 300 - 1. / 500.) * 1.e9
+        dn = dndx * cerenkov_length
+        dndxs.append(dndx)
+        dns.append(dn)
+
+    # gr1 = TGraph(len(dns), np.array(time_of_flights), np.array(dndxs))
+    gr_tof = TGraph(len(dns), np.array(time_of_flights), np.array(dns))
+    gr_gev = TGraph(len(dns), np.array(momentums), np.array(dns))
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetGrid()
+    set_graph_style(gr_tof)
+    gr_tof.Draw('AL')
+    gr_tof.GetXaxis().SetTitle('Time of Flight (ns)')
+    gr_tof.GetYaxis().SetTitle('NPE')
+    c1.Update()
+    c1.SaveAs('{}/plot_dndx_vs_time_of_flight.tof.pdf'.format(FIGURE_DIR))
+
+    c2 = TCanvas('c2', 'c2', 800, 600)
+    set_margin()
+    gPad.SetGrid()
+    set_graph_style(gr_gev)
+    gr_gev.Draw('AL')
+    gr_gev.GetXaxis().SetTitle('Muon Momentum (GeV)')
+    gr_gev.GetYaxis().SetTitle('NPE')
+    c2.Update()
+    c2.SaveAs('{}/plot_dndx_vs_time_of_flight.gev.pdf'.format(FIGURE_DIR))
+
+    input('Press any key to continue.')
+
+    # print('theta = {} degree'.format(theta))
+    # print('sin_square_theta = {}'.format(sin_square_theta))
+    # print('dndx = {}'.format(dndx))
+    # print('dn = {}'.format(dn))
+
+
+# 20190312_testbeam_cerenkov_cosmic_trigger
+# gStyle.SetOptStat('emr')
+# plot_dndx_vs_time_of_flight()
+# plot_cerenkov_pulse('V1742Analysis.run_2430_0001.root', spill=12, event=1, gate_min=250, gate_max=550)
+# plot_cerenkov_pulse('V1742Analysis.run_2430_0001.root', spill=16, event=1, gate_min=250, gate_max=550)
+# plot_cerenkov_pulse('V1742Analysis.run_2430_0001.root', spill=26, event=1, gate_min=250, gate_max=550)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2430.root', x_min=-16.81, x_max=100., calibration_constant=3.362e-3, log_y=True, canvas_height=600)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2430.root', x_min=-5e3, x_max=30e3, log_y=True, canvas_height=800)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2431.root', x_min=-5e3, x_max=30e3, log_y=True, canvas_height=800)
+# spills = get_pulse_spill_numbers('cerenkovana.cosmic_run_2440.root', calibration_constant=3.362e-3)
+# print('spills = {}'.format(spills))
+# for spill in [350]:
+# for spill in [289]:
+for spill in [161]:
+# for spill in [350, 289, 161, 389]:
+# for spill in spills:
+    # plot_cerenkov_pulse('V1742Analysis.run_2440.root', spill=spill, event=1, channel=5, gate_min=200, gate_max=800, trigger_channels=[0, 2])
+    plot_cerenkov_pulse('V1742Analysis.run_2440.root', spill=spill, event=1, channel=5, gate_min=200, gate_max=800)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2440.root', x_min=-16.81, x_max=600., calibration_constant=3.362e-3, log_y=True, canvas_height=600)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2440.root', x_min=-5e3, x_max=1000.e3, log_y=True, canvas_height=600)
+
+# 20190311_testbeam_seal_cerenkov
+# gStyle.SetOptStat(0)
+# compare_cerenkov_adc_spectra(['cerenkovana.cosmic_run_2388.root',
+#                               'cerenkovana.cosmic_run_2395.root',
+#                               'cerenkovana.cosmic_run_2414.root',
+#                               'cerenkovana.cosmic_run_2423.root'],
+#                              x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3,
+#                              colors=[kRed, kBlue, kGreen + 2, kMagenta + 1],
+#                              legend_texts=['plastic wraps (ineffective)',
+#                                            'cap Swageloks',
+#                                            '+ tape LED ports + Tedlar cover',
+#                                            'Tedlar window'])
+
+# 20190306_testbeam_tof_pmt_calibration
+# gStyle.SetOptStat('emr')
+# plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_tof_run_2408.root', x_min=-2000, x_max=70e3)
+# plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_tof_run_2409.root', x_min=-2000, x_max=70e3)
+# plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_tof_run_2410.root', x_min=-2000, x_max=70e3)
+# plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_tof_run_2411.root', x_min=-2000, x_max=100e3)
+# plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_tof_run_2412.root', x_min=-2000, x_max=30e3)
+# plot_cerenkov_pulse('V1742Analysis.run_2411_0001.root', gate_min=450, gate_max=580)
+# plot_cerenkov_pulse('V1742Analysis.run_2411_0001.root', gate_min=450, gate_max=700)
+
 # 20190226_testbeam_cerenkov_cosmic
 # gStyle.SetOptStat('emr')
 # gStyle.SetOptFit(1)
+# gStyle.SetOptStat(0)
+# compare_cerenkov_adc_spectra(['cerenkovana.cosmic_run_2388.root', 'cerenkovana.cosmic_run_2395.root', 'cerenkovana.cosmic_run_2414.root'],
+#                              x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3,
+#                              legend_texts=['plastic wraps (ineffective)', 'cap Swageloks', '+ tape LED ports + Tedlar cover'])
+# compare_cerenkov_adc_spectra(['cerenkovana.cosmic_run_2395.root', 'cerenkovana.cosmic_run_2388.root'], x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
+# compare_cerenkov_adc_spectra(['cerenkovana.cosmic_run_2379.root', 'cerenkovana.cosmic_run_2388.root'], x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
 # plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_1.root', x_min=10e3, x_max=70e3)
 # plot_cerenkov_calibration_constant_vs_light_level()
 # plot_cherenkov_index_of_refaction_air()
@@ -4311,9 +4597,16 @@ def plot_cerenkov_calibration_constant_vs_light_level():
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_1.root', x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_1.root', x_min=-16.81, x_max=504.3, calibration_constant=3.362e-3, log_y=True)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2328.root', x_min=-5e3, x_max=40e3)
-plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2328.root', x_min=-5e3, x_max=150e3, log_y=True)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2328.root', x_min=-5e3, x_max=150e3, log_y=True)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2328.root', x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2328.root', x_min=-16.81, x_max=504.3, calibration_constant=3.362e-3, log_y=True)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2379.root', x_min=-5e3, x_max=40e3)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2379.root', x_min=-5e3, x_max=150e3, log_y=True)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2379.root', x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2379.root', x_min=-16.81, x_max=504.3, calibration_constant=3.362e-3, log_y=True)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2388.root', x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2388.root', x_min=-16.81, x_max=504.3, calibration_constant=3.362e-3, log_y=True)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2395.root', x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_1.root', adc_method='pulse')
 # plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_1.root')
 # plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_2.root')
