@@ -4070,23 +4070,28 @@ def plot_cerenkov_trigger_rate_vs_threshold():
     input('Press any key to continue.')
 
 
+def get_graph_from_th1(h1):
+    adcs = []
+    time_ticks = []
+    for i in range(1, h1.GetNbinsX() + 1):
+        adcs.append(h1.GetBinContent(i))
+        time_ticks.append(float(i))
+    return TGraph(len(time_ticks), np.array(time_ticks), np.array(adcs))
+
+
 def plot_cerenkov_pulse(filename, **kwargs):
     gate_min = kwargs.get('gate_min', None)
     gate_max = kwargs.get('gate_max', None)
     spill = kwargs.get('spill', 1)
     event = kwargs.get('event', 0)
     channel = kwargs.get('channel', 2)
+    trigger_channels = kwargs.get('trigger_channels', None)
+    y_min = kwargs.get('y_min', None)
+    y_max = kwargs.get('y_max', None)
+    legend_ndcs = kwargs.get('legend_ndcs', [0.4, 0.22, 0.53, 0.45])
 
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
-    # h1 = tf.Get('Event9/Channel2')
-    h1 = tf.Get('Spill{}/Event{}/Channel{}'.format(spill, event, channel))
-
-    adcs = []
-    time_ticks = []
-    for i in range(1, h1.GetNbinsX() + 1):
-        adcs.append(h1.GetBinContent(i))
-        time_ticks.append(float(i))
-    gr = TGraph(len(time_ticks), np.array(time_ticks), np.array(adcs))
+    gr = get_graph_from_th1(tf.Get('Spill{}/Event{}/Channel{}'.format(spill, event, channel)))
 
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
@@ -4097,26 +4102,42 @@ def plot_cerenkov_pulse(filename, **kwargs):
     gr.GetXaxis().SetTitle('Time Tick (200 ps)')
     gr.GetYaxis().SetTitle('ADC')
     gr.GetYaxis().SetTitleOffset(1.5)
+    if y_min is not None and y_max is not None:
+        gr.GetYaxis().SetRangeUser(y_min, y_max)
+
+    lg1 = TLegend(legend_ndcs[0], legend_ndcs[1], legend_ndcs[2], legend_ndcs[3])
+    set_legend_style(lg1)
+    lg1.AddEntry(gr, 'Cerenkov', 'l')
+    lg1.Draw()
 
     if gate_min and gate_max:
         c1.Update()
         line_min = TLine(gate_min, gPad.GetUymin(), gate_min, gPad.GetUymax())
         line_max = TLine(gate_max, gPad.GetUymin(), gate_max, gPad.GetUymax())
-
         for line in [line_min, line_max]:
             line.Draw()
             line.SetLineWidth(2)
             line.SetLineStyle(2)
             line.SetLineColor(kBlue)
-
-        # lg1 = TLegend(0.7, 0.18, 0.98, 0.28)
-        lg1 = TLegend(0.75, 0.18, 0.9, 0.28)
-        set_legend_style(lg1)
         lg1.AddEntry(line_min, 'gate', 'l')
-        lg1.Draw()
+
+    if trigger_channels:
+        gr_trigger_1 = get_graph_from_th1(tf.Get('Spill{}/Event{}/Channel{}'.format(spill, event, trigger_channels[0])))
+        gr_trigger_2 = get_graph_from_th1(tf.Get('Spill{}/Event{}/Channel{}'.format(spill, event, trigger_channels[1])))
+
+        set_graph_style(gr_trigger_1)
+        gr_trigger_1.SetLineColor(kRed)
+        gr_trigger_1.Draw('L,sames')
+
+        set_graph_style(gr_trigger_2)
+        gr_trigger_2.SetLineColor(kBlue)
+        gr_trigger_2.Draw('L,sames')
+
+        lg1.AddEntry(gr_trigger_1, 'downstream trigger', 'l')
+        lg1.AddEntry(gr_trigger_2, 'upstream trigger', 'l')
 
     c1.Update()
-    c1.SaveAs('{}/plot_cerenkov_pulse.{}.spill_{}.event_{}.channel_{}.pdf'.format(FIGURE_DIR, filename, spill, event, channel))
+    c1.SaveAs('{}/plot_cerenkov_pulse.{}.spill_{}.event_{}.channel_{}{}.pdf'.format(FIGURE_DIR, filename, spill, event, channel, '.trigger' if trigger_channels else ''))
     input('Press any key to continue.')
 
 
@@ -4504,7 +4525,7 @@ def plot_dndx_vs_time_of_flight():
 
 # 20190312_testbeam_cerenkov_cosmic_trigger
 # gStyle.SetOptStat('emr')
-plot_dndx_vs_time_of_flight()
+# plot_dndx_vs_time_of_flight()
 # plot_cerenkov_pulse('V1742Analysis.run_2430_0001.root', spill=12, event=1, gate_min=250, gate_max=550)
 # plot_cerenkov_pulse('V1742Analysis.run_2430_0001.root', spill=16, event=1, gate_min=250, gate_max=550)
 # plot_cerenkov_pulse('V1742Analysis.run_2430_0001.root', spill=26, event=1, gate_min=250, gate_max=550)
@@ -4515,9 +4536,11 @@ plot_dndx_vs_time_of_flight()
 # print('spills = {}'.format(spills))
 # for spill in [350]:
 # for spill in [289]:
+for spill in [161]:
 # for spill in [350, 289, 161, 389]:
 # for spill in spills:
-    # plot_cerenkov_pulse('V1742Analysis.run_2440.root', spill=spill, event=1, channel=5, gate_min=200, gate_max=800)
+    # plot_cerenkov_pulse('V1742Analysis.run_2440.root', spill=spill, event=1, channel=5, gate_min=200, gate_max=800, trigger_channels=[0, 2])
+    plot_cerenkov_pulse('V1742Analysis.run_2440.root', spill=spill, event=1, channel=5, gate_min=200, gate_max=800)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2440.root', x_min=-16.81, x_max=600., calibration_constant=3.362e-3, log_y=True, canvas_height=600)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2440.root', x_min=-5e3, x_max=1000.e3, log_y=True, canvas_height=600)
 
