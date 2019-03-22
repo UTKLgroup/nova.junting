@@ -19,7 +19,7 @@ gROOT.ProcessLine(
     Float_t pdg_id; \
     Float_t parent_id; \
     Int_t spill_number; \
-    Bool_t present_tof_us; \
+    Int_t present_tof_us; \
     Float_t x_tof_us; \
     Float_t y_tof_us; \
     Float_t z_tof_us; \
@@ -27,7 +27,7 @@ gROOT.ProcessLine(
     Float_t px_tof_us; \
     Float_t py_tof_us; \
     Float_t pz_tof_us; \
-    Bool_t present_wire_chamber_1; \
+    Int_t present_wire_chamber_1; \
     Float_t x_wire_chamber_1; \
     Float_t y_wire_chamber_1; \
     Float_t z_wire_chamber_1; \
@@ -35,7 +35,7 @@ gROOT.ProcessLine(
     Float_t px_wire_chamber_1; \
     Float_t py_wire_chamber_1; \
     Float_t pz_wire_chamber_1; \
-    Bool_t present_wire_chamber_2; \
+    Int_t present_wire_chamber_2; \
     Float_t x_wire_chamber_2; \
     Float_t y_wire_chamber_2; \
     Float_t z_wire_chamber_2; \
@@ -43,7 +43,7 @@ gROOT.ProcessLine(
     Float_t px_wire_chamber_2; \
     Float_t py_wire_chamber_2; \
     Float_t pz_wire_chamber_2; \
-    Bool_t present_wire_chamber_3; \
+    Int_t present_wire_chamber_3; \
     Float_t x_wire_chamber_3; \
     Float_t y_wire_chamber_3; \
     Float_t z_wire_chamber_3; \
@@ -51,7 +51,7 @@ gROOT.ProcessLine(
     Float_t px_wire_chamber_3; \
     Float_t py_wire_chamber_3; \
     Float_t pz_wire_chamber_3; \
-    Bool_t present_wire_chamber_4; \
+    Int_t present_wire_chamber_4; \
     Float_t x_wire_chamber_4; \
     Float_t y_wire_chamber_4; \
     Float_t z_wire_chamber_4; \
@@ -59,15 +59,15 @@ gROOT.ProcessLine(
     Float_t px_wire_chamber_4; \
     Float_t py_wire_chamber_4; \
     Float_t pz_wire_chamber_4; \
-    Bool_t present_cherenkov; \
-    Float_t x_cherenkov; \
-    Float_t y_cherenkov; \
-    Float_t z_cherenkov; \
-    Float_t t_cherenkov; \
-    Float_t px_cherenkov; \
-    Float_t py_cherenkov; \
-    Float_t pz_cherenkov; \
-    Bool_t present_tof_ds; \
+    Int_t present_cerenkov; \
+    Float_t x_cerenkov; \
+    Float_t y_cerenkov; \
+    Float_t z_cerenkov; \
+    Float_t t_cerenkov; \
+    Float_t px_cerenkov; \
+    Float_t py_cerenkov; \
+    Float_t pz_cerenkov; \
+    Int_t present_tof_ds; \
     Float_t x_tof_ds; \
     Float_t y_tof_ds; \
     Float_t z_tof_ds; \
@@ -88,13 +88,13 @@ def save_particle_to_root(filename):
     tree.Branch('particle', particle,
                 'is_noise/I:event_id:track_id:x/F:y:z:t:px:py:pz:pdg_id:parent_id:' +
                 'spill_number/I:' +
-                'present_tof_us/O:x_tof_us/F:y_tof_us:z_tof_us:t_tof_us:px_tof_us:py_tof_us:pz_tof_us:' +
-                'present_wire_chamber_1/O:x_wire_chamber_1/F:y_wire_chamber_1:z_wire_chamber_1:t_wire_chamber_1:px_wire_chamber_1:py_wire_chamber_1:pz_wire_chamber_1:' +
-                'present_wire_chamber_2/O:x_wire_chamber_2/F:y_wire_chamber_2:z_wire_chamber_2:t_wire_chamber_2:px_wire_chamber_2:py_wire_chamber_2:pz_wire_chamber_2:' +
-                'present_wire_chamber_3/O:x_wire_chamber_3/F:y_wire_chamber_3:z_wire_chamber_3:t_wire_chamber_3:px_wire_chamber_3:py_wire_chamber_3:pz_wire_chamber_3:' +
-                'present_wire_chamber_4/O:x_wire_chamber_4/F:y_wire_chamber_4:z_wire_chamber_4:t_wire_chamber_4:px_wire_chamber_4:py_wire_chamber_4:pz_wire_chamber_4:' +
-                'present_cherenkov/O:x_cherenkov/F:y_cherenkov:z_cherenkov:t_cherenkov:px_cherenkov:py_cherenkov:pz_cherenkov:' +
-                'present_tof_ds/O:x_tof_ds/F:y_tof_ds:z_tof_ds:t_tof_ds:px_tof_ds:py_tof_ds:pz_tof_ds')
+                'present_tof_us/I:x_tof_us/F:y_tof_us:z_tof_us:t_tof_us:px_tof_us:py_tof_us:pz_tof_us:' +
+                'present_wire_chamber_1/I:x_wire_chamber_1/F:y_wire_chamber_1:z_wire_chamber_1:t_wire_chamber_1:px_wire_chamber_1:py_wire_chamber_1:pz_wire_chamber_1:' +
+                'present_wire_chamber_2/I:x_wire_chamber_2/F:y_wire_chamber_2:z_wire_chamber_2:t_wire_chamber_2:px_wire_chamber_2:py_wire_chamber_2:pz_wire_chamber_2:' +
+                'present_wire_chamber_3/I:x_wire_chamber_3/F:y_wire_chamber_3:z_wire_chamber_3:t_wire_chamber_3:px_wire_chamber_3:py_wire_chamber_3:pz_wire_chamber_3:' +
+                'present_wire_chamber_4/I:x_wire_chamber_4/F:y_wire_chamber_4:z_wire_chamber_4:t_wire_chamber_4:px_wire_chamber_4:py_wire_chamber_4:pz_wire_chamber_4:' +
+                'present_cerenkov/I:x_cerenkov/F:y_cerenkov:z_cerenkov:t_cerenkov:px_cerenkov:py_cerenkov:pz_cerenkov:' +
+                'present_tof_ds/I:x_tof_ds/F:y_tof_ds:z_tof_ds:t_tof_ds:px_tof_ds:py_tof_ds:pz_tof_ds')
 
     tf_in = TFile(filename)
     pid_momentums = {}
@@ -147,50 +147,50 @@ def save_particle_to_root(filename):
                 particle.py_tof_us = track.Pytof_us
                 particle.pz_tof_us = track.Pztof_us
 
-                particle.present_wire_chamber_1_detector = track.TrackPresentwire_chamber_1_detector
-                particle.x_wire_chamber_1_detector = track.xwire_chamber_1_detector
-                particle.y_wire_chamber_1_detector = track.ywire_chamber_1_detector
-                particle.z_wire_chamber_1_detector = track.zwire_chamber_1_detector
-                particle.t_wire_chamber_1_detector = track.twire_chamber_1_detector
-                particle.px_wire_chamber_1_detector = track.Pxwire_chamber_1_detector
-                particle.py_wire_chamber_1_detector = track.Pywire_chamber_1_detector
-                particle.pz_wire_chamber_1_detector = track.Pzwire_chamber_1_detector
+                particle.present_wire_chamber_1 = track.TrackPresentwire_chamber_1_detector
+                particle.x_wire_chamber_1 = track.xwire_chamber_1_detector
+                particle.y_wire_chamber_1 = track.ywire_chamber_1_detector
+                particle.z_wire_chamber_1 = track.zwire_chamber_1_detector
+                particle.t_wire_chamber_1 = track.twire_chamber_1_detector
+                particle.px_wire_chamber_1 = track.Pxwire_chamber_1_detector
+                particle.py_wire_chamber_1 = track.Pywire_chamber_1_detector
+                particle.pz_wire_chamber_1 = track.Pzwire_chamber_1_detector
 
-                particle.present_wire_chamber_2_detector = track.TrackPresentwire_chamber_2_detector
-                particle.x_wire_chamber_2_detector = track.xwire_chamber_2_detector
-                particle.y_wire_chamber_2_detector = track.ywire_chamber_2_detector
-                particle.z_wire_chamber_2_detector = track.zwire_chamber_2_detector
-                particle.t_wire_chamber_2_detector = track.twire_chamber_2_detector
-                particle.px_wire_chamber_2_detector = track.Pxwire_chamber_2_detector
-                particle.py_wire_chamber_2_detector = track.Pywire_chamber_2_detector
-                particle.pz_wire_chamber_2_detector = track.Pzwire_chamber_2_detector
+                particle.present_wire_chamber_2 = track.TrackPresentwire_chamber_2_detector
+                particle.x_wire_chamber_2 = track.xwire_chamber_2_detector
+                particle.y_wire_chamber_2 = track.ywire_chamber_2_detector
+                particle.z_wire_chamber_2 = track.zwire_chamber_2_detector
+                particle.t_wire_chamber_2 = track.twire_chamber_2_detector
+                particle.px_wire_chamber_2 = track.Pxwire_chamber_2_detector
+                particle.py_wire_chamber_2 = track.Pywire_chamber_2_detector
+                particle.pz_wire_chamber_2 = track.Pzwire_chamber_2_detector
 
-                particle.present_wire_chamber_3_detector = track.TrackPresentwire_chamber_3_detector
-                particle.x_wire_chamber_3_detector = track.xwire_chamber_3_detector
-                particle.y_wire_chamber_3_detector = track.ywire_chamber_3_detector
-                particle.z_wire_chamber_3_detector = track.zwire_chamber_3_detector
-                particle.t_wire_chamber_3_detector = track.twire_chamber_3_detector
-                particle.px_wire_chamber_3_detector = track.Pxwire_chamber_3_detector
-                particle.py_wire_chamber_3_detector = track.Pywire_chamber_3_detector
-                particle.pz_wire_chamber_3_detector = track.Pzwire_chamber_3_detector
+                particle.present_wire_chamber_3 = track.TrackPresentwire_chamber_3_detector
+                particle.x_wire_chamber_3 = track.xwire_chamber_3_detector
+                particle.y_wire_chamber_3 = track.ywire_chamber_3_detector
+                particle.z_wire_chamber_3 = track.zwire_chamber_3_detector
+                particle.t_wire_chamber_3 = track.twire_chamber_3_detector
+                particle.px_wire_chamber_3 = track.Pxwire_chamber_3_detector
+                particle.py_wire_chamber_3 = track.Pywire_chamber_3_detector
+                particle.pz_wire_chamber_3 = track.Pzwire_chamber_3_detector
 
-                particle.present_wire_chamber_4_detector = track.TrackPresentwire_chamber_4_detector
-                particle.x_wire_chamber_4_detector = track.xwire_chamber_4_detector
-                particle.y_wire_chamber_4_detector = track.ywire_chamber_4_detector
-                particle.z_wire_chamber_4_detector = track.zwire_chamber_4_detector
-                particle.t_wire_chamber_4_detector = track.twire_chamber_4_detector
-                particle.px_wire_chamber_4_detector = track.Pxwire_chamber_4_detector
-                particle.py_wire_chamber_4_detector = track.Pywire_chamber_4_detector
-                particle.pz_wire_chamber_4_detector = track.Pzwire_chamber_4_detector
+                particle.present_wire_chamber_4 = track.TrackPresentwire_chamber_4_detector
+                particle.x_wire_chamber_4 = track.xwire_chamber_4_detector
+                particle.y_wire_chamber_4 = track.ywire_chamber_4_detector
+                particle.z_wire_chamber_4 = track.zwire_chamber_4_detector
+                particle.t_wire_chamber_4 = track.twire_chamber_4_detector
+                particle.px_wire_chamber_4 = track.Pxwire_chamber_4_detector
+                particle.py_wire_chamber_4 = track.Pywire_chamber_4_detector
+                particle.pz_wire_chamber_4 = track.Pzwire_chamber_4_detector
 
-                particle.present_cherenkov = track.TrackPresentcherenkov
-                particle.x_cherenkov = track.xcherenkov
-                particle.y_cherenkov = track.ycherenkov
-                particle.z_cherenkov = track.zcherenkov
-                particle.t_cherenkov = track.tcherenkov
-                particle.px_cherenkov = track.Pxcherenkov
-                particle.py_cherenkov = track.Pycherenkov
-                particle.pz_cherenkov = track.Pzcherenkov
+                particle.present_cerenkov = track.TrackPresentcherenkov
+                particle.x_cerenkov = track.xcherenkov
+                particle.y_cerenkov = track.ycherenkov
+                particle.z_cerenkov = track.zcherenkov
+                particle.t_cerenkov = track.tcherenkov
+                particle.px_cerenkov = track.Pxcherenkov
+                particle.py_cerenkov = track.Pycherenkov
+                particle.pz_cerenkov = track.Pzcherenkov
 
                 particle.present_tof_ds = track.TrackPresenttof_ds
                 particle.x_tof_ds = track.xtof_ds
@@ -202,6 +202,10 @@ def save_particle_to_root(filename):
                 particle.pz_tof_ds = track.Pztof_ds
 
                 tree.Fill()
+
+            # if track_count == 5000:
+            #     break
+        # break
     tf_in.Close()
 
     tf_out.cd()
