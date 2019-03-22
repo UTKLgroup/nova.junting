@@ -1432,11 +1432,24 @@ def plot_ddt_exposure(filename, **kwargs):
         # input('Press any key to continue.')
         # break
 
+
+def get_cosmic_ray_trigger_exposure():
+    event_duration = 550.e-6    # s
+    trigger_rate = 10.          # Hz
+
+    exposure_per_second = event_duration * trigger_rate
+    # exposure_per_year = (exposure_per_second * 60. * 60. * 24. * 365.) / (60. * 60. * 24.) # day
+    exposure_per_year = exposure_per_second * 365. # day
+    print('exposure_per_year = {} days'.format(exposure_per_year))
+
+
+get_cosmic_ray_trigger_exposure()
+
 # 20190220_nnbar_data_quality
-gStyle.SetOptStat(0)
-plot_ddt_exposure('get-metadata.json',
-                  datetime_start=datetime.datetime(2018, 7, 31),
-                  datetime_end=datetime.datetime(2019, 2, 20))
+# gStyle.SetOptStat(0)
+# plot_ddt_exposure('get-metadata.json',
+#                   datetime_start=datetime.datetime(2018, 7, 31),
+#                   datetime_end=datetime.datetime(2019, 2, 20))
 
 # 20181115_nnbar_data_quality
 # gStyle.SetOptStat(0)
