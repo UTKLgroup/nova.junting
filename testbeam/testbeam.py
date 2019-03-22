@@ -4523,6 +4523,32 @@ def plot_dndx_vs_time_of_flight():
     # print('dn = {}'.format(dn))
 
 
+def get_test_beam_chamber_volume():
+    length = 75. * 12. * INCH_TO_METER
+    width = (23. * 12. + 6.) * INCH_TO_METER
+    height = 95. * INCH_TO_METER
+
+    area = pi * (width / 2.)**2 / 2. + width * height
+    volume = area * length
+
+    print('INCH_TO_METER = {}'.format(INCH_TO_METER))
+    print('length = {}'.format(length))
+    print('width = {}'.format(width))
+    print('height = {}'.format(height))
+    print('area = {} m2'.format(area))
+    print('volume = {} m3'.format(volume))
+    print('volume = {} cubic feet'.format(volume * 35.3147))
+
+    cerenkov_radius = 0.15
+    cerenkov_length = 3.
+    cerenkov_volume = pi * cerenkov_radius**2 * cerenkov_length
+    # cerenkov_volume = 0.25
+    print('cerenkov_volume = {}'.format(cerenkov_volume))
+    print('cerenkov_volume / volume = {}'.format(cerenkov_volume / volume))
+
+
+get_test_beam_chamber_volume()
+
 # 20190312_testbeam_cerenkov_cosmic_trigger
 # gStyle.SetOptStat('emr')
 # plot_dndx_vs_time_of_flight()
@@ -4536,11 +4562,11 @@ def plot_dndx_vs_time_of_flight():
 # print('spills = {}'.format(spills))
 # for spill in [350]:
 # for spill in [289]:
-for spill in [161]:
+# for spill in [161]:
 # for spill in [350, 289, 161, 389]:
 # for spill in spills:
     # plot_cerenkov_pulse('V1742Analysis.run_2440.root', spill=spill, event=1, channel=5, gate_min=200, gate_max=800, trigger_channels=[0, 2])
-    plot_cerenkov_pulse('V1742Analysis.run_2440.root', spill=spill, event=1, channel=5, gate_min=200, gate_max=800)
+    # plot_cerenkov_pulse('V1742Analysis.run_2440.root', spill=spill, event=1, channel=5, gate_min=200, gate_max=800)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2440.root', x_min=-16.81, x_max=600., calibration_constant=3.362e-3, log_y=True, canvas_height=600)
 # plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2440.root', x_min=-5e3, x_max=1000.e3, log_y=True, canvas_height=600)
 
