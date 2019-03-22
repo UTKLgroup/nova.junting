@@ -1443,7 +1443,37 @@ def get_cosmic_ray_trigger_exposure():
     print('exposure_per_year = {} days'.format(exposure_per_year))
 
 
-get_cosmic_ray_trigger_exposure()
+def plot_sensitivity_vs_efficiency_background():
+    h1 = TH2D('h1', 'h1', 100, 0.5, 100.5, 100, 0, 1)
+
+    for i in range(1, h1.GetNbinsX() + 1):
+        for j in range(1, h1.GetNbinsY() + 1):
+            background = h1.GetXaxis().GetBinCenter(i)
+            efficiency = h1.GetYaxis().GetBinCenter(j)
+            life_time = efficiency / background**0.5
+            h1.SetBinContent(i, j, life_time)
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetLogx()
+    gPad.SetLogy()
+    gPad.SetLogz()
+
+    set_h2_style(h1)
+    set_h2_color_style()
+
+    h1.Draw('colz')
+    h1.GetXaxis().SetTitle('Background Event Count')
+    h1.GetYaxis().SetTitle('Efficiency')
+
+    c1.Update()
+    c1.SaveAs('{}/plot_sensitivity_vs_efficiency_background.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
+gStyle.SetOptStat(0)
+plot_sensitivity_vs_efficiency_background()
+# get_cosmic_ray_trigger_exposure()
 
 # 20190220_nnbar_data_quality
 # gStyle.SetOptStat(0)
