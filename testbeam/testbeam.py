@@ -15,7 +15,7 @@ INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
 # FIGURE_DIR = '/Users/juntinghuang/Desktop/nova/testbeam/doc/testbeam_beamline_simulation/figures'
-FIGURE_DIR = '/Users/juntinghuang/beamer/20190312_testbeam_cerenkov_cosmic_trigger/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20190325_testbeam_beam_tof/figures'
 DATA_DIR = './data'
 
 
@@ -4547,7 +4547,271 @@ def get_test_beam_chamber_volume():
     print('cerenkov_volume / volume = {}'.format(cerenkov_volume / volume))
 
 
-get_test_beam_chamber_volume()
+def sort_cerenkov_event_by_adc(filename, **kwargs):
+    calibration_constant = kwargs.get('calibration_constant', None)
+
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+
+    subrun_number_adcs = []
+    for event in tf.Get('cerenkovana/fPulseTree'):
+        # print('event.fSubRunNumber = {}'.format(event.fSubRunNumber))
+        # print('event.fPulseAdc = {}'.format(event.fPulseAdc))
+        subrun_number_adcs.append([event.fSubRunNumber, event.fPulseAdc])
+
+    subrun_number_adcs = sorted(subrun_number_adcs, key=lambda x: x[0], reverse=True)
+    # pprint(subrun_number_adcs)
+    for subrun_number_adc in subrun_number_adcs:
+        subrun_number = subrun_number_adc[0]
+        adc = subrun_number_adc[1]
+        npe = None
+        if calibration_constant:
+            npe = adc * calibration_constant
+        print('subrun_number = {}, adc = {}, npe = {}'.format(subrun_number, adc, npe))
+
+
+def plot_trigger_count_per_fragment(filename):
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+
+    spill_number_trigger_counts = []
+
+    keys = [key.GetName() for key in gDirectory.GetListOfKeys()]
+    for key in keys:
+        print('key = {}'.format(key))
+        spill_number = int(key[5:])
+
+        gDirectory.cd(key)
+        sub_keys = [key.GetName() for key in gDirectory.GetListOfKeys()]
+        trigger_count = len(sub_keys) - 1
+        # if len(sub_keys) > 1:
+        #     print('sub_keys = {}'.format(sub_keys))
+        spill_number_trigger_counts.append([spill_number, trigger_count])
+        gDirectory.cd('..')
+        # break
+
+    spill_number_trigger_counts = sorted(spill_number_trigger_counts, key=lambda x: x[0])
+    spill_numbers = [float(spill_number_trigger_count[0]) for spill_number_trigger_count in spill_number_trigger_counts]
+    trigger_counts = [float(spill_number_trigger_count[1]) for spill_number_trigger_count in spill_number_trigger_counts]
+
+    h1 = TH1D('h1', 'h1', int(max(spill_numbers) - min(spill_numbers)) + 1, min(spill_numbers) - 0.5, max(spill_numbers) + 0.5)
+    for i in range(len(trigger_counts)):
+        h1.Fill(spill_numbers[i], trigger_counts[i])
+
+    gr = TGraph(len(spill_numbers), np.array(spill_numbers), np.array(trigger_counts))
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gPad.SetLogy()
+    # set_graph_style(gr)
+    # gr.Draw('APL')
+
+    set_h1_style(h1)
+    h1.Draw('hist')
+    h1.GetXaxis().SetTitle('Time (minute)')
+    h1.GetYaxis().SetTitle('Coincidence Count per Minute')
+
+    c1.Update()
+    c1.SaveAs('{}/plot_trigger_count_per_fragment.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
+def plot_coincidence_us_tof_2wcs(filename, **kwargs):
+    subrun_count = kwargs.get('subrun_count', 4000)
+
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+
+    # h1 = TH1D('h1', 'h1', 3531, 0.5, 3531.5)
+    h1 = TH1D('h1', 'h1', subrun_count, 0.5, subrun_count + 0.5)
+
+    for event in tf.Get('cerenkovana/fTofTree'):
+        h1.Fill(event.fSubRunNumber)
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    set_h1_style(h1)
+    h1.GetXaxis().SetTitle('Time (minute)')
+    h1.GetYaxis().SetTitle('Event Count per Minute')
+    h1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_coincidence_us_tof_2wcs.{}.pdf'.format(FIGURE_DIR, filename))
+    input('Press any key to continue.')
+
+
+def plot_coincidence_us_tof_2wcs_multiple_runs():
+    filenames = ['cerenkovana.cosmic_run_2499.root', 'cerenkovana.cosmic_run_2500.root', 'cerenkovana.cosmic_run_2501.root']
+    run_numbers = [2499, 2500, 2501]
+    # Fri Mar 22 13:22:09 CDT 2019: START transition complete for run 2499
+    # Fri Mar 22 16:39:01 CDT 2019: STOP transition complete for run 2499
+
+    # Fri Mar 22 16:41:02 CDT 2019: START transition complete for run 2500
+    # Fri Mar 22 16:55:56 CDT 2019: STOP transition complete for run 2500
+
+    # Fri Mar 22 17:19:27 CDT 2019: START transition complete for run 2501
+    # Mon Mar 25 08:27:15 CDT 2019: STOP transition complete for run 2501
+
+    start_times = [
+        datetime(2019, 3, 22, 13, 22, 9),
+        datetime(2019, 3, 22, 16, 41, 2),
+        datetime(2019, 3, 22, 17, 19, 27)
+    ]
+
+    end_times = [
+        datetime(2019, 3, 22, 16, 39, 1),
+        datetime(2019, 3, 22, 16, 55, 56),
+        datetime(2019, 3, 25, 8, 27, 15)
+    ]
+
+    subrun_counts = [196, 14, 3531]
+
+    gaps = [
+        0,
+        int((start_times[1] - end_times[0]).total_seconds() / 60.),
+        int((start_times[2] - end_times[1]).total_seconds() / 60.),
+    ]
+
+    minute_count = sum(subrun_counts) + sum(gaps)
+    h1 = TH1D('h1', 'h1', minute_count, 0.5, minute_count + 0.5)
+    print('gaps = {}'.format(gaps))
+
+    tf0 = TFile('{}/cerenkovana.cosmic_run_{}.root'.format(DATA_DIR, run_numbers[0]))
+    for event in tf0.Get('cerenkovana/fTofTree'):
+        minute = gaps[0] + event.fSubRunNumber
+        h1.Fill(minute)
+
+    tf1 = TFile('{}/cerenkovana.cosmic_run_{}.root'.format(DATA_DIR, run_numbers[1]))
+    for event in tf1.Get('cerenkovana/fTofTree'):
+        minute = gaps[0] + subrun_counts[0] + gaps[1] + event.fSubRunNumber
+        h1.Fill(minute)
+
+    tf2 = TFile('{}/cerenkovana.cosmic_run_{}.root'.format(DATA_DIR, run_numbers[2]))
+    for event in tf2.Get('cerenkovana/fTofTree'):
+        minute = gaps[0] + subrun_counts[0] + gaps[1] + subrun_counts[1] + gaps[2] + event.fSubRunNumber
+        h1.Fill(minute)
+
+    cosmic_ray_rate = h1.Integral(500, 3000) / ((3000 - 500 + 1) * 60)
+    print('cosmic_ray_rate = {}'.format(cosmic_ray_rate))
+
+    # c1 = TCanvas('c1', 'c1', 800, 600)
+    # set_margin()
+    # set_h1_style(h1)
+    # h1.GetXaxis().SetTitle('Time (minute)')
+    # h1.GetYaxis().SetTitle('Event Count per Minute')
+    # h1.Draw()
+    # c1.Update()
+    # c1.SaveAs('{}/plot_coincidence_us_tof_2wcs_multiple_runs.pdf'.format(FIGURE_DIR))
+
+    # c2 = TCanvas('c2', 'c2', 800, 600)
+    # set_margin()
+    # set_h1_style(h1)
+    # h1.GetXaxis().SetTitle('Time (minute)')
+    # h1.GetYaxis().SetTitle('Event Count per Minute')
+    # h1.GetXaxis().SetRangeUser(150, 300)
+    # h1.Draw()
+    # c2.Update()
+    # tls = [
+    #     TLine(gaps[0] + subrun_counts[0], gPad.GetUymin(), gaps[0] + subrun_counts[0], gPad.GetUymax()),
+    #     TLine(gaps[0] + subrun_counts[0] + gaps[1], gPad.GetUymin(), gaps[0] + subrun_counts[0] + gaps[1], gPad.GetUymax()),
+    #     TLine(gaps[0] + subrun_counts[0] + gaps[1] + subrun_counts[1], gPad.GetUymin(), gaps[0] + subrun_counts[0] + gaps[1] + subrun_counts[1], gPad.GetUymax()),
+    #     TLine(gaps[0] + subrun_counts[0] + gaps[1] + subrun_counts[1] + gaps[2], gPad.GetUymin(), gaps[0] + subrun_counts[0] + gaps[1] + subrun_counts[1] + gaps[2], gPad.GetUymax()),
+    # ]
+    # tl_colors = [kRed, kGreen + 1, kGreen + 1, kMagenta + 1]
+    # for i, tl in enumerate(tls):
+    #     tl.SetLineStyle(3)
+    #     tl.SetLineWidth(3)
+    #     tl.SetLineColor(tl_colors[i])
+    #     tl.Draw()
+    # latex = TLatex()
+    # latex.SetNDC()
+    # latex.SetTextFont(43)
+    # latex.SetTextSize(22)
+    # latex.SetTextColor(kRed)
+    # latex.DrawLatex(0.25, 0.83, '#splitline{run}{2499}')
+    # latex.SetTextColor(kGreen + 1)
+    # latex.DrawLatex(0.4, 0.83, '#splitline{run}{2500}')
+    # latex.SetTextColor(kMagenta + 1)
+    # latex.DrawLatex(0.72, 0.83, '#splitline{run}{2501}')
+    # c2.Update()
+    # c2.SaveAs('{}/plot_coincidence_us_tof_2wcs_multiple_runs.beam.pdf'.format(FIGURE_DIR))
+
+    c3 = TCanvas('c3', 'c3', 800, 600)
+    set_margin()
+    set_h1_style(h1)
+    h1.GetXaxis().SetTitle('Time (hour)')
+    h1.GetYaxis().SetTitle('Event Count per Hour')
+    h1.Rebin(60)
+    h1.GetXaxis().SetRangeUser(500, 3000)
+    h1.Draw()
+    c3.Update()
+    c3.SaveAs('{}/plot_coincidence_us_tof_2wcs_multiple_runs.cosmic.pdf'.format(FIGURE_DIR))
+
+    input('Press any key to continue.')
+
+
+def plot_us_tof_waveform(filename, **kwargs):
+    spill = kwargs.get('spill', 1)
+    event = kwargs.get('event', 0)
+    channel = kwargs.get('channel', 2)
+
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    grs = [
+        get_graph_from_th1(tf.Get('Spill{}/Event{}/Channel{}'.format(spill, event, 3))),
+        get_graph_from_th1(tf.Get('Spill{}/Event{}/Channel{}'.format(spill, event, 4))),
+        get_graph_from_th1(tf.Get('Spill{}/Event{}/Channel{}'.format(spill, event, 5))),
+        get_graph_from_th1(tf.Get('Spill{}/Event{}/Channel{}'.format(spill, event, 6)))
+    ]
+    colors = [kBlack, kBlue, kRed, kGreen + 1]
+    legend_names = ['channel 1', 'channel 2', 'channel 3', 'channel 4']
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+
+    lg1 = TLegend(0.6, 0.24, 0.84, 0.55)
+    set_legend_style(lg1)
+
+    for i, gr in enumerate(grs):
+        set_graph_style(gr)
+        gr.SetLineColor(colors[i])
+        if i == 0:
+            gr.GetXaxis().SetTitle('Time (0.2 ns)')
+            gr.GetYaxis().SetTitle('ADC')
+            gr.GetXaxis().SetRangeUser(0, 1024)
+            gr.GetYaxis().SetTitleOffset(1.5)
+            gr.Draw('AL')
+        else:
+            gr.Draw('L,sames')
+        lg1.AddEntry(gr, legend_names[i], 'l')
+
+    lg1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_us_tof_waveform.{}.spill_{}.event_{}.pdf'.format(FIGURE_DIR, filename, spill, event))
+    input('Press any key to continue.')
+
+
+# 20190325_testbeam_beam_tof
+gStyle.SetOptStat(0)
+# plot_coincidence_us_tof_2wcs('cerenkovana.cosmic_run_2499.root', subrun_count=196)
+# plot_coincidence_us_tof_2wcs('cerenkovana.cosmic_run_2500.root', subrun_count=14)
+# plot_coincidence_us_tof_2wcs('cerenkovana.cosmic_run_2501.root', subrun_count=3531)
+plot_coincidence_us_tof_2wcs_multiple_runs()
+# plot_us_tof_waveform('V1742Analysis.run_2500.root', spill=1, event=0)
+# plot_us_tof_waveform('V1742Analysis.run_2500.root', spill=1, event=5)
+# plot_us_tof_waveform('V1742Analysis.run_2500.root', spill=1, event=7)
+# plot_us_tof_waveform('V1742Analysis.run_2500.root', spill=1, event=10)
+# plot_us_tof_waveform('V1742Analysis.run_2500.root', spill=1, event=11)
+
+# 20190322_testbeam_cerenkov_mwpc_trigger
+# gStyle.SetOptStat('emr')
+# gStyle.SetOptStat(0)
+# get_test_beam_chamber_volume()
+# plot_cerenkov_pulse('V1742Analysis.run_2484.root', spill=243, event=1, gate_min=150, gate_max=800, channel=7, legend_ndcs=[0.5, 0.22, 0.6, 0.35])
+# plot_cerenkov_pulse('V1742Analysis.run_2484.root', spill=502, event=1, gate_min=150, gate_max=800, channel=7, legend_ndcs=[0.5, 0.22, 0.6, 0.35])
+# plot_cerenkov_pulse('V1742Analysis.run_2484.root', spill=765, event=0, gate_min=150, gate_max=800, channel=7, y_min=2100, y_max=2200, legend_ndcs=[0.5, 0.22, 0.6, 0.35])
+# plot_cerenkov_pulse('V1742Analysis.run_2484.root', spill=51, event=0, gate_min=150, gate_max=800, channel=7, y_min=2000, y_max=2200, legend_ndcs=[0.5, 0.22, 0.6, 0.35])
+# plot_trigger_count_per_fragment('V1742Analysis.run_2484.root')
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2484.pedestal_left.root', x_min=-16.81, x_max=672.4, calibration_constant=3.362e-3, log_y=True, canvas_height=600)
+# plot_cerenkov_adc_spectrum('cerenkovana.cosmic_run_2484.pedestal_left.root', x_min=-5e3, x_max=200e3, log_y=True, canvas_height=800)
+# sort_cerenkov_event_by_adc('cerenkovana.cosmic_run_2484.pedestal_left.root', calibration_constant=3.362e-3)
 
 # 20190312_testbeam_cerenkov_cosmic_trigger
 # gStyle.SetOptStat('emr')
