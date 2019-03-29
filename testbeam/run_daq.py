@@ -1,7 +1,7 @@
 from subprocess import call
 import glob
 import os
-
+from ROOT import TFile, gDirectory
 
 def cerenkov_threshold_scan():
     threshold_run_numbers = [
@@ -48,6 +48,10 @@ def analyze_data(**kwargs):
 
     call('hadd -f data/cerenkovana.{}_run_{}.root data/cerenkovana.{}_run_{}_*.root'.format(run_type, run_number, run_type, run_number), shell=True)
     # call('hadd -f data/V1742Analysis.run_{}.root data/V1742Analysis.run_{}_*.root'.format(run_number, run_number), shell=True)
+    cmd = 'art -c fcl/V1742Analysis.test.fcl -s {}'.format('/daqdata/lariat_r00{}_*.root'.format(run_number))
+    call(cmd, shell=True)
+    cmd = 'mv -f V1742Analysis.root data/V1742Analysis.run_{}.root'.format(run_number)
+    call(cmd, shell=True)
 
 
 def parse_run_log():
@@ -66,8 +70,32 @@ def parse_run_log():
                     last_line = line
 
 
+def find_trigger(filename):
+    tf = TFile(filename)
+    keys = [key.GetName() for key in gDirectory.GetListOfKeys()]
+    for key in keys:
+        print('key = {}'.format(key))
+        gDirectory.cd(key)
+        sub_keys = [key.GetName() for key in gDirectory.GetListOfKeys()]
+        if len(sub_keys) > 1:
+            print('sub_keys = {}'.format(sub_keys))
+        gDirectory.cd('..')
+
+
+analyze_data(run_type='cosmic', run_number=2574)
+# analyze_data(run_type='cosmic', run_number=2573)
+# analyze_data(run_type='cosmic', run_number=2499)
+# analyze_data(run_type='cosmic', run_number=2500)
+# analyze_data(run_type='cosmic', run_number=2501)
+# find_trigger('data/V1742Analysis.run_2484.root')
+# analyze_data(run_type='cosmic', run_number=2484)
+# find_trigger('data/V1742Analysis.run_2483.root')
+# find_trigger('data/V1742Analysis.run_2480.root')
+# analyze_data(run_type='cosmic', run_number=2483)
+# analyze_data(run_type='cosmic', run_number=2480)
+# analyze_data(run_type='cosmic', run_number=2476)
 # parse_run_log()
-analyze_data(run_type='cosmic', run_number=2440)
+# analyze_data(run_type='cosmic', run_number=2440)
 # cerenkov_threshold_scan()
 # analyze_data()
 # analyze_data(run_type='calibration_tof', run_number=2408)
