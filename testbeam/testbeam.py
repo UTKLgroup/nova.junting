@@ -14,8 +14,9 @@ ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
+COLORS = [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1, kYellow + 2, kPink, kViolet, kAzure + 4, kCyan + 1, kTeal - 7]
 # FIGURE_DIR = '/Users/juntinghuang/Desktop/nova/testbeam/doc/testbeam_beamline_simulation/figures'
-FIGURE_DIR = '/Users/juntinghuang/beamer/20190325_testbeam_beam_tof/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20190401_testbeam_beam_cerenkov/figures'
 DATA_DIR = './data'
 
 
@@ -4070,12 +4071,14 @@ def plot_cerenkov_trigger_rate_vs_threshold():
     input('Press any key to continue.')
 
 
-def get_graph_from_th1(h1):
+def get_graph_from_th1(h1, **kwarg):
+    x_scale = kwarg.get('x_scale', 1.)
+
     adcs = []
     time_ticks = []
     for i in range(1, h1.GetNbinsX() + 1):
         adcs.append(h1.GetBinContent(i))
-        time_ticks.append(float(i))
+        time_ticks.append(float(i) * x_scale)
     return TGraph(len(time_ticks), np.array(time_ticks), np.array(adcs))
 
 
@@ -4142,8 +4145,9 @@ def plot_cerenkov_pulse(filename, **kwargs):
 
 
 def get_graph_min_max(gr):
-    gr_list = list(gr.GetY())
-    return min(gr_list), max(gr_list)
+    x_list = list(gr.GetX())
+    y_list = list(gr.GetY())
+    return min(x_list), max(x_list), min(y_list), max(y_list)
 
 
 def plot_waveforms(filename, **kwargs):
@@ -4159,18 +4163,16 @@ def plot_waveforms(filename, **kwargs):
     y_max = kwargs.get('y_max', None)
 
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
-    grs_min = 1e4
-    grs_max = 0
+    grs_xs = []
+    grs_ys = []
     grs = []
     for channel in channels:
-        gr = get_graph_from_th1(tf.Get('Spill{}/Event{}/Channel{}'.format(spill, event, channel)))
+        gr = get_graph_from_th1(tf.Get('Spill{}/Event{}/Channel{}'.format(spill, event, channel)), x_scale=0.2)
         grs.append(gr)
         get_graph_min_max(gr)
-        gr_min, gr_max = get_graph_min_max(gr)
-        if gr_min < grs_min:
-            grs_min = gr_min
-        if gr_max > grs_max:
-            grs_max = gr_max
+        gr_x_min, gr_x_max, gr_y_min, gr_y_max = get_graph_min_max(gr)
+        grs_xs += [gr_x_min, gr_x_max]
+        grs_ys += [gr_y_min, gr_y_max]
 
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
@@ -4185,14 +4187,16 @@ def plot_waveforms(filename, **kwargs):
 
         if i == 0:
             gr.Draw('AL')
-            gr.GetXaxis().SetRangeUser(0, 1024)
-            gr.GetXaxis().SetTitle('Time Tick (200 ps)')
+            # gr.GetXaxis().SetRangeUser(0, 1024)
+            # gr.GetXaxis().SetTitle('Time Tick (200 ps)')
+            gr.GetXaxis().SetTitle('Time (ns)')
             gr.GetYaxis().SetTitle('ADC')
             gr.GetYaxis().SetTitleOffset(1.5)
+            gr.GetXaxis().SetRangeUser(min(grs_xs), max(grs_xs))
             if y_min is not None and y_max is not None:
                 gr.GetYaxis().SetRangeUser(y_min, y_max)
             else:
-                gr.GetYaxis().SetRangeUser(grs_min * 0.9, grs_max * 1.1)
+                gr.GetYaxis().SetRangeUser(min(grs_ys) * 0.9, max(grs_ys) * 1.1)
         else:
             gr.Draw('L,sames')
 
@@ -4868,7 +4872,12 @@ def plot_us_tof_waveform(filename, **kwargs):
 # plot_cerenkov_pulse('V1742Analysis.run_2627.root', spill=1, event=1, gate_min=150, gate_max=800, channel=8, legend_ndcs=[0.5, 0.22, 0.6, 0.35], trigger_channels=[9, 10])
 # plot_cerenkov_pulse('V1742Analysis.run_2627.root', spill=1, event=7, gate_min=150, gate_max=800, channel=8, legend_ndcs=[0.5, 0.22, 0.6, 0.35], trigger_channels=[12, 15])
 # plot_waveforms('V1742Analysis.run_2626.root', spill=55, event=2, gate_min=150, gate_max=800, channels=[15, 11, 14], colors=[kBlack, kRed, kBlue], legend_labels=['Cerenkov', 'US TOF', 'DS TOF'], legend_ndcs=[0.5, 0.22, 0.6, 0.35])
-plot_waveforms('V1742Analysis.run_2626.root', spill=53, event=19, channels=[15, 11, 14], colors=[kBlack, kRed, kBlue], legend_labels=['Cerenkov', 'US TOF', 'DS TOF'], legend_ndcs=[0.5, 0.22, 0.6, 0.35])
+# plot_waveforms('V1742Analysis.run_2626.root', spill=53, event=19, channels=[15, 11, 14], colors=[kBlack, kRed, kBlue], legend_labels=['Cerenkov', 'US TOF', 'DS TOF'], legend_ndcs=[0.5, 0.22, 0.6, 0.35])
+plot_waveforms('V1742Analysis.run_2627.root', spill=1, event=10,
+               channels=[8, 9, 10, 11, 12, 13, 14, 15],
+               legend_labels=['US TOF 1', 'US TOF 2', 'US TOF 3', 'US TOF 4', 'DS TOF 1', 'DS TOF 2', 'DS TOF 3', 'Cerenkov'],
+               legend_ndcs=[0.6, 0.18, 0.8, 0.55],
+               colors=COLORS)
 
 # 20190325_testbeam_beam_tof
 # gStyle.SetOptStat(0)
