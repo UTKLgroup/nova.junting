@@ -4141,6 +4141,79 @@ def plot_cerenkov_pulse(filename, **kwargs):
     input('Press any key to continue.')
 
 
+def get_graph_min_max(gr):
+    gr_list = list(gr.GetY())
+    return min(gr_list), max(gr_list)
+
+
+def plot_waveforms(filename, **kwargs):
+    gate_min = kwargs.get('gate_min', None)
+    gate_max = kwargs.get('gate_max', None)
+    spill = kwargs.get('spill', 1)
+    event = kwargs.get('event', 0)
+    channels = kwargs.get('channels', [2])
+    legend_labels = kwargs.get('legend_labels', ['Cerenkov'])
+    legend_ndcs = kwargs.get('legend_ndcs', [0.4, 0.22, 0.53, 0.45])
+    colors = kwargs.get('colors', [kBlack])
+    y_min = kwargs.get('y_min', None)
+    y_max = kwargs.get('y_max', None)
+
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    grs_min = 1e4
+    grs_max = 0
+    grs = []
+    for channel in channels:
+        gr = get_graph_from_th1(tf.Get('Spill{}/Event{}/Channel{}'.format(spill, event, channel)))
+        grs.append(gr)
+        get_graph_min_max(gr)
+        gr_min, gr_max = get_graph_min_max(gr)
+        if gr_min < grs_min:
+            grs_min = gr_min
+        if gr_max > grs_max:
+            grs_max = gr_max
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+
+    lg1 = TLegend(legend_ndcs[0], legend_ndcs[1], legend_ndcs[2], legend_ndcs[3])
+    set_legend_style(lg1)
+
+    for i, gr in enumerate(grs):
+        set_graph_style(gr)
+        gr.SetLineColor(colors[i])
+        lg1.AddEntry(gr, legend_labels[i], 'l')
+
+        if i == 0:
+            gr.Draw('AL')
+            gr.GetXaxis().SetRangeUser(0, 1024)
+            gr.GetXaxis().SetTitle('Time Tick (200 ps)')
+            gr.GetYaxis().SetTitle('ADC')
+            gr.GetYaxis().SetTitleOffset(1.5)
+            if y_min is not None and y_max is not None:
+                gr.GetYaxis().SetRangeUser(y_min, y_max)
+            else:
+                gr.GetYaxis().SetRangeUser(grs_min * 0.9, grs_max * 1.1)
+        else:
+            gr.Draw('L,sames')
+
+    lg1.Draw()
+
+    if gate_min and gate_max:
+        c1.Update()
+        line_min = TLine(gate_min, gPad.GetUymin(), gate_min, gPad.GetUymax())
+        line_max = TLine(gate_max, gPad.GetUymin(), gate_max, gPad.GetUymax())
+        for line in [line_min, line_max]:
+            line.Draw()
+            line.SetLineWidth(2)
+            line.SetLineStyle(2)
+            line.SetLineColor(kBlue)
+        lg1.AddEntry(line_min, 'gate', 'l')
+
+    c1.Update()
+    c1.SaveAs('{}/plot_cerenkov_pulse.{}.spill_{}.event_{}.channel_{}.pdf'.format(FIGURE_DIR, filename, spill, event, '_'.join(list(map(str, channels)))))
+    input('Press any key to continue.')
+
+
 def plot_cerenkov_hit_count_per_event(filename):
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
     h1 = tf.Get('cerenkovana/fHitCountPerEvent')
@@ -4788,12 +4861,21 @@ def plot_us_tof_waveform(filename, **kwargs):
     input('Press any key to continue.')
 
 
+# 20190401_testbeam_beam_cerenkov
+# plot_cerenkov_pulse('V1742Analysis.run_2626.root', spill=55, event=2, gate_min=150, gate_max=800, channel=15, legend_ndcs=[0.5, 0.22, 0.6, 0.35])
+# plot_cerenkov_pulse('V1742Analysis.run_2626.root', spill=55, event=2, gate_min=150, gate_max=800, channel=15, legend_ndcs=[0.5, 0.22, 0.6, 0.35], trigger_channels=[11, 12])
+# plot_cerenkov_pulse('V1742Analysis.run_2626.root', spill=55, event=2, gate_min=150, gate_max=800, channel=15, legend_ndcs=[0.5, 0.22, 0.6, 0.35], trigger_channels=[11, 12])
+# plot_cerenkov_pulse('V1742Analysis.run_2627.root', spill=1, event=1, gate_min=150, gate_max=800, channel=8, legend_ndcs=[0.5, 0.22, 0.6, 0.35], trigger_channels=[9, 10])
+# plot_cerenkov_pulse('V1742Analysis.run_2627.root', spill=1, event=7, gate_min=150, gate_max=800, channel=8, legend_ndcs=[0.5, 0.22, 0.6, 0.35], trigger_channels=[12, 15])
+# plot_waveforms('V1742Analysis.run_2626.root', spill=55, event=2, gate_min=150, gate_max=800, channels=[15, 11, 14], colors=[kBlack, kRed, kBlue], legend_labels=['Cerenkov', 'US TOF', 'DS TOF'], legend_ndcs=[0.5, 0.22, 0.6, 0.35])
+plot_waveforms('V1742Analysis.run_2626.root', spill=53, event=19, channels=[15, 11, 14], colors=[kBlack, kRed, kBlue], legend_labels=['Cerenkov', 'US TOF', 'DS TOF'], legend_ndcs=[0.5, 0.22, 0.6, 0.35])
+
 # 20190325_testbeam_beam_tof
-gStyle.SetOptStat(0)
+# gStyle.SetOptStat(0)
 # plot_coincidence_us_tof_2wcs('cerenkovana.cosmic_run_2499.root', subrun_count=196)
 # plot_coincidence_us_tof_2wcs('cerenkovana.cosmic_run_2500.root', subrun_count=14)
 # plot_coincidence_us_tof_2wcs('cerenkovana.cosmic_run_2501.root', subrun_count=3531)
-plot_coincidence_us_tof_2wcs_multiple_runs()
+# plot_coincidence_us_tof_2wcs_multiple_runs()
 # plot_us_tof_waveform('V1742Analysis.run_2500.root', spill=1, event=0)
 # plot_us_tof_waveform('V1742Analysis.run_2500.root', spill=1, event=5)
 # plot_us_tof_waveform('V1742Analysis.run_2500.root', spill=1, event=7)
