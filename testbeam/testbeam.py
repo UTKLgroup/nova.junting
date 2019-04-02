@@ -4161,6 +4161,7 @@ def plot_waveforms(filename, **kwargs):
     colors = kwargs.get('colors', [kBlack])
     y_min = kwargs.get('y_min', None)
     y_max = kwargs.get('y_max', None)
+    image_format = kwargs.get('image_format', 'pdf')
 
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
     grs_xs = []
@@ -4214,7 +4215,47 @@ def plot_waveforms(filename, **kwargs):
         lg1.AddEntry(line_min, 'gate', 'l')
 
     c1.Update()
-    c1.SaveAs('{}/plot_cerenkov_pulse.{}.spill_{}.event_{}.channel_{}.pdf'.format(FIGURE_DIR, filename, spill, event, '_'.join(list(map(str, channels)))))
+    c1.SaveAs('{}/plot_cerenkov_pulse.{}.spill_{}.event_{}.channel_{}.{}'.format(FIGURE_DIR, filename, spill, event, '_'.join(list(map(str, channels))), image_format))
+    input('Press any key to continue.')
+
+
+def plot_waveform_hist(filename, **kwargs):
+    spill = kwargs.get('spill', 1)
+    event = kwargs.get('event', 0)
+    channel = kwargs.get('channel', 2)
+
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    gr = get_graph_from_th1(tf.Get('Spill{}/Event{}/Channel{}'.format(spill, event, channel)))
+    h1 = tf.Get('Spill{}/Event{}/Channel{}'.format(spill, event, channel))
+    h_adc = TH1D('h_adc', 'h_adc', 4096, 0.5, 4096.5)
+    for i in range(1, h1.GetNbinsX() + 1):
+        h_adc.Fill(h1.GetBinContent(i))
+
+    peak = h_adc.GetBinCenter(h_adc.GetMaximumBin())
+    x_min = min(list(gr.GetX()))
+    x_max = max(list(gr.GetX()))
+    print('peak = {}'.format(peak))
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+
+    gr.Draw('AL')
+    gr.GetXaxis().SetRangeUser(x_min, x_max)
+    tl = TLine(x_min, peak, x_max, peak)
+    tl.SetLineColor(kRed)
+    tl.SetLineWidth(3)
+    tl.Draw()
+
+    # set_h1_style(h_adc)
+    # h_adc.Draw()
+    # c1.Update()
+    # tl = TLine(peak, gPad.GetUymin(), peak, gPad.GetUymax())
+    # tl.SetLineColor(kRed)
+    # tl.SetLineWidth(3)
+    # tl.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_waveform_hist.{}.spill_{}.event_{}.channel_{}.pdf'.format(FIGURE_DIR, filename, spill, event, channel))
     input('Press any key to continue.')
 
 
@@ -4873,11 +4914,33 @@ def plot_us_tof_waveform(filename, **kwargs):
 # plot_cerenkov_pulse('V1742Analysis.run_2627.root', spill=1, event=7, gate_min=150, gate_max=800, channel=8, legend_ndcs=[0.5, 0.22, 0.6, 0.35], trigger_channels=[12, 15])
 # plot_waveforms('V1742Analysis.run_2626.root', spill=55, event=2, gate_min=150, gate_max=800, channels=[15, 11, 14], colors=[kBlack, kRed, kBlue], legend_labels=['Cerenkov', 'US TOF', 'DS TOF'], legend_ndcs=[0.5, 0.22, 0.6, 0.35])
 # plot_waveforms('V1742Analysis.run_2626.root', spill=53, event=19, channels=[15, 11, 14], colors=[kBlack, kRed, kBlue], legend_labels=['Cerenkov', 'US TOF', 'DS TOF'], legend_ndcs=[0.5, 0.22, 0.6, 0.35])
-plot_waveforms('V1742Analysis.run_2627.root', spill=1, event=10,
+plot_waveforms('V1742Analysis.run_2627.root',
+               # spill=1, event=10,
+               # spill=3, event=14,
+               # spill=4, event=12,
+               # spill=4, event=19,
+               # spill=9, event=13,
+               spill=5, event=19,
                channels=[8, 9, 10, 11, 12, 13, 14, 15],
                legend_labels=['US TOF 1', 'US TOF 2', 'US TOF 3', 'US TOF 4', 'DS TOF 1', 'DS TOF 2', 'DS TOF 3', 'Cerenkov'],
                legend_ndcs=[0.6, 0.18, 0.8, 0.55],
-               colors=COLORS)
+               colors=COLORS,
+               image_format='png')
+# plot_waveforms('V1742Analysis.run_2626.root',
+#                # spill=13, event=4,
+#                # spill=16, event=10,
+#                # spill=20, event=1,
+#                # spill=22, event=10,
+#                # spill=29, event=3,
+#                # spill=29, event=8,
+#                # spill=30, event=4,
+#                # spill=35, event=4,
+#                spill=55, event=2,
+#                channels=[8, 9, 10, 11, 12, 13, 14, 15],
+#                legend_labels=['US TOF 1', 'US TOF 2', 'US TOF 3', 'US TOF 4', 'DS TOF 1', 'DS TOF 2', 'DS TOF 3', 'Cerenkov'],
+#                legend_ndcs=[0.6, 0.18, 0.8, 0.55],
+#                colors=COLORS)
+# plot_waveform_hist('V1742Analysis.run_2627.root', spill=1, event=10, channel=9)
 
 # 20190325_testbeam_beam_tof
 # gStyle.SetOptStat(0)
