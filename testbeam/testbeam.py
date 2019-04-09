@@ -4162,13 +4162,16 @@ def plot_waveforms(filename, **kwargs):
     y_min = kwargs.get('y_min', None)
     y_max = kwargs.get('y_max', None)
     image_format = kwargs.get('image_format', 'pdf')
+    batch_mode = kwargs.get('batch_mode', False)
+    x_scale = kwargs.get('x_scale', 0.2)
+    x_unit = kwargs.get('x_unit', 'ns')
 
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
     grs_xs = []
     grs_ys = []
     grs = []
     for channel in channels:
-        gr = get_graph_from_th1(tf.Get('Spill{}/Event{}/Channel{}'.format(spill, event, channel)), x_scale=0.2)
+        gr = get_graph_from_th1(tf.Get('Spill{}/Event{}/Channel{}'.format(spill, event, channel)), x_scale=x_scale)
         grs.append(gr)
         get_graph_min_max(gr)
         gr_x_min, gr_x_max, gr_y_min, gr_y_max = get_graph_min_max(gr)
@@ -4190,7 +4193,7 @@ def plot_waveforms(filename, **kwargs):
             gr.Draw('AL')
             # gr.GetXaxis().SetRangeUser(0, 1024)
             # gr.GetXaxis().SetTitle('Time Tick (200 ps)')
-            gr.GetXaxis().SetTitle('Time (ns)')
+            gr.GetXaxis().SetTitle('Time ({})'.format(x_unit))
             gr.GetYaxis().SetTitle('ADC')
             gr.GetYaxis().SetTitleOffset(1.5)
             gr.GetXaxis().SetRangeUser(min(grs_xs), max(grs_xs))
@@ -4216,7 +4219,8 @@ def plot_waveforms(filename, **kwargs):
 
     c1.Update()
     c1.SaveAs('{}/plot_cerenkov_pulse.{}.spill_{}.event_{}.channel_{}.{}'.format(FIGURE_DIR, filename, spill, event, '_'.join(list(map(str, channels))), image_format))
-    input('Press any key to continue.')
+    if not batch_mode:
+        input('Press any key to continue.')
 
 
 def plot_waveform_hist(filename, **kwargs):
@@ -4239,20 +4243,20 @@ def plot_waveform_hist(filename, **kwargs):
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
 
-    gr.Draw('AL')
-    gr.GetXaxis().SetRangeUser(x_min, x_max)
-    tl = TLine(x_min, peak, x_max, peak)
-    tl.SetLineColor(kRed)
-    tl.SetLineWidth(3)
-    tl.Draw()
-
-    # set_h1_style(h_adc)
-    # h_adc.Draw()
-    # c1.Update()
-    # tl = TLine(peak, gPad.GetUymin(), peak, gPad.GetUymax())
+    # gr.Draw('AL')
+    # gr.GetXaxis().SetRangeUser(x_min, x_max)
+    # tl = TLine(x_min, peak, x_max, peak)
     # tl.SetLineColor(kRed)
     # tl.SetLineWidth(3)
     # tl.Draw()
+
+    set_h1_style(h_adc)
+    h_adc.Draw()
+    c1.Update()
+    tl = TLine(peak, gPad.GetUymin(), peak, gPad.GetUymax())
+    tl.SetLineColor(kRed)
+    tl.SetLineWidth(3)
+    tl.Draw()
 
     c1.Update()
     c1.SaveAs('{}/plot_waveform_hist.{}.spill_{}.event_{}.channel_{}.pdf'.format(FIGURE_DIR, filename, spill, event, channel))
@@ -4907,6 +4911,14 @@ def plot_us_tof_waveform(filename, **kwargs):
 
 
 # 20190401_testbeam_beam_cerenkov
+# plot_waveforms('V1742Analysis.run_2645.root',
+#                spill=10, event=4,
+#                channels=[8, 9, 10, 11, 12, 13, 14, 15],
+#                legend_labels=['US TOF 1', 'US TOF 2', 'US TOF 3', 'US TOF 4', 'DS TOF 1', 'DS TOF 2', 'DS TOF 3', 'Cerenkov'],
+#                legend_ndcs=[0.6, 0.18, 0.8, 0.55],
+#                colors=COLORS,
+#                x_scale=1.,
+#                x_unit='TDC')
 # plot_cerenkov_pulse('V1742Analysis.run_2626.root', spill=55, event=2, gate_min=150, gate_max=800, channel=15, legend_ndcs=[0.5, 0.22, 0.6, 0.35])
 # plot_cerenkov_pulse('V1742Analysis.run_2626.root', spill=55, event=2, gate_min=150, gate_max=800, channel=15, legend_ndcs=[0.5, 0.22, 0.6, 0.35], trigger_channels=[11, 12])
 # plot_cerenkov_pulse('V1742Analysis.run_2626.root', spill=55, event=2, gate_min=150, gate_max=800, channel=15, legend_ndcs=[0.5, 0.22, 0.6, 0.35], trigger_channels=[11, 12])
@@ -4914,18 +4926,18 @@ def plot_us_tof_waveform(filename, **kwargs):
 # plot_cerenkov_pulse('V1742Analysis.run_2627.root', spill=1, event=7, gate_min=150, gate_max=800, channel=8, legend_ndcs=[0.5, 0.22, 0.6, 0.35], trigger_channels=[12, 15])
 # plot_waveforms('V1742Analysis.run_2626.root', spill=55, event=2, gate_min=150, gate_max=800, channels=[15, 11, 14], colors=[kBlack, kRed, kBlue], legend_labels=['Cerenkov', 'US TOF', 'DS TOF'], legend_ndcs=[0.5, 0.22, 0.6, 0.35])
 # plot_waveforms('V1742Analysis.run_2626.root', spill=53, event=19, channels=[15, 11, 14], colors=[kBlack, kRed, kBlue], legend_labels=['Cerenkov', 'US TOF', 'DS TOF'], legend_ndcs=[0.5, 0.22, 0.6, 0.35])
-plot_waveforms('V1742Analysis.run_2627.root',
-               # spill=1, event=10,
-               # spill=3, event=14,
-               # spill=4, event=12,
-               # spill=4, event=19,
-               # spill=9, event=13,
-               spill=5, event=19,
-               channels=[8, 9, 10, 11, 12, 13, 14, 15],
-               legend_labels=['US TOF 1', 'US TOF 2', 'US TOF 3', 'US TOF 4', 'DS TOF 1', 'DS TOF 2', 'DS TOF 3', 'Cerenkov'],
-               legend_ndcs=[0.6, 0.18, 0.8, 0.55],
-               colors=COLORS,
-               image_format='png')
+# plot_waveforms('V1742Analysis.run_2627.root',
+#                spill=1, event=10,
+#                # spill=3, event=14,
+#                # spill=4, event=12,
+#                # spill=4, event=19,
+#                # spill=9, event=13,
+#                # spill=5, event=19,
+#                channels=[8, 9, 10, 11, 12, 13, 14, 15],
+#                legend_labels=['US TOF 1', 'US TOF 2', 'US TOF 3', 'US TOF 4', 'DS TOF 1', 'DS TOF 2', 'DS TOF 3', 'Cerenkov'],
+#                legend_ndcs=[0.6, 0.18, 0.8, 0.55],
+#                colors=COLORS,
+#                image_format='png')
 # plot_waveforms('V1742Analysis.run_2626.root',
 #                # spill=13, event=4,
 #                # spill=16, event=10,
@@ -4936,6 +4948,60 @@ plot_waveforms('V1742Analysis.run_2627.root',
 #                # spill=30, event=4,
 #                # spill=35, event=4,
 #                spill=55, event=2,
+#                channels=[8, 9, 10, 11, 12, 13, 14, 15],
+#                legend_labels=['US TOF 1', 'US TOF 2', 'US TOF 3', 'US TOF 4', 'DS TOF 1', 'DS TOF 2', 'DS TOF 3', 'Cerenkov'],
+#                legend_ndcs=[0.6, 0.18, 0.8, 0.55],
+#                colors=COLORS)
+# plot_waveforms('V1742Analysis.run_2634.root',
+#                spill=1, event=26,
+#                # spill=1, event=0,
+#                # spill=1, event=1,
+#                # spill=3, event=16,
+#                channels=[8, 9, 10, 11, 12, 13, 14, 15, 20],
+#                legend_labels=['US TOF 1', 'US TOF 2', 'US TOF 3', 'US TOF 4', 'DS TOF 1', 'DS TOF 2', 'DS TOF 3', 'DS TOF 4', 'Cerenkov'],
+#                legend_ndcs=[0.6, 0.18, 0.8, 0.55],
+#                colors=COLORS)
+spill_events = [
+    # (3, 11),
+    (3, 14),
+    (3, 17),
+    (9, 13),
+    (10, 8),
+    # (10, 3)
+    # (4, 12)
+]
+for spill_event in spill_events:
+    spill = spill_event[0]
+    event = spill_event[1]
+    plot_waveforms('V1742Analysis.run_2627.root',
+                   spill=spill, event=event,
+                   channels=[8, 9, 10, 11, 12, 13, 14, 15],
+                   legend_labels=['US TOF 1', 'US TOF 2', 'US TOF 3', 'US TOF 4', 'DS TOF 1', 'DS TOF 2', 'DS TOF 3', 'Cerenkov'],
+                   legend_ndcs=[0.6, 0.18, 0.8, 0.55],
+                   colors=COLORS,
+                   image_format='pdf',
+                   batch_mode=True)
+# plot_waveforms('V1742Analysis.run_2627.root',
+#                # spill=3, event=14,
+#                # spill=3, event=17,
+#                # spill=9, event=13,
+#                spill=10, event=8,
+#                # spill=11, event=12,
+#                # spill=3, event=12,
+#                # spill=3, event=12,
+#                # spill=11, event=7,
+#                # spill=3, event=1,
+#                channels=[8, 9, 10, 11, 12, 13, 14, 15],
+#                legend_labels=['US TOF 1', 'US TOF 2', 'US TOF 3', 'US TOF 4', 'DS TOF 1', 'DS TOF 2', 'DS TOF 3', 'Cerenkov'],
+#                legend_ndcs=[0.6, 0.18, 0.8, 0.55],
+#                colors=COLORS,
+#                # image_format='png',
+#                batch_mode=False)
+# plot_waveforms('V1742Analysis.run_2628.root',
+#                # spill=6, event=7,
+#                # spill=9, event=25,
+#                # spill=18, event=23,
+#                spill=24, event=2,
 #                channels=[8, 9, 10, 11, 12, 13, 14, 15],
 #                legend_labels=['US TOF 1', 'US TOF 2', 'US TOF 3', 'US TOF 4', 'DS TOF 1', 'DS TOF 2', 'DS TOF 3', 'Cerenkov'],
 #                legend_ndcs=[0.6, 0.18, 0.8, 0.55],
