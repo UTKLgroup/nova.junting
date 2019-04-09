@@ -4150,6 +4150,52 @@ def get_graph_min_max(gr):
     return min(x_list), max(x_list), min(y_list), max(y_list)
 
 
+def print_integrated_charge_npe(filename, **kwargs):
+    spill = kwargs.get('spill', 1)
+    event = kwargs.get('event', 0)
+    channel = kwargs.get('channel', 15)
+    gate_min = kwargs.get('gate_min', 500)
+    gate_max = kwargs.get('gate_max', 600)
+    calibration_constant = kwargs.get('calibration_constant', None)
+
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    h1 = tf.Get('Spill{}/Event{}/Channel{}'.format(spill, event, channel))
+    gr = get_graph_from_th1(h1)
+
+    total_charge = 0.
+    h_adc = TH1D('h_adc', 'h_adc', 4096, 0.5, 4096.5)
+    for i in range(1, h1.GetNbinsX() + 1):
+        h_adc.Fill(h1.GetBinContent(i))
+        if i >= gate_min and i <= gate_max:
+            total_charge += h1.GetBinContent(i)
+    pedestal = h_adc.GetBinCenter(h_adc.GetMaximumBin())
+    total_charge = pedestal * (gate_max - gate_min + 1) - total_charge
+    print('spill = {}'.format(spill))
+    print('event = {}'.format(event))
+    print('channel = {}'.format(channel))
+    print('pedestal = {}'.format(pedestal))
+    print('total_charge = {} ADC*0.2ns'.format(total_charge))
+
+    if calibration_constant:
+        npe = total_charge * calibration_constant
+        print('npe = {}'.format(npe))
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    gr.Draw('AL')
+    c1.Update()
+    line_min = TLine(gate_min, gPad.GetUymin(), gate_min, gPad.GetUymax())
+    line_max = TLine(gate_max, gPad.GetUymin(), gate_max, gPad.GetUymax())
+    for line in [line_min, line_max]:
+        line.Draw()
+        line.SetLineWidth(2)
+        line.SetLineStyle(2)
+        line.SetLineColor(kBlue)
+    c1.Update()
+    c1.SaveAs('{}/print_integrated_charge_npe.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
 def plot_waveforms(filename, **kwargs):
     gate_min = kwargs.get('gate_min', None)
     gate_max = kwargs.get('gate_max', None)
@@ -4961,26 +5007,26 @@ def plot_us_tof_waveform(filename, **kwargs):
 #                legend_labels=['US TOF 1', 'US TOF 2', 'US TOF 3', 'US TOF 4', 'DS TOF 1', 'DS TOF 2', 'DS TOF 3', 'DS TOF 4', 'Cerenkov'],
 #                legend_ndcs=[0.6, 0.18, 0.8, 0.55],
 #                colors=COLORS)
-spill_events = [
-    # (3, 11),
-    (3, 14),
-    (3, 17),
-    (9, 13),
-    (10, 8),
-    # (10, 3)
-    # (4, 12)
-]
-for spill_event in spill_events:
-    spill = spill_event[0]
-    event = spill_event[1]
-    plot_waveforms('V1742Analysis.run_2627.root',
-                   spill=spill, event=event,
-                   channels=[8, 9, 10, 11, 12, 13, 14, 15],
-                   legend_labels=['US TOF 1', 'US TOF 2', 'US TOF 3', 'US TOF 4', 'DS TOF 1', 'DS TOF 2', 'DS TOF 3', 'Cerenkov'],
-                   legend_ndcs=[0.6, 0.18, 0.8, 0.55],
-                   colors=COLORS,
-                   image_format='pdf',
-                   batch_mode=True)
+# spill_events = [
+#     # (3, 11),
+#     (3, 14),
+#     (3, 17),
+#     (9, 13),
+#     (10, 8),
+#     # (10, 3)
+#     # (4, 12)
+# ]
+# for spill_event in spill_events:
+#     spill = spill_event[0]
+#     event = spill_event[1]
+#     plot_waveforms('V1742Analysis.run_2627.root',
+#                    spill=spill, event=event,
+#                    channels=[8, 9, 10, 11, 12, 13, 14, 15],
+#                    legend_labels=['US TOF 1', 'US TOF 2', 'US TOF 3', 'US TOF 4', 'DS TOF 1', 'DS TOF 2', 'DS TOF 3', 'Cerenkov'],
+#                    legend_ndcs=[0.6, 0.18, 0.8, 0.55],
+#                    colors=COLORS,
+#                    image_format='pdf',
+#                    batch_mode=True)
 # plot_waveforms('V1742Analysis.run_2627.root',
 #                # spill=3, event=14,
 #                # spill=3, event=17,
@@ -4997,11 +5043,14 @@ for spill_event in spill_events:
 #                colors=COLORS,
 #                # image_format='png',
 #                batch_mode=False)
+# print_integrated_charge_npe('V1742Analysis.run_2627.root', spill=10, event=8, channel=15, gate_min=350, gate_max=550, calibration_constant=3.362e-3)
+# print_integrated_charge_npe('V1742Analysis.run_2627.root', spill=3, event=14, channel=15, gate_min=400, gate_max=600, calibration_constant=3.362e-3)
+print_integrated_charge_npe('V1742Analysis.run_2627.root', spill=9, event=13, channel=15, gate_min=300, gate_max=500, calibration_constant=3.362e-3)
 # plot_waveforms('V1742Analysis.run_2628.root',
-#                # spill=6, event=7,
+#                spill=6, event=7,
 #                # spill=9, event=25,
 #                # spill=18, event=23,
-#                spill=24, event=2,
+#                # spill=24, event=2,
 #                channels=[8, 9, 10, 11, 12, 13, 14, 15],
 #                legend_labels=['US TOF 1', 'US TOF 2', 'US TOF 3', 'US TOF 4', 'DS TOF 1', 'DS TOF 2', 'DS TOF 3', 'Cerenkov'],
 #                legend_ndcs=[0.6, 0.18, 0.8, 0.55],
