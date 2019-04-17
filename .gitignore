@@ -1,3 +1,5 @@
+*.ipynb
+.ipynb_checkpoints
 git_stats
 paper
 testbeam/secondary_beam/digitize/
