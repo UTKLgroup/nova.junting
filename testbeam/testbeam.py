@@ -16,7 +16,7 @@ DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
 COLORS = [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1, kYellow + 2, kPink, kViolet, kAzure + 4, kCyan + 1, kTeal - 7]
 # FIGURE_DIR = '/Users/juntinghuang/Desktop/nova/testbeam/doc/testbeam_beamline_simulation/figures'
-FIGURE_DIR = '/Users/juntinghuang/beamer/20190401_testbeam_beam_cerenkov/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20190419_testbeam_scintillator_paddle_by_mwpc/figures'
 DATA_DIR = './data'
 
 
@@ -4956,6 +4956,17 @@ def plot_us_tof_waveform(filename, **kwargs):
     input('Press any key to continue.')
 
 
+# 20190419_testbeam_scintillator_paddle_by_mwpc
+plot_waveforms('V1742Analysis.run_2689.root',
+               spill=73, event=1,
+               # channels=[3, 4, 5, 6, 7, 12, 13, 14, 15],
+               channels=[3, 4, 5, 6, 7, 8, 9, 10, 11],
+               legend_labels=['Cerenkov', 'Paddle 1', 'Paddle 2', 'Paddle 3', 'Paddle 4', 'US TOF 1', 'US TOF 2', 'US TOF 3', 'US TOF 4'],
+               legend_ndcs=[0.6, 0.18, 0.8, 0.55],
+               colors=COLORS,
+               x_scale=1.,
+               x_unit='TDC')
+
 # 20190401_testbeam_beam_cerenkov
 # plot_waveforms('V1742Analysis.run_2645.root',
 #                spill=10, event=4,
@@ -5045,7 +5056,7 @@ def plot_us_tof_waveform(filename, **kwargs):
 #                batch_mode=False)
 # print_integrated_charge_npe('V1742Analysis.run_2627.root', spill=10, event=8, channel=15, gate_min=350, gate_max=550, calibration_constant=3.362e-3)
 # print_integrated_charge_npe('V1742Analysis.run_2627.root', spill=3, event=14, channel=15, gate_min=400, gate_max=600, calibration_constant=3.362e-3)
-print_integrated_charge_npe('V1742Analysis.run_2627.root', spill=9, event=13, channel=15, gate_min=300, gate_max=500, calibration_constant=3.362e-3)
+# print_integrated_charge_npe('V1742Analysis.run_2627.root', spill=9, event=13, channel=15, gate_min=300, gate_max=500, calibration_constant=3.362e-3)
 # plot_waveforms('V1742Analysis.run_2628.root',
 #                spill=6, event=7,
 #                # spill=9, event=25,
