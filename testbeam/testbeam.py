@@ -14,7 +14,7 @@ ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
-COLORS = [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1, kYellow + 2, kPink, kViolet, kAzure + 4, kCyan + 1, kTeal - 7]
+COLORS = [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1, kYellow + 2, kPink, kViolet, kAzure + 4, kCyan + 1, kTeal - 7, kBlue - 5]
 # FIGURE_DIR = '/Users/juntinghuang/Desktop/nova/testbeam/doc/testbeam_beamline_simulation/figures'
 FIGURE_DIR = '/Users/juntinghuang/beamer/20190419_testbeam_scintillator_paddle_by_mwpc/figures'
 DATA_DIR = './data'
@@ -4204,13 +4204,17 @@ def plot_waveforms(filename, **kwargs):
     channels = kwargs.get('channels', [2])
     legend_labels = kwargs.get('legend_labels', ['Cerenkov'])
     legend_ndcs = kwargs.get('legend_ndcs', [0.4, 0.22, 0.53, 0.45])
+    legend_text_size = kwargs.get('legend_text_size', None)
+    legend_column_count = kwargs.get('legend_column_count', 1)
     colors = kwargs.get('colors', [kBlack])
     y_min = kwargs.get('y_min', None)
     y_max = kwargs.get('y_max', None)
+    y_limit = kwargs.get('y_limit', 5000.)
     image_format = kwargs.get('image_format', 'pdf')
     batch_mode = kwargs.get('batch_mode', False)
     x_scale = kwargs.get('x_scale', 0.2)
     x_unit = kwargs.get('x_unit', 'ns')
+    grid = kwargs.get('grid', False)
 
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
     grs_xs = []
@@ -4226,9 +4230,15 @@ def plot_waveforms(filename, **kwargs):
 
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
+    if grid:
+        gPad.SetGrid()
 
     lg1 = TLegend(legend_ndcs[0], legend_ndcs[1], legend_ndcs[2], legend_ndcs[3])
     set_legend_style(lg1)
+    if legend_text_size:
+        lg1.SetTextSize(legend_text_size)
+    if legend_column_count > 1:
+        lg1.SetNColumns(legend_column_count)
 
     for i, gr in enumerate(grs):
         set_graph_style(gr)
@@ -4246,7 +4256,8 @@ def plot_waveforms(filename, **kwargs):
             if y_min is not None and y_max is not None:
                 gr.GetYaxis().SetRangeUser(y_min, y_max)
             else:
-                gr.GetYaxis().SetRangeUser(min(grs_ys) * 0.9, max(grs_ys) * 1.1)
+                y_max = min(max(grs_ys) * 1.1, y_limit)
+                gr.GetYaxis().SetRangeUser(min(grs_ys) * 0.9, y_max)
         else:
             gr.Draw('L,sames')
 
@@ -4956,16 +4967,63 @@ def plot_us_tof_waveform(filename, **kwargs):
     input('Press any key to continue.')
 
 
+def get_subrun_number_event_indexs(run_number, **kwargs):
+    tree_name = kwargs.get('tree_name', 'fPulseTree')
+
+    tf = TFile('{}/cerenkovana.beam_run_{}.root'.format(DATA_DIR, run_number))
+    subrun_number_event_indexs = []
+    for event in tf.Get('cerenkovana/{}'.format(tree_name)):
+        subrun_number_event_indexs.append((event.fSubRunNumber, event.fEventIndex))
+
+    return subrun_number_event_indexs
+
+
 # 20190419_testbeam_scintillator_paddle_by_mwpc
-plot_waveforms('V1742Analysis.run_2689.root',
-               spill=73, event=1,
-               # channels=[3, 4, 5, 6, 7, 12, 13, 14, 15],
-               channels=[3, 4, 5, 6, 7, 8, 9, 10, 11],
-               legend_labels=['Cerenkov', 'Paddle 1', 'Paddle 2', 'Paddle 3', 'Paddle 4', 'US TOF 1', 'US TOF 2', 'US TOF 3', 'US TOF 4'],
-               legend_ndcs=[0.6, 0.18, 0.8, 0.55],
-               colors=COLORS,
-               x_scale=1.,
-               x_unit='TDC')
+print('len(COLORS = {}'.format(len(COLORS)))
+subrun_number_event_indexs = get_subrun_number_event_indexs(2690)
+for (subrun_number, event_index) in subrun_number_event_indexs:
+    print('subrun_number = {}'.format(subrun_number))
+    print('event_index = {}'.format(event_index))
+    plot_waveforms(
+        'V1742Analysis.run_2690.root',
+        spill=subrun_number, event=event_index,
+        channels=[3,
+                  4, 5, 6, 7,
+                  8, 9, 10, 11,
+                  12, 13, 14, 15],
+        legend_labels=['Cerenkov',
+                       'Paddle 1', 'Paddle 2', 'Paddle 3', 'Paddle 4',
+                       'US TOF 1', 'US TOF 2', 'US TOF 3', 'US TOF 4',
+                       'DS TOF 1', 'DS TOF 2', 'DS TOF 3', 'DS TOF 4'],
+        # channels=[3, 4, 5, 6, 7, 12, 13, 14, 15],
+        # legend_labels=['Cerenkov', 'Paddle 1', 'Paddle 2', 'Paddle 3', 'Paddle 4', 'DS TOF 1', 'DS TOF 2', 'DS TOF 3', 'DS TOF 4'],
+        # channels=[3, 4, 5, 6, 7, 8, 9, 10, 11],
+        # legend_labels=['Cerenkov', 'Paddle 1', 'Paddle 2', 'Paddle 3', 'Paddle 4', 'US TOF 1', 'US TOF 2', 'US TOF 3', 'US TOF 4'],
+        legend_ndcs=[0.65, 0.18, 0.85, 0.55],
+        legend_text_size=20,
+        # legend_ndcs=[0.6, 0.18, 0.8, 0.55],
+        # legend_column_count=4,
+        # channels=[6, 7],
+        # legend_labels=['Paddle 3', 'Paddle 4'],
+        # legend_ndcs=[0.6, 0.2, 0.8, 0.4],
+        # legend_text_size=28,
+        # grid=True,
+        colors=COLORS,
+        # x_scale=1.,
+        # x_unit='TDC',
+        batch_mode=True,
+    )
+    # break
+
+# plot_waveforms('V1742Analysis.run_2689.root',
+#                spill=73, event=1,
+#                # channels=[3, 4, 5, 6, 7, 12, 13, 14, 15],
+#                channels=[3, 4, 5, 6, 7, 8, 9, 10, 11],
+#                legend_labels=['Cerenkov', 'Paddle 1', 'Paddle 2', 'Paddle 3', 'Paddle 4', 'US TOF 1', 'US TOF 2', 'US TOF 3', 'US TOF 4'],
+#                legend_ndcs=[0.6, 0.18, 0.8, 0.55],
+#                colors=COLORS,
+#                x_scale=1.,
+#                x_unit='TDC')
 
 # 20190401_testbeam_beam_cerenkov
 # plot_waveforms('V1742Analysis.run_2645.root',
