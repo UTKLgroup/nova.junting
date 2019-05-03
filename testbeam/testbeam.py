@@ -6,6 +6,7 @@ import math
 from math import pi, cos, sin, atan, sqrt, log, exp
 import numpy as np
 from datetime import datetime
+import os
 
 
 PDG = TDatabasePDG()
@@ -16,7 +17,8 @@ DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
 COLORS = [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1, kYellow + 2, kPink, kViolet, kAzure + 4, kCyan + 1, kTeal - 7, kBlue - 5]
 # FIGURE_DIR = '/Users/juntinghuang/Desktop/nova/testbeam/doc/testbeam_beamline_simulation/figures'
-FIGURE_DIR = '/Users/juntinghuang/beamer/20190419_testbeam_scintillator_paddle_by_mwpc/figures'
+# FIGURE_DIR = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20190502_testbeam_scintillator_paddle_beam/figures'
 DATA_DIR = './data'
 
 
@@ -4215,6 +4217,7 @@ def plot_waveforms(filename, **kwargs):
     x_scale = kwargs.get('x_scale', 0.2)
     x_unit = kwargs.get('x_unit', 'ns')
     grid = kwargs.get('grid', False)
+    subdirectory = kwargs.get('subdirectory', '')
 
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
     grs_xs = []
@@ -4274,8 +4277,12 @@ def plot_waveforms(filename, **kwargs):
             line.SetLineColor(kBlue)
         lg1.AddEntry(line_min, 'gate', 'l')
 
+    figure_dir_subdir = '{}/{}'.format(FIGURE_DIR, subdirectory)
+    if not os.path.isdir(figure_dir_subdir):
+        os.makedirs(figure_dir_subdir)
+
     c1.Update()
-    c1.SaveAs('{}/plot_cerenkov_pulse.{}.spill_{}.event_{}.channel_{}.{}'.format(FIGURE_DIR, filename, spill, event, '_'.join(list(map(str, channels))), image_format))
+    c1.SaveAs('{}plot_cerenkov_pulse.{}.spill_{}.event_{}.channel_{}.{}'.format(figure_dir_subdir, filename, spill, event, '_'.join(list(map(str, channels))), image_format))
     if not batch_mode:
         input('Press any key to continue.')
 
@@ -4748,7 +4755,11 @@ def sort_cerenkov_event_by_adc(filename, **kwargs):
         print('subrun_number = {}, adc = {}, npe = {}'.format(subrun_number, adc, npe))
 
 
-def plot_trigger_count_per_fragment(filename):
+def plot_trigger_count_per_fragment(filename, **kwargs):
+    x_axis_title = kwargs.get('x_axis_title', 'Time (minute)')
+    y_axis_title = kwargs.get('y_axis_title', 'Coincidence Count per Minute')
+    grid = kwargs.get('grid', False)
+
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
 
     spill_number_trigger_counts = []
@@ -4780,13 +4791,16 @@ def plot_trigger_count_per_fragment(filename):
     c1 = TCanvas('c1', 'c1', 800, 600)
     set_margin()
     gPad.SetLogy()
+    if grid:
+        gPad.SetGrid()
+
     # set_graph_style(gr)
     # gr.Draw('APL')
 
     set_h1_style(h1)
     h1.Draw('hist')
-    h1.GetXaxis().SetTitle('Time (minute)')
-    h1.GetYaxis().SetTitle('Coincidence Count per Minute')
+    h1.GetXaxis().SetTitle(x_axis_title)
+    h1.GetYaxis().SetTitle(y_axis_title)
 
     c1.Update()
     c1.SaveAs('{}/plot_trigger_count_per_fragment.pdf'.format(FIGURE_DIR))
@@ -4969,8 +4983,9 @@ def plot_us_tof_waveform(filename, **kwargs):
 
 def get_subrun_number_event_indexs(run_number, **kwargs):
     tree_name = kwargs.get('tree_name', 'fPulseTree')
+    config = kwargs.get('config', '')
 
-    tf = TFile('{}/cerenkovana.beam_run_{}.root'.format(DATA_DIR, run_number))
+    tf = TFile('{}/cerenkovana.beam_run_{}{}.root'.format(DATA_DIR, run_number, config))
     subrun_number_event_indexs = []
     for event in tf.Get('cerenkovana/{}'.format(tree_name)):
         subrun_number_event_indexs.append((event.fSubRunNumber, event.fEventIndex))
@@ -4978,43 +4993,109 @@ def get_subrun_number_event_indexs(run_number, **kwargs):
     return subrun_number_event_indexs
 
 
-# 20190419_testbeam_scintillator_paddle_by_mwpc
-print('len(COLORS = {}'.format(len(COLORS)))
-subrun_number_event_indexs = get_subrun_number_event_indexs(2690)
-for (subrun_number, event_index) in subrun_number_event_indexs:
-    print('subrun_number = {}'.format(subrun_number))
-    print('event_index = {}'.format(event_index))
-    plot_waveforms(
-        'V1742Analysis.run_2690.root',
-        spill=subrun_number, event=event_index,
-        channels=[3,
-                  4, 5, 6, 7,
-                  8, 9, 10, 11,
-                  12, 13, 14, 15],
-        legend_labels=['Cerenkov',
-                       'Paddle 1', 'Paddle 2', 'Paddle 3', 'Paddle 4',
-                       'US TOF 1', 'US TOF 2', 'US TOF 3', 'US TOF 4',
-                       'DS TOF 1', 'DS TOF 2', 'DS TOF 3', 'DS TOF 4'],
-        # channels=[3, 4, 5, 6, 7, 12, 13, 14, 15],
-        # legend_labels=['Cerenkov', 'Paddle 1', 'Paddle 2', 'Paddle 3', 'Paddle 4', 'DS TOF 1', 'DS TOF 2', 'DS TOF 3', 'DS TOF 4'],
-        # channels=[3, 4, 5, 6, 7, 8, 9, 10, 11],
-        # legend_labels=['Cerenkov', 'Paddle 1', 'Paddle 2', 'Paddle 3', 'Paddle 4', 'US TOF 1', 'US TOF 2', 'US TOF 3', 'US TOF 4'],
-        legend_ndcs=[0.65, 0.18, 0.85, 0.55],
-        legend_text_size=20,
-        # legend_ndcs=[0.6, 0.18, 0.8, 0.55],
-        # legend_column_count=4,
-        # channels=[6, 7],
-        # legend_labels=['Paddle 3', 'Paddle 4'],
-        # legend_ndcs=[0.6, 0.2, 0.8, 0.4],
-        # legend_text_size=28,
-        # grid=True,
-        colors=COLORS,
-        # x_scale=1.,
-        # x_unit='TDC',
-        batch_mode=True,
-    )
-    # break
+def plot_alignment_data():
+    with open('data/alignment/NTB summary_up_ct_dn.txt') as f_txt:
+        for row in csv.reader(f_txt, delimiter=','):
+            print('row = {}'.format(row))
+            x = float(row[2])
+            y = float(row[3])
+            z = float(row[4])
+            # print('x = {}, y = {}, z = {}'.format(x, y, z))
 
+
+# 20190502_testbeam_scintillator_paddle_beam
+gStyle.SetOptStat(0)
+plot_trigger_count_per_fragment('V1742Analysis.run_2724.root', x_axis_title='Spill Number', y_axis_title='Event Count', grid=True)
+# run_number = 2717
+# config = ''
+# # subrun_number_event_indexs = get_subrun_number_event_indexs(run_number, config=config)
+# subrun_number_event_indexs = [
+#     (98, 23)
+# ]
+# run_number = 2724
+# config = '.v1742EventIndex_i'
+# config = '.v1742EventIndex_i+1'
+# subrun_number_event_indexs = get_subrun_number_event_indexs(run_number, config=config)
+# config = '.v1742EventIndex_i+1.timing.80ns'
+# subrun_number_event_indexs = [
+#     # (137, 5),
+#     (167, 1),
+#     (323, 6),
+#     # (33, 6),
+#     (352, 6),
+#     # (366, 4),
+#     (414, 4),
+#     (432, 4),
+#     (443, 6),
+#     # (91, 6)
+# ]
+# config = '.v1742EventIndex_i.timing'
+# subrun_number_event_indexs = [
+#     # (335, 2),
+#     (392, 2)
+# ]
+# for (subrun_number, event_index) in subrun_number_event_indexs:
+#     print('subrun_number = {}'.format(subrun_number))
+#     print('event_index = {}'.format(event_index))
+#     plot_waveforms(
+#         'V1742Analysis.run_{}.root'.format(run_number),
+#         spill=subrun_number, event=event_index,
+#         channels=[3,
+#                   4, 5, 6, 7,
+#                   8, 9, 10, 11,
+#                   12, 13, 14, 15],
+#         legend_labels=['Cerenkov',
+#                        'Paddle 1', 'Paddle 2', 'Paddle 3', 'Paddle 4',
+#                        'US TOF 1', 'US TOF 2', 'US TOF 3', 'US TOF 4',
+#                        'DS TOF 1', 'DS TOF 2', 'DS TOF 3', 'DS TOF 4'],
+#         legend_ndcs=[0.65, 0.18, 0.85, 0.55],
+#         legend_text_size=20,
+#         colors=COLORS,
+#         batch_mode=True,
+#         image_format='pdf',
+#         subdirectory='run_{}{}/'.format(run_number, config)
+#     )
+#     # break
+
+# 20190424_testbeam_alignment
+# plot_alignment_data()
+
+# 20190419_testbeam_scintillator_paddle_by_mwpc
+# print('len(COLORS = {}'.format(len(COLORS)))
+# subrun_number_event_indexs = get_subrun_number_event_indexs(2690)
+# for (subrun_number, event_index) in subrun_number_event_indexs:
+#     print('subrun_number = {}'.format(subrun_number))
+#     print('event_index = {}'.format(event_index))
+#     plot_waveforms(
+#         'V1742Analysis.run_2690.root',
+#         spill=subrun_number, event=event_index,
+#         channels=[3,
+#                   4, 5, 6, 7,
+#                   8, 9, 10, 11,
+#                   12, 13, 14, 15],
+#         legend_labels=['Cerenkov',
+#                        'Paddle 1', 'Paddle 2', 'Paddle 3', 'Paddle 4',
+#                        'US TOF 1', 'US TOF 2', 'US TOF 3', 'US TOF 4',
+#                        'DS TOF 1', 'DS TOF 2', 'DS TOF 3', 'DS TOF 4'],
+#         # channels=[3, 4, 5, 6, 7, 12, 13, 14, 15],
+#         # legend_labels=['Cerenkov', 'Paddle 1', 'Paddle 2', 'Paddle 3', 'Paddle 4', 'DS TOF 1', 'DS TOF 2', 'DS TOF 3', 'DS TOF 4'],
+#         # channels=[3, 4, 5, 6, 7, 8, 9, 10, 11],
+#         # legend_labels=['Cerenkov', 'Paddle 1', 'Paddle 2', 'Paddle 3', 'Paddle 4', 'US TOF 1', 'US TOF 2', 'US TOF 3', 'US TOF 4'],
+#         legend_ndcs=[0.65, 0.18, 0.85, 0.55],
+#         legend_text_size=20,
+#         # legend_ndcs=[0.6, 0.18, 0.8, 0.55],
+#         # legend_column_count=4,
+#         # channels=[6, 7],
+#         # legend_labels=['Paddle 3', 'Paddle 4'],
+#         # legend_ndcs=[0.6, 0.2, 0.8, 0.4],
+#         # legend_text_size=28,
+#         # grid=True,
+#         colors=COLORS,
+#         # x_scale=1.,
+#         # x_unit='TDC',
+#         batch_mode=True,
+#     )
+#     # break
 # plot_waveforms('V1742Analysis.run_2689.root',
 #                spill=73, event=1,
 #                # channels=[3, 4, 5, 6, 7, 12, 13, 14, 15],
