@@ -4758,6 +4758,8 @@ def sort_cerenkov_event_by_adc(filename, **kwargs):
 def plot_trigger_count_per_fragment(filename, **kwargs):
     x_axis_title = kwargs.get('x_axis_title', 'Time (minute)')
     y_axis_title = kwargs.get('y_axis_title', 'Coincidence Count per Minute')
+    y_min = kwargs.get('y_min', None)
+    y_max = kwargs.get('y_max', None)
     grid = kwargs.get('grid', False)
 
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
@@ -4785,6 +4787,13 @@ def plot_trigger_count_per_fragment(filename, **kwargs):
     h1 = TH1D('h1', 'h1', int(max(spill_numbers) - min(spill_numbers)) + 1, min(spill_numbers) - 0.5, max(spill_numbers) + 0.5)
     for i in range(len(trigger_counts)):
         h1.Fill(spill_numbers[i], trigger_counts[i])
+    if y_min is not None and y_max is not None:
+        h1.GetYaxis().SetRangeUser(y_min, y_max)
+
+    print('h1.Integral() = {}'.format(h1.Integral()))
+    print('h1.Integral() = {}'.format(h1.Integral(2, h1.GetNbinsX())))
+    print('h1.GetNbinsX() = {}'.format(h1.GetNbinsX()))
+    print('h1.Integral() / h1.GetNbinsX() = {}'.format(float(h1.Integral()) / h1.GetNbinsX()))
 
     gr = TGraph(len(spill_numbers), np.array(spill_numbers), np.array(trigger_counts))
 
@@ -4803,7 +4812,7 @@ def plot_trigger_count_per_fragment(filename, **kwargs):
     h1.GetYaxis().SetTitle(y_axis_title)
 
     c1.Update()
-    c1.SaveAs('{}/plot_trigger_count_per_fragment.pdf'.format(FIGURE_DIR))
+    c1.SaveAs('{}/plot_trigger_count_per_fragment.{}.pdf'.format(FIGURE_DIR, filename))
     input('Press any key to continue.')
 
 
@@ -5004,8 +5013,10 @@ def plot_alignment_data():
 
 
 # 20190502_testbeam_scintillator_paddle_beam
-gStyle.SetOptStat(0)
-plot_trigger_count_per_fragment('V1742Analysis.run_2724.root', x_axis_title='Spill Number', y_axis_title='Event Count', grid=True)
+# gStyle.SetOptStat(0)
+# plot_trigger_count_per_fragment('V1742Analysis.run_2724.root', x_axis_title='Spill Number', y_axis_title='Event Count', grid=True)
+# plot_trigger_count_per_fragment('V1742Analysis.run_2717.root', x_axis_title='Spill Number', y_axis_title='Event Count', grid=True)
+plot_trigger_count_per_fragment('V1742Analysis.run_2627.root', x_axis_title='Spill Number', y_axis_title='Event Count', grid=True)
 # run_number = 2717
 # config = ''
 # # subrun_number_event_indexs = get_subrun_number_event_indexs(run_number, config=config)
@@ -5015,6 +5026,7 @@ plot_trigger_count_per_fragment('V1742Analysis.run_2724.root', x_axis_title='Spi
 # run_number = 2724
 # config = '.v1742EventIndex_i'
 # config = '.v1742EventIndex_i+1'
+# config = '.no_wire_chamber'
 # subrun_number_event_indexs = get_subrun_number_event_indexs(run_number, config=config)
 # config = '.v1742EventIndex_i+1.timing.80ns'
 # subrun_number_event_indexs = [
@@ -5033,6 +5045,10 @@ plot_trigger_count_per_fragment('V1742Analysis.run_2724.root', x_axis_title='Spi
 # subrun_number_event_indexs = [
 #     # (335, 2),
 #     (392, 2)
+# ]
+# config = '.missing_paddle'
+# subrun_number_event_indexs = [
+#     (8, 3)
 # ]
 # for (subrun_number, event_index) in subrun_number_event_indexs:
 #     print('subrun_number = {}'.format(subrun_number))
