@@ -5005,18 +5005,22 @@ def get_subrun_number_event_indexs(run_number, **kwargs):
 def plot_alignment_data():
     with open('data/alignment/NTB summary_up_ct_dn.txt') as f_txt:
         for row in csv.reader(f_txt, delimiter=','):
-            print('row = {}'.format(row))
+            # print('row = {}'.format(row))
+            detector = row[1].strip()
             x = float(row[2])
             y = float(row[3])
             z = float(row[4])
-            # print('x = {}, y = {}, z = {}'.format(x, y, z))
+
+            if '_CT' in detector:
+                print('detector = {}'.format(detector))
+                print('x = {}, y = {}, z = {}'.format(x, y, z))
 
 
 # 20190502_testbeam_scintillator_paddle_beam
 # gStyle.SetOptStat(0)
 # plot_trigger_count_per_fragment('V1742Analysis.run_2724.root', x_axis_title='Spill Number', y_axis_title='Event Count', grid=True)
 # plot_trigger_count_per_fragment('V1742Analysis.run_2717.root', x_axis_title='Spill Number', y_axis_title='Event Count', grid=True)
-plot_trigger_count_per_fragment('V1742Analysis.run_2627.root', x_axis_title='Spill Number', y_axis_title='Event Count', grid=True)
+# plot_trigger_count_per_fragment('V1742Analysis.run_2627.root', x_axis_title='Spill Number', y_axis_title='Event Count', grid=True)
 # run_number = 2717
 # config = ''
 # # subrun_number_event_indexs = get_subrun_number_event_indexs(run_number, config=config)
@@ -5029,6 +5033,9 @@ plot_trigger_count_per_fragment('V1742Analysis.run_2627.root', x_axis_title='Spi
 # config = '.no_wire_chamber'
 # subrun_number_event_indexs = get_subrun_number_event_indexs(run_number, config=config)
 # config = '.v1742EventIndex_i+1.timing.80ns'
+# subrun_number_event_indexs = [
+#     (338, 6)
+# ]
 # subrun_number_event_indexs = [
 #     # (137, 5),
 #     (167, 1),
@@ -5074,7 +5081,7 @@ plot_trigger_count_per_fragment('V1742Analysis.run_2627.root', x_axis_title='Spi
 #     # break
 
 # 20190424_testbeam_alignment
-# plot_alignment_data()
+plot_alignment_data()
 
 # 20190419_testbeam_scintillator_paddle_by_mwpc
 # print('len(COLORS = {}'.format(len(COLORS)))
