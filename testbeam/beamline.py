@@ -1,6 +1,7 @@
 import csv
 from rootalias import *
 from math import pi, tan, sin, cos
+from pprint import pprint
 
 
 class Detector:
@@ -36,6 +37,7 @@ class Beamline:
     INCH = 25.4                 # mm
     FOOT = 304.8                # mm
     RADIAN_PER_DEGREE = pi / 180.
+    COLORS = [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1, kYellow + 2, kPink, kViolet, kAzure + 4, kCyan + 1, kTeal - 7, kBlue - 5]
 
     def __init__(self, g4bl_filename='beamline.py.in'):
         self.figure_dir = None
@@ -771,35 +773,138 @@ class Beamline:
                 component.y *= 25.4
                 component.z *= 25.4
 
-    def read_alignment_data_nova_detector(self):
-        self.nova.set_xyz((0., 0., 0.))
-        with open('data/alignment/NTB summary_up_ct_dn.txt') as f_txt:
-            for row in csv.reader(f_txt, delimiter=','):
-                # print('row = {}'.format(row))
-                detector_name = row[1].strip()
-                x = float(row[2])
-                y = float(row[3])
-                z = float(row[4])
-                if '_CT' in detector_name:
-                    # print('detector = {}'.format(detector))
-                    # print('x = {}, y = {}, z = {}'.format(x, y, z))
-                    position = -x, z, y
+    def plot_vertical_positions(self):
+        h1 = TH1D('h1', 'h1', 200, -100, 100)
 
+        for component in self.components:
+            if component.name not in ['nova detector', 'upstream collimator']:
+                h1.Fill(component.y)
+                if component.y > 20.:
+                    print('component.name = {}, component.y = {}'.format(component.name, component.y))
+
+        c1 = TCanvas('c1', 'c1', 800, 600)
+        set_margin()
+        set_h1_style(h1)
+
+        h1.Draw()
+        h1.GetXaxis().SetTitle('Vertical Position (mm)')
+        h1.GetYaxis().SetTitle('Detector Count')
+        h1.GetXaxis().SetRangeUser(-20, 50)
+
+        c1.Update()
+        c1.SaveAs('{}/plot_vertical_positions.pdf'.format(self.figure_dir))
+        input('Press any key to continue.')
+
+    def read_alignment_data_nova_detector(self):
+        gStyle.SetMarkerStyle(8)
+
+        ntp = TNtuple('TNtuple', 'TNtuple', 'x:y:z:color')
+        name_positions = {}
+        with open('data/alignment/Block 1 and Block 2 offset points Target frame.txt') as f_txt:
+            rows = csv.reader(f_txt, delimiter=',')
+            row_count = 0
+            for i in range(5):
+                next(rows)
+            for row in rows:
+                row_count += 1
+                name = row[0].strip()
+                x = float(row[-3])
+                y = float(row[-2])
+                z = float(row[-1])
+                position = -x, z, y
+                if name not in name_positions:
+                    name_positions[name] = []
+                name_positions[name].append(position)
+            print('row_count = {}'.format(row_count))
+
+        names = sorted(name_positions.keys())
+        names = [
+            'Top of Blue Steel Baseplate Offset Points',
+            # block 1
+            'Block 1 Upper Beam Left Horizontal End Caps Offset Points', # 1
+            'Block 1 Lower Beam Left Horizontal End Caps Offset Points', # 2
+            'Block 1 Horizontal Panel Bottom Offset Points', # 3
+            'Block 1 BL top shifted - 3"', # 4
+            'Block 1 Beam Left Vertical Panel Offset Points', # 5
+            'Block 1 Beam Right Vertical Panel Offset Points', # 6
+            'Block 1 UPST Plane Offset Points', # 7
+            'Block 1 Center Split points projected', # 8
+            'Block 1 Panel 30 Downstream Plane Offset Points', # 9
+            # block 2
+            'Block 2 Upper Beam Left Horizontal End Caps Offset Points', # 10
+            'Block 2 Lower Beam Left Horizontal End Caps Offset Points', # 11
+            'Block 2 Horizontal Panel Bottom Offset Points', # 12
+            'Block 2 Beam Left Vertical Panel Offset Points', # 13
+            'Block 2 Beam Right Vertical Panel Offset Points', # 14
+            'Block 2 DNST Plane Offset Points', # 15
+            'Block 2 Center Split points projected', # 16
+            'Block 2 Panel 32 Upstream Plane Offset Points' # 17
+        ]
+
+        row_count = 0
+        for i, name in enumerate(names):
+            print('name = {}, i = {}'.format(name, i))
+            print('len(name_positions[name]) = {}'.format(len(name_positions[name])))
+            row_count += len(name_positions[name])
+            # if 'Block 1' in name:
+            #     continue
+            # color_index = i % len(self.COLORS)
+            # color = self.COLORS[color_index]
+            color = kBlack
+            # base
+            # if name == 'Top of Blue Steel Baseplate Offset Points':
+            # block 1
+            # if name == 'Block 1 Upper Beam Left Horizontal End Caps Offset Points': # 1
+            # if name == 'Block 1 Lower Beam Left Horizontal End Caps Offset Points': # 2
+            # if name == 'Block 1 Horizontal Panel Bottom Offset Points': # 3
+            # if name == 'Block 1 BL top shifted - 3"': # 4
+            # if name == 'Block 1 Beam Left Vertical Panel Offset Points': # 5
+            # if name == 'Block 1 Beam Right Vertical Panel Offset Points': # 6
+            # if name == 'Block 1 UPST Plane Offset Points': # 7
+            # if name == 'Block 1 Center Split points projected': # 8
+            # if name == 'Block 1 Panel 30 Downstream Plane Offset Points': # 9
+            # block 2
+            # if name == 'Block 2 Upper Beam Left Horizontal End Caps Offset Points': # 10
+            # if name == 'Block 2 Lower Beam Left Horizontal End Caps Offset Points': # 11
+            # if name == 'Block 2 Horizontal Panel Bottom Offset Points': # 12
+            # if name == 'Block 2 Beam Left Vertical Panel Offset Points': # 13
+            # if name == 'Block 2 Beam Right Vertical Panel Offset Points': # 14
+            # if name == 'Block 2 DNST Plane Offset Points': # 15
+            # if name == 'Block 2 Center Split points projected': # 16
+            if name == 'Block 2 Panel 32 Upstream Plane Offset Points': # 17
+                color = kRed
+
+            for position in name_positions[name]:
+                ntp.Fill(position[0], position[1], position[2], color)
+
+        print('row_count = {}'.format(row_count))
+        pprint(names)
+        print('len(names) = {}'.format(len(names)))
+
+        c1 = TCanvas('c1', 'c1', 800, 600)
+        set_margin()
+
+        ntp.Draw('y:x:z:color')
+
+        c1.Update()
+        c1.SaveAs('{}/read_alignment_data_nova_detector.pdf'.format(self.figure_dir))
+        input('Press any key to continue.')
 
 
 # if __name__ == '__main__':
+gStyle.SetOptStat(0)
 beamline = Beamline()
 # beamline.figure_dir = '/Users/juntinghuang/beamer/20180413_testbeam_120gev/figures'
 beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
 # beamline.plot_position()
 # beamline.screen_shot = True
 # beamline.read_cherenkov_dimension()
-beamline.write()
-print('before: beamline.nova.z = {}'.format(beamline.nova.z))
-beamline.read_alignment_data_beamline()
-print('after: beamline.nova.z = {}'.format(beamline.nova.z))
+# beamline.write()
+# beamline.read_alignment_data_beamline()
 # beamline.read_alignment_data_nova_detector()
-beamline.plot_position()
+# beamline.plot_position()
+# beamline.plot_vertical_positions()
+beamline.read_alignment_data_nova_detector()
 
 # beamline = Beamline('beamline.py.radiation.collimator.in')
 # beamline.write_radiation()
