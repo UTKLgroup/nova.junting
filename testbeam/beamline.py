@@ -19,6 +19,11 @@ class Detector:
         self.color = kBlack
         self.marker_style = 20
 
+    def set_xyz(self, xyz):
+        self.x = xyz[0]
+        self.y = xyz[1]
+        self.z = xyz[2]
+
     def set_zx(self, zx):
         self.z = zx[0]
         self.x = zx[1]
@@ -77,6 +82,14 @@ class Beamline:
             self.tof_ds,
             self.nova
         ]
+
+        self.shielding_blocks = [
+            self.shielding_block_1,
+            self.shielding_block_2,
+            self.shielding_block_3
+        ]
+
+        self.components = self.detectors + self.shielding_blocks
 
         self.read_position()
         self.correct_position()
@@ -191,7 +204,10 @@ class Beamline:
             kGreen + 2,
             kSpring + 2,
             kYellow + 2,
-            kOrange + 2
+            kOrange + 2,
+            kBlue,
+            kBlue,
+            kBlue
         ]
 
         styles = [
@@ -206,7 +222,10 @@ class Beamline:
             28,
             29,
             30,
-            31
+            31,
+            32,
+            33,
+            34
         ]
 
         c1 = TCanvas('c1', 'c1', 1200, 600)
@@ -225,31 +244,39 @@ class Beamline:
         gr.GetYaxis().SetTitleOffset(1.)
         gr.Draw('AP')
         gr.GetXaxis().SetRangeUser(-50, 1600)
-        gr.GetYaxis().SetRangeUser(-160, 50)
+        # gr.GetYaxis().SetRangeUser(-160, 50)
+        gr.GetYaxis().SetRangeUser(-220, 120)
         gr.GetYaxis().SetNdivisions(505, 1)
         gr.GetXaxis().SetNdivisions(508, 1)
 
-        lg1 = TLegend(0.5, 0.33, 0.87, 0.86)
+        # lg1 = TLegend(0.5, 0.33, 0.87, 0.86)
+        # lg1.SetTextSize(22)
+        lg1 = TLegend(0.34, 0.53, 0.87, 0.86)
         set_legend_style(lg1)
-        lg1.SetTextSize(22)
+        lg1.SetNColumns(2)
+        lg1.SetTextSize(18)
         lg1.SetMargin(0.15)
         lg1.SetBorderSize(1)
 
+
+        # components = self.detectors + self.shielding_blocks
+        print('len(self.components) = {}'.format(len(self.components)))
+        print('len(colors) = {}'.format(len(colors)))
+        print('len(styles) = {}'.format(len(styles)))
+
         markers = []
-        for i, detector in enumerate(self.detectors):
-            if i == len(self.detectors) - 1:
-                continue
+        for i, detector in enumerate(self.components):
             marker = TMarker(detector.z / 10., detector.x / 10., 24)
             markers.append(marker)
             markers[i].SetMarkerColor(colors[i])
             markers[i].SetMarkerStyle(styles[i])
             markers[i].SetMarkerSize(2.)
-            markers[i].Draw()
+            if detector.name != 'nova detector':
+                markers[i].Draw()
+                name = '{} ({:.1f}, {:.1f})'.format(detector.name, detector.z / 10., detector.x / 10.)
+                lg1.AddEntry(markers[i], name, 'p')
 
-            name = '{} ({:.1f}, {:.1f})'.format(detector.name, detector.z / 10., detector.x / 10.)
-            lg1.AddEntry(markers[i], name, 'p')
-
-        length = 10.
+        length = 20.
         nova_detector_line = TLine(self.nova.z / 10., self.nova.x / 10. - length, self.nova.z / 10., self.nova.x / 10. + length)
         nova_detector_line.SetLineStyle(2)
         nova_detector_line.SetLineWidth(2)
@@ -388,6 +415,7 @@ class Beamline:
         self.nova.length = 10.
         self.f_out.write('virtualdetector nova height={} length={} width={} color=0.39,0.39,0.39\n'.format(self.nova.height, self.nova.length, self.nova.width))
         self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y{}\n'.format(self.nova.x, self.nova.y, self.nova.z, self.nova.theta))
+        print('self.nova.z = {}'.format(self.nova.z))
 
     def write_nova(self):
         self.nova.theta = self.us_theta + self.ds_theta
@@ -691,12 +719,87 @@ class Beamline:
         self.write_shielding_block()
 
 
+    def read_alignment_data_beamline(self):
+        for component in self.components:
+            if component.name not in ['nova detector', 'upstream collimator']:
+                component.set_xyz((0., 0., 0.))
+
+        with open('data/alignment/NTB summary_up_ct_dn.txt') as f_txt:
+            for row in csv.reader(f_txt, delimiter=','):
+                detector_name = row[1].strip()
+                x = float(row[2])
+                y = float(row[3])
+                z = float(row[4])
+                position = -x, z, y
+
+                if detector_name == 'NTB-CERENKOV_DN':
+                    self.cherenkov.set_xyz(position)
+                    self.cherenkov.z = 546.554
+                    self.cherenkov.z += 15.75 - 134.86 / 2.
+
+                if '_CT' in detector_name:
+                    # print('detector = {}'.format(detector))
+                    # print('x = {}, y = {}, z = {}'.format(x, y, z))
+                    if 'TARGET' in detector_name:
+                        self.target.set_xyz(position)
+                    elif 'NTB-TGT-COLL-002-TOF-1' in detector_name:
+                        self.tof_us.set_xyz(position)
+                    elif 'NTB-MWPC-AK' in detector_name:
+                        self.wc_1.set_xyz(position)
+                    elif 'NTB-MWPC-AL' in detector_name:
+                        self.wc_2.set_xyz(position)
+                    elif 'NTB-MWPC-AF' in detector_name:
+                        self.wc_3.set_xyz(position)
+                    elif 'NTB-MWPC-AI' in detector_name:
+                        self.wc_4.set_xyz(position)
+                    elif 'NTB-CERENKOV-TOF-1' in detector_name:
+                        self.tof_ds.set_xyz(position)
+                    elif 'NTB-COLLIMATOR' in detector_name:
+                        self.collimator_ds.set_xyz(position)
+                    elif 'NTB-M-1-0' in detector_name:
+                        self.magnet.set_xyz(position)
+                    elif 'NTB-MIPP-SHIELD-BLOCK' in detector_name:
+                        self.shielding_block_1.set_xyz(position)
+                    elif 'NTB-LEFT-SHIELD-BLOCK' in detector_name:
+                        self.shielding_block_2.set_xyz(position)
+                    elif 'NTB-RIGHT-SHIELD-BLOCK' in detector_name:
+                        self.shielding_block_3.set_xyz(position)
+
+        for component in self.components:
+            if component.name not in ['nova detector', 'upstream collimator']:
+                component.x *= 25.4
+                component.y *= 25.4
+                component.z *= 25.4
+
+    def read_alignment_data_nova_detector(self):
+        self.nova.set_xyz((0., 0., 0.))
+        with open('data/alignment/NTB summary_up_ct_dn.txt') as f_txt:
+            for row in csv.reader(f_txt, delimiter=','):
+                # print('row = {}'.format(row))
+                detector_name = row[1].strip()
+                x = float(row[2])
+                y = float(row[3])
+                z = float(row[4])
+                if '_CT' in detector_name:
+                    # print('detector = {}'.format(detector))
+                    # print('x = {}, y = {}, z = {}'.format(x, y, z))
+                    position = -x, z, y
+
+
+
+# if __name__ == '__main__':
 beamline = Beamline()
 # beamline.figure_dir = '/Users/juntinghuang/beamer/20180413_testbeam_120gev/figures'
+beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
 # beamline.plot_position()
 # beamline.screen_shot = True
 # beamline.read_cherenkov_dimension()
 beamline.write()
+print('before: beamline.nova.z = {}'.format(beamline.nova.z))
+beamline.read_alignment_data_beamline()
+print('after: beamline.nova.z = {}'.format(beamline.nova.z))
+# beamline.read_alignment_data_nova_detector()
+beamline.plot_position()
 
 # beamline = Beamline('beamline.py.radiation.collimator.in')
 # beamline.write_radiation()
