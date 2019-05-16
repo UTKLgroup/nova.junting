@@ -347,6 +347,7 @@ class Beamline:
         self.f_out.write('place collimator_us_plate rename=collimator_us_top_2 x={} y={} z={}\n'.format(collimator_us_top_2_positions[0], collimator_us_top_2_positions[1], collimator_us_top_2_positions[2]))
 
     def write_collimator_us_alignment(self):
+        # all numbers are in inch
         # alignment
         # NTB-TGT-COLL-002-CHANNEL_UP
         channel_up_x = -2.215
@@ -361,6 +362,9 @@ class Beamline:
         aperture_plate_up_edge_large = 20.07
         aperture_plate_height = 2.
         collimator_width = 32.
+        collimator_base_height = 5.19
+        collimator_base_length = 58.
+        collimator_plate_height = 5.19
         # measurement by M. Vincent
         channel_down_width = 6.
 
@@ -376,11 +380,12 @@ class Beamline:
         aperture_plate_1_vertex_3_z = channel_down_z
         aperture_plate_1_vertex_4_x = aperture_plate_1_vertex_1_x
         aperture_plate_1_vertex_4_z = aperture_plate_1_vertex_3_z
-        self.f_out.write('extrusion aperture_plate_1 length={} vertices={},{};{},{};{},{};{},{}\n'.format(aperture_plate_height * Beamline.INCH,
-                                                                                                 0, 0,
-                                                                                                 (aperture_plate_1_vertex_2_x - aperture_plate_1_vertex_1_x) * Beamline.INCH, (aperture_plate_1_vertex_2_z - aperture_plate_1_vertex_1_z) * Beamline.INCH,
-                                                                                                 (aperture_plate_1_vertex_3_x - aperture_plate_1_vertex_1_x) * Beamline.INCH, (aperture_plate_1_vertex_3_z - aperture_plate_1_vertex_1_z) * Beamline.INCH,
-                                                                                                 (aperture_plate_1_vertex_4_x - aperture_plate_1_vertex_1_x) * Beamline.INCH, (aperture_plate_1_vertex_4_z - aperture_plate_1_vertex_1_z) * Beamline.INCH))
+        self.f_out.write('extrusion aperture_plate_1 length={} vertices={},{};{},{};{},{};{},{} material=Fe color=0,1,1 kill={}\n'.format(aperture_plate_height * Beamline.INCH,
+                                                                                                                                          0, 0,
+                                                                                                                                          (aperture_plate_1_vertex_2_x - aperture_plate_1_vertex_1_x) * Beamline.INCH, (aperture_plate_1_vertex_2_z - aperture_plate_1_vertex_1_z) * Beamline.INCH,
+                                                                                                                                          (aperture_plate_1_vertex_3_x - aperture_plate_1_vertex_1_x) * Beamline.INCH, (aperture_plate_1_vertex_3_z - aperture_plate_1_vertex_1_z) * Beamline.INCH,
+                                                                                                                                          (aperture_plate_1_vertex_4_x - aperture_plate_1_vertex_1_x) * Beamline.INCH, (aperture_plate_1_vertex_4_z - aperture_plate_1_vertex_1_z) * Beamline.INCH,
+                                                                                                                                          self.kill))
         self.f_out.write('place aperture_plate_1 rename=aperture_plate_1 x={} y={} z={} rotation=x90\n'.format(aperture_plate_1_vertex_1_x * Beamline.INCH, aperture_plate_y * Beamline.INCH, aperture_plate_1_vertex_1_z * Beamline.INCH))
 
         aperture_plate_2_vertex_1_x = channel_up_x - channel_up_width / 2.
@@ -391,13 +396,38 @@ class Beamline:
         aperture_plate_2_vertex_3_z = channel_down_z
         aperture_plate_2_vertex_4_x = channel_down_x - channel_down_width / 2.
         aperture_plate_2_vertex_4_z = aperture_plate_2_vertex_3_z
-        self.f_out.write('extrusion aperture_plate_2 length={} vertices={},{};{},{};{},{};{},{}\n'.format(aperture_plate_height * Beamline.INCH,
-                                                                                                          0, 0,
-                                                                                                          (aperture_plate_2_vertex_2_x - aperture_plate_2_vertex_1_x) * Beamline.INCH, (aperture_plate_2_vertex_2_z - aperture_plate_2_vertex_1_z) * Beamline.INCH,
-                                                                                                          (aperture_plate_2_vertex_3_x - aperture_plate_2_vertex_1_x) * Beamline.INCH, (aperture_plate_2_vertex_3_z - aperture_plate_2_vertex_1_z) * Beamline.INCH,
-                                                                                                          (aperture_plate_2_vertex_4_x - aperture_plate_2_vertex_1_x) * Beamline.INCH, (aperture_plate_2_vertex_4_z - aperture_plate_2_vertex_1_z) * Beamline.INCH))
-        self.f_out.write('place aperture_plate_2 rename=aperture_plate_2 x={} y={} z={} rotation=x90\n'.format(aperture_plate_2_vertex_1_x * Beamline.INCH, aperture_plate_y, aperture_plate_2_vertex_1_z * Beamline.INCH))
+        self.f_out.write('extrusion aperture_plate_2 length={} vertices={},{};{},{};{},{};{},{} material=Fe color=0,1,1 kill={}\n'.format(aperture_plate_height * Beamline.INCH,
+                                                                                                                                          0, 0,
+                                                                                                                                          (aperture_plate_2_vertex_2_x - aperture_plate_2_vertex_1_x) * Beamline.INCH, (aperture_plate_2_vertex_2_z - aperture_plate_2_vertex_1_z) * Beamline.INCH,
+                                                                                                                                          (aperture_plate_2_vertex_3_x - aperture_plate_2_vertex_1_x) * Beamline.INCH, (aperture_plate_2_vertex_3_z - aperture_plate_2_vertex_1_z) * Beamline.INCH,
+                                                                                                                                          (aperture_plate_2_vertex_4_x - aperture_plate_2_vertex_1_x) * Beamline.INCH, (aperture_plate_2_vertex_4_z - aperture_plate_2_vertex_1_z) * Beamline.INCH,
+                                                                                                                                          self.kill))
+        self.f_out.write('place aperture_plate_2 rename=aperture_plate_2 x={} y={} z={} rotation=x90\n'.format(aperture_plate_2_vertex_1_x * Beamline.INCH, aperture_plate_y * Beamline.INCH, aperture_plate_2_vertex_1_z * Beamline.INCH))
 
+
+        aperture_plate_x = (aperture_plate_1_vertex_1_x + aperture_plate_2_vertex_2_x) / 2.
+        aperture_plate_z = (aperture_plate_1_vertex_1_z + aperture_plate_1_vertex_4_z) / 2.
+        collimator_plate_length = aperture_plate_length
+
+        collimator_base_dimensions = [collimator_base_height, collimator_base_length, collimator_width]
+        collimator_plate_dimensions = [collimator_plate_height, collimator_plate_length, collimator_width]
+
+        collimator_base_positions = [aperture_plate_x, aperture_plate_y - 0.5 * aperture_plate_height - collimator_plate_dimensions[0] - 0.5 * collimator_base_dimensions[0], aperture_plate_z - (collimator_base_dimensions[1] - collimator_plate_dimensions[1]) / 2.]
+        collimator_bottom_positions = [aperture_plate_x, aperture_plate_y - 0.5 * aperture_plate_height - 0.5 * collimator_plate_dimensions[0], aperture_plate_z]
+        collimator_top_1_positions = [aperture_plate_x, aperture_plate_y + 0.5 * aperture_plate_height + 0.5 * collimator_plate_dimensions[0], aperture_plate_z]
+        collimator_top_2_positions = [aperture_plate_x, aperture_plate_y + 0.5 * aperture_plate_height + 1.5 * collimator_plate_dimensions[0], aperture_plate_z]
+
+        for quantity in [collimator_base_dimensions, collimator_plate_dimensions, collimator_base_positions, collimator_bottom_positions, collimator_top_1_positions, collimator_top_2_positions]:
+            quantity[0] *= Beamline.INCH
+            quantity[1] *= Beamline.INCH
+            quantity[2] *= Beamline.INCH
+
+        self.f_out.write('box collimator_base height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_base_dimensions[0], collimator_base_dimensions[1], collimator_base_dimensions[2], self.kill))
+        self.f_out.write('box collimator_plate height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_plate_dimensions[0], collimator_plate_dimensions[1], collimator_plate_dimensions[2], self.kill))
+        self.f_out.write('place collimator_base rename=collimator_base x={} y={} z={}\n'.format(collimator_base_positions[0], collimator_base_positions[1], collimator_base_positions[2]))
+        self.f_out.write('place collimator_plate rename=collimator_bottom x={} y={} z={}\n'.format(collimator_bottom_positions[0], collimator_bottom_positions[1], collimator_bottom_positions[2]))
+        self.f_out.write('place collimator_plate rename=collimator_top_1 x={} y={} z={}\n'.format(collimator_top_1_positions[0], collimator_top_1_positions[1], collimator_top_1_positions[2]))
+        self.f_out.write('place collimator_plate rename=collimator_top_2 x={} y={} z={}\n'.format(collimator_top_2_positions[0], collimator_top_2_positions[1], collimator_top_2_positions[2]))
 
     def write_virtual_disk(self):
         start_line_radius = 1750.
