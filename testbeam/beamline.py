@@ -41,6 +41,7 @@ class Beamline:
     MARKER_STYLES = list(range(20, 31)) + [2, 3, 4, 5, 8]
 
     def __init__(self, g4bl_filename='beamline.py.in'):
+        self.g4bl_filename = g4bl_filename
         self.figure_dir = None
         self.us_theta = -16.    # degree
         self.ds_theta = 16.     # degree
@@ -345,6 +346,59 @@ class Beamline:
         self.f_out.write('place collimator_us_plate rename=collimator_us_top_1 x={} y={} z={}\n'.format(collimator_us_top_1_positions[0], collimator_us_top_1_positions[1], collimator_us_top_1_positions[2]))
         self.f_out.write('place collimator_us_plate rename=collimator_us_top_2 x={} y={} z={}\n'.format(collimator_us_top_2_positions[0], collimator_us_top_2_positions[1], collimator_us_top_2_positions[2]))
 
+    def write_collimator_us_alignment(self):
+        # alignment
+        # NTB-TGT-COLL-002-CHANNEL_UP
+        channel_up_x = -2.215
+        channel_up_y = -0.040
+        channel_up_z = 7.694
+        # NTB-TGT-COLL-002-CHANNEL_DN
+        channel_down_x = -14.561
+        channel_down_y = 0.012
+        channel_down_z = 50.439
+        # drawing by J. Kilmer
+        aperture_plate_up_edge_small = 9.02
+        aperture_plate_up_edge_large = 20.07
+        aperture_plate_height = 2.
+        collimator_width = 32.
+        # measurement by M. Vincent
+        channel_down_width = 6.
+
+        channel_up_width = collimator_width - aperture_plate_up_edge_small - aperture_plate_up_edge_large
+        aperture_plate_length = channel_down_z - channel_up_z
+        aperture_plate_y = (channel_up_y + channel_down_y) / 2.
+
+        aperture_plate_1_vertex_1_x = channel_up_x + channel_up_width / 2. + aperture_plate_up_edge_small
+        aperture_plate_1_vertex_1_z = channel_up_z
+        aperture_plate_1_vertex_2_x = channel_up_x + channel_up_width / 2.
+        aperture_plate_1_vertex_2_z = aperture_plate_1_vertex_1_z
+        aperture_plate_1_vertex_3_x = channel_down_x + channel_down_width / 2.
+        aperture_plate_1_vertex_3_z = channel_down_z
+        aperture_plate_1_vertex_4_x = aperture_plate_1_vertex_1_x
+        aperture_plate_1_vertex_4_z = aperture_plate_1_vertex_3_z
+        self.f_out.write('extrusion aperture_plate_1 length={} vertices={},{};{},{};{},{};{},{}\n'.format(aperture_plate_height * Beamline.INCH,
+                                                                                                 0, 0,
+                                                                                                 (aperture_plate_1_vertex_2_x - aperture_plate_1_vertex_1_x) * Beamline.INCH, (aperture_plate_1_vertex_2_z - aperture_plate_1_vertex_1_z) * Beamline.INCH,
+                                                                                                 (aperture_plate_1_vertex_3_x - aperture_plate_1_vertex_1_x) * Beamline.INCH, (aperture_plate_1_vertex_3_z - aperture_plate_1_vertex_1_z) * Beamline.INCH,
+                                                                                                 (aperture_plate_1_vertex_4_x - aperture_plate_1_vertex_1_x) * Beamline.INCH, (aperture_plate_1_vertex_4_z - aperture_plate_1_vertex_1_z) * Beamline.INCH))
+        self.f_out.write('place aperture_plate_1 rename=aperture_plate_1 x={} y={} z={} rotation=x90\n'.format(aperture_plate_1_vertex_1_x * Beamline.INCH, aperture_plate_y * Beamline.INCH, aperture_plate_1_vertex_1_z * Beamline.INCH))
+
+        aperture_plate_2_vertex_1_x = channel_up_x - channel_up_width / 2.
+        aperture_plate_2_vertex_1_z = channel_up_z
+        aperture_plate_2_vertex_2_x = channel_up_x - channel_up_width / 2. - aperture_plate_up_edge_large
+        aperture_plate_2_vertex_2_z = aperture_plate_2_vertex_1_z
+        aperture_plate_2_vertex_3_x = aperture_plate_2_vertex_2_x
+        aperture_plate_2_vertex_3_z = channel_down_z
+        aperture_plate_2_vertex_4_x = channel_down_x - channel_down_width / 2.
+        aperture_plate_2_vertex_4_z = aperture_plate_2_vertex_3_z
+        self.f_out.write('extrusion aperture_plate_2 length={} vertices={},{};{},{};{},{};{},{}\n'.format(aperture_plate_height * Beamline.INCH,
+                                                                                                          0, 0,
+                                                                                                          (aperture_plate_2_vertex_2_x - aperture_plate_2_vertex_1_x) * Beamline.INCH, (aperture_plate_2_vertex_2_z - aperture_plate_2_vertex_1_z) * Beamline.INCH,
+                                                                                                          (aperture_plate_2_vertex_3_x - aperture_plate_2_vertex_1_x) * Beamline.INCH, (aperture_plate_2_vertex_3_z - aperture_plate_2_vertex_1_z) * Beamline.INCH,
+                                                                                                          (aperture_plate_2_vertex_4_x - aperture_plate_2_vertex_1_x) * Beamline.INCH, (aperture_plate_2_vertex_4_z - aperture_plate_2_vertex_1_z) * Beamline.INCH))
+        self.f_out.write('place aperture_plate_2 rename=aperture_plate_2 x={} y={} z={} rotation=x90\n'.format(aperture_plate_2_vertex_1_x * Beamline.INCH, aperture_plate_y, aperture_plate_2_vertex_1_z * Beamline.INCH))
+
+
     def write_virtual_disk(self):
         start_line_radius = 1750.
         start_line_length = 1.
@@ -637,7 +691,7 @@ class Beamline:
         self.f_out.write('place det rotation=y{} x={} y={} z={}\n'.format(self.us_theta, det_positions[0], det_positions[1], det_positions[2]))
 
     def write_geometry_check(self):
-        self.screen_shot = True
+        self.screen_shot = False
         self.kill = 1
         self.f_out.write('physics QGSP_BIC\n')
         self.f_out.write('param worldMaterial=Air\n')
@@ -652,8 +706,9 @@ class Beamline:
         self.f_out.write('trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton,neutron,anti_neutron\n')
 
         # upstream collimator
-        # self.write_target()
+        self.write_target()
         # self.write_collimator_us()
+        self.write_collimator_us_alignment()
 
         # det_width = (6. + 1.) * Beamline.INCH
         # det_height = (2. + 1.) * Beamline.INCH
@@ -715,11 +770,15 @@ class Beamline:
         # self.write_magnet()
 
         # shielding block
-        self.shielding_block_1.x = 0.
-        self.shielding_block_1.y = 0.
-        self.shielding_block_1.z = 0.
-        self.shielding_block_1.theta = 0.
-        self.write_shielding_block()
+        # self.shielding_block_1.x = 0.
+        # self.shielding_block_1.y = 0.
+        # self.shielding_block_1.z = 0.
+        # self.shielding_block_1.theta = 0.
+        # self.write_shielding_block()
+
+        print('finished write_geometry_check()')
+        print('file wrote to {}'.format(self.g4bl_filename))
+
 
     def read_alignment_data_beamline(self):
         for component in self.components:
@@ -1068,12 +1127,17 @@ class Beamline:
         c1.SaveAs('{}/read_alignment_data_beamline_collimator_us.pdf'.format(self.figure_dir))
         input('Press any key to continue.')
 
+    def calculate(self):
+        # ll = 20.07 - 42.76 * tan((16 + 1.97) * pi / 180.)
+        # ll = 42.76 * tan((16 - 1.97) * pi / 180.)
+        ll = 32. - (9.02 + 10.69 + 6.2)
+        print('ll = {}'.format(ll))
 
 # if __name__ == '__main__':
 gStyle.SetOptStat(0)
-beamline = Beamline()
+# beamline = Beamline()
 # beamline.figure_dir = '/Users/juntinghuang/beamer/20180413_testbeam_120gev/figures'
-beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
+# beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
 # beamline.plot_position()
 # beamline.screen_shot = True
 # beamline.read_cherenkov_dimension()
@@ -1083,10 +1147,11 @@ beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/fi
 # beamline.plot_position()
 # beamline.plot_vertical_positions()
 # beamline.read_alignment_data_nova_detector()
-beamline.read_alignment_data_beamline_collimator_us()
+# beamline.read_alignment_data_beamline_collimator_us()
 
 # beamline = Beamline('beamline.py.radiation.collimator.in')
 # beamline.write_radiation()
 
-# beamline = Beamline('tmp/beamline.py.geometry_check.in')
-# beamline.write_geometry_check()
+beamline = Beamline('tmp/beamline.py.geometry_check.in')
+beamline.write_geometry_check()
+# beamline.calculate()
