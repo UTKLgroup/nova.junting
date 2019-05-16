@@ -38,6 +38,7 @@ class Beamline:
     FOOT = 304.8                # mm
     RADIAN_PER_DEGREE = pi / 180.
     COLORS = [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1, kYellow + 2, kPink, kViolet, kAzure + 4, kCyan + 1, kTeal - 7, kBlue - 5]
+    MARKER_STYLES = list(range(20, 31)) + [2, 3, 4, 5, 8]
 
     def __init__(self, g4bl_filename='beamline.py.in'):
         self.figure_dir = None
@@ -720,7 +721,6 @@ class Beamline:
         self.shielding_block_1.theta = 0.
         self.write_shielding_block()
 
-
     def read_alignment_data_beamline(self):
         for component in self.components:
             if component.name not in ['nova detector', 'upstream collimator']:
@@ -890,6 +890,152 @@ class Beamline:
         c1.SaveAs('{}/read_alignment_data_nova_detector.pdf'.format(self.figure_dir))
         input('Press any key to continue.')
 
+    def read_alignment_data_beamline_collimator_us(self):
+        gStyle.SetMarkerStyle(8)
+
+        mwpc_txt_name_positions = {
+            'NTB-MWPC-P_UP': (0.010204, -26.058411, -0.034998),
+            'NTB-MWPC-P_CT': (0.015523, -25.153253, -0.009607),
+            'NTB-MWPC-P_DN': (0.020869, -24.248055, 0.015647)
+        }
+
+        mwpc_pdf_name_positions = {
+            'NTB-MWPC-P_ROLL': (-0.333, -27.957, 99.951),
+            'NTB-MWPC-P_UP': (0.010, -26.058, -0.035),
+            'NTB-MWPC-P_CT': (0.016, -25.153, -0.010),
+            'NTB-MWPC-P_DN': (0.021, -24.248, 0.016),
+            'NTB-MWPC-P-0.875_A': (-4.093, -26.572, -0.036),
+            'NTB-MWPC-P-0.875_B': (-0.002, -26.705, 3.997),
+            'NTB-MWPC-P-0.875_C': (3.908, -26.633, 0.271),
+            'NTB-MWPC-P-0.875_D': (-0.113, -26.494, -3.703),
+            'NTB-MWPC-P-0.875_E': (-3.500, -23.702, 0.147),
+            'NTB-MWPC-P-0.875_F': (0.241, -23.621, -3.645),
+            'NTB-MWPC-P-0.875_G': (3.673, -23.736, 0.046),
+            'NTB-MWPC-P-0.875_H': (0.424, -23.814, 3.627)
+        }
+
+
+        collimator_txt_name_positions = {
+            'NTB-TGT-COLL-002_UP': (2.214573, 7.693723, -0.039740),
+            'NTB-TGT-COLL-002-CHANNEL_UP': (2.214573, 7.693723, -0.039740),
+            'NTB-TGT-COLL-002_DN': (2.220929, 50.429730, 0.081151),
+            'NTB-TGT-COLL-002-CHANNEL_DN': (14.561032, 50.438895, 0.012260),
+            'NTB-TARGET_UP': (0.012334,  -6.282132,  -0.165835),
+            'NTB-TARGET_CT': (0.015489,  -0.000110,  -0.141833),
+            'NTB-TARGET_DN': (0.018712,  6.281790,  -0.117855)
+        }
+
+        collimator_pdf_name_positions = {
+            'NTB-TGT-COLL-002_ROLL': (2.563, 7.471, 99.960),
+            'NTB-TGT-COLL-002_UP': (2.215, 7.694, -0.040),
+            'NTB-TGT-COLL-002-CHANNEL_UP': (2.215, 7.694, -0.040),
+            'NTB-TGT-COLL-002_DN': (2.221, 50.430, 0.081),
+            'NTB-TGT-COLL-002-CHANNEL_DN': (14.561, 50.439, 0.012),
+            'NTB-TGT-COLL-002_C': (24.779, -4.807, -9.798),
+            'NTB-TGT-COLL-002_D': (21.051, -8.712, -9.819),
+            'NTB-TGT-COLL-002_E': (-5.761, -8.724, -9.843),
+            'NTB-TGT-COLL-002_F': (-9.327, -5.378, -9.510),
+            'NTB-TGT-COLL-002_L': (24.821, 47.911, -9.740),
+            'NTB-TGT-COLL-002_M': (20.929, 51.553, -9.693),
+            'NTB-TGT-COLL-002_N': (-5.753, 51.529, -9.394),
+            'NTB-TGT-COLL-002_P': (-9.375, 47.952, -9.525),
+            'NTB-TARGET_UP': (0.012, -6.282, -0.166),
+            'NTB-TARGET_CT': (0.015, 0.000, -0.142),
+            'NTB-TARGET_DN': (0.019, 6.282, -0.118),
+            'NTB-TARGET_ROLL': (-1.352, -0.382, 99.848)
+        }
+
+        mwpc_txt_names = sorted(mwpc_txt_name_positions.keys())
+        mwpc_pdf_names = sorted(mwpc_pdf_name_positions.keys())
+        collimator_txt_names = sorted(collimator_txt_name_positions.keys())
+        collimator_pdf_names = sorted(collimator_pdf_name_positions.keys())
+
+        names = collimator_pdf_names
+        name_positions = collimator_pdf_name_positions
+        print('len(names) = {}'.format(len(names)))
+
+        ntp = TNtuple('TNtuple', 'TNtuple', 'x:y:z:color')
+        mk_zxs = {}
+        mk_zys = {}
+        xs = []
+        ys = []
+        zs = []
+        pprint(name_positions)
+        for name in names:
+            x = -name_positions[name][0]
+            y = name_positions[name][2]
+            z = name_positions[name][1]
+
+            color = kBlack
+            if name == 'NTB-TARGET_CT':
+                color = kRed
+            mk_zxs[name] = TMarker(z, x, 20)
+            mk_zys[name] = TMarker(z, y, 20)
+            xs.append(x)
+            ys.append(y)
+            zs.append(z)
+            ntp.Fill(x, y, z, color)
+
+        gr_zx = TGraph(len(names), np.array(zs), np.array(xs))
+        gr_zy = TGraph(len(names), np.array(zs), np.array(ys))
+        gr_2d = TGraph2D(len(names), np.array(zs), np.array(xs), np.array(ys))
+
+        for gr in [gr_zx, gr_zy]:
+            set_graph_style(gr)
+            gr.SetMarkerSize(0)
+            gr.SetMarkerColor(kWhite)
+            gr.GetXaxis().SetTitle('Z (in)')
+            gr.GetXaxis().SetTitleOffset(3)
+            gr.GetYaxis().SetTitleOffset(2)
+
+        c1 = TCanvas('c1', 'c1', 1800, 1200)
+        c1.Divide(2, 2)
+
+        c1.cd(1)
+        set_margin()
+        # ntp.Draw('y:x:z:color')
+        gr_2d.Draw('P')
+        set_graph_style(gr_2d)
+        gr_2d.GetXaxis().SetTitle('Z (in)')
+        gr_2d.GetYaxis().SetTitle('X (in)')
+        gr_2d.GetZaxis().SetTitle('Y (in)')
+        gr_2d.GetXaxis().SetTitleOffset(3)
+        gr_2d.GetYaxis().SetTitleOffset(4)
+        gr_2d.GetZaxis().SetTitleOffset(2)
+
+        c1.cd(2)
+        set_margin()
+        gr_zx.Draw('AP')
+        gr_zx.GetYaxis().SetTitle('X (in)')
+        lg1 = TLegend(0.1, 0.1, 0.9, 0.9)
+        set_legend_style(lg1)
+
+        for i, name in enumerate(names):
+            mk_zx = mk_zxs[name]
+            mk_zx.Draw()
+            mk_zx.SetMarkerSize(2)
+            mk_zx.SetMarkerStyle(Beamline.MARKER_STYLES[i % len(Beamline.MARKER_STYLES)])
+            mk_zx.SetMarkerColor(Beamline.COLORS[i % len(Beamline.COLORS)])
+            lg1.AddEntry(mk_zx, name, 'p')
+
+        c1.cd(3)
+        set_margin()
+        gr_zy.Draw('AP')
+        gr_zy.GetYaxis().SetTitle('Y (in)')
+        for i, name in enumerate(names):
+            mk_zy = mk_zys[name]
+            mk_zy.Draw()
+            mk_zy.SetMarkerSize(2)
+            mk_zy.SetMarkerStyle(Beamline.MARKER_STYLES[i % len(Beamline.MARKER_STYLES)])
+            mk_zy.SetMarkerColor(Beamline.COLORS[i % len(Beamline.COLORS)])
+
+        c1.cd(4)
+        lg1.Draw()
+
+        c1.Update()
+        c1.SaveAs('{}/read_alignment_data_beamline_collimator_us.pdf'.format(self.figure_dir))
+        input('Press any key to continue.')
+
 
 # if __name__ == '__main__':
 gStyle.SetOptStat(0)
@@ -904,7 +1050,8 @@ beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/fi
 # beamline.read_alignment_data_nova_detector()
 # beamline.plot_position()
 # beamline.plot_vertical_positions()
-beamline.read_alignment_data_nova_detector()
+# beamline.read_alignment_data_nova_detector()
+beamline.read_alignment_data_beamline_collimator_us()
 
 # beamline = Beamline('beamline.py.radiation.collimator.in')
 # beamline.write_radiation()
