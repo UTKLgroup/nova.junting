@@ -914,7 +914,6 @@ class Beamline:
             'NTB-MWPC-P-0.875_H': (0.424, -23.814, 3.627)
         }
 
-
         collimator_txt_name_positions = {
             'NTB-TGT-COLL-002_UP': (2.214573, 7.693723, -0.039740),
             'NTB-TGT-COLL-002-CHANNEL_UP': (2.214573, 7.693723, -0.039740),
@@ -948,20 +947,40 @@ class Beamline:
         mwpc_txt_names = sorted(mwpc_txt_name_positions.keys())
         mwpc_pdf_names = sorted(mwpc_pdf_name_positions.keys())
         collimator_txt_names = sorted(collimator_txt_name_positions.keys())
-        collimator_pdf_names = sorted(collimator_pdf_name_positions.keys())
+        collimator_pdf_names = [
+            'NTB-TARGET_UP',
+            'NTB-TARGET_CT',
+            'NTB-TARGET_DN',
+            'NTB-TARGET_ROLL',
+            'NTB-TGT-COLL-002_UP',
+            'NTB-TGT-COLL-002_DN',
+            'NTB-TGT-COLL-002_ROLL',
+            'NTB-TGT-COLL-002-CHANNEL_UP',
+            'NTB-TGT-COLL-002-CHANNEL_DN',
+            'NTB-TGT-COLL-002_C',
+            'NTB-TGT-COLL-002_D',
+            'NTB-TGT-COLL-002_E',
+            'NTB-TGT-COLL-002_F',
+            'NTB-TGT-COLL-002_L',
+            'NTB-TGT-COLL-002_M',
+            'NTB-TGT-COLL-002_N',
+            'NTB-TGT-COLL-002_P'
+        ]
 
         names = collimator_pdf_names
         name_positions = collimator_pdf_name_positions
         print('len(names) = {}'.format(len(names)))
 
         ntp = TNtuple('TNtuple', 'TNtuple', 'x:y:z:color')
+        # poly_mk = TPolyMarker3D(len(names))
+        poly_mks = []
         mk_zxs = {}
         mk_zys = {}
         xs = []
         ys = []
         zs = []
         pprint(name_positions)
-        for name in names:
+        for i, name in enumerate(names):
             x = -name_positions[name][0]
             y = name_positions[name][2]
             z = name_positions[name][1]
@@ -975,6 +994,10 @@ class Beamline:
             ys.append(y)
             zs.append(z)
             ntp.Fill(x, y, z, color)
+            # poly_mk.SetPoint(i, z, x, y)
+            poly_mk = TPolyMarker3D(1)
+            poly_mk.SetPoint(0, z, x, y)
+            poly_mks.append(poly_mk)
 
         gr_zx = TGraph(len(names), np.array(zs), np.array(xs))
         gr_zy = TGraph(len(names), np.array(zs), np.array(ys))
@@ -988,7 +1011,7 @@ class Beamline:
             gr.GetXaxis().SetTitleOffset(3)
             gr.GetYaxis().SetTitleOffset(2)
 
-        c1 = TCanvas('c1', 'c1', 1800, 1200)
+        c1 = TCanvas('c1', 'c1', 1600, 1000)
         c1.Divide(2, 2)
 
         c1.cd(1)
@@ -996,6 +1019,8 @@ class Beamline:
         # ntp.Draw('y:x:z:color')
         gr_2d.Draw('P')
         set_graph_style(gr_2d)
+        gr_2d.SetMarkerSize(0)
+        gr_2d.SetMarkerColor(kWhite)
         gr_2d.GetXaxis().SetTitle('Z (in)')
         gr_2d.GetYaxis().SetTitle('X (in)')
         gr_2d.GetZaxis().SetTitle('Y (in)')
@@ -1003,11 +1028,18 @@ class Beamline:
         gr_2d.GetYaxis().SetTitleOffset(4)
         gr_2d.GetZaxis().SetTitleOffset(2)
 
+        for i, poly_mk in enumerate(poly_mks):
+            poly_mk.SetMarkerStyle(Beamline.MARKER_STYLES[i % len(Beamline.MARKER_STYLES)])
+            poly_mk.SetMarkerColor(Beamline.COLORS[i % len(Beamline.COLORS)])
+            # poly_mk.SetMarkerStyle(3)
+            poly_mk.SetMarkerSize(2)
+            poly_mk.Draw()
+
         c1.cd(2)
         set_margin()
         gr_zx.Draw('AP')
         gr_zx.GetYaxis().SetTitle('X (in)')
-        lg1 = TLegend(0.1, 0.1, 0.9, 0.9)
+        lg1 = TLegend(0.1, 0, 0.9, 0.9)
         set_legend_style(lg1)
 
         for i, name in enumerate(names):
