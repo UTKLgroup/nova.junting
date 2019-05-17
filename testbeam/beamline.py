@@ -721,7 +721,7 @@ class Beamline:
         self.f_out.write('place det rotation=y{} x={} y={} z={}\n'.format(self.us_theta, det_positions[0], det_positions[1], det_positions[2]))
 
     def write_geometry_check(self):
-        self.screen_shot = False
+        self.screen_shot = True
         self.kill = 1
         self.f_out.write('physics QGSP_BIC\n')
         self.f_out.write('param worldMaterial=Air\n')
@@ -930,50 +930,108 @@ class Beamline:
             'Block 2 Panel 32 Upstream Plane Offset Points' # 17
         ]
 
+        name_poly_mk_3ds = {}
+        name_poly_mk_zxs = {}
+        name_poly_mk_zys = {}
+        xs = []
+        ys = []
+        zs = []
         row_count = 0
         for i, name in enumerate(names):
             print('name = {}, i = {}'.format(name, i))
             print('len(name_positions[name]) = {}'.format(len(name_positions[name])))
-            row_count += len(name_positions[name])
-            # if 'Block 1' in name:
-            #     continue
-            # color_index = i % len(self.COLORS)
-            # color = self.COLORS[color_index]
-            color = kBlack
-            # base
-            # if name == 'Top of Blue Steel Baseplate Offset Points':
-            # block 1
-            # if name == 'Block 1 Upper Beam Left Horizontal End Caps Offset Points': # 1
-            # if name == 'Block 1 Lower Beam Left Horizontal End Caps Offset Points': # 2
-            # if name == 'Block 1 Horizontal Panel Bottom Offset Points': # 3
-            # if name == 'Block 1 BL top shifted - 3"': # 4
-            # if name == 'Block 1 Beam Left Vertical Panel Offset Points': # 5
-            # if name == 'Block 1 Beam Right Vertical Panel Offset Points': # 6
-            # if name == 'Block 1 UPST Plane Offset Points': # 7
-            # if name == 'Block 1 Center Split points projected': # 8
-            # if name == 'Block 1 Panel 30 Downstream Plane Offset Points': # 9
-            # block 2
-            # if name == 'Block 2 Upper Beam Left Horizontal End Caps Offset Points': # 10
-            # if name == 'Block 2 Lower Beam Left Horizontal End Caps Offset Points': # 11
-            # if name == 'Block 2 Horizontal Panel Bottom Offset Points': # 12
-            # if name == 'Block 2 Beam Left Vertical Panel Offset Points': # 13
-            # if name == 'Block 2 Beam Right Vertical Panel Offset Points': # 14
-            # if name == 'Block 2 DNST Plane Offset Points': # 15
-            # if name == 'Block 2 Center Split points projected': # 16
-            if name == 'Block 2 Panel 32 Upstream Plane Offset Points': # 17
-                color = kRed
 
-            for position in name_positions[name]:
-                ntp.Fill(position[0], position[1], position[2], color)
+            positions = name_positions[name]
+            row_count += len(positions)
+
+            poly_mk_3d = TPolyMarker3D(len(positions))
+            poly_mk_zx = TPolyMarker(len(positions))
+            poly_mk_zy = TPolyMarker(len(positions))
+            for i, position in enumerate(positions):
+                x = position[0] / 1000. # m
+                y = position[1] / 1000. # m
+                z = position[2] / 1000. # m
+
+                poly_mk_3d.SetPoint(i, z, x, y)
+                poly_mk_zx.SetPoint(i, z, x)
+                poly_mk_zy.SetPoint(i, z, y)
+                xs.append(x)
+                ys.append(y)
+                zs.append(z)
+            name_poly_mk_3ds[name] = poly_mk_3d
+            name_poly_mk_zxs[name] = poly_mk_zx
+            name_poly_mk_zys[name] = poly_mk_zy
 
         print('row_count = {}'.format(row_count))
-        pprint(names)
-        print('len(names) = {}'.format(len(names)))
+        gr_zx = TGraph(len(zs), np.array(zs), np.array(xs))
+        gr_zy = TGraph(len(zs), np.array(zs), np.array(ys))
+        gr_2d = TGraph2D(len(zs), np.array(zs), np.array(xs), np.array(ys))
+        for gr in [gr_zx, gr_zy]:
+            set_graph_style(gr)
+            gr.SetMarkerSize(0)
+            gr.SetMarkerColor(kWhite)
+            gr.GetXaxis().SetTitle('Z (m)')
+            gr.GetXaxis().SetTitleOffset(2.5)
+            gr.GetYaxis().SetTitleOffset(2)
 
-        c1 = TCanvas('c1', 'c1', 800, 600)
+        c1 = TCanvas('c1', 'c1', 1600, 1000)
         set_margin()
+        c1.Divide(2, 2)
 
-        ntp.Draw('y:x:z:color')
+        c1.cd(1)
+        set_margin()
+        gr_2d.Draw('P')
+        set_graph_style(gr_2d)
+        gr_2d.SetMarkerSize(0)
+        gr_2d.SetMarkerColor(kWhite)
+        gr_2d.GetXaxis().SetTitle('Z (m)')
+        gr_2d.GetYaxis().SetTitle('X (m)')
+        gr_2d.GetZaxis().SetTitle('Y (m)')
+        gr_2d.GetXaxis().SetTitleOffset(3)
+        gr_2d.GetYaxis().SetTitleOffset(4)
+        gr_2d.GetZaxis().SetTitleOffset(2)
+
+        for i, name in enumerate(names):
+            print('poly_mk_3ds')
+            print('i = {}'.format(i))
+            print('name = {}'.format(name))
+
+            poly_mk_3d = name_poly_mk_3ds[name]
+            poly_mk_3d.SetMarkerStyle(Beamline.MARKER_STYLES[i % len(Beamline.MARKER_STYLES)])
+            poly_mk_3d.SetMarkerColor(Beamline.COLORS[i % len(Beamline.COLORS)])
+            poly_mk_3d.SetMarkerSize(2)
+            poly_mk_3d.Draw()
+
+        c1.cd(2)
+        set_margin()
+        gr_zx.Draw('AP')
+        gr_zx.GetYaxis().SetTitle('X (in)')
+
+        lg1 = TLegend(0, 0, 0.4, 0.9)
+
+        for i, name in enumerate(names):
+            poly_mk_zx = name_poly_mk_zxs[name]
+            poly_mk_zx.Draw()
+            poly_mk_zx.SetMarkerSize(2)
+            poly_mk_zx.SetMarkerStyle(Beamline.MARKER_STYLES[i % len(Beamline.MARKER_STYLES)])
+            poly_mk_zx.SetMarkerColor(Beamline.COLORS[i % len(Beamline.COLORS)])
+            lg1.AddEntry(poly_mk_zx, name, 'p')
+
+        c1.cd(3)
+        set_margin()
+        gr_zy.Draw('AP')
+        gr_zy.GetYaxis().SetTitle('Y (in)')
+        for i, name in enumerate(names):
+            poly_mk_zy = name_poly_mk_zys[name]
+            poly_mk_zy.Draw()
+            poly_mk_zy.SetMarkerSize(2)
+            poly_mk_zy.SetMarkerStyle(Beamline.MARKER_STYLES[i % len(Beamline.MARKER_STYLES)])
+            poly_mk_zy.SetMarkerColor(Beamline.COLORS[i % len(Beamline.COLORS)])
+
+        c1.cd(4)
+        set_legend_style(lg1)
+        lg1.SetTextSize(25)
+        lg1.Draw()
 
         c1.Update()
         c1.SaveAs('{}/read_alignment_data_nova_detector.pdf'.format(self.figure_dir))
@@ -1097,7 +1155,7 @@ class Beamline:
             gr.SetMarkerSize(0)
             gr.SetMarkerColor(kWhite)
             gr.GetXaxis().SetTitle('Z (in)')
-            gr.GetXaxis().SetTitleOffset(3)
+            gr.GetXaxis().SetTitleOffset(2.5)
             gr.GetYaxis().SetTitleOffset(2)
 
         c1 = TCanvas('c1', 'c1', 1600, 1000)
@@ -1165,9 +1223,9 @@ class Beamline:
 
 # if __name__ == '__main__':
 gStyle.SetOptStat(0)
-# beamline = Beamline()
+beamline = Beamline()
 # beamline.figure_dir = '/Users/juntinghuang/beamer/20180413_testbeam_120gev/figures'
-# beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
+beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
 # beamline.plot_position()
 # beamline.screen_shot = True
 # beamline.read_cherenkov_dimension()
@@ -1176,12 +1234,12 @@ gStyle.SetOptStat(0)
 # beamline.read_alignment_data_nova_detector()
 # beamline.plot_position()
 # beamline.plot_vertical_positions()
-# beamline.read_alignment_data_nova_detector()
+beamline.read_alignment_data_nova_detector()
 # beamline.read_alignment_data_beamline_collimator_us()
 
 # beamline = Beamline('beamline.py.radiation.collimator.in')
 # beamline.write_radiation()
 
-beamline = Beamline('tmp/beamline.py.geometry_check.in')
-beamline.write_geometry_check()
+# beamline = Beamline('tmp/beamline.py.geometry_check.in')
+# beamline.write_geometry_check()
 # beamline.calculate()
