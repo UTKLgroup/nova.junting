@@ -642,7 +642,37 @@ class Beamline:
         # self.write_nova()       # for radiation study
         # self.write_housing()    # for radiation study
 
-    def write_radiation(self):
+    def write_radiation_dosage(self):
+        self.f_out.write('physics QGSP_BIC\n')
+        self.f_out.write('param worldMaterial=Air\n')
+        self.f_out.write('param histoFile=beam.root\n')
+
+        self.f_out.write('g4ui when=4 "/vis/viewer/set/viewpointVector -1 1 1"\n')
+        self.f_out.write('g4ui when=4 "/vis/viewer/zoom 1.5"\n')
+        self.f_out.write('g4ui when=4 "/vis/viewer/set/style wireframe"\n')
+        if self.screen_shot:
+            self.f_out.write('g4ui when=4 "/vis/viewer/set/background 1 1 1"\n')
+
+        self.f_out.write('beam gaussian particle=$particle firstEvent=$first lastEvent=$last sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=$momentum\n')
+        self.f_out.write('trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,proton,anti_proton,neutron,anti_neutron\n')
+
+        self.write_target()
+        self.write_collimator_us()
+        if not self.screen_shot:
+            self.write_virtual_disk()
+        self.write_wc()
+        self.write_magnet()
+        self.write_collimator_ds()
+        self.write_tof()
+        self.write_cherenkov()
+        self.write_shielding_block()
+        self.write_nova()
+        self.write_housing()
+
+        print('finished write_radiation_dosage()')
+        print('file written to {}'.format(self.g4bl_filename))
+
+    def write_radiation_collimator(self):
         self.kill = 1
 
         self.f_out.write('physics QGSP_BIC\n')
@@ -672,6 +702,9 @@ class Beamline:
         det_positions = [det_r * sin(self.us_theta * Beamline.RADIAN_PER_DEGREE), 0., det_r * cos(self.us_theta * Beamline.RADIAN_PER_DEGREE)]
         self.f_out.write('virtualdetector det width={} height={} length={} material=Air color=0.9,0.9,0.7\n'.format(det_width, det_height, det_length))
         self.f_out.write('place det rotation=y{} x={} y={} z={}\n'.format(self.us_theta, det_positions[0], det_positions[1], det_positions[2]))
+
+        print('finished write_radiation_collimator()')
+        print('file written to {}'.format(self.g4bl_filename))
 
     def write_geometry_check(self):
         self.screen_shot = True
@@ -763,8 +796,7 @@ class Beamline:
         self.write_wc()
 
         print('finished write_geometry_check()')
-        print('file wrote to {}'.format(self.g4bl_filename))
-
+        print('file written to {}'.format(self.g4bl_filename))
 
     def read_alignment_data_beamline(self):
         for component in self.components:
@@ -1586,18 +1618,22 @@ class Beamline:
 # beamline.plot_position()
 # beamline.write()
 
-# 20180530_testbeam_radiation_dosage
+
 # 20180912_testbeam_radiation_collimator
-# beamline = Beamline('beamline.py.radiation.collimator.in')
-# beamline.write_radiation()
+# beamline = Beamline('tmp/beamline.py.radiation.collimator.in')
+# beamline.write_radiation_collimator()
+
+# 20180530_testbeam_radiation_dosage
+# beamline = Beamline('tmp/beamline.py.radiation.dosage.in')
+# beamline.write_radiation_dosage()
 
 # 20181031_beamline_sim_update
 # beamline = Beamline('tmp/beamline.py.geometry_check.in')
 # beamline.write_geometry_check()
 
 # 20190424_testbeam_alignment
-beamline = Beamline()
-beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
+# beamline = Beamline()
+# beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
 # beamline.read_alignment_data_beamline()
 # beamline.read_alignment_data_beamline_collimator_us()
 # beamline.read_alignment_data_beamline_mwpc()
@@ -1608,5 +1644,5 @@ beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/fi
 # beamline = Beamline('tmp/beamline.py.geometry_check.in')
 # beamline.write_geometry_check()
 # beamline.calculate()
-beamline.plot_position()
+# beamline.plot_position()
 # beamline.plot_vertical_positions()
