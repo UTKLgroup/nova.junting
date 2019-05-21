@@ -1325,6 +1325,251 @@ class Beamline:
         c1.SaveAs('{}/read_alignment_data_beamline_collimator_us.pdf'.format(self.figure_dir))
         input('Press any key to continue.')
 
+    def plot_alignment_data(self, name_positions, names, figure_name):
+        print('len(names) = {}'.format(len(names)))
+        pprint(name_positions)
+
+        poly_mks = []
+        mk_zxs = {}
+        mk_zys = {}
+        xs = []
+        ys = []
+        zs = []
+        for i, name in enumerate(names):
+            x = -name_positions[name][0]
+            y = name_positions[name][2]
+            z = name_positions[name][1]
+
+            mk_zxs[name] = TMarker(z, x, 20)
+            mk_zys[name] = TMarker(z, y, 20)
+            xs.append(x)
+            ys.append(y)
+            zs.append(z)
+            poly_mk = TPolyMarker3D(1)
+            poly_mk.SetPoint(0, z, x, y)
+            poly_mks.append(poly_mk)
+
+        gr_zx = TGraph(len(names), np.array(zs), np.array(xs))
+        gr_zy = TGraph(len(names), np.array(zs), np.array(ys))
+        gr_2d = TGraph2D(len(names), np.array(zs), np.array(xs), np.array(ys))
+
+        for gr in [gr_zx, gr_zy]:
+            set_graph_style(gr)
+            gr.SetMarkerSize(0)
+            gr.SetMarkerColor(kWhite)
+            gr.GetXaxis().SetTitle('Z (in)')
+            gr.GetXaxis().SetTitleOffset(2.5)
+            gr.GetYaxis().SetTitleOffset(2)
+
+        c1 = TCanvas('c1', 'c1', 1600, 1000)
+        c1.Divide(2, 2)
+
+        c1.cd(1)
+        set_margin()
+        gr_2d.Draw('P')
+        set_graph_style(gr_2d)
+        gr_2d.SetMarkerSize(0)
+        gr_2d.SetMarkerColor(kWhite)
+        gr_2d.GetXaxis().SetTitle('Z (in)')
+        gr_2d.GetYaxis().SetTitle('X (in)')
+        gr_2d.GetZaxis().SetTitle('Y (in)')
+        gr_2d.GetXaxis().SetTitleOffset(3)
+        gr_2d.GetYaxis().SetTitleOffset(4)
+        gr_2d.GetZaxis().SetTitleOffset(2)
+
+        for i, poly_mk in enumerate(poly_mks):
+            poly_mk.SetMarkerStyle(Beamline.MARKER_STYLES[i % len(Beamline.MARKER_STYLES)])
+            poly_mk.SetMarkerColor(Beamline.COLORS[i % len(Beamline.COLORS)])
+            poly_mk.SetMarkerSize(2)
+            poly_mk.Draw()
+
+        c1.cd(2)
+        set_margin()
+        gr_zx.Draw('AP')
+        gr_zx.GetYaxis().SetTitle('X (in)')
+        lg1 = TLegend(0.1, 0, 0.9, 0.9)
+        set_legend_style(lg1)
+
+        for i, name in enumerate(names):
+            mk_zx = mk_zxs[name]
+            mk_zx.Draw()
+            mk_zx.SetMarkerSize(2)
+            mk_zx.SetMarkerStyle(Beamline.MARKER_STYLES[i % len(Beamline.MARKER_STYLES)])
+            mk_zx.SetMarkerColor(Beamline.COLORS[i % len(Beamline.COLORS)])
+            lg1.AddEntry(mk_zx, name, 'p')
+
+        c1.cd(3)
+        set_margin()
+        gr_zy.Draw('AP')
+        gr_zy.GetYaxis().SetTitle('Y (in)')
+        for i, name in enumerate(names):
+            mk_zy = mk_zys[name]
+            mk_zy.Draw()
+            mk_zy.SetMarkerSize(2)
+            mk_zy.SetMarkerStyle(Beamline.MARKER_STYLES[i % len(Beamline.MARKER_STYLES)])
+            mk_zy.SetMarkerColor(Beamline.COLORS[i % len(Beamline.COLORS)])
+
+        c1.cd(4)
+        lg1.Draw()
+
+        c1.Update()
+        c1.SaveAs('{}/{}.pdf'.format(self.figure_dir, figure_name))
+        input('Press any key to continue.')
+
+    def read_alignment_data_beamline_mwpc(self):
+        mwpc_1_pdf_name_positions = {
+            'NTB-MWPC-AK-0.875_C': (20.665, 60.294, 0.060),
+            'NTB-MWPC-AK-BOT-BR-PIN_UP': (21.237, 60.625, 3.770),
+            'NTB-MWPC-AK-BOT-BL-PIN_UP': (21.274, 60.700, -3.728),
+            'NTB-MWPC-AK-0.875_D': (17.652, 61.256, -3.346),
+            'NTB-MWPC-AK-0.875_B': (17.296, 61.287, 3.342),
+            'NTB-MWPC-AK_UP': (17.667, 61.761, 0.011),
+            'NTB-MWPC-AK-0.875_A': (14.331, 62.230, 0.176),
+            'NTB-MWPC-AK-BOT-BR-PIN_DN': (21.779, 62.379, 3.817),
+            'NTB-MWPC-AK-BOT-BL-PIN_DN': (21.814, 62.456, -3.686),
+            'NTB-MWPC-AK_CT': (17.943, 62.638, 0.021),
+            'NTB-MWPC-AK-TOP-BR-PIN_UP': (14.055, 62.823, 3.755),
+            'NTB-MWPC-AK-TOP-BL-PIN_UP': (14.099, 62.896, -3.747),
+            'NTB-MWPC-AK-0.875_G': (21.571, 63.033, -0.056),
+            'NTB-MWPC-AK_DN': (18.218, 63.516, 0.031),
+            'NTB-MWPC-AK-0.875_H': (18.330, 63.988, 3.399),
+            'NTB-MWPC-AK-0.875_F': (18.508, 64.011, -3.272),
+            'NTB-MWPC-AK-TOP-BR-PIN_DN': (14.611, 64.579, 3.805),
+            'NTB-MWPC-AK-TOP-BL-PIN_DN': (14.646, 64.656, -3.698),
+            'NTB-MWPC-AK-0.875_E': (15.175, 64.996, 0.027),
+            'NTB-MWPC-AK_ROLL': (-77.470, 92.578, -0.179),
+        }
+        mwpc_1_pdf_names = [
+            'NTB-MWPC-AK-BOT-BR-PIN_UP',
+            'NTB-MWPC-AK-BOT-BL-PIN_UP',
+            'NTB-MWPC-AK-BOT-BR-PIN_DN',
+            'NTB-MWPC-AK-BOT-BL-PIN_DN',
+            'NTB-MWPC-AK-TOP-BR-PIN_UP',
+            'NTB-MWPC-AK-TOP-BL-PIN_UP',
+            'NTB-MWPC-AK-TOP-BR-PIN_DN',
+            'NTB-MWPC-AK-TOP-BL-PIN_DN',
+            'NTB-MWPC-AK-0.875_A',
+            'NTB-MWPC-AK-0.875_B',
+            'NTB-MWPC-AK-0.875_C',
+            'NTB-MWPC-AK-0.875_D',
+            'NTB-MWPC-AK-0.875_E',
+            'NTB-MWPC-AK-0.875_F',
+            'NTB-MWPC-AK-0.875_G',
+            'NTB-MWPC-AK-0.875_H',
+            'NTB-MWPC-AK_UP',
+            'NTB-MWPC-AK_CT',
+            'NTB-MWPC-AK_DN',
+            # 'NTB-MWPC-AK_ROLL',
+        ]
+
+        mwpc_2_pdf_name_positions = {
+            'NTB-MWPC-AL-BOT-BL-PIN_UP': (37.191, 116.138, -3.723),
+            'NTB-MWPC-AL-BOT-BR-PIN_UP': (37.238, 116.186, 3.775),
+            'NTB-MWPC-AL-BOT-BL-PIN_DN': (37.700, 117.902, -3.739),
+            'NTB-MWPC-AL-BOT-BR-PIN_DN': (37.738, 117.953, 3.766),
+            'NTB-MWPC-AL-TOP-BL-PIN_UP': (29.972, 118.182, -3.691),
+            'NTB-MWPC-AL-TOP-BR-PIN_UP': (30.019, 118.230, 3.810),
+            'NTB-MWPC-AL-TOP-BL-PIN_DN': (30.480, 119.943, -3.715),
+            'NTB-MWPC-AL-TOP-BR-PIN_DN': (30.519, 119.994, 3.788),
+            'NTB-MWPC-AL-0.875_A': (30.289, 117.580, -0.049),
+            'NTB-MWPC-AL-0.875_B': (33.457, 116.711, 3.370),
+            'NTB-MWPC-AL-0.875_C': (36.685, 115.767, -0.192),
+            'NTB-MWPC-AL-0.875_D': (33.438, 116.663, -3.350),
+            'NTB-MWPC-AL-0.875_E': (31.066, 120.352, 0.082),
+            'NTB-MWPC-AL-0.875_F': (34.154, 119.451, -3.410),
+            'NTB-MWPC-AL-0.875_G': (37.471, 118.541, 0.020),
+            'NTB-MWPC-AL-0.875_H': (34.081, 119.526, 3.355),
+            'NTB-MWPC-AL_UP': (33.606, 117.184, 0.043),
+            'NTB-MWPC-AL_CT': (33.858, 118.066, 0.035),
+            'NTB-MWPC-AL_DN': (34.110, 118.948, 0.028),
+            'NTB-MWPC-AL_ROLL': (-62.291, 145.548, 0.408),
+        }
+        mwpc_2_pdf_names = [
+            'NTB-MWPC-AL-BOT-BL-PIN_UP',
+            'NTB-MWPC-AL-BOT-BR-PIN_UP',
+            'NTB-MWPC-AL-BOT-BL-PIN_DN',
+            'NTB-MWPC-AL-BOT-BR-PIN_DN',
+            'NTB-MWPC-AL-TOP-BL-PIN_UP',
+            'NTB-MWPC-AL-TOP-BR-PIN_UP',
+            'NTB-MWPC-AL-TOP-BL-PIN_DN',
+            'NTB-MWPC-AL-TOP-BR-PIN_DN',
+            'NTB-MWPC-AL-0.875_A',
+            'NTB-MWPC-AL-0.875_B',
+            'NTB-MWPC-AL-0.875_C',
+            'NTB-MWPC-AL-0.875_D',
+            'NTB-MWPC-AL-0.875_E',
+            'NTB-MWPC-AL-0.875_F',
+            'NTB-MWPC-AL-0.875_G',
+            'NTB-MWPC-AL-0.875_H',
+            'NTB-MWPC-AL_UP',
+            'NTB-MWPC-AL_CT',
+            'NTB-MWPC-AL_DN',
+            # 'NTB-MWPC-AL_ROLL',
+        ]
+
+        mwpc_3_pdf_name_positions = {
+            'NTB-MWPC-AF-0.875_B': (53.249, 288.663, 3.565),
+            'NTB-MWPC-AF-0.875_C': (56.823, 288.605, -0.059),
+            'NTB-MWPC-AF-0.875_D': (53.179, 288.711, -3.586),
+            'NTB-MWPC-AF-0.875_E': (49.791, 291.663, 0.073),
+            'NTB-MWPC-AF-0.875_F': (53.342, 291.561, 3.631),
+            'NTB-MWPC-AF-0.875_G': (56.820, 291.500, -0.006),
+            'NTB-MWPC-AF-0.875_H': (53.294, 291.612, -3.496),
+            'NTB-MWPC-AF_UP': (53.241, 289.214, -0.004),
+            'NTB-MWPC-AF_CT': (53.262, 290.136, 0.003),
+            'NTB-MWPC-AF_DN': (53.283, 291.058, 0.010),
+            'NTB-MWPC-AF_ROLL': (52.802, 289.411, 99.999),
+        }
+        mwpc_3_pdf_names = [
+            'NTB-MWPC-AF-0.875_B',
+            'NTB-MWPC-AF-0.875_C',
+            'NTB-MWPC-AF-0.875_D',
+            'NTB-MWPC-AF-0.875_E',
+            'NTB-MWPC-AF-0.875_F',
+            'NTB-MWPC-AF-0.875_G',
+            'NTB-MWPC-AF-0.875_H',
+            'NTB-MWPC-AF_UP',
+            'NTB-MWPC-AF_CT',
+            'NTB-MWPC-AF_DN',
+            # 'NTB-MWPC-AF_ROLL',
+        ]
+
+        mwpc_4_pdf_name_positions = {
+            'NTB-MWPC-AI_ROLL': (-46.661, 396.623, 0.236),
+            'NTB-MWPC-AI-0.500_D': (50.957, 398.049, -3.689),
+            'NTB-MWPC-AI-0.500_A': (50.802, 398.096, 3.884),
+            'NTB-MWPC-AI-0.500_C': (55.778, 398.159, -3.661),
+            'NTB-MWPC-AI-0.500_B': (55.722, 398.210, 3.870),
+            'NTB-MWPC-AI_UP': (53.327, 398.399, 0.019),
+            'NTB-MWPC-AI_CT': (53.302, 399.344, 0.012),
+            'NTB-MWPC-AI_DN': (53.276, 400.288, 0.006),
+            'NTB-MWPC-AI-0.500_K': (50.026, 400.525, -0.235),
+            'NTB-MWPC-AI-0.500_L': (53.435, 400.582, -3.294),
+            'NTB-MWPC-AI-0.500_J': (53.179, 400.616, 3.296),
+            'NTB-MWPC-AI-0.500_M': (56.607, 400.675, 0.071),
+            'NTB-MWPC-AI-0.500_F': (57.663, 400.717, 3.448),
+        }
+        mwpc_4_pdf_names = [
+            'NTB-MWPC-AI-0.500_A',
+            'NTB-MWPC-AI-0.500_B',
+            'NTB-MWPC-AI-0.500_C',
+            'NTB-MWPC-AI-0.500_D',
+            'NTB-MWPC-AI-0.500_F',
+            'NTB-MWPC-AI-0.500_J',
+            'NTB-MWPC-AI-0.500_K',
+            'NTB-MWPC-AI-0.500_L',
+            'NTB-MWPC-AI-0.500_M',
+            'NTB-MWPC-AI_UP',
+            'NTB-MWPC-AI_CT',
+            'NTB-MWPC-AI_DN',
+            # 'NTB-MWPC-AI_ROLL',
+        ]
+
+        # self.plot_alignment_data(mwpc_1_pdf_name_positions, mwpc_1_pdf_names, 'read_alignment_data_beamline_mwpc_1.plot')
+        # self.plot_alignment_data(mwpc_2_pdf_name_positions, mwpc_2_pdf_names, 'read_alignment_data_beamline_mwpc_2.plot')
+        self.plot_alignment_data(mwpc_3_pdf_name_positions, mwpc_3_pdf_names, 'read_alignment_data_beamline_mwpc_3.plot')
+        # self.plot_alignment_data(mwpc_4_pdf_name_positions, mwpc_4_pdf_names, 'read_alignment_data_beamline_mwpc_4.plot')
+
     def calculate(self):
         # ll = 20.07 - 42.76 * tan((16 + 1.97) * pi / 180.)
         # ll = 42.76 * tan((16 - 1.97) * pi / 180.)
@@ -1345,11 +1590,12 @@ beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/fi
 # beamline.plot_position()
 # beamline.plot_vertical_positions()
 # beamline.read_alignment_data_nova_detector()
-beamline.plot_alignment_data_nova_detector_vertical_center_block_1()
+# beamline.plot_alignment_data_nova_detector_vertical_center_block_1()
 # beamline.plot_alignment_data_nova_detector_front_surface()
 # beamline.read_alignment_data_beamline_collimator_us()
 # beamline = Beamline('beamline.py.radiation.collimator.in')
 # beamline.write_radiation()
+beamline.read_alignment_data_beamline_mwpc()
 
 # beamline = Beamline('tmp/beamline.py.geometry_check.in')
 # beamline.write_geometry_check()
