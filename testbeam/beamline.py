@@ -736,9 +736,9 @@ class Beamline:
         self.f_out.write('trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton,neutron,anti_neutron\n')
 
         # upstream collimator
-        self.write_target()
+        # self.write_target()
         # self.write_collimator_us()
-        self.write_collimator_us_alignment()
+        # self.write_collimator_us_alignment()
 
         # det_width = (6. + 1.) * Beamline.INCH
         # det_height = (2. + 1.) * Beamline.INCH
@@ -806,6 +806,9 @@ class Beamline:
         # self.shielding_block_1.theta = 0.
         # self.write_shielding_block()
 
+        # wire chambers
+        self.write_wc()
+
         print('finished write_geometry_check()')
         print('file wrote to {}'.format(self.g4bl_filename))
 
@@ -829,8 +832,6 @@ class Beamline:
                     self.cherenkov.z += 15.75 - 134.86 / 2.
 
                 if '_CT' in detector_name:
-                    # print('detector = {}'.format(detector))
-                    # print('x = {}, y = {}, z = {}'.format(x, y, z))
                     if 'TARGET' in detector_name:
                         self.target.set_xyz(position)
                     elif 'NTB-TGT-COLL-002-TOF-1' in detector_name:
@@ -1324,7 +1325,9 @@ class Beamline:
         c1.SaveAs('{}/{}.pdf'.format(self.figure_dir, figure_name))
         input('Press any key to continue.')
 
-    def read_alignment_data_beamline_mwpc(self):
+    def read_alignment_data_beamline_mwpc(self, **kwargs):
+        plot = kwargs.get('plot', True)
+
         mwpc_1_pdf_name_positions = {
             'NTB-MWPC-AK-0.875_C': (20.665, 60.294, 0.060),
             'NTB-MWPC-AK-BOT-BR-PIN_UP': (21.237, 60.625, 3.770),
@@ -1473,62 +1476,16 @@ class Beamline:
             # 'NTB-MWPC-AI_ROLL',
         ]
 
-        # self.plot_alignment_data(mwpc_1_pdf_name_positions, mwpc_1_pdf_names, 'read_alignment_data_beamline_mwpc_1.plot')
-        # self.plot_alignment_data(mwpc_2_pdf_name_positions, mwpc_2_pdf_names, 'read_alignment_data_beamline_mwpc_2.plot')
-        self.plot_alignment_data(mwpc_3_pdf_name_positions, mwpc_3_pdf_names, 'read_alignment_data_beamline_mwpc_3.plot')
-        # self.plot_alignment_data(mwpc_4_pdf_name_positions, mwpc_4_pdf_names, 'read_alignment_data_beamline_mwpc_4.plot')
+        if plot:
+            self.plot_alignment_data(mwpc_1_pdf_name_positions, mwpc_1_pdf_names, 'read_alignment_data_beamline_mwpc_1.plot')
+            # self.plot_alignment_data(mwpc_2_pdf_name_positions, mwpc_2_pdf_names, 'read_alignment_data_beamline_mwpc_2.plot')
+            # self.plot_alignment_data(mwpc_3_pdf_name_positions, mwpc_3_pdf_names, 'read_alignment_data_beamline_mwpc_3.plot')
+            # self.plot_alignment_data(mwpc_4_pdf_name_positions, mwpc_4_pdf_names, 'read_alignment_data_beamline_mwpc_4.plot')
 
-    def read_alignment_data_beamline_magnet(self):
-        # magnet_pdf_name_positions = {
-        #     'NTB-M-1-0_B': (73.313, 164.856, 4.061),
-        #     'NTB-M-1-0_A': (64.010, 164.929, 16.162),
-        #     'NTB-M-1-0_UP': (48.158, 165.318, 0.013),
-        #     'NTB-M-1-0-TOP-OF-SPACER_UP': (48.158, 165.318, 0.576),
-        #     'NTB-M-1-0-SAGITTA_UP': (47.430, 165.420, 0.013),
-        #     'NTB-M-1-0_F': (23.485, 169.334, -3.893),
-        #     'NTB-M-1-0_G': (23.394, 169.441, 3.908),
-        #     'NTB-M-1-0_H': (33.061, 171.541, 16.164),
-        #     'NTB-M-1-0_D': (65.274, 173.812, -16.160),
-        #     'NTB-M-1-0-MFS-54-Z': (136.451, 173.962, 1.099),
-        #     'NTB-M-1-0_E': (34.082, 178.498, -16.162),
-        #     'NTB-M-1-0-MFS-53-0.500-SMR-2': (64.670, 184.026, 0.513),
-        #     'NTB-M-1-0-MFS-53-0.500-SMR-3': (64.658, 184.059, -1.306),
-        #     'NTB-M-1-0-MFS-53-X': (64.778, 184.085, 1.523),
-        #     'NTB-M-1-0-MFS-53-Y-SENSOR': (64.799, 184.089, -0.347),
-        #     'NTB-M-1-0-MFS-53-ORIGIN': (64.763, 184.095, -0.477),
-        #     'NTB-M-1-0-MFS-53-Z-SENSOR': (64.809, 184.169, -0.475),
-        #     'NTB-M-1-0-MFS-53-X-SENSOR': (64.770, 184.200, -0.333),
-        #     'NTB-M-1-0-MFS-53-0.500-SMR-1': (64.798, 185.004, 0.502),
-        #     'NTB-M-1-0-MFS-53-0.500-SMR-4': (64.782, 185.027, -1.221),
-        #     'NTB-M-1-0-MFS-53-Y': (65.019, 186.079, -0.469),
-        #     'NTB-M-1-0_CT': (51.089, 186.145, -0.010),
-        #     'NTB-M-1-0-TOP-OF-SPACER_CT': (51.089, 186.145, 0.552),
-        #     'NTB-M-1-0-SAGITTA_CT': (50.361, 186.247, -0.010),
-        #     'NTB-M-1-0_ROLL': (51.086, 186.256, 99.990),
-        #     'NTB-M-1-0-TOP-OF-SPACER_ROLL': (51.086, 186.257, 100.552),
-        #     'NTB-M-1-0-MFS-54-0.500-SMR-3': (37.491, 187.823, 0.476),
-        #     'NTB-M-1-0-MFS-54-0.500-SMR-2': (37.527, 187.873, -1.362),
-        #     'NTB-M-1-0-MFS-54-ORIGIN': (37.440, 187.914, -0.361),
-        #     'NTB-M-1-0-MFS-54-Y-SENSOR': (37.402, 187.921, -0.489),
-        #     'NTB-M-1-0-MFS-54-X': (37.477, 187.965, -2.361),
-        #     'NTB-M-1-0-MFS-54-Z-SENSOR': (37.406, 187.996, -0.360),
-        #     'NTB-M-1-0-MFS-54-X-SENSOR': (37.458, 188.035, -0.483),
-        #     'NTB-M-1-0-MFS-54-0.500-SMR-4': (37.647, 188.807, 0.436),
-        #     'NTB-M-1-0-MFS-54-0.500-SMR-1': (37.659, 188.831, -1.306),
-        #     'NTB-M-1-0-MFS-54-Y': (37.718, 189.894, -0.305),
-        #     'NTB-M-1-0-MFS-53-Z': (-34.414, 196.870, 0.337),
-        #     'NTB-M-1-0_L': (78.735, 202.771, -3.813),
-        #     'NTB-M-1-0_K': (78.673, 202.851, 3.861),
-        #     'NTB-M-1-0_M': (69.386, 202.894, -16.190),
-        #     'NTB-M-1-0_J': (69.345, 203.052, 16.143),
-        #     'NTB-M-1-0_DN': (54.020, 206.972, -0.034),
-        #     'NTB-M-1-0-TOP-OF-SPACER_DN': (54.020, 206.972, 0.529),
-        #     'NTB-M-1-0-SAGITTA_DN': (53.292, 207.074, -0.034),
-        #     'NTB-M-1-0_N': (38.116, 207.227, -16.206),
-        #     'NTB-M-1-0_R': (38.137, 207.425, 16.138),
-        #     'NTB-M-1-0_P': (29.189, 209.786, -3.893),
-        #     'NTB-M-1-0_Q': (29.145, 209.927, 3.833),
-        # }
+        return mwpc_1_pdf_name_positions['NTB-MWPC-AK_CT'], mwpc_2_pdf_name_positions['NTB-MWPC-AL_CT'], mwpc_3_pdf_name_positions['NTB-MWPC-AF_CT'], mwpc_4_pdf_name_positions['NTB-MWPC-AI_CT']
+
+    def read_alignment_data_beamline_magnet(self, **kwargs):
+        plot = kwargs.get('plot', True)
 
         magnet_pdf_name_positions = {
             'NTB-M-1-0_A': (64.010, 164.929, 16.162),
@@ -1650,9 +1607,15 @@ class Beamline:
             'NTB-M-1-0-MFS-54-0.500-SMR-4',
         ]
 
-        print('len(magnet_pdf_name_positions) = {}'.format(len(magnet_pdf_name_positions)))
-        print('len(magnet_pdf_names) = {}'.format(len(magnet_pdf_names)))
-        self.plot_alignment_data(magnet_pdf_name_positions, magnet_pdf_names, 'read_alignment_data_beamline_magnet.plot', legend_text_size=15, legend_n_columns=2)
+        if plot:
+            print('len(magnet_pdf_name_positions) = {}'.format(len(magnet_pdf_name_positions)))
+            print('len(magnet_pdf_names) = {}'.format(len(magnet_pdf_names)))
+            self.plot_alignment_data(magnet_pdf_name_positions, magnet_pdf_names, 'read_alignment_data_beamline_magnet.plot', legend_text_size=15, legend_n_columns=2)
+
+        return magnet_pdf_name_positions['NTB-M-1-0_CT']
+
+    def read_alignment_data_beamline_tof(self, **kwargs):
+        pass
 
     def calculate(self):
         # ll = 20.07 - 42.76 * tan((16 + 1.97) * pi / 180.)
@@ -1662,9 +1625,9 @@ class Beamline:
 
 # if __name__ == '__main__':
 gStyle.SetOptStat(0)
-beamline = Beamline()
+# beamline = Beamline()
 # beamline.figure_dir = '/Users/juntinghuang/beamer/20180413_testbeam_120gev/figures'
-beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
+# beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
 # beamline.plot_position()
 # beamline.screen_shot = True
 # beamline.read_cherenkov_dimension()
@@ -1676,12 +1639,13 @@ beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/fi
 # beamline.read_alignment_data_nova_detector()
 # beamline.plot_alignment_data_nova_detector_vertical_center_block_1()
 # beamline.plot_alignment_data_nova_detector_front_surface()
-beamline.read_alignment_data_beamline_collimator_us()
+# beamline.read_alignment_data_beamline_collimator_us()
 # beamline.read_alignment_data_beamline_mwpc()
 # beamline.read_alignment_data_beamline_magnet()
 # beamline = Beamline('beamline.py.radiation.collimator.in')
 # beamline.write_radiation()
 
-# beamline = Beamline('tmp/beamline.py.geometry_check.in')
-# beamline.write_geometry_check()
+beamline = Beamline('tmp/beamline.py.geometry_check.in')
+beamline.read_alignment_data_beamline()
+beamline.write_geometry_check()
 # beamline.calculate()
