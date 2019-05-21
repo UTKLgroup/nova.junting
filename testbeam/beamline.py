@@ -357,11 +357,10 @@ class Beamline:
                                                                                                                                           self.kill))
         self.f_out.write('place aperture_plate_2 rename=aperture_plate_2 x={} y={} z={} rotation=x90\n'.format(aperture_plate_2_vertex_1_x * Beamline.INCH, aperture_plate_y * Beamline.INCH, aperture_plate_2_vertex_1_z * Beamline.INCH))
 
-
         aperture_plate_x = (aperture_plate_1_vertex_1_x + aperture_plate_2_vertex_2_x) / 2.
         aperture_plate_z = (aperture_plate_1_vertex_1_z + aperture_plate_1_vertex_4_z) / 2.
-        collimator_plate_length = aperture_plate_length
 
+        collimator_plate_length = aperture_plate_length
         collimator_base_dimensions = [collimator_base_height, collimator_base_length, collimator_width]
         collimator_plate_dimensions = [collimator_plate_height, collimator_plate_length, collimator_width]
 
@@ -374,6 +373,8 @@ class Beamline:
             quantity[0] *= Beamline.INCH
             quantity[1] *= Beamline.INCH
             quantity[2] *= Beamline.INCH
+
+        self.collimator_us.set_zx([collimator_top_1_positions[2], collimator_top_1_positions[0]])
 
         self.f_out.write('box collimator_base height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_base_dimensions[0], collimator_base_dimensions[1], collimator_base_dimensions[2], self.kill))
         self.f_out.write('box collimator_plate height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_plate_dimensions[0], collimator_plate_dimensions[1], collimator_plate_dimensions[2], self.kill))
@@ -615,7 +616,6 @@ class Beamline:
         self.f_out.write('param histoFile=beam.root\n')
 
         self.f_out.write('g4ui when=4 "/vis/viewer/set/viewpointVector 0 1 0"\n')
-        # self.f_out.write('g4ui when=4 "/vis/viewer/set/viewpointVector -1 1 1"\n') # for radiation study
         self.f_out.write('g4ui when=4 "/vis/viewer/zoom 1.5"\n')
         self.f_out.write('g4ui when=4 "/vis/viewer/set/style wireframe"\n')
         if self.screen_shot:
@@ -623,13 +623,10 @@ class Beamline:
 
         self.f_out.write('beam gaussian particle=$particle firstEvent=$first lastEvent=$last sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=$momentum\n')
         self.f_out.write('trackcuts kineticEnergyCut=20 keep=gamma,pi0,pi+,pi-,kaon+,kaon-,mu+,mu-,e+,e-,proton,anti_proton\n')
-        # self.f_out.write('trackcuts kineticEnergyCut=5 keep=pi+,pi-,kaon+,kaon-,mu+,mu-,e+,e-,proton,anti_proton\n')
-        # self.f_out.write('trackcuts kineticEnergyCut=5 kineticEnergyMax=3000 keep=pi+,pi-,kaon+,kaon-,mu+,mu-,e+,e-,proton,anti_proton\n')
-        # self.f_out.write('trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,e+,e-,gamma,proton,anti_proton\n')
-        # self.f_out.write('trackcuts keep=pi+,pi-,pi0,kaon+,kaon-,mu+,mu-,proton,anti_proton,neutron,anti_neutron\n') # for radiation study
 
         self.write_target()
-        self.write_collimator_us()
+        # self.write_collimator_us()
+        self.write_collimator_us_alignment()
         if not self.screen_shot:
             self.write_virtual_disk()
         self.write_wc()
@@ -639,8 +636,6 @@ class Beamline:
         self.write_cherenkov()
         self.write_nova_plane()
         self.write_shielding_block()
-        # self.write_nova()       # for radiation study
-        # self.write_housing()    # for radiation study
 
     def write_radiation_dosage(self):
         self.f_out.write('physics QGSP_BIC\n')
