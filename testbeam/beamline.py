@@ -65,6 +65,7 @@ class Beamline:
         self.wc_4 = Detector('wire chamber 4')
         self.cherenkov = Detector('cherenkov counter')
         self.tof_ds = Detector('downstream TOF')
+        self.tof_ds_sipm = Detector('downstream TOF SiPM')
         self.nova = Detector('nova detector')
         self.shielding_block = Detector('shielding block')
         self.shielding_block_1 = Detector('shielding block 1')
@@ -84,6 +85,7 @@ class Beamline:
             self.wc_4,
             self.cherenkov,
             self.tof_ds,
+            self.tof_ds_sipm,
             self.nova
         ]
 
@@ -434,6 +436,7 @@ class Beamline:
         self.f_out.write('place tof_us rename=tof_us x={} y={} z={} rotation=y{}\n'.format(self.tof_us.x, self.tof_us.y, self.tof_us.z, self.tof_us.theta))
         self.f_out.write('virtualdetector tof_ds height={} length={} width={} material=LUCITE color=0.05,0.05,0.93\n'.format(tof_ds_dimensions[0], tof_ds_dimensions[1], tof_ds_dimensions[2]))
         self.f_out.write('place tof_ds rename=tof_ds x={} y={} z={} rotation=y{}\n'.format(self.tof_ds.x, self.tof_ds.y, self.tof_ds.z, self.tof_ds.theta))
+        self.f_out.write('place tof_ds rename=tof_ds_sipm x={} y={} z={} rotation=y{}\n'.format(self.tof_ds_sipm.x, self.tof_ds_sipm.y, self.tof_ds_sipm.z, self.tof_ds.theta))
 
     def write_wc(self):
         wire_chamber_detector_dimensions = [125., 25., 128.]
@@ -923,6 +926,8 @@ class Beamline:
                         self.wc_4.set_xyz(position)
                     elif 'NTB-CERENKOV-TOF-1' in detector_name:
                         self.tof_ds.set_xyz(position)
+                    elif 'NTB-CERENKOV-TOF-2' in detector_name:
+                        self.tof_ds_sipm.set_xyz(position)
                     elif 'NTB-COLLIMATOR' in detector_name:
                         self.collimator_ds.set_xyz(position)
                     elif 'NTB-M-1-0' in detector_name:
