@@ -214,7 +214,8 @@ class Beamline:
         gr.GetYaxis().SetNdivisions(505, 1)
         gr.GetXaxis().SetNdivisions(508, 1)
 
-        lg1 = TLegend(0.34, 0.53, 0.87, 0.86)
+        # lg1 = TLegend(0.34, 0.53, 0.87, 0.86)
+        lg1 = TLegend(0.36, 0.53, 0.87, 0.86)
         set_legend_style(lg1)
         lg1.SetNColumns(2)
         lg1.SetTextSize(18)
@@ -410,7 +411,7 @@ class Beamline:
         self.wc_4.theta = self.us_theta + self.ds_theta
 
         # place wire chamber 3 by the upstream edge of the grating
-        self.wc_3.z = self.grating_upstream_edge_z - self.wire_chamber_support_length / 2.
+        # self.wc_3.z = self.grating_upstream_edge_z - self.wire_chamber_support_length / 2.
 
         self.f_out.write('group wire_chamber\n')
         self.f_out.write('  virtualdetector wire_chamber_detector height={} length={} width={} color=0,1,0\n'.format(wire_chamber_detector_dimensions[0], wire_chamber_detector_dimensions[1], wire_chamber_detector_dimensions[2]))
@@ -444,7 +445,7 @@ class Beamline:
         self.tof_ds.theta = self.us_theta + self.ds_theta
 
         # the downstream tof is about 2.375 inches to the front surface of the NOvA test beam detector
-        self.tof_ds.z = self.nova.z - 2.375 * Beamline.INCH
+        # self.tof_ds.z = self.nova.z - 2.375 * Beamline.INCH
 
         self.f_out.write('virtualdetector tof_us  height={} length={} width={} material=LUCITE color=0.05,0.05,0.93\n'.format(tof_us_dimensions[0], tof_us_dimensions[1], tof_us_dimensions[2]))
         self.f_out.write('place tof_us rename=tof_us x={} y={} z={} rotation=y{}\n'.format(self.tof_us.x, self.tof_us.y, self.tof_us.z, self.tof_us.theta))
@@ -456,7 +457,6 @@ class Beamline:
         self.nova.length = 10.
         self.f_out.write('virtualdetector nova height={} length={} width={} color=0.39,0.39,0.39\n'.format(self.nova.height, self.nova.length, self.nova.width))
         self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y{}\n'.format(self.nova.x, self.nova.y, self.nova.z, self.nova.theta))
-        print('self.nova.z = {}'.format(self.nova.z))
 
     def write_nova(self):
         self.nova.theta = self.us_theta + self.ds_theta
@@ -475,7 +475,7 @@ class Beamline:
         support_dimensions = [4.5 * Beamline.FOOT, 6. * Beamline.FOOT, 3. * Beamline.FOOT]
 
         # the distance between wire chamber 4 and the upstream end of the Cerenkov counter is about 48 inches
-        self.cherenkov.z = self.wc_4.z + 48. * Beamline.INCH + self.cherenkov.length / 2.
+        # self.cherenkov.z = self.wc_4.z + 48. * Beamline.INCH + self.cherenkov.length / 2.
         cherenkov_end_to_support_edge_distance = 3.625 * Beamline.INCH
         cherenkov_to_support_distance = 6.125 * Beamline.INCH
 
@@ -552,13 +552,13 @@ class Beamline:
         # self.shielding_block_1.set_zx([self.magnet.z + 1200., self.magnet.x + self.shielding_block.width / 2. + shielding_block_separation / 2.])
         # self.shielding_block_2.set_zx([self.magnet.z + 1200., self.magnet.x - self.shielding_block.width / 2. - shielding_block_separation / 2.])
         # self.shielding_block_1.set_zx([self.collimator_ds.z, self.collimator_ds.x + self.shielding_block.width / 2. + self.collimator_ds.width / 2.])
-        self.shielding_block_1.set_zx([self.wc_3.z - self.wire_chamber_support_length / 2. - self.shielding_block.length / 2., self.wc_3.x + 5.789 * Beamline.INCH + self.shielding_block.width / 2.])
+        # self.shielding_block_1.set_zx([self.wc_3.z - self.wire_chamber_support_length / 2. - self.shielding_block.length / 2., self.wc_3.x + 5.789 * Beamline.INCH + self.shielding_block.width / 2.])
         # self.shielding_block_2.set_zx([self.collimator_ds.z, self.collimator_ds.x - self.shielding_block.width / 2. - self.collimator_ds.width / 2.])
         # self.shielding_block_2.set_zx([self.wc_3.z, self.wc_3.x - 17.676 * Beamline.INCH - self.shielding_block.width / 2.])
-        self.shielding_block_2.set_zx([self.wc_3.z - self.wire_chamber_support_length / 2. - self.shielding_block.length / 2., self.wc_3.x - 5.789 * Beamline.INCH - self.shielding_block.width / 2.])
+        # self.shielding_block_2.set_zx([self.wc_3.z - self.wire_chamber_support_length / 2. - self.shielding_block.length / 2., self.wc_3.x - 5.789 * Beamline.INCH - self.shielding_block.width / 2.])
         # self.shielding_block_3.set_zx([self.shielding_block_1.z, self.shielding_block_1.x + self.shielding_block.width])
-        self.shielding_block_3.set_zx([2700. - (self.collimator_us.length - (42.76 + 8.36) * Beamline.INCH) + self.shielding_block.length / 2., (7.47 * Beamline.INCH + 460.) - (420. + 12. * Beamline.INCH)])
-        self.shielding_block_4.set_zx([self.collimator_ds.z - self.collimator_ds.length / 2. + 15.647 * Beamline.INCH + self.shielding_block.length / 2., self.collimator_ds.x - self.shielding_block.width / 2. - self.collimator_ds.width / 2.])
+        # self.shielding_block_3.set_zx([2700. - (self.collimator_us.length - (42.76 + 8.36) * Beamline.INCH) + self.shielding_block.length / 2., (7.47 * Beamline.INCH + 460.) - (420. + 12. * Beamline.INCH)])
+        # self.shielding_block_4.set_zx([self.collimator_ds.z - self.collimator_ds.length / 2. + 15.647 * Beamline.INCH + self.shielding_block.length / 2., self.collimator_ds.x - self.shielding_block.width / 2. - self.collimator_ds.width / 2.])
 
         # the distance from ground to the top of the shielding block is 2.7m
         y_shift = (2700. - 16. * Beamline.INCH) - self.distance_target_to_ground
@@ -1627,9 +1627,10 @@ class Beamline:
 # beamline.write_geometry_check()
 
 # 20190424_testbeam_alignment
-# beamline = Beamline()
-# beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
-# beamline.read_alignment_data_beamline()
+beamline = Beamline()
+beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
+beamline.read_alignment_data_beamline()
+beamline.write()
 # beamline.read_alignment_data_beamline_collimator_us()
 # beamline.read_alignment_data_beamline_mwpc()
 # beamline.read_alignment_data_beamline_magnet()
@@ -1639,5 +1640,5 @@ class Beamline:
 # beamline = Beamline('tmp/beamline.py.geometry_check.in')
 # beamline.write_geometry_check()
 # beamline.calculate()
-# beamline.plot_position()
+beamline.plot_position()
 # beamline.plot_vertical_positions()
