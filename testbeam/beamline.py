@@ -193,6 +193,32 @@ class Beamline:
         top_points = Beamline.get_csv('digitize/ftbf_drawing_digitize.csv')
         self.cherenkov.length = self.get_distance(top_points[16], top_points[17])
 
+    def correct_position(self):
+        us_detectors = [
+            self.tof_us,
+            self.wc_1,
+            self.wc_2
+        ]
+        for us_detector in us_detectors:
+            distance = us_detector.get_r()
+            us_detector.x = sin(self.us_theta * Beamline.RADIAN_PER_DEGREE) * distance
+            us_detector.z = cos(self.us_theta * Beamline.RADIAN_PER_DEGREE) * distance
+
+        ds_detectors = [
+            self.wc_3,
+            self.collimator_ds,
+            self.wc_4,
+            self.cherenkov,
+            self.tof_ds,
+            self.nova
+        ]
+        ds_detector_average_x = np.average([ds_detector.x for ds_detector in ds_detectors])
+        for ds_detector in ds_detectors:
+            ds_detector.x = ds_detector_average_x
+
+        self.magnet.x = ds_detector_average_x
+        self.magnet.z = ds_detector_average_x / tan(self.us_theta * Beamline.RADIAN_PER_DEGREE)
+
     def plot_position(self):
         c1 = TCanvas('c1', 'c1', 1200, 600)
         set_margin()
@@ -214,7 +240,6 @@ class Beamline:
         gr.GetYaxis().SetNdivisions(505, 1)
         gr.GetXaxis().SetNdivisions(508, 1)
 
-        # lg1 = TLegend(0.34, 0.53, 0.87, 0.86)
         lg1 = TLegend(0.36, 0.53, 0.87, 0.86)
         set_legend_style(lg1)
         lg1.SetNColumns(2)
@@ -396,6 +421,20 @@ class Beamline:
         self.f_out.write('virtualdetector start_line radius={} length={} material=Air color=0.9,0.9,0.7\n'.format(start_line_radius, start_line_length))
         self.f_out.write('place start_line rotation=y{} x={} y={} z={}\n'.format(self.us_theta, start_line_positions[0], start_line_positions[1], start_line_positions[2]))
 
+    def write_tof(self):
+        tof_us_dimensions = [150., 20., 150.]
+        self.tof_us.theta = self.us_theta
+        tof_ds_dimensions = [150., 20., 150.]
+        self.tof_ds.theta = self.us_theta + self.ds_theta
+
+        # the downstream tof is about 2.375 inches to the front surface of the NOvA test beam detector
+        # self.tof_ds.z = self.nova.z - 2.375 * Beamline.INCH
+
+        self.f_out.write('virtualdetector tof_us  height={} length={} width={} material=LUCITE color=0.05,0.05,0.93\n'.format(tof_us_dimensions[0], tof_us_dimensions[1], tof_us_dimensions[2]))
+        self.f_out.write('place tof_us rename=tof_us x={} y={} z={} rotation=y{}\n'.format(self.tof_us.x, self.tof_us.y, self.tof_us.z, self.tof_us.theta))
+        self.f_out.write('virtualdetector tof_ds height={} length={} width={} material=LUCITE color=0.05,0.05,0.93\n'.format(tof_ds_dimensions[0], tof_ds_dimensions[1], tof_ds_dimensions[2]))
+        self.f_out.write('place tof_ds rename=tof_ds x={} y={} z={} rotation=y{}\n'.format(self.tof_ds.x, self.tof_ds.y, self.tof_ds.z, self.tof_ds.theta))
+
     def write_wc(self):
         wire_chamber_detector_dimensions = [125., 25., 128.]
         wire_chamber_frame_vertical_dimensions = [254., 25., 63.]
@@ -438,57 +477,6 @@ class Beamline:
         self.f_out.write('genericbend M1 fieldHeight={} fieldLength={} fieldWidth={} kill={} ironColor=1,0,0 ironHeight={} ironLength={} ironWidth={}\n'.format(magnet_field_dimensions[0], magnet_field_dimensions[1], magnet_field_dimensions[2], self.kill, magnet_iron_dimensions[0], magnet_iron_dimensions[1], magnet_iron_dimensions[2]))
         self.f_out.write('place M1 By=$b_field x={} y={} z={} rotation=Y{}\n'.format(self.magnet.x, self.magnet.y, self.magnet.z, self.magnet.theta))
 
-    def write_tof(self):
-        tof_us_dimensions = [150., 20., 150.]
-        self.tof_us.theta = self.us_theta
-        tof_ds_dimensions = [150., 20., 150.]
-        self.tof_ds.theta = self.us_theta + self.ds_theta
-
-        # the downstream tof is about 2.375 inches to the front surface of the NOvA test beam detector
-        # self.tof_ds.z = self.nova.z - 2.375 * Beamline.INCH
-
-        self.f_out.write('virtualdetector tof_us  height={} length={} width={} material=LUCITE color=0.05,0.05,0.93\n'.format(tof_us_dimensions[0], tof_us_dimensions[1], tof_us_dimensions[2]))
-        self.f_out.write('place tof_us rename=tof_us x={} y={} z={} rotation=y{}\n'.format(self.tof_us.x, self.tof_us.y, self.tof_us.z, self.tof_us.theta))
-        self.f_out.write('virtualdetector tof_ds height={} length={} width={} material=LUCITE color=0.05,0.05,0.93\n'.format(tof_ds_dimensions[0], tof_ds_dimensions[1], tof_ds_dimensions[2]))
-        self.f_out.write('place tof_ds rename=tof_ds x={} y={} z={} rotation=y{}\n'.format(self.tof_ds.x, self.tof_ds.y, self.tof_ds.z, self.tof_ds.theta))
-
-    def write_nova_plane(self):
-        self.nova.theta = self.us_theta + self.ds_theta
-        self.nova.length = 10.
-        self.f_out.write('virtualdetector nova height={} length={} width={} color=0.39,0.39,0.39\n'.format(self.nova.height, self.nova.length, self.nova.width))
-        self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y{}\n'.format(self.nova.x, self.nova.y, self.nova.z, self.nova.theta))
-
-    def write_nova(self):
-        self.nova.theta = self.us_theta + self.ds_theta
-        self.nova.length = 3900.
-        self.f_out.write('virtualdetector nova height={} length={} width={} material=POLYSTYRENE color=0.39,0.39,0.39\n'.format(self.nova.height, self.nova.length, self.nova.width))
-        self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y{}\n'.format(self.nova.x, self.nova.y, self.nova.z + self.nova.length / 2., self.nova.theta))
-
-    def write_cherenkov(self):
-        self.cherenkov.theta = self.us_theta + self.ds_theta
-        self.cherenkov.length = 2925.
-        cherenkov_inner_radius = 315. / 2.
-        cherenkov_outer_radius = 324. / 2.
-        cherenkov_pmt_pipe_outer_radius = 273. / 2.
-        cherenkov_pmt_pipe_inner_radius = 264. / 2.
-        cherenkov_pmt_pipe_length = 846. - 324. / 2.
-        support_dimensions = [4.5 * Beamline.FOOT, 6. * Beamline.FOOT, 3. * Beamline.FOOT]
-
-        # the distance between wire chamber 4 and the upstream end of the Cerenkov counter is about 48 inches
-        # self.cherenkov.z = self.wc_4.z + 48. * Beamline.INCH + self.cherenkov.length / 2.
-        cherenkov_end_to_support_edge_distance = 3.625 * Beamline.INCH
-        cherenkov_to_support_distance = 6.125 * Beamline.INCH
-
-        self.f_out.write('virtualdetector cherenkov radius={} length={} color=1,1,1 material=CARBON_DIOXIDE\n'.format(cherenkov_inner_radius, self.cherenkov.length))
-        self.f_out.write('tubs cherenkov_pipe innerRadius={} outerRadius={} length={} color=0.74,0.34,0.09 material=STAINLESS-STEEL\n'.format(cherenkov_inner_radius, cherenkov_outer_radius, self.cherenkov.length))
-        self.f_out.write('tubs cherenkov_pipe_pmt innerRadius={} outerRadius={} length={} color=0.74,0.34,0.09 material=STAINLESS-STEEL\n'.format(cherenkov_pmt_pipe_inner_radius, cherenkov_pmt_pipe_outer_radius, cherenkov_pmt_pipe_length))
-        self.f_out.write('box cherenkov_support height={} length={} width={} material=CONCRETE color=0,1,1 kill={}\n'.format(support_dimensions[0], support_dimensions[1], support_dimensions[2], self.kill))
-
-        self.f_out.write('place cherenkov rename=cherenkov x={} y={} z={} rotation=y{}\n'.format(self.cherenkov.x, self.cherenkov.y, self.cherenkov.z, self.cherenkov.theta))
-        self.f_out.write('place cherenkov_pipe rename=cherenkov_pipe x={} y={} z={} rotation=y{} kill={}\n'.format(self.cherenkov.x, self.cherenkov.y, self.cherenkov.z, self.cherenkov.theta, self.kill))
-        self.f_out.write('place cherenkov_pipe_pmt rename=cherenkov_pipe_pmt x={} y={} z={} rotation=y{},x90 kill={}\n'.format(self.cherenkov.x, self.cherenkov.y - cherenkov_outer_radius - cherenkov_pmt_pipe_length / 2., self.cherenkov.z + self.cherenkov.length / 2. - cherenkov_pmt_pipe_outer_radius - 1.75 * Beamline.INCH, self.cherenkov.theta, self.kill))
-        self.f_out.write('place cherenkov_support x={} y={} z={} rotation=y{}\n'.format(self.cherenkov.x, self.cherenkov.y - cherenkov_outer_radius - cherenkov_to_support_distance - support_dimensions[0] / 2., self.cherenkov.z - self.cherenkov.length / 2. + cherenkov_end_to_support_edge_distance + support_dimensions[1] / 2., self.cherenkov.theta))
-
     def write_collimator_ds(self):
         # lariat
         # collimator_ds_bottom_dimensions = [8.5 * Beamline.INCH, 36. * Beamline.INCH, 30. * Beamline.INCH]
@@ -524,6 +512,43 @@ class Beamline:
         self.f_out.write('  place collimator_ds_bottom rename=+_top x={} y={} z={}\n'.format(collimator_ds_top_positions[0], collimator_ds_top_positions[1], collimator_ds_top_positions[2]))
         self.f_out.write('endgroup\n')
         self.f_out.write('place collimator_ds x={} y={} z={} rotation=y{}\n'.format(self.collimator_ds.x, self.collimator_ds.y, self.collimator_ds.z, self.collimator_ds.theta))
+
+    def write_cherenkov(self):
+        self.cherenkov.theta = self.us_theta + self.ds_theta
+        self.cherenkov.length = 2925.
+        cherenkov_inner_radius = 315. / 2.
+        cherenkov_outer_radius = 324. / 2.
+        cherenkov_pmt_pipe_outer_radius = 273. / 2.
+        cherenkov_pmt_pipe_inner_radius = 264. / 2.
+        cherenkov_pmt_pipe_length = 846. - 324. / 2.
+        support_dimensions = [4.5 * Beamline.FOOT, 6. * Beamline.FOOT, 3. * Beamline.FOOT]
+
+        # the distance between wire chamber 4 and the upstream end of the Cerenkov counter is about 48 inches
+        # self.cherenkov.z = self.wc_4.z + 48. * Beamline.INCH + self.cherenkov.length / 2.
+        cherenkov_end_to_support_edge_distance = 3.625 * Beamline.INCH
+        cherenkov_to_support_distance = 6.125 * Beamline.INCH
+
+        self.f_out.write('virtualdetector cherenkov radius={} length={} color=1,1,1 material=CARBON_DIOXIDE\n'.format(cherenkov_inner_radius, self.cherenkov.length))
+        self.f_out.write('tubs cherenkov_pipe innerRadius={} outerRadius={} length={} color=0.74,0.34,0.09 material=STAINLESS-STEEL\n'.format(cherenkov_inner_radius, cherenkov_outer_radius, self.cherenkov.length))
+        self.f_out.write('tubs cherenkov_pipe_pmt innerRadius={} outerRadius={} length={} color=0.74,0.34,0.09 material=STAINLESS-STEEL\n'.format(cherenkov_pmt_pipe_inner_radius, cherenkov_pmt_pipe_outer_radius, cherenkov_pmt_pipe_length))
+        self.f_out.write('box cherenkov_support height={} length={} width={} material=CONCRETE color=0,1,1 kill={}\n'.format(support_dimensions[0], support_dimensions[1], support_dimensions[2], self.kill))
+
+        self.f_out.write('place cherenkov rename=cherenkov x={} y={} z={} rotation=y{}\n'.format(self.cherenkov.x, self.cherenkov.y, self.cherenkov.z, self.cherenkov.theta))
+        self.f_out.write('place cherenkov_pipe rename=cherenkov_pipe x={} y={} z={} rotation=y{} kill={}\n'.format(self.cherenkov.x, self.cherenkov.y, self.cherenkov.z, self.cherenkov.theta, self.kill))
+        self.f_out.write('place cherenkov_pipe_pmt rename=cherenkov_pipe_pmt x={} y={} z={} rotation=y{},x90 kill={}\n'.format(self.cherenkov.x, self.cherenkov.y - cherenkov_outer_radius - cherenkov_pmt_pipe_length / 2., self.cherenkov.z + self.cherenkov.length / 2. - cherenkov_pmt_pipe_outer_radius - 1.75 * Beamline.INCH, self.cherenkov.theta, self.kill))
+        self.f_out.write('place cherenkov_support x={} y={} z={} rotation=y{}\n'.format(self.cherenkov.x, self.cherenkov.y - cherenkov_outer_radius - cherenkov_to_support_distance - support_dimensions[0] / 2., self.cherenkov.z - self.cherenkov.length / 2. + cherenkov_end_to_support_edge_distance + support_dimensions[1] / 2., self.cherenkov.theta))
+
+    def write_nova_plane(self):
+        self.nova.theta = self.us_theta + self.ds_theta
+        self.nova.length = 10.
+        self.f_out.write('virtualdetector nova height={} length={} width={} color=0.39,0.39,0.39\n'.format(self.nova.height, self.nova.length, self.nova.width))
+        self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y{}\n'.format(self.nova.x, self.nova.y, self.nova.z, self.nova.theta))
+
+    def write_nova(self):
+        self.nova.theta = self.us_theta + self.ds_theta
+        self.nova.length = 3900.
+        self.f_out.write('virtualdetector nova height={} length={} width={} material=POLYSTYRENE color=0.39,0.39,0.39\n'.format(self.nova.height, self.nova.length, self.nova.width))
+        self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y{}\n'.format(self.nova.x, self.nova.y, self.nova.z + self.nova.length / 2., self.nova.theta))
 
     def write_shielding_block(self):
         steel_dimensions = [24. * Beamline.INCH, 16. * Beamline.INCH, 24. * Beamline.INCH]
@@ -583,32 +608,6 @@ class Beamline:
         self.f_out.write('place wall x={} y={} z={}\n'.format(0, 0, length / 2. - shift))
         self.f_out.write('place cap rename=cap_start x={} y={} z={}\n'.format(0, 0, -shift - thickness / 2.))
         self.f_out.write('place cap rename=cap_end x={} y={} z={}\n'.format(0, 0, length - shift + thickness / 2.))
-
-    def correct_position(self):
-        us_detectors = [
-            self.tof_us,
-            self.wc_1,
-            self.wc_2
-        ]
-        for us_detector in us_detectors:
-            distance = us_detector.get_r()
-            us_detector.x = sin(self.us_theta * Beamline.RADIAN_PER_DEGREE) * distance
-            us_detector.z = cos(self.us_theta * Beamline.RADIAN_PER_DEGREE) * distance
-
-        ds_detectors = [
-            self.wc_3,
-            self.collimator_ds,
-            self.wc_4,
-            self.cherenkov,
-            self.tof_ds,
-            self.nova
-        ]
-        ds_detector_average_x = np.average([ds_detector.x for ds_detector in ds_detectors])
-        for ds_detector in ds_detectors:
-            ds_detector.x = ds_detector_average_x
-
-        self.magnet.x = ds_detector_average_x
-        self.magnet.z = ds_detector_average_x / tan(self.us_theta * Beamline.RADIAN_PER_DEGREE)
 
     def write(self):
         self.f_out.write('physics QGSP_BIC\n')
