@@ -792,423 +792,6 @@ class Beamline:
         print('finished write_geometry_check()')
         print('file written to {}'.format(self.g4bl_filename))
 
-    def read_alignment_data_beamline(self):
-        for component in self.components:
-            if component.name not in ['nova detector', 'upstream collimator']:
-                component.set_xyz((0., 0., 0.))
-
-        with open('data/alignment/NTB summary_up_ct_dn.txt') as f_txt:
-            for row in csv.reader(f_txt, delimiter=','):
-                detector_name = row[1].strip()
-                x = float(row[2])
-                y = float(row[3])
-                z = float(row[4])
-                position = -x, z, y
-
-                if detector_name == 'NTB-CERENKOV_DN':
-                    self.cherenkov.set_xyz(position)
-                    self.cherenkov.z = 546.554
-                    self.cherenkov.z += 15.75 - 134.86 / 2.
-
-                if '_CT' in detector_name:
-                    if 'TARGET' in detector_name:
-                        self.target.set_xyz(position)
-                    elif 'NTB-TGT-COLL-002-TOF-1' in detector_name:
-                        self.tof_us.set_xyz(position)
-                    elif 'NTB-MWPC-AK' in detector_name:
-                        self.wc_1.set_xyz(position)
-                    elif 'NTB-MWPC-AL' in detector_name:
-                        self.wc_2.set_xyz(position)
-                    elif 'NTB-MWPC-AF' in detector_name:
-                        self.wc_3.set_xyz(position)
-                    elif 'NTB-MWPC-AI' in detector_name:
-                        self.wc_4.set_xyz(position)
-                    elif 'NTB-CERENKOV-TOF-1' in detector_name:
-                        self.tof_ds.set_xyz(position)
-                    elif 'NTB-COLLIMATOR' in detector_name:
-                        self.collimator_ds.set_xyz(position)
-                    elif 'NTB-M-1-0' in detector_name:
-                        self.magnet.set_xyz(position)
-                    elif 'NTB-MIPP-SHIELD-BLOCK' in detector_name:
-                        self.shielding_block_1.set_xyz(position)
-                    elif 'NTB-LEFT-SHIELD-BLOCK' in detector_name:
-                        self.shielding_block_2.set_xyz(position)
-                    elif 'NTB-RIGHT-SHIELD-BLOCK' in detector_name:
-                        self.shielding_block_3.set_xyz(position)
-
-        for component in self.components:
-            if component.name not in ['nova detector', 'upstream collimator']:
-                component.x *= 25.4
-                component.y *= 25.4
-                component.z *= 25.4
-
-    def plot_vertical_positions(self):
-        h1 = TH1D('h1', 'h1', 200, -100, 100)
-
-        for component in self.components:
-            if component.name not in ['nova detector', 'upstream collimator']:
-                h1.Fill(component.y)
-                if component.y > 20.:
-                    print('component.name = {}, component.y = {}'.format(component.name, component.y))
-
-        c1 = TCanvas('c1', 'c1', 800, 600)
-        set_margin()
-        set_h1_style(h1)
-
-        h1.Draw()
-        h1.GetXaxis().SetTitle('Vertical Position (mm)')
-        h1.GetYaxis().SetTitle('Detector Count')
-        h1.GetXaxis().SetRangeUser(-20, 50)
-
-        c1.Update()
-        c1.SaveAs('{}/plot_vertical_positions.pdf'.format(self.figure_dir))
-        input('Press any key to continue.')
-
-    def plot_alignment_data_nova_detector_vertical_center_block_1(self):
-        name_positions = {}
-        with open('data/alignment/Block 1 and Block 2 offset points Target frame.txt') as f_txt:
-            rows = csv.reader(f_txt, delimiter=',')
-            row_count = 0
-            for i in range(5):
-                next(rows)
-            for row in rows:
-                row_count += 1
-                name = row[0].strip()
-                x = float(row[-3])
-                y = float(row[-2])
-                z = float(row[-1])
-                position = -x, z, y
-                if name not in name_positions:
-                    name_positions[name] = []
-                name_positions[name].append(position)
-            print('row_count = {}'.format(row_count))
-
-        positions = name_positions['Block 1 Center Split points projected']
-
-        xs = []
-        ys = []
-        zs = []
-        for position in positions:
-            xs.append(position[0])
-            ys.append(position[1])
-            zs.append(position[2])
-
-        gr_xy = TGraph(len(xs), np.array(xs), np.array(ys))
-        c1 = TCanvas('c1', 'c1', 800, 600)
-        set_margin()
-        set_graph_style(gr_xy)
-        gr_xy.Draw('AP')
-        gr_xy.GetXaxis().SetTitle('X (mm)')
-        gr_xy.GetYaxis().SetTitle('Y (mm)')
-        gr_xy.GetYaxis().SetTitleOffset(1.6)
-
-        tf = TF1('tf1', 'pol1')
-        gr_xy.Fit('tf1')
-
-
-        latex = TLatex()
-        latex.SetNDC()
-        latex.SetTextFont(43)
-        latex.SetTextSize(28)
-        latex.DrawLatex(0.2, 0.2, 'f(x) = {:.3E} x {:.3E}'.format(tf.GetParameter(1), tf.GetParameter(0)))
-
-        theta = atan(1. / tf.GetParameter(1)) * 180. / pi
-        print('theta = {} degree'.format(theta))
-
-        c1.Update()
-        c1.SaveAs('{}/plot_alignment_data_nova_detector_vertical_center_block_1.pdf'.format(self.figure_dir))
-        input('Press any key to continue.')
-
-    def plot_alignment_data_nova_detector_front_surface(self):
-        name_positions = {}
-        with open('data/alignment/Block 1 and Block 2 offset points Target frame.txt') as f_txt:
-            rows = csv.reader(f_txt, delimiter=',')
-            row_count = 0
-            for i in range(5):
-                next(rows)
-            for row in rows:
-                row_count += 1
-                name = row[0].strip()
-                x = float(row[-3])
-                y = float(row[-2])
-                z = float(row[-1])
-                position = -x, z, y
-                if name not in name_positions:
-                    name_positions[name] = []
-                name_positions[name].append(position)
-            print('row_count = {}'.format(row_count))
-
-        positions = name_positions['Block 1 UPST Plane Offset Points']
-
-        xs = []
-        ys = []
-        zs = []
-        for position in positions:
-            xs.append(position[0])
-            ys.append(position[1])
-            zs.append(position[2])
-
-        gr_xz = TGraph(len(xs), np.array(xs), np.array(zs))
-        c1 = TCanvas('c1', 'c1', 800, 600)
-        set_margin()
-        set_graph_style(gr_xz)
-        gr_xz.Draw('AP')
-        gr_xz.GetXaxis().SetTitle('X (mm)')
-        gr_xz.GetYaxis().SetTitle('Z (mm)')
-        gr_xz.GetYaxis().SetTitleOffset(1.6)
-
-        tf = TF1('tf1', 'pol1')
-        gr_xz.Fit('tf1')
-
-
-        latex = TLatex()
-        latex.SetNDC()
-        latex.SetTextFont(43)
-        latex.SetTextSize(28)
-        latex.DrawLatex(0.2, 0.83, 'f(x) = {:.3E} x + {:.3E}'.format(tf.GetParameter(1), tf.GetParameter(0)))
-
-        theta = atan(tf.GetParameter(1)) * 180. / pi
-        print('theta = {} degree'.format(theta))
-
-        c1.Update()
-        c1.SaveAs('{}/plot_alignment_data_nova_detector_front_surface.pdf'.format(self.figure_dir))
-        input('Press any key to continue.')
-
-    def read_alignment_data_nova_detector(self):
-        gStyle.SetMarkerStyle(8)
-
-        ntp = TNtuple('TNtuple', 'TNtuple', 'x:y:z:color')
-        name_positions = {}
-        with open('data/alignment/Block 1 and Block 2 offset points Target frame.txt') as f_txt:
-            rows = csv.reader(f_txt, delimiter=',')
-            row_count = 0
-            for i in range(5):
-                next(rows)
-            for row in rows:
-                row_count += 1
-                name = row[0].strip()
-                x = float(row[-3])
-                y = float(row[-2])
-                z = float(row[-1])
-                position = -x, z, y
-                if name not in name_positions:
-                    name_positions[name] = []
-                name_positions[name].append(position)
-            print('row_count = {}'.format(row_count))
-
-        names = sorted(name_positions.keys())
-        names = [
-            'Top of Blue Steel Baseplate Offset Points',
-            # block 1
-            'Block 1 Upper Beam Left Horizontal End Caps Offset Points', # 1
-            'Block 1 Lower Beam Left Horizontal End Caps Offset Points', # 2
-            'Block 1 Horizontal Panel Bottom Offset Points', # 3
-            'Block 1 BL top shifted - 3"', # 4
-            'Block 1 Beam Left Vertical Panel Offset Points', # 5
-            'Block 1 Beam Right Vertical Panel Offset Points', # 6
-            'Block 1 UPST Plane Offset Points', # 7
-            'Block 1 Center Split points projected', # 8
-            'Block 1 Panel 30 Downstream Plane Offset Points', # 9
-            # block 2
-            'Block 2 Upper Beam Left Horizontal End Caps Offset Points', # 10
-            'Block 2 Lower Beam Left Horizontal End Caps Offset Points', # 11
-            'Block 2 Horizontal Panel Bottom Offset Points', # 12
-            'Block 2 Beam Left Vertical Panel Offset Points', # 13
-            'Block 2 Beam Right Vertical Panel Offset Points', # 14
-            'Block 2 DNST Plane Offset Points', # 15
-            'Block 2 Center Split points projected', # 16
-            'Block 2 Panel 32 Upstream Plane Offset Points' # 17
-        ]
-
-        name_poly_mk_3ds = {}
-        name_poly_mk_zxs = {}
-        name_poly_mk_zys = {}
-        xs = []
-        ys = []
-        zs = []
-        row_count = 0
-        for i, name in enumerate(names):
-            print('name = {}, i = {}'.format(name, i))
-            print('len(name_positions[name]) = {}'.format(len(name_positions[name])))
-
-            positions = name_positions[name]
-            row_count += len(positions)
-
-            poly_mk_3d = TPolyMarker3D(len(positions))
-            poly_mk_zx = TPolyMarker(len(positions))
-            poly_mk_zy = TPolyMarker(len(positions))
-            for i, position in enumerate(positions):
-                x = position[0] / 1000. # m
-                y = position[1] / 1000. # m
-                z = position[2] / 1000. # m
-
-                poly_mk_3d.SetPoint(i, z, x, y)
-                poly_mk_zx.SetPoint(i, z, x)
-                poly_mk_zy.SetPoint(i, z, y)
-                xs.append(x)
-                ys.append(y)
-                zs.append(z)
-            name_poly_mk_3ds[name] = poly_mk_3d
-            name_poly_mk_zxs[name] = poly_mk_zx
-            name_poly_mk_zys[name] = poly_mk_zy
-
-        print('row_count = {}'.format(row_count))
-        gr_zx = TGraph(len(zs), np.array(zs), np.array(xs))
-        gr_zy = TGraph(len(zs), np.array(zs), np.array(ys))
-        gr_2d = TGraph2D(len(zs), np.array(zs), np.array(xs), np.array(ys))
-        for gr in [gr_zx, gr_zy]:
-            set_graph_style(gr)
-            gr.SetMarkerSize(0)
-            gr.SetMarkerColor(kWhite)
-            gr.GetXaxis().SetTitle('Z (m)')
-            gr.GetXaxis().SetTitleOffset(2.5)
-            gr.GetYaxis().SetTitleOffset(2)
-
-        c1 = TCanvas('c1', 'c1', 1600, 1000)
-        set_margin()
-        c1.Divide(2, 2)
-
-        c1.cd(1)
-        set_margin()
-        gr_2d.Draw('P')
-        set_graph_style(gr_2d)
-        gr_2d.SetMarkerSize(0)
-        gr_2d.SetMarkerColor(kWhite)
-        gr_2d.GetXaxis().SetTitle('Z (m)')
-        gr_2d.GetYaxis().SetTitle('X (m)')
-        gr_2d.GetZaxis().SetTitle('Y (m)')
-        gr_2d.GetXaxis().SetTitleOffset(3)
-        gr_2d.GetYaxis().SetTitleOffset(4)
-        gr_2d.GetZaxis().SetTitleOffset(2)
-
-        for i, name in enumerate(names):
-            print('poly_mk_3ds')
-            print('i = {}'.format(i))
-            print('name = {}'.format(name))
-
-            poly_mk_3d = name_poly_mk_3ds[name]
-            poly_mk_3d.SetMarkerStyle(Beamline.MARKER_STYLES[i % len(Beamline.MARKER_STYLES)])
-            poly_mk_3d.SetMarkerColor(Beamline.COLORS[i % len(Beamline.COLORS)])
-            poly_mk_3d.SetMarkerSize(2)
-            poly_mk_3d.Draw()
-
-        c1.cd(2)
-        set_margin()
-        gr_zx.Draw('AP')
-        gr_zx.GetYaxis().SetTitle('X (in)')
-
-        lg1 = TLegend(0, 0, 0.4, 0.9)
-
-        for i, name in enumerate(names):
-            poly_mk_zx = name_poly_mk_zxs[name]
-            poly_mk_zx.Draw()
-            poly_mk_zx.SetMarkerSize(2)
-            poly_mk_zx.SetMarkerStyle(Beamline.MARKER_STYLES[i % len(Beamline.MARKER_STYLES)])
-            poly_mk_zx.SetMarkerColor(Beamline.COLORS[i % len(Beamline.COLORS)])
-            lg1.AddEntry(poly_mk_zx, name, 'p')
-
-        c1.cd(3)
-        set_margin()
-        gr_zy.Draw('AP')
-        gr_zy.GetYaxis().SetTitle('Y (in)')
-        for i, name in enumerate(names):
-            poly_mk_zy = name_poly_mk_zys[name]
-            poly_mk_zy.Draw()
-            poly_mk_zy.SetMarkerSize(2)
-            poly_mk_zy.SetMarkerStyle(Beamline.MARKER_STYLES[i % len(Beamline.MARKER_STYLES)])
-            poly_mk_zy.SetMarkerColor(Beamline.COLORS[i % len(Beamline.COLORS)])
-
-        c1.cd(4)
-        set_legend_style(lg1)
-        lg1.SetTextSize(25)
-        lg1.Draw()
-
-        c1.Update()
-        c1.SaveAs('{}/read_alignment_data_nova_detector.pdf'.format(self.figure_dir))
-        input('Press any key to continue.')
-
-    def read_alignment_data_beamline_collimator_us(self, **kwargs):
-        plot = kwargs.get('plot', True)
-
-        mwpc_txt_name_positions = {
-            'NTB-MWPC-P_UP': (0.010204, -26.058411, -0.034998),
-            'NTB-MWPC-P_CT': (0.015523, -25.153253, -0.009607),
-            'NTB-MWPC-P_DN': (0.020869, -24.248055, 0.015647)
-        }
-
-        mwpc_pdf_name_positions = {
-            'NTB-MWPC-P_ROLL': (-0.333, -27.957, 99.951),
-            'NTB-MWPC-P_UP': (0.010, -26.058, -0.035),
-            'NTB-MWPC-P_CT': (0.016, -25.153, -0.010),
-            'NTB-MWPC-P_DN': (0.021, -24.248, 0.016),
-            'NTB-MWPC-P-0.875_A': (-4.093, -26.572, -0.036),
-            'NTB-MWPC-P-0.875_B': (-0.002, -26.705, 3.997),
-            'NTB-MWPC-P-0.875_C': (3.908, -26.633, 0.271),
-            'NTB-MWPC-P-0.875_D': (-0.113, -26.494, -3.703),
-            'NTB-MWPC-P-0.875_E': (-3.500, -23.702, 0.147),
-            'NTB-MWPC-P-0.875_F': (0.241, -23.621, -3.645),
-            'NTB-MWPC-P-0.875_G': (3.673, -23.736, 0.046),
-            'NTB-MWPC-P-0.875_H': (0.424, -23.814, 3.627)
-        }
-
-        collimator_txt_name_positions = {
-            'NTB-TGT-COLL-002_UP': (2.214573, 7.693723, -0.039740),
-            'NTB-TGT-COLL-002-CHANNEL_UP': (2.214573, 7.693723, -0.039740),
-            'NTB-TGT-COLL-002_DN': (2.220929, 50.429730, 0.081151),
-            'NTB-TGT-COLL-002-CHANNEL_DN': (14.561032, 50.438895, 0.012260),
-            'NTB-TARGET_UP': (0.012334,  -6.282132,  -0.165835),
-            'NTB-TARGET_CT': (0.015489,  -0.000110,  -0.141833),
-            'NTB-TARGET_DN': (0.018712,  6.281790,  -0.117855)
-        }
-
-        collimator_pdf_name_positions = {
-            'NTB-TGT-COLL-002_ROLL': (2.563, 7.471, 99.960),
-            'NTB-TGT-COLL-002_UP': (2.215, 7.694, -0.040),
-            'NTB-TGT-COLL-002-CHANNEL_UP': (2.215, 7.694, -0.040),
-            'NTB-TGT-COLL-002_DN': (2.221, 50.430, 0.081),
-            'NTB-TGT-COLL-002-CHANNEL_DN': (14.561, 50.439, 0.012),
-            'NTB-TGT-COLL-002_C': (24.779, -4.807, -9.798),
-            'NTB-TGT-COLL-002_D': (21.051, -8.712, -9.819),
-            'NTB-TGT-COLL-002_E': (-5.761, -8.724, -9.843),
-            'NTB-TGT-COLL-002_F': (-9.327, -5.378, -9.510),
-            'NTB-TGT-COLL-002_L': (24.821, 47.911, -9.740),
-            'NTB-TGT-COLL-002_M': (20.929, 51.553, -9.693),
-            'NTB-TGT-COLL-002_N': (-5.753, 51.529, -9.394),
-            'NTB-TGT-COLL-002_P': (-9.375, 47.952, -9.525),
-            'NTB-TARGET_UP': (0.012, -6.282, -0.166),
-            'NTB-TARGET_CT': (0.015, 0.000, -0.142),
-            'NTB-TARGET_DN': (0.019, 6.282, -0.118),
-            'NTB-TARGET_ROLL': (-1.352, -0.382, 99.848)
-        }
-
-        mwpc_txt_names = sorted(mwpc_txt_name_positions.keys())
-        mwpc_pdf_names = sorted(mwpc_pdf_name_positions.keys())
-        collimator_txt_names = sorted(collimator_txt_name_positions.keys())
-        collimator_pdf_names = [
-            'NTB-TARGET_UP',
-            'NTB-TARGET_CT',
-            'NTB-TARGET_DN',
-            # 'NTB-TARGET_ROLL',
-            'NTB-TGT-COLL-002_UP',
-            'NTB-TGT-COLL-002_DN',
-            # 'NTB-TGT-COLL-002_ROLL',
-            'NTB-TGT-COLL-002-CHANNEL_UP',
-            'NTB-TGT-COLL-002-CHANNEL_DN',
-            'NTB-TGT-COLL-002_C',
-            'NTB-TGT-COLL-002_D',
-            'NTB-TGT-COLL-002_E',
-            'NTB-TGT-COLL-002_F',
-            'NTB-TGT-COLL-002_L',
-            'NTB-TGT-COLL-002_M',
-            'NTB-TGT-COLL-002_N',
-            'NTB-TGT-COLL-002_P',
-        ]
-
-        if plot:
-            self.plot_alignment_data(collimator_pdf_name_positions, collimator_pdf_names, 'read_alignment_data_beamline_collimator_us.plot')
-
-        return collimator_pdf_name_positions['NTB-TGT-COLL-002-CHANNEL_UP'], collimator_pdf_name_positions['NTB-TGT-COLL-002-CHANNEL_DN']
-
     def plot_alignment_data(self, name_positions, names, figure_name, **kwargs):
         legend_text_size = kwargs.get('legend_text_size', None)
         legend_n_columns = kwargs.get('legend_n_columns', None)
@@ -1306,6 +889,141 @@ class Beamline:
         c1.Update()
         c1.SaveAs('{}/{}.pdf'.format(self.figure_dir, figure_name))
         input('Press any key to continue.')
+
+    def read_alignment_data_beamline(self):
+        for component in self.components:
+            if component.name not in ['nova detector', 'upstream collimator']:
+                component.set_xyz((0., 0., 0.))
+
+        with open('data/alignment/NTB summary_up_ct_dn.txt') as f_txt:
+            for row in csv.reader(f_txt, delimiter=','):
+                detector_name = row[1].strip()
+                x = float(row[2])
+                y = float(row[3])
+                z = float(row[4])
+                position = -x, z, y
+
+                if detector_name == 'NTB-CERENKOV_DN':
+                    self.cherenkov.set_xyz(position)
+                    self.cherenkov.z = 546.554
+                    self.cherenkov.z += 15.75 - 134.86 / 2.
+
+                if '_CT' in detector_name:
+                    if 'TARGET' in detector_name:
+                        self.target.set_xyz(position)
+                    elif 'NTB-TGT-COLL-002-TOF-1' in detector_name:
+                        self.tof_us.set_xyz(position)
+                    elif 'NTB-MWPC-AK' in detector_name:
+                        self.wc_1.set_xyz(position)
+                    elif 'NTB-MWPC-AL' in detector_name:
+                        self.wc_2.set_xyz(position)
+                    elif 'NTB-MWPC-AF' in detector_name:
+                        self.wc_3.set_xyz(position)
+                    elif 'NTB-MWPC-AI' in detector_name:
+                        self.wc_4.set_xyz(position)
+                    elif 'NTB-CERENKOV-TOF-1' in detector_name:
+                        self.tof_ds.set_xyz(position)
+                    elif 'NTB-COLLIMATOR' in detector_name:
+                        self.collimator_ds.set_xyz(position)
+                    elif 'NTB-M-1-0' in detector_name:
+                        self.magnet.set_xyz(position)
+                    elif 'NTB-MIPP-SHIELD-BLOCK' in detector_name:
+                        self.shielding_block_1.set_xyz(position)
+                    elif 'NTB-LEFT-SHIELD-BLOCK' in detector_name:
+                        self.shielding_block_2.set_xyz(position)
+                    elif 'NTB-RIGHT-SHIELD-BLOCK' in detector_name:
+                        self.shielding_block_3.set_xyz(position)
+
+        for component in self.components:
+            if component.name not in ['nova detector', 'upstream collimator']:
+                component.x *= 25.4
+                component.y *= 25.4
+                component.z *= 25.4
+
+    def read_alignment_data_beamline_tof(self, **kwargs):
+        pass
+
+    def read_alignment_data_beamline_collimator_us(self, **kwargs):
+        plot = kwargs.get('plot', True)
+
+        mwpc_txt_name_positions = {
+            'NTB-MWPC-P_UP': (0.010204, -26.058411, -0.034998),
+            'NTB-MWPC-P_CT': (0.015523, -25.153253, -0.009607),
+            'NTB-MWPC-P_DN': (0.020869, -24.248055, 0.015647)
+        }
+
+        mwpc_pdf_name_positions = {
+            'NTB-MWPC-P_ROLL': (-0.333, -27.957, 99.951),
+            'NTB-MWPC-P_UP': (0.010, -26.058, -0.035),
+            'NTB-MWPC-P_CT': (0.016, -25.153, -0.010),
+            'NTB-MWPC-P_DN': (0.021, -24.248, 0.016),
+            'NTB-MWPC-P-0.875_A': (-4.093, -26.572, -0.036),
+            'NTB-MWPC-P-0.875_B': (-0.002, -26.705, 3.997),
+            'NTB-MWPC-P-0.875_C': (3.908, -26.633, 0.271),
+            'NTB-MWPC-P-0.875_D': (-0.113, -26.494, -3.703),
+            'NTB-MWPC-P-0.875_E': (-3.500, -23.702, 0.147),
+            'NTB-MWPC-P-0.875_F': (0.241, -23.621, -3.645),
+            'NTB-MWPC-P-0.875_G': (3.673, -23.736, 0.046),
+            'NTB-MWPC-P-0.875_H': (0.424, -23.814, 3.627)
+        }
+
+        collimator_txt_name_positions = {
+            'NTB-TGT-COLL-002_UP': (2.214573, 7.693723, -0.039740),
+            'NTB-TGT-COLL-002-CHANNEL_UP': (2.214573, 7.693723, -0.039740),
+            'NTB-TGT-COLL-002_DN': (2.220929, 50.429730, 0.081151),
+            'NTB-TGT-COLL-002-CHANNEL_DN': (14.561032, 50.438895, 0.012260),
+            'NTB-TARGET_UP': (0.012334,  -6.282132,  -0.165835),
+            'NTB-TARGET_CT': (0.015489,  -0.000110,  -0.141833),
+            'NTB-TARGET_DN': (0.018712,  6.281790,  -0.117855)
+        }
+
+        collimator_pdf_name_positions = {
+            'NTB-TGT-COLL-002_ROLL': (2.563, 7.471, 99.960),
+            'NTB-TGT-COLL-002_UP': (2.215, 7.694, -0.040),
+            'NTB-TGT-COLL-002-CHANNEL_UP': (2.215, 7.694, -0.040),
+            'NTB-TGT-COLL-002_DN': (2.221, 50.430, 0.081),
+            'NTB-TGT-COLL-002-CHANNEL_DN': (14.561, 50.439, 0.012),
+            'NTB-TGT-COLL-002_C': (24.779, -4.807, -9.798),
+            'NTB-TGT-COLL-002_D': (21.051, -8.712, -9.819),
+            'NTB-TGT-COLL-002_E': (-5.761, -8.724, -9.843),
+            'NTB-TGT-COLL-002_F': (-9.327, -5.378, -9.510),
+            'NTB-TGT-COLL-002_L': (24.821, 47.911, -9.740),
+            'NTB-TGT-COLL-002_M': (20.929, 51.553, -9.693),
+            'NTB-TGT-COLL-002_N': (-5.753, 51.529, -9.394),
+            'NTB-TGT-COLL-002_P': (-9.375, 47.952, -9.525),
+            'NTB-TARGET_UP': (0.012, -6.282, -0.166),
+            'NTB-TARGET_CT': (0.015, 0.000, -0.142),
+            'NTB-TARGET_DN': (0.019, 6.282, -0.118),
+            'NTB-TARGET_ROLL': (-1.352, -0.382, 99.848)
+        }
+
+        mwpc_txt_names = sorted(mwpc_txt_name_positions.keys())
+        mwpc_pdf_names = sorted(mwpc_pdf_name_positions.keys())
+        collimator_txt_names = sorted(collimator_txt_name_positions.keys())
+        collimator_pdf_names = [
+            'NTB-TARGET_UP',
+            'NTB-TARGET_CT',
+            'NTB-TARGET_DN',
+            # 'NTB-TARGET_ROLL',
+            'NTB-TGT-COLL-002_UP',
+            'NTB-TGT-COLL-002_DN',
+            # 'NTB-TGT-COLL-002_ROLL',
+            'NTB-TGT-COLL-002-CHANNEL_UP',
+            'NTB-TGT-COLL-002-CHANNEL_DN',
+            'NTB-TGT-COLL-002_C',
+            'NTB-TGT-COLL-002_D',
+            'NTB-TGT-COLL-002_E',
+            'NTB-TGT-COLL-002_F',
+            'NTB-TGT-COLL-002_L',
+            'NTB-TGT-COLL-002_M',
+            'NTB-TGT-COLL-002_N',
+            'NTB-TGT-COLL-002_P',
+        ]
+
+        if plot:
+            self.plot_alignment_data(collimator_pdf_name_positions, collimator_pdf_names, 'read_alignment_data_beamline_collimator_us.plot')
+
+        return collimator_pdf_name_positions['NTB-TGT-COLL-002-CHANNEL_UP'], collimator_pdf_name_positions['NTB-TGT-COLL-002-CHANNEL_DN']
 
     def read_alignment_data_beamline_mwpc(self, **kwargs):
         plot = kwargs.get('plot', True)
@@ -1596,8 +1314,290 @@ class Beamline:
 
         return magnet_pdf_name_positions['NTB-M-1-0_CT']
 
-    def read_alignment_data_beamline_tof(self, **kwargs):
-        pass
+    def plot_vertical_positions(self):
+        h1 = TH1D('h1', 'h1', 200, -100, 100)
+
+        for component in self.components:
+            if component.name not in ['nova detector', 'upstream collimator']:
+                h1.Fill(component.y)
+                if component.y > 20.:
+                    print('component.name = {}, component.y = {}'.format(component.name, component.y))
+
+        c1 = TCanvas('c1', 'c1', 800, 600)
+        set_margin()
+        set_h1_style(h1)
+
+        h1.Draw()
+        h1.GetXaxis().SetTitle('Vertical Position (mm)')
+        h1.GetYaxis().SetTitle('Detector Count')
+        h1.GetXaxis().SetRangeUser(-20, 50)
+
+        c1.Update()
+        c1.SaveAs('{}/plot_vertical_positions.pdf'.format(self.figure_dir))
+        input('Press any key to continue.')
+
+    def read_alignment_data_nova_detector(self):
+        gStyle.SetMarkerStyle(8)
+
+        ntp = TNtuple('TNtuple', 'TNtuple', 'x:y:z:color')
+        name_positions = {}
+        with open('data/alignment/Block 1 and Block 2 offset points Target frame.txt') as f_txt:
+            rows = csv.reader(f_txt, delimiter=',')
+            row_count = 0
+            for i in range(5):
+                next(rows)
+            for row in rows:
+                row_count += 1
+                name = row[0].strip()
+                x = float(row[-3])
+                y = float(row[-2])
+                z = float(row[-1])
+                position = -x, z, y
+                if name not in name_positions:
+                    name_positions[name] = []
+                name_positions[name].append(position)
+            print('row_count = {}'.format(row_count))
+
+        names = sorted(name_positions.keys())
+        names = [
+            'Top of Blue Steel Baseplate Offset Points',
+            # block 1
+            'Block 1 Upper Beam Left Horizontal End Caps Offset Points', # 1
+            'Block 1 Lower Beam Left Horizontal End Caps Offset Points', # 2
+            'Block 1 Horizontal Panel Bottom Offset Points', # 3
+            'Block 1 BL top shifted - 3"', # 4
+            'Block 1 Beam Left Vertical Panel Offset Points', # 5
+            'Block 1 Beam Right Vertical Panel Offset Points', # 6
+            'Block 1 UPST Plane Offset Points', # 7
+            'Block 1 Center Split points projected', # 8
+            'Block 1 Panel 30 Downstream Plane Offset Points', # 9
+            # block 2
+            'Block 2 Upper Beam Left Horizontal End Caps Offset Points', # 10
+            'Block 2 Lower Beam Left Horizontal End Caps Offset Points', # 11
+            'Block 2 Horizontal Panel Bottom Offset Points', # 12
+            'Block 2 Beam Left Vertical Panel Offset Points', # 13
+            'Block 2 Beam Right Vertical Panel Offset Points', # 14
+            'Block 2 DNST Plane Offset Points', # 15
+            'Block 2 Center Split points projected', # 16
+            'Block 2 Panel 32 Upstream Plane Offset Points' # 17
+        ]
+
+        name_poly_mk_3ds = {}
+        name_poly_mk_zxs = {}
+        name_poly_mk_zys = {}
+        xs = []
+        ys = []
+        zs = []
+        row_count = 0
+        for i, name in enumerate(names):
+            print('name = {}, i = {}'.format(name, i))
+            print('len(name_positions[name]) = {}'.format(len(name_positions[name])))
+
+            positions = name_positions[name]
+            row_count += len(positions)
+
+            poly_mk_3d = TPolyMarker3D(len(positions))
+            poly_mk_zx = TPolyMarker(len(positions))
+            poly_mk_zy = TPolyMarker(len(positions))
+            for i, position in enumerate(positions):
+                x = position[0] / 1000. # m
+                y = position[1] / 1000. # m
+                z = position[2] / 1000. # m
+
+                poly_mk_3d.SetPoint(i, z, x, y)
+                poly_mk_zx.SetPoint(i, z, x)
+                poly_mk_zy.SetPoint(i, z, y)
+                xs.append(x)
+                ys.append(y)
+                zs.append(z)
+            name_poly_mk_3ds[name] = poly_mk_3d
+            name_poly_mk_zxs[name] = poly_mk_zx
+            name_poly_mk_zys[name] = poly_mk_zy
+
+        print('row_count = {}'.format(row_count))
+        gr_zx = TGraph(len(zs), np.array(zs), np.array(xs))
+        gr_zy = TGraph(len(zs), np.array(zs), np.array(ys))
+        gr_2d = TGraph2D(len(zs), np.array(zs), np.array(xs), np.array(ys))
+        for gr in [gr_zx, gr_zy]:
+            set_graph_style(gr)
+            gr.SetMarkerSize(0)
+            gr.SetMarkerColor(kWhite)
+            gr.GetXaxis().SetTitle('Z (m)')
+            gr.GetXaxis().SetTitleOffset(2.5)
+            gr.GetYaxis().SetTitleOffset(2)
+
+        c1 = TCanvas('c1', 'c1', 1600, 1000)
+        set_margin()
+        c1.Divide(2, 2)
+
+        c1.cd(1)
+        set_margin()
+        gr_2d.Draw('P')
+        set_graph_style(gr_2d)
+        gr_2d.SetMarkerSize(0)
+        gr_2d.SetMarkerColor(kWhite)
+        gr_2d.GetXaxis().SetTitle('Z (m)')
+        gr_2d.GetYaxis().SetTitle('X (m)')
+        gr_2d.GetZaxis().SetTitle('Y (m)')
+        gr_2d.GetXaxis().SetTitleOffset(3)
+        gr_2d.GetYaxis().SetTitleOffset(4)
+        gr_2d.GetZaxis().SetTitleOffset(2)
+
+        for i, name in enumerate(names):
+            print('poly_mk_3ds')
+            print('i = {}'.format(i))
+            print('name = {}'.format(name))
+
+            poly_mk_3d = name_poly_mk_3ds[name]
+            poly_mk_3d.SetMarkerStyle(Beamline.MARKER_STYLES[i % len(Beamline.MARKER_STYLES)])
+            poly_mk_3d.SetMarkerColor(Beamline.COLORS[i % len(Beamline.COLORS)])
+            poly_mk_3d.SetMarkerSize(2)
+            poly_mk_3d.Draw()
+
+        c1.cd(2)
+        set_margin()
+        gr_zx.Draw('AP')
+        gr_zx.GetYaxis().SetTitle('X (in)')
+
+        lg1 = TLegend(0, 0, 0.4, 0.9)
+
+        for i, name in enumerate(names):
+            poly_mk_zx = name_poly_mk_zxs[name]
+            poly_mk_zx.Draw()
+            poly_mk_zx.SetMarkerSize(2)
+            poly_mk_zx.SetMarkerStyle(Beamline.MARKER_STYLES[i % len(Beamline.MARKER_STYLES)])
+            poly_mk_zx.SetMarkerColor(Beamline.COLORS[i % len(Beamline.COLORS)])
+            lg1.AddEntry(poly_mk_zx, name, 'p')
+
+        c1.cd(3)
+        set_margin()
+        gr_zy.Draw('AP')
+        gr_zy.GetYaxis().SetTitle('Y (in)')
+        for i, name in enumerate(names):
+            poly_mk_zy = name_poly_mk_zys[name]
+            poly_mk_zy.Draw()
+            poly_mk_zy.SetMarkerSize(2)
+            poly_mk_zy.SetMarkerStyle(Beamline.MARKER_STYLES[i % len(Beamline.MARKER_STYLES)])
+            poly_mk_zy.SetMarkerColor(Beamline.COLORS[i % len(Beamline.COLORS)])
+
+        c1.cd(4)
+        set_legend_style(lg1)
+        lg1.SetTextSize(25)
+        lg1.Draw()
+
+        c1.Update()
+        c1.SaveAs('{}/read_alignment_data_nova_detector.pdf'.format(self.figure_dir))
+        input('Press any key to continue.')
+
+    def plot_alignment_data_nova_detector_vertical_center_block_1(self):
+        name_positions = {}
+        with open('data/alignment/Block 1 and Block 2 offset points Target frame.txt') as f_txt:
+            rows = csv.reader(f_txt, delimiter=',')
+            row_count = 0
+            for i in range(5):
+                next(rows)
+            for row in rows:
+                row_count += 1
+                name = row[0].strip()
+                x = float(row[-3])
+                y = float(row[-2])
+                z = float(row[-1])
+                position = -x, z, y
+                if name not in name_positions:
+                    name_positions[name] = []
+                name_positions[name].append(position)
+            print('row_count = {}'.format(row_count))
+
+        positions = name_positions['Block 1 Center Split points projected']
+
+        xs = []
+        ys = []
+        zs = []
+        for position in positions:
+            xs.append(position[0])
+            ys.append(position[1])
+            zs.append(position[2])
+
+        gr_xy = TGraph(len(xs), np.array(xs), np.array(ys))
+        c1 = TCanvas('c1', 'c1', 800, 600)
+        set_margin()
+        set_graph_style(gr_xy)
+        gr_xy.Draw('AP')
+        gr_xy.GetXaxis().SetTitle('X (mm)')
+        gr_xy.GetYaxis().SetTitle('Y (mm)')
+        gr_xy.GetYaxis().SetTitleOffset(1.6)
+
+        tf = TF1('tf1', 'pol1')
+        gr_xy.Fit('tf1')
+
+
+        latex = TLatex()
+        latex.SetNDC()
+        latex.SetTextFont(43)
+        latex.SetTextSize(28)
+        latex.DrawLatex(0.2, 0.2, 'f(x) = {:.3E} x {:.3E}'.format(tf.GetParameter(1), tf.GetParameter(0)))
+
+        theta = atan(1. / tf.GetParameter(1)) * 180. / pi
+        print('theta = {} degree'.format(theta))
+
+        c1.Update()
+        c1.SaveAs('{}/plot_alignment_data_nova_detector_vertical_center_block_1.pdf'.format(self.figure_dir))
+        input('Press any key to continue.')
+
+    def plot_alignment_data_nova_detector_front_surface(self):
+        name_positions = {}
+        with open('data/alignment/Block 1 and Block 2 offset points Target frame.txt') as f_txt:
+            rows = csv.reader(f_txt, delimiter=',')
+            row_count = 0
+            for i in range(5):
+                next(rows)
+            for row in rows:
+                row_count += 1
+                name = row[0].strip()
+                x = float(row[-3])
+                y = float(row[-2])
+                z = float(row[-1])
+                position = -x, z, y
+                if name not in name_positions:
+                    name_positions[name] = []
+                name_positions[name].append(position)
+            print('row_count = {}'.format(row_count))
+
+        positions = name_positions['Block 1 UPST Plane Offset Points']
+
+        xs = []
+        ys = []
+        zs = []
+        for position in positions:
+            xs.append(position[0])
+            ys.append(position[1])
+            zs.append(position[2])
+
+        gr_xz = TGraph(len(xs), np.array(xs), np.array(zs))
+        c1 = TCanvas('c1', 'c1', 800, 600)
+        set_margin()
+        set_graph_style(gr_xz)
+        gr_xz.Draw('AP')
+        gr_xz.GetXaxis().SetTitle('X (mm)')
+        gr_xz.GetYaxis().SetTitle('Z (mm)')
+        gr_xz.GetYaxis().SetTitleOffset(1.6)
+
+        tf = TF1('tf1', 'pol1')
+        gr_xz.Fit('tf1')
+
+
+        latex = TLatex()
+        latex.SetNDC()
+        latex.SetTextFont(43)
+        latex.SetTextSize(28)
+        latex.DrawLatex(0.2, 0.83, 'f(x) = {:.3E} x + {:.3E}'.format(tf.GetParameter(1), tf.GetParameter(0)))
+
+        theta = atan(tf.GetParameter(1)) * 180. / pi
+        print('theta = {} degree'.format(theta))
+
+        c1.Update()
+        c1.SaveAs('{}/plot_alignment_data_nova_detector_front_surface.pdf'.format(self.figure_dir))
+        input('Press any key to continue.')
 
     def calculate(self):
         # ll = 20.07 - 42.76 * tan((16 + 1.97) * pi / 180.)
