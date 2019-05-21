@@ -1148,8 +1148,8 @@ class Beamline:
         c1.SaveAs('{}/read_alignment_data_nova_detector.pdf'.format(self.figure_dir))
         input('Press any key to continue.')
 
-    def read_alignment_data_beamline_collimator_us(self):
-        gStyle.SetMarkerStyle(8)
+    def read_alignment_data_beamline_collimator_us(self, **kwargs):
+        plot = kwargs.get('plot', True)
 
         mwpc_txt_name_positions = {
             'NTB-MWPC-P_UP': (0.010204, -26.058411, -0.034998),
@@ -1225,7 +1225,10 @@ class Beamline:
             'NTB-TGT-COLL-002_P',
         ]
 
-        self.plot_alignment_data(collimator_pdf_name_positions, collimator_pdf_names, 'read_alignment_data_beamline_collimator_us.plot')
+        if plot:
+            self.plot_alignment_data(collimator_pdf_name_positions, collimator_pdf_names, 'read_alignment_data_beamline_collimator_us.plot')
+
+        return collimator_pdf_name_positions['NTB-TGT-COLL-002-CHANNEL_UP'], collimator_pdf_name_positions['NTB-TGT-COLL-002-CHANNEL_DN']
 
     def plot_alignment_data(self, name_positions, names, figure_name, **kwargs):
         legend_text_size = kwargs.get('legend_text_size', None)
@@ -1626,26 +1629,30 @@ class Beamline:
 # if __name__ == '__main__':
 gStyle.SetOptStat(0)
 # beamline = Beamline()
-# beamline.figure_dir = '/Users/juntinghuang/beamer/20180413_testbeam_120gev/figures'
 # beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
-# beamline.plot_position()
 # beamline.screen_shot = True
-# beamline.read_cherenkov_dimension()
-# beamline.write()
-# beamline.read_alignment_data_beamline()
-# beamline.read_alignment_data_nova_detector()
 # beamline.plot_position()
-# beamline.plot_vertical_positions()
-# beamline.read_alignment_data_nova_detector()
-# beamline.plot_alignment_data_nova_detector_vertical_center_block_1()
-# beamline.plot_alignment_data_nova_detector_front_surface()
-# beamline.read_alignment_data_beamline_collimator_us()
-# beamline.read_alignment_data_beamline_mwpc()
-# beamline.read_alignment_data_beamline_magnet()
+# beamline.write()
+
+# 20180530_testbeam_radiation_dosage
+# 20180912_testbeam_radiation_collimator
 # beamline = Beamline('beamline.py.radiation.collimator.in')
 # beamline.write_radiation()
 
-beamline = Beamline('tmp/beamline.py.geometry_check.in')
-beamline.read_alignment_data_beamline()
-beamline.write_geometry_check()
+# 20181031_beamline_sim_update
+# beamline = Beamline('tmp/beamline.py.geometry_check.in')
+# beamline.write_geometry_check()
+
+# 20190424_testbeam_alignment
+# beamline.read_alignment_data_beamline()
+# beamline.read_alignment_data_beamline_collimator_us()
+# beamline.read_alignment_data_beamline_mwpc()
+# beamline.read_alignment_data_beamline_magnet()
+# beamline.read_alignment_data_nova_detector()
+# beamline.plot_alignment_data_nova_detector_vertical_center_block_1()
+# beamline.plot_alignment_data_nova_detector_front_surface()
+# beamline = Beamline('tmp/beamline.py.geometry_check.in')
+# beamline.write_geometry_check()
 # beamline.calculate()
+# beamline.plot_position()
+# beamline.plot_vertical_positions()
