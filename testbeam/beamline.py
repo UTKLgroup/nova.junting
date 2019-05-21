@@ -1325,7 +1325,10 @@ class Beamline:
         c1.SaveAs('{}/read_alignment_data_beamline_collimator_us.pdf'.format(self.figure_dir))
         input('Press any key to continue.')
 
-    def plot_alignment_data(self, name_positions, names, figure_name):
+    def plot_alignment_data(self, name_positions, names, figure_name, **kwargs):
+        legend_text_size = kwargs.get('legend_text_size', None)
+        legend_n_columns = kwargs.get('legend_n_columns', None)
+
         print('len(names) = {}'.format(len(names)))
         pprint(name_positions)
 
@@ -1389,6 +1392,10 @@ class Beamline:
         gr_zx.GetYaxis().SetTitle('X (in)')
         lg1 = TLegend(0.1, 0, 0.9, 0.9)
         set_legend_style(lg1)
+        if legend_n_columns:
+            lg1.SetNColumns(legend_n_columns)
+        if legend_text_size:
+            lg1.SetTextSize(legend_text_size)
 
         for i, name in enumerate(names):
             mk_zx = mk_zxs[name]
@@ -1570,6 +1577,182 @@ class Beamline:
         self.plot_alignment_data(mwpc_3_pdf_name_positions, mwpc_3_pdf_names, 'read_alignment_data_beamline_mwpc_3.plot')
         # self.plot_alignment_data(mwpc_4_pdf_name_positions, mwpc_4_pdf_names, 'read_alignment_data_beamline_mwpc_4.plot')
 
+    def read_alignment_data_beamline_magnet(self):
+        # magnet_pdf_name_positions = {
+        #     'NTB-M-1-0_B': (73.313, 164.856, 4.061),
+        #     'NTB-M-1-0_A': (64.010, 164.929, 16.162),
+        #     'NTB-M-1-0_UP': (48.158, 165.318, 0.013),
+        #     'NTB-M-1-0-TOP-OF-SPACER_UP': (48.158, 165.318, 0.576),
+        #     'NTB-M-1-0-SAGITTA_UP': (47.430, 165.420, 0.013),
+        #     'NTB-M-1-0_F': (23.485, 169.334, -3.893),
+        #     'NTB-M-1-0_G': (23.394, 169.441, 3.908),
+        #     'NTB-M-1-0_H': (33.061, 171.541, 16.164),
+        #     'NTB-M-1-0_D': (65.274, 173.812, -16.160),
+        #     'NTB-M-1-0-MFS-54-Z': (136.451, 173.962, 1.099),
+        #     'NTB-M-1-0_E': (34.082, 178.498, -16.162),
+        #     'NTB-M-1-0-MFS-53-0.500-SMR-2': (64.670, 184.026, 0.513),
+        #     'NTB-M-1-0-MFS-53-0.500-SMR-3': (64.658, 184.059, -1.306),
+        #     'NTB-M-1-0-MFS-53-X': (64.778, 184.085, 1.523),
+        #     'NTB-M-1-0-MFS-53-Y-SENSOR': (64.799, 184.089, -0.347),
+        #     'NTB-M-1-0-MFS-53-ORIGIN': (64.763, 184.095, -0.477),
+        #     'NTB-M-1-0-MFS-53-Z-SENSOR': (64.809, 184.169, -0.475),
+        #     'NTB-M-1-0-MFS-53-X-SENSOR': (64.770, 184.200, -0.333),
+        #     'NTB-M-1-0-MFS-53-0.500-SMR-1': (64.798, 185.004, 0.502),
+        #     'NTB-M-1-0-MFS-53-0.500-SMR-4': (64.782, 185.027, -1.221),
+        #     'NTB-M-1-0-MFS-53-Y': (65.019, 186.079, -0.469),
+        #     'NTB-M-1-0_CT': (51.089, 186.145, -0.010),
+        #     'NTB-M-1-0-TOP-OF-SPACER_CT': (51.089, 186.145, 0.552),
+        #     'NTB-M-1-0-SAGITTA_CT': (50.361, 186.247, -0.010),
+        #     'NTB-M-1-0_ROLL': (51.086, 186.256, 99.990),
+        #     'NTB-M-1-0-TOP-OF-SPACER_ROLL': (51.086, 186.257, 100.552),
+        #     'NTB-M-1-0-MFS-54-0.500-SMR-3': (37.491, 187.823, 0.476),
+        #     'NTB-M-1-0-MFS-54-0.500-SMR-2': (37.527, 187.873, -1.362),
+        #     'NTB-M-1-0-MFS-54-ORIGIN': (37.440, 187.914, -0.361),
+        #     'NTB-M-1-0-MFS-54-Y-SENSOR': (37.402, 187.921, -0.489),
+        #     'NTB-M-1-0-MFS-54-X': (37.477, 187.965, -2.361),
+        #     'NTB-M-1-0-MFS-54-Z-SENSOR': (37.406, 187.996, -0.360),
+        #     'NTB-M-1-0-MFS-54-X-SENSOR': (37.458, 188.035, -0.483),
+        #     'NTB-M-1-0-MFS-54-0.500-SMR-4': (37.647, 188.807, 0.436),
+        #     'NTB-M-1-0-MFS-54-0.500-SMR-1': (37.659, 188.831, -1.306),
+        #     'NTB-M-1-0-MFS-54-Y': (37.718, 189.894, -0.305),
+        #     'NTB-M-1-0-MFS-53-Z': (-34.414, 196.870, 0.337),
+        #     'NTB-M-1-0_L': (78.735, 202.771, -3.813),
+        #     'NTB-M-1-0_K': (78.673, 202.851, 3.861),
+        #     'NTB-M-1-0_M': (69.386, 202.894, -16.190),
+        #     'NTB-M-1-0_J': (69.345, 203.052, 16.143),
+        #     'NTB-M-1-0_DN': (54.020, 206.972, -0.034),
+        #     'NTB-M-1-0-TOP-OF-SPACER_DN': (54.020, 206.972, 0.529),
+        #     'NTB-M-1-0-SAGITTA_DN': (53.292, 207.074, -0.034),
+        #     'NTB-M-1-0_N': (38.116, 207.227, -16.206),
+        #     'NTB-M-1-0_R': (38.137, 207.425, 16.138),
+        #     'NTB-M-1-0_P': (29.189, 209.786, -3.893),
+        #     'NTB-M-1-0_Q': (29.145, 209.927, 3.833),
+        # }
+
+        magnet_pdf_name_positions = {
+            'NTB-M-1-0_A': (64.010, 164.929, 16.162),
+            'NTB-M-1-0_B': (73.313, 164.856, 4.061),
+            'NTB-M-1-0_D': (65.274, 173.812, -16.160),
+            'NTB-M-1-0_E': (34.082, 178.498, -16.162),
+            'NTB-M-1-0_F': (23.485, 169.334, -3.893),
+            'NTB-M-1-0_G': (23.394, 169.441, 3.908),
+            'NTB-M-1-0_H': (33.061, 171.541, 16.164),
+            'NTB-M-1-0_J': (69.345, 203.052, 16.143),
+            'NTB-M-1-0_K': (78.673, 202.851, 3.861),
+            'NTB-M-1-0_L': (78.735, 202.771, -3.813),
+            'NTB-M-1-0_M': (69.386, 202.894, -16.190),
+            'NTB-M-1-0_N': (38.116, 207.227, -16.206),
+            'NTB-M-1-0_Q': (29.145, 209.927, 3.833),
+            'NTB-M-1-0_P': (29.189, 209.786, -3.893),
+            'NTB-M-1-0_R': (38.137, 207.425, 16.138),
+
+            'NTB-M-1-0_UP': (48.158, 165.318, 0.013),
+            'NTB-M-1-0_CT': (51.089, 186.145, -0.010),
+            'NTB-M-1-0_DN': (54.020, 206.972, -0.034),
+            'NTB-M-1-0_ROLL': (51.086, 186.256, 99.990),
+
+            'NTB-M-1-0-SAGITTA_UP': (47.430, 165.420, 0.013),
+            'NTB-M-1-0-SAGITTA_CT': (50.361, 186.247, -0.010),
+            'NTB-M-1-0-SAGITTA_DN': (53.292, 207.074, -0.034),
+
+            'NTB-M-1-0-TOP-OF-SPACER_UP': (48.158, 165.318, 0.576),
+            'NTB-M-1-0-TOP-OF-SPACER_CT': (51.089, 186.145, 0.552),
+            'NTB-M-1-0-TOP-OF-SPACER_DN': (54.020, 206.972, 0.529),
+            'NTB-M-1-0-TOP-OF-SPACER_ROLL': (51.086, 186.257, 100.552),
+
+            'NTB-M-1-0-MFS-53-X': (64.778, 184.085, 1.523),
+            'NTB-M-1-0-MFS-53-Y': (65.019, 186.079, -0.469),
+            'NTB-M-1-0-MFS-53-Z': (-34.414, 196.870, 0.337),
+
+            'NTB-M-1-0-MFS-53-X-SENSOR': (64.770, 184.200, -0.333),
+            'NTB-M-1-0-MFS-53-Y-SENSOR': (64.799, 184.089, -0.347),
+            'NTB-M-1-0-MFS-53-Z-SENSOR': (64.809, 184.169, -0.475),
+
+            'NTB-M-1-0-MFS-53-ORIGIN': (64.763, 184.095, -0.477),
+            'NTB-M-1-0-MFS-53-0.500-SMR-1': (64.798, 185.004, 0.502),
+            'NTB-M-1-0-MFS-53-0.500-SMR-2': (64.670, 184.026, 0.513),
+            'NTB-M-1-0-MFS-53-0.500-SMR-3': (64.658, 184.059, -1.306),
+            'NTB-M-1-0-MFS-53-0.500-SMR-4': (64.782, 185.027, -1.221),
+
+            'NTB-M-1-0-MFS-54-X': (37.477, 187.965, -2.361),
+            'NTB-M-1-0-MFS-54-Y': (37.718, 189.894, -0.305),
+            'NTB-M-1-0-MFS-54-Z': (136.451, 173.962, 1.099),
+
+            'NTB-M-1-0-MFS-54-X-SENSOR': (37.458, 188.035, -0.483),
+            'NTB-M-1-0-MFS-54-Y-SENSOR': (37.402, 187.921, -0.489),
+            'NTB-M-1-0-MFS-54-Z-SENSOR': (37.406, 187.996, -0.360),
+
+            'NTB-M-1-0-MFS-54-ORIGIN': (37.440, 187.914, -0.361),
+            'NTB-M-1-0-MFS-54-0.500-SMR-1': (37.659, 188.831, -1.306),
+            'NTB-M-1-0-MFS-54-0.500-SMR-2': (37.527, 187.873, -1.362),
+            'NTB-M-1-0-MFS-54-0.500-SMR-3': (37.491, 187.823, 0.476),
+            'NTB-M-1-0-MFS-54-0.500-SMR-4': (37.647, 188.807, 0.436),
+        }
+
+        magnet_pdf_names = [
+            'NTB-M-1-0_A',
+            'NTB-M-1-0_B',
+            'NTB-M-1-0_D',
+            'NTB-M-1-0_E',
+            'NTB-M-1-0_F',
+            'NTB-M-1-0_G',
+            'NTB-M-1-0_H',
+            'NTB-M-1-0_J',
+            'NTB-M-1-0_K',
+            'NTB-M-1-0_L',
+            'NTB-M-1-0_M',
+            'NTB-M-1-0_N',
+            'NTB-M-1-0_Q',
+            'NTB-M-1-0_P',
+            'NTB-M-1-0_R',
+
+            'NTB-M-1-0_UP',
+            'NTB-M-1-0_CT',
+            'NTB-M-1-0_DN',
+            # 'NTB-M-1-0_ROLL',
+
+            'NTB-M-1-0-SAGITTA_UP',
+            'NTB-M-1-0-SAGITTA_CT',
+            'NTB-M-1-0-SAGITTA_DN',
+
+            'NTB-M-1-0-TOP-OF-SPACER_UP',
+            'NTB-M-1-0-TOP-OF-SPACER_CT',
+            'NTB-M-1-0-TOP-OF-SPACER_DN',
+            # 'NTB-M-1-0-TOP-OF-SPACER_ROLL',
+
+            'NTB-M-1-0-MFS-53-X',
+            'NTB-M-1-0-MFS-53-Y',
+            'NTB-M-1-0-MFS-53-Z',
+
+            'NTB-M-1-0-MFS-53-X-SENSOR',
+            'NTB-M-1-0-MFS-53-Y-SENSOR',
+            'NTB-M-1-0-MFS-53-Z-SENSOR',
+
+            'NTB-M-1-0-MFS-53-ORIGIN',
+            'NTB-M-1-0-MFS-53-0.500-SMR-1',
+            'NTB-M-1-0-MFS-53-0.500-SMR-2',
+            'NTB-M-1-0-MFS-53-0.500-SMR-3',
+            'NTB-M-1-0-MFS-53-0.500-SMR-4',
+
+            'NTB-M-1-0-MFS-54-X',
+            'NTB-M-1-0-MFS-54-Y',
+            'NTB-M-1-0-MFS-54-Z',
+
+            'NTB-M-1-0-MFS-54-X-SENSOR',
+            'NTB-M-1-0-MFS-54-Y-SENSOR',
+            'NTB-M-1-0-MFS-54-Z-SENSOR',
+
+            'NTB-M-1-0-MFS-54-ORIGIN',
+            'NTB-M-1-0-MFS-54-0.500-SMR-1',
+            'NTB-M-1-0-MFS-54-0.500-SMR-2',
+            'NTB-M-1-0-MFS-54-0.500-SMR-3',
+            'NTB-M-1-0-MFS-54-0.500-SMR-4',
+        ]
+
+        print('len(magnet_pdf_name_positions) = {}'.format(len(magnet_pdf_name_positions)))
+        print('len(magnet_pdf_names) = {}'.format(len(magnet_pdf_names)))
+        self.plot_alignment_data(magnet_pdf_name_positions, magnet_pdf_names, 'read_alignment_data_beamline_magnet.plot', legend_text_size=15, legend_n_columns=2)
+
     def calculate(self):
         # ll = 20.07 - 42.76 * tan((16 + 1.97) * pi / 180.)
         # ll = 42.76 * tan((16 - 1.97) * pi / 180.)
@@ -1595,7 +1778,8 @@ beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/fi
 # beamline.read_alignment_data_beamline_collimator_us()
 # beamline = Beamline('beamline.py.radiation.collimator.in')
 # beamline.write_radiation()
-beamline.read_alignment_data_beamline_mwpc()
+# beamline.read_alignment_data_beamline_mwpc()
+beamline.read_alignment_data_beamline_magnet()
 
 # beamline = Beamline('tmp/beamline.py.geometry_check.in')
 # beamline.write_geometry_check()
