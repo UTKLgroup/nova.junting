@@ -95,14 +95,13 @@ class Beamline:
 
         self.components = self.detectors + self.shielding_blocks
 
-        self.read_position()
-        self.correct_position()
-
-        self.read_nova_dimension()
-        self.read_magnet_dimension()
+        # self.read_position()
+        # self.correct_position()
+        # self.read_nova_dimension()
+        # self.read_magnet_dimension()
         # self.read_collimator_us_dimension()
         # self.read_collimator_ds_dimension()
-        self.read_cherenkov_dimension()
+        # self.read_cherenkov_dimension()
 
     def __del__(self):
         self.f_out.close()
@@ -195,43 +194,6 @@ class Beamline:
         self.cherenkov.length = self.get_distance(top_points[16], top_points[17])
 
     def plot_position(self):
-
-        colors = [
-            kBlack,
-            kRed + 2,
-            kMagenta + 2,
-            kViolet + 2,
-            kBlue + 2,
-            kAzure + 2,
-            kCyan + 2,
-            kTeal + 2,
-            kGreen + 2,
-            kSpring + 2,
-            kYellow + 2,
-            kOrange + 2,
-            kBlue,
-            kBlue,
-            kBlue
-        ]
-
-        styles = [
-            20,
-            21,
-            22,
-            23,
-            24,
-            25,
-            26,
-            27,
-            28,
-            29,
-            30,
-            31,
-            32,
-            33,
-            34
-        ]
-
         c1 = TCanvas('c1', 'c1', 1200, 600)
         set_margin()
         gPad.SetLeftMargin(0.1)
@@ -248,13 +210,10 @@ class Beamline:
         gr.GetYaxis().SetTitleOffset(1.)
         gr.Draw('AP')
         gr.GetXaxis().SetRangeUser(-50, 1600)
-        # gr.GetYaxis().SetRangeUser(-160, 50)
         gr.GetYaxis().SetRangeUser(-220, 120)
         gr.GetYaxis().SetNdivisions(505, 1)
         gr.GetXaxis().SetNdivisions(508, 1)
 
-        # lg1 = TLegend(0.5, 0.33, 0.87, 0.86)
-        # lg1.SetTextSize(22)
         lg1 = TLegend(0.34, 0.53, 0.87, 0.86)
         set_legend_style(lg1)
         lg1.SetNColumns(2)
@@ -262,18 +221,12 @@ class Beamline:
         lg1.SetMargin(0.15)
         lg1.SetBorderSize(1)
 
-
-        # components = self.detectors + self.shielding_blocks
-        print('len(self.components) = {}'.format(len(self.components)))
-        print('len(colors) = {}'.format(len(colors)))
-        print('len(styles) = {}'.format(len(styles)))
-
         markers = []
         for i, detector in enumerate(self.components):
             marker = TMarker(detector.z / 10., detector.x / 10., 24)
             markers.append(marker)
-            markers[i].SetMarkerColor(colors[i])
-            markers[i].SetMarkerStyle(styles[i])
+            markers[i].SetMarkerColor(Beamline.COLORS[i % len(Beamline.COLORS)])
+            markers[i].SetMarkerStyle(Beamline.MARKER_STYLES[i % len(Beamline.MARKER_STYLES)])
             markers[i].SetMarkerSize(2.)
             if detector.name != 'nova detector':
                 markers[i].Draw()
@@ -1627,9 +1580,8 @@ class Beamline:
         print('ll = {}'.format(ll))
 
 # if __name__ == '__main__':
-gStyle.SetOptStat(0)
+# gStyle.SetOptStat(0)
 # beamline = Beamline()
-# beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
 # beamline.screen_shot = True
 # beamline.plot_position()
 # beamline.write()
@@ -1644,6 +1596,8 @@ gStyle.SetOptStat(0)
 # beamline.write_geometry_check()
 
 # 20190424_testbeam_alignment
+beamline = Beamline()
+beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
 # beamline.read_alignment_data_beamline()
 # beamline.read_alignment_data_beamline_collimator_us()
 # beamline.read_alignment_data_beamline_mwpc()
@@ -1654,5 +1608,5 @@ gStyle.SetOptStat(0)
 # beamline = Beamline('tmp/beamline.py.geometry_check.in')
 # beamline.write_geometry_check()
 # beamline.calculate()
-# beamline.plot_position()
+beamline.plot_position()
 # beamline.plot_vertical_positions()
