@@ -1,6 +1,6 @@
 import csv
 from rootalias import *
-from math import pi, tan, sin, cos
+from math import pi, tan, atan, sin, cos
 from pprint import pprint
 
 
@@ -884,6 +884,116 @@ class Beamline:
         c1.SaveAs('{}/plot_vertical_positions.pdf'.format(self.figure_dir))
         input('Press any key to continue.')
 
+    def plot_alignment_data_nova_detector_vertical_center_block_1(self):
+        name_positions = {}
+        with open('data/alignment/Block 1 and Block 2 offset points Target frame.txt') as f_txt:
+            rows = csv.reader(f_txt, delimiter=',')
+            row_count = 0
+            for i in range(5):
+                next(rows)
+            for row in rows:
+                row_count += 1
+                name = row[0].strip()
+                x = float(row[-3])
+                y = float(row[-2])
+                z = float(row[-1])
+                position = -x, z, y
+                if name not in name_positions:
+                    name_positions[name] = []
+                name_positions[name].append(position)
+            print('row_count = {}'.format(row_count))
+
+        positions = name_positions['Block 1 Center Split points projected']
+
+        xs = []
+        ys = []
+        zs = []
+        for position in positions:
+            xs.append(position[0])
+            ys.append(position[1])
+            zs.append(position[2])
+
+        gr_xy = TGraph(len(xs), np.array(xs), np.array(ys))
+        c1 = TCanvas('c1', 'c1', 800, 600)
+        set_margin()
+        set_graph_style(gr_xy)
+        gr_xy.Draw('AP')
+        gr_xy.GetXaxis().SetTitle('X (mm)')
+        gr_xy.GetYaxis().SetTitle('Y (mm)')
+        gr_xy.GetYaxis().SetTitleOffset(1.6)
+
+        tf = TF1('tf1', 'pol1')
+        gr_xy.Fit('tf1')
+
+
+        latex = TLatex()
+        latex.SetNDC()
+        latex.SetTextFont(43)
+        latex.SetTextSize(28)
+        latex.DrawLatex(0.2, 0.2, 'f(x) = {:.3E} x {:.3E}'.format(tf.GetParameter(1), tf.GetParameter(0)))
+
+        theta = atan(1. / tf.GetParameter(1)) * 180. / pi
+        print('theta = {} degree'.format(theta))
+
+        c1.Update()
+        c1.SaveAs('{}/plot_alignment_data_nova_detector_vertical_center_block_1.pdf'.format(self.figure_dir))
+        input('Press any key to continue.')
+
+    def plot_alignment_data_nova_detector_front_surface(self):
+        name_positions = {}
+        with open('data/alignment/Block 1 and Block 2 offset points Target frame.txt') as f_txt:
+            rows = csv.reader(f_txt, delimiter=',')
+            row_count = 0
+            for i in range(5):
+                next(rows)
+            for row in rows:
+                row_count += 1
+                name = row[0].strip()
+                x = float(row[-3])
+                y = float(row[-2])
+                z = float(row[-1])
+                position = -x, z, y
+                if name not in name_positions:
+                    name_positions[name] = []
+                name_positions[name].append(position)
+            print('row_count = {}'.format(row_count))
+
+        positions = name_positions['Block 1 UPST Plane Offset Points']
+
+        xs = []
+        ys = []
+        zs = []
+        for position in positions:
+            xs.append(position[0])
+            ys.append(position[1])
+            zs.append(position[2])
+
+        gr_xz = TGraph(len(xs), np.array(xs), np.array(zs))
+        c1 = TCanvas('c1', 'c1', 800, 600)
+        set_margin()
+        set_graph_style(gr_xz)
+        gr_xz.Draw('AP')
+        gr_xz.GetXaxis().SetTitle('X (mm)')
+        gr_xz.GetYaxis().SetTitle('Z (mm)')
+        gr_xz.GetYaxis().SetTitleOffset(1.6)
+
+        tf = TF1('tf1', 'pol1')
+        gr_xz.Fit('tf1')
+
+
+        latex = TLatex()
+        latex.SetNDC()
+        latex.SetTextFont(43)
+        latex.SetTextSize(28)
+        latex.DrawLatex(0.2, 0.83, 'f(x) = {:.3E} x + {:.3E}'.format(tf.GetParameter(1), tf.GetParameter(0)))
+
+        theta = atan(tf.GetParameter(1)) * 180. / pi
+        print('theta = {} degree'.format(theta))
+
+        c1.Update()
+        c1.SaveAs('{}/plot_alignment_data_nova_detector_front_surface.pdf'.format(self.figure_dir))
+        input('Press any key to continue.')
+
     def read_alignment_data_nova_detector(self):
         gStyle.SetMarkerStyle(8)
 
@@ -1234,9 +1344,10 @@ beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/fi
 # beamline.read_alignment_data_nova_detector()
 # beamline.plot_position()
 # beamline.plot_vertical_positions()
-beamline.read_alignment_data_nova_detector()
+# beamline.read_alignment_data_nova_detector()
+beamline.plot_alignment_data_nova_detector_vertical_center_block_1()
+# beamline.plot_alignment_data_nova_detector_front_surface()
 # beamline.read_alignment_data_beamline_collimator_us()
-
 # beamline = Beamline('beamline.py.radiation.collimator.in')
 # beamline.write_radiation()
 
