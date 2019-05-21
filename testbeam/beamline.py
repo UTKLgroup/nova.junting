@@ -544,6 +544,10 @@ class Beamline:
     def write_nova_plane(self):
         self.nova.theta = self.us_theta + self.ds_theta
         self.nova.length = 10.
+
+        self.nova.z = 14617.377049180326
+        self.nova.x = -1378.172131147541
+
         self.f_out.write('virtualdetector nova height={} length={} width={} color=0.39,0.39,0.39\n'.format(self.nova.height, self.nova.length, self.nova.width))
         self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y{}\n'.format(self.nova.x, self.nova.y, self.nova.z, self.nova.theta))
 
@@ -1342,9 +1346,23 @@ class Beamline:
         input('Press any key to continue.')
 
     def read_alignment_data_nova_detector(self):
-        gStyle.SetMarkerStyle(8)
+        name_positions = {}
+        with open('data/alignment/Block 1 and Block 2 offset points Target frame.txt') as f_txt:
+            rows = csv.reader(f_txt, delimiter=',')
+            for i in range(5):
+                next(rows)
+            for row in rows:
+                name = row[0].strip()
+                x = float(row[-3])
+                y = float(row[-2])
+                z = float(row[-1])
+                position = -x, z, y
+                if name not in name_positions:
+                    name_positions[name] = []
+                name_positions[name].append(position)
 
-        ntp = TNtuple('TNtuple', 'TNtuple', 'x:y:z:color')
+
+    def plot_alignment_data_nova_detector(self):
         name_positions = {}
         with open('data/alignment/Block 1 and Block 2 offset points Target frame.txt') as f_txt:
             rows = csv.reader(f_txt, delimiter=',')
@@ -1491,7 +1509,7 @@ class Beamline:
         lg1.Draw()
 
         c1.Update()
-        c1.SaveAs('{}/read_alignment_data_nova_detector.pdf'.format(self.figure_dir))
+        c1.SaveAs('{}/plot_alignment_data_nova_detector.pdf'.format(self.figure_dir))
         input('Press any key to continue.')
 
     def plot_alignment_data_nova_detector_vertical_center_block_1(self):
@@ -1535,7 +1553,6 @@ class Beamline:
         tf = TF1('tf1', 'pol1')
         gr_xy.Fit('tf1')
 
-
         latex = TLatex()
         latex.SetNDC()
         latex.SetTextFont(43)
@@ -1546,7 +1563,40 @@ class Beamline:
         print('theta = {} degree'.format(theta))
 
         c1.Update()
-        c1.SaveAs('{}/plot_alignment_data_nova_detector_vertical_center_block_1.pdf'.format(self.figure_dir))
+        c1.SaveAs('{}/plot_alignment_data_nova_detector_vertical_center_block_1.gr_xy.pdf'.format(self.figure_dir))
+
+        h_z = TH1D('h_z', 'h_z', 75, 14610, 14625)
+        h_x = TH1D('h_x', 'h_x', 100, -1300, -1400)
+        for position in positions:
+            h_x.Fill(position[0])
+            h_z.Fill(position[2])
+
+        print('h_z.GetMean() = {}'.format(h_z.GetMean()))
+        print('h_x.GetMean() = {}'.format(h_x.GetMean()))
+
+        c2 = TCanvas('c2', 'c2', 800, 600)
+        set_margin()
+        set_h1_style(h_z)
+        h_z.Draw()
+        h_z.GetXaxis().SetTitle('Z (mm)')
+        h_z.GetYaxis().SetTitle('Data Point Count')
+        gStyle.SetOptStat('emr')
+        c2.Update()
+        draw_statbox(h_z, x1=0.7)
+        c2.Update()
+        c2.SaveAs('{}/read_alignment_data_nova_detector.h_z.pdf'.format(self.figure_dir))
+
+        c3 = TCanvas('c3', 'c3', 800, 600)
+        set_margin()
+        set_h1_style(h_x)
+        h_x.Draw()
+        h_x.GetXaxis().SetTitle('Z (mm)')
+        h_x.GetYaxis().SetTitle('Data Point Count')
+        gStyle.SetOptStat('emr')
+        c3.Update()
+        draw_statbox(h_x, x1=0.7)
+        c3.Update()
+        c3.SaveAs('{}/read_alignment_data_nova_detector.h_x.pdf'.format(self.figure_dir))
         input('Press any key to continue.')
 
     def plot_alignment_data_nova_detector_front_surface(self):
@@ -1639,6 +1689,7 @@ beamline.write()
 # beamline.read_alignment_data_beamline_mwpc()
 # beamline.read_alignment_data_beamline_magnet()
 # beamline.read_alignment_data_nova_detector()
+# beamline.plot_alignment_data_nova_detector()
 # beamline.plot_alignment_data_nova_detector_vertical_center_block_1()
 # beamline.plot_alignment_data_nova_detector_front_surface()
 # beamline = Beamline('tmp/beamline.py.geometry_check.in')
