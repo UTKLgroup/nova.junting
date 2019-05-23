@@ -546,13 +546,16 @@ class Beamline:
         self.nova.length = 10.
         # alignment
         self.nova.z = 14617.377049180326
-        self.nova.x = -1378.172131147541
-        self.nova.y = 78.19984374999967
-        self.nova.height = 2531.9463541666664
+        self.nova.x = -1374.4731770833332
+        self.nova.y = 76.1231770833333
+        self.nova.height = 2531.9463541666664 * 1.2
         self.nova.width = self.nova.height
+        rotation_y = -0.35
+        rotation_z = 0.8
 
         self.f_out.write('virtualdetector nova height={} length={} width={} color=0.39,0.39,0.39\n'.format(self.nova.height, self.nova.length, self.nova.width))
-        self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y{}\n'.format(self.nova.x, self.nova.y, self.nova.z, self.nova.theta))
+        # self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y{}\n'.format(self.nova.x, self.nova.y, self.nova.z, self.nova.theta))
+        self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y{},z{}\n'.format(self.nova.x, self.nova.y, self.nova.z, rotation_y, rotation_z))
 
     def write_nova(self):
         self.nova.theta = self.us_theta + self.ds_theta
@@ -645,6 +648,9 @@ class Beamline:
         self.write_cherenkov()
         self.write_nova_plane()
         self.write_shielding_block()
+
+        print('finished write()')
+        print('file written to {}'.format(self.g4bl_filename))
 
     def write_radiation_dosage(self):
         self.f_out.write('physics QGSP_BIC\n')
@@ -797,7 +803,27 @@ class Beamline:
         # self.write_shielding_block()
 
         # wire chambers
-        self.write_wc()
+        # self.write_wc()
+
+        # nova detector
+        # self.nova.theta = self.us_theta + self.ds_theta
+        self.nova.length = 10.
+        # self.nova.z = 14617.377049180326
+        # self.nova.x = -1374.4731770833332
+        # self.nova.y = 76.1231770833333
+        self.nova.height = 2531.9463541666664 * 1.2
+        self.nova.width = self.nova.height
+        self.nova.z = 0.
+        self.nova.x = 0.
+        self.nova.y = 0.
+        # self.nova.height = 10.
+        # self.nova.width = 1000.
+        self.f_out.write('virtualdetector nova height={} length={} width={} color=0.39,0.39,0.39\n'.format(self.nova.height, self.nova.length, self.nova.width))
+        # self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y{}\n'.format(self.nova.x, self.nova.y, self.nova.z, self.nova.theta))
+        # self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y0,z0\n'.format(self.nova.x, self.nova.y, self.nova.z))
+        # self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y45,z0\n'.format(self.nova.x, self.nova.y, self.nova.z))
+        # self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y45,z-90\n'.format(self.nova.x, self.nova.y, self.nova.z))
+        self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y-0.35,z0.8\n'.format(self.nova.x, self.nova.y, self.nova.z))
 
         print('finished write_geometry_check()')
         print('file written to {}'.format(self.g4bl_filename))
@@ -1536,8 +1562,8 @@ class Beamline:
         for name in group_name_positions[group]:
             plane = int(name.split(' ')[-1])
             left_right = name.split(' ')[-4]
-            if 'BR' in left_right:
-                continue
+            # if 'BR' in left_right:
+            #     continue
             if plane not in block_horizontal_bottom_plane_positions[block]:
                 block_horizontal_bottom_plane_positions[block][plane] = []
             block_horizontal_bottom_plane_positions[block][plane].append(group_name_positions[group][name])
@@ -1564,8 +1590,8 @@ class Beamline:
         for name in group_name_positions[group]:
             plane = int(name.split(' ')[-5])
             left_right = name.split(' ')[-4]
-            if 'BR' in left_right:
-                continue
+            # if 'BR' in left_right:
+            #     continue
             if plane not in block_horizontal_bottom_plane_positions[block]:
                 block_horizontal_bottom_plane_positions[block][plane] = []
             block_horizontal_bottom_plane_positions[block][plane].append(group_name_positions[group][name])
@@ -1612,10 +1638,18 @@ class Beamline:
                 module_widths.append(module_width)
 
         avg_horizontal_bottom_y = sum(horizontal_bottom_y_up_to_plane_60s) / len(horizontal_bottom_y_up_to_plane_60s)
+        first_horizontal_bottom_y = (block_horizontal_bottom_plane_positions['block 1'][2][0][1] + block_horizontal_bottom_plane_positions['block 1'][2][1][1]) / 2.
         module_width = sum(module_widths) / len(module_widths)
         print('module_width = {}'.format(module_width))
+        print('first_horizontal_bottom_y = {}'.format(first_horizontal_bottom_y))
         print('avg_horizontal_bottom_y = {}'.format(avg_horizontal_bottom_y))
-        print('vertical center = {}'.format(avg_horizontal_bottom_y + module_width / 2.))
+        print('first vertical center = {}'.format(first_horizontal_bottom_y + module_width / 2.))
+        print('average vertical center = {}'.format(avg_horizontal_bottom_y + module_width / 2.))
+
+        first_vertical_left_xs = [position[0] for position in block_vertical_left_plane_positions['block 1'][1]]
+        first_vertical_left_x = sum(first_vertical_left_xs) / len(first_vertical_left_xs)
+        print('first_vertical_left_x = {}'.format(first_vertical_left_x))
+        print('first vertical center = {}'.format(first_vertical_left_x - module_width / 2.))
 
         gr_vertical = TGraph(len(vertical_planes), np.array(vertical_planes), np.array(vertical_left_xs))
         gr_horiztonal = TGraph(len(horizontal_planes), np.array(horizontal_planes), np.array(horizontal_bottom_ys))
@@ -1623,18 +1657,18 @@ class Beamline:
         for module_width in module_widths:
             h1.Fill(module_width)
 
-        c1 = TCanvas('c1', 'c1', 600, 600)
-        set_margin()
-        gPad.SetGrid()
-        gStyle.SetOptStat('emr')
-        set_h1_style(h1)
-        h1.Draw()
-        h1.GetXaxis().SetTitle('Vertical Module Width (mm)')
-        h1.GetYaxis().SetTitle('Vertical Module Count')
-        c1.Update()
-        draw_statbox(h1, x1=0.65)
-        c1.Update()
-        c1.SaveAs('{}/plot_alignment_data_nova_detector_edge.module_width.pdf'.format(self.figure_dir))
+        # c1 = TCanvas('c1', 'c1', 600, 600)
+        # set_margin()
+        # gPad.SetGrid()
+        # gStyle.SetOptStat('emr')
+        # set_h1_style(h1)
+        # h1.Draw()
+        # h1.GetXaxis().SetTitle('Vertical Module Width (mm)')
+        # h1.GetYaxis().SetTitle('Vertical Module Count')
+        # c1.Update()
+        # draw_statbox(h1, x1=0.65)
+        # c1.Update()
+        # c1.SaveAs('{}/plot_alignment_data_nova_detector_edge.module_width.pdf'.format(self.figure_dir))
 
         # c2 = TCanvas('c2', 'c2', 600, 600)
         # set_margin()
@@ -1648,17 +1682,18 @@ class Beamline:
         # c2.Update()
         # c2.SaveAs('{}/plot_alignment_data_nova_detector_edge.vertical_left.pdf'.format(self.figure_dir))
 
-        # c3 = TCanvas('c3', 'c3', 600, 600)
-        # set_margin()
-        # gPad.SetLeftMargin(0.2)
-        # gPad.SetGrid()
-        # set_graph_style(gr_horiztonal)
-        # gr_horiztonal.Draw('AP')
-        # gr_horiztonal.GetXaxis().SetTitle('Plane Number')
-        # gr_horiztonal.GetYaxis().SetTitle('Y (mm)')
-        # gr_horiztonal.GetYaxis().SetTitleOffset(2.)
-        # c3.Update()
-        # c3.SaveAs('{}/plot_alignment_data_nova_detector_edge.horizontal_bottom.pdf'.format(self.figure_dir))
+        c3 = TCanvas('c3', 'c3', 600, 600)
+        set_margin()
+        gPad.SetLeftMargin(0.2)
+        gPad.SetGrid()
+        set_graph_style(gr_horiztonal)
+        gr_horiztonal.Draw('AP')
+        gr_horiztonal.GetXaxis().SetTitle('Plane Number')
+        gr_horiztonal.GetYaxis().SetTitle('Y (mm)')
+        gr_horiztonal.GetYaxis().SetTitleOffset(2.)
+        c3.Update()
+        # c3.SaveAs('{}/plot_alignment_data_nova_detector_edge.horizontal_bottom.left.pdf'.format(self.figure_dir))
+        c3.SaveAs('{}/plot_alignment_data_nova_detector_edge.horizontal_bottom.pdf'.format(self.figure_dir))
         input('Press any key to continue.')
 
     def plot_alignment_data_nova_detector_vertical_center_block_1(self):
@@ -1834,17 +1869,19 @@ class Beamline:
 # 20190424_testbeam_alignment
 beamline = Beamline()
 beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
-# beamline.read_alignment_data_beamline()
-# beamline.write()
+beamline.read_alignment_data_beamline()
+beamline.write()
 # beamline.read_alignment_data_beamline_collimator_us()
 # beamline.read_alignment_data_beamline_mwpc()
 # beamline.read_alignment_data_beamline_magnet()
 # beamline.plot_alignment_data_nova_detector()
 # beamline.plot_alignment_data_nova_detector_edge()
-beamline.plot_alignment_data_nova_detector_vertical_center_block_1()
+# beamline.plot_alignment_data_nova_detector_vertical_center_block_1()
 # beamline.plot_alignment_data_nova_detector_front_surface()
 # beamline = Beamline('tmp/beamline.py.geometry_check.in')
+# beamline.write()
 # beamline.write_geometry_check()
+# beamline.write_nova_plane()
 # beamline.calculate()
 # beamline.plot_position()
 # beamline.plot_vertical_positions()
