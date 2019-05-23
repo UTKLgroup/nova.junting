@@ -543,7 +543,7 @@ class Beamline:
 
     def write_nova_plane(self):
         self.nova.theta = self.us_theta + self.ds_theta
-        self.nova.length = 10.
+        self.nova.length = 1.
         # alignment
         self.nova.z = 14617.377049180326
         self.nova.x = -1374.4731770833332
