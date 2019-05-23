@@ -550,8 +550,8 @@ class Beamline:
         self.nova.y = 76.1231770833333
         self.nova.height = 2531.9463541666664 * 1.2
         self.nova.width = self.nova.height
-        rotation_y = -0.35
-        rotation_z = 0.8
+        rotation_y = -0.3492962692141463
+        rotation_z = 0.8032983167050841
 
         self.f_out.write('virtualdetector nova height={} length={} width={} color=0.39,0.39,0.39\n'.format(self.nova.height, self.nova.length, self.nova.width))
         # self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y{}\n'.format(self.nova.x, self.nova.y, self.nova.z, self.nova.theta))
@@ -1637,19 +1637,20 @@ class Beamline:
                 vertical_left_xs.append(avg_left_x)
                 module_widths.append(module_width)
 
-        avg_horizontal_bottom_y = sum(horizontal_bottom_y_up_to_plane_60s) / len(horizontal_bottom_y_up_to_plane_60s)
-        first_horizontal_bottom_y = (block_horizontal_bottom_plane_positions['block 1'][2][0][1] + block_horizontal_bottom_plane_positions['block 1'][2][1][1]) / 2.
         module_width = sum(module_widths) / len(module_widths)
+        # avg_horizontal_bottom_y = sum(horizontal_bottom_y_up_to_plane_60s) / len(horizontal_bottom_y_up_to_plane_60s)
+        # print('avg_horizontal_bottom_y = {}'.format(avg_horizontal_bottom_y))
+        # print('average vertical center = {}'.format(avg_horizontal_bottom_y + module_width / 2.))
+        first_horizontal_bottom_ys = [position[1] for position in block_horizontal_bottom_plane_positions['block 1'][2]]
+        first_horizontal_bottom_y = sum(first_horizontal_bottom_ys) / len(first_horizontal_bottom_ys)
         print('module_width = {}'.format(module_width))
         print('first_horizontal_bottom_y = {}'.format(first_horizontal_bottom_y))
-        print('avg_horizontal_bottom_y = {}'.format(avg_horizontal_bottom_y))
-        print('first vertical center = {}'.format(first_horizontal_bottom_y + module_width / 2.))
-        print('average vertical center = {}'.format(avg_horizontal_bottom_y + module_width / 2.))
+        print('Y0 = {}'.format(first_horizontal_bottom_y + module_width / 2.))
 
         first_vertical_left_xs = [position[0] for position in block_vertical_left_plane_positions['block 1'][1]]
         first_vertical_left_x = sum(first_vertical_left_xs) / len(first_vertical_left_xs)
         print('first_vertical_left_x = {}'.format(first_vertical_left_x))
-        print('first vertical center = {}'.format(first_vertical_left_x - module_width / 2.))
+        print('X0 = {}'.format(first_vertical_left_x - module_width / 2.))
 
         gr_vertical = TGraph(len(vertical_planes), np.array(vertical_planes), np.array(vertical_left_xs))
         gr_horiztonal = TGraph(len(horizontal_planes), np.array(horizontal_planes), np.array(horizontal_bottom_ys))
@@ -1875,7 +1876,7 @@ beamline.write()
 # beamline.read_alignment_data_beamline_mwpc()
 # beamline.read_alignment_data_beamline_magnet()
 # beamline.plot_alignment_data_nova_detector()
-# beamline.plot_alignment_data_nova_detector_edge()
+beamline.plot_alignment_data_nova_detector_edge()
 # beamline.plot_alignment_data_nova_detector_vertical_center_block_1()
 # beamline.plot_alignment_data_nova_detector_front_surface()
 # beamline = Beamline('tmp/beamline.py.geometry_check.in')
