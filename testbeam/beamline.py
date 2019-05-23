@@ -414,23 +414,15 @@ class Beamline:
     def write_virtual_disk(self):
         start_line_radius = 1750.
         start_line_length = 1.
-        start_line_r = 1450.
-        start_line_positions = [
-            start_line_r * sin(self.us_theta * Beamline.RADIAN_PER_DEGREE),
-            0.,
-            start_line_r * cos(self.us_theta * Beamline.RADIAN_PER_DEGREE)
-        ]
+        shift_z = 50.           # distance upstream of the upstream tof
         self.f_out.write('virtualdetector start_line radius={} length={} material=Air color=0.9,0.9,0.7\n'.format(start_line_radius, start_line_length))
-        self.f_out.write('place start_line rotation=y{} x={} y={} z={}\n'.format(self.us_theta, start_line_positions[0], start_line_positions[1], start_line_positions[2]))
+        self.f_out.write('place start_line x={} y={} z={}\n'.format(self.tof_us.x, self.tof_us.y, self.tof_us.z - shift_z))
 
     def write_tof(self):
         tof_us_dimensions = [150., 20., 150.]
         self.tof_us.theta = self.us_theta
         tof_ds_dimensions = [150., 20., 150.]
         self.tof_ds.theta = self.us_theta + self.ds_theta
-
-        # the downstream tof is about 2.375 inches to the front surface of the NOvA test beam detector
-        # self.tof_ds.z = self.nova.z - 2.375 * Beamline.INCH
 
         self.f_out.write('virtualdetector tof_us  height={} length={} width={} material=LUCITE color=0.05,0.05,0.93\n'.format(tof_us_dimensions[0], tof_us_dimensions[1], tof_us_dimensions[2]))
         self.f_out.write('place tof_us rename=tof_us x={} y={} z={} rotation=y{}\n'.format(self.tof_us.x, self.tof_us.y, self.tof_us.z, self.tof_us.theta))
