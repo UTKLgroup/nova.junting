@@ -352,6 +352,7 @@ class Beamline:
         channel_up_width = collimator_width - aperture_plate_up_edge_small - aperture_plate_up_edge_large
         aperture_plate_length = channel_down_z - channel_up_z
         aperture_plate_y = (channel_up_y + channel_down_y) / 2.
+        self.collimator_us.y = aperture_plate_y
 
         aperture_plate_1_vertex_1_x = channel_up_x + channel_up_width / 2. + aperture_plate_up_edge_small
         aperture_plate_1_vertex_1_z = channel_up_z
@@ -414,9 +415,9 @@ class Beamline:
     def write_virtual_disk(self):
         start_line_radius = 1750.
         start_line_length = 1.
-        shift_z = 50.           # distance upstream of the upstream tof
+        z_shift = 50.           # distance upstream of the upstream tof
         self.f_out.write('virtualdetector start_line radius={} length={} material=Air color=0.9,0.9,0.7\n'.format(start_line_radius, start_line_length))
-        self.f_out.write('place start_line x={} y={} z={}\n'.format(self.tof_us.x, self.tof_us.y, self.tof_us.z - shift_z))
+        self.f_out.write('place start_line x={} y={} z={}\n'.format(self.tof_us.x, self.tof_us.y, self.tof_us.z - z_shift))
 
     def write_tof(self):
         tof_us_dimensions = [150., 20., 150.]
@@ -461,6 +462,9 @@ class Beamline:
         self.f_out.write('place wire_chamber rename=wire_chamber_2 x={} y={} z={} rotation=y{}\n'.format(self.wc_2.x, self.wc_2.y, self.wc_2.z, self.wc_2.theta))
         self.f_out.write('place wire_chamber rename=wire_chamber_3 x={} y={} z={} rotation=y{}\n'.format(self.wc_3.x, self.wc_3.y, self.wc_3.z, self.wc_3.theta))
         self.f_out.write('place wire_chamber rename=wire_chamber_4 x={} y={} z={} rotation=y{}\n'.format(self.wc_4.x, self.wc_4.y, self.wc_4.z, self.wc_4.theta))
+
+    def write_beam_pipe():
+        pass
 
     def write_magnet(self):
         self.magnet.height = 30. * Beamline.INCH
@@ -579,13 +583,11 @@ class Beamline:
         self.shielding_block.width = concrete_top_dimensions[2]
 
         # convert geometric center to model origin
-        self.shielding_block_1.y += 4. * Beamline.INCH
-        self.shielding_block_2.y += 4. * Beamline.INCH
-        self.shielding_block_3.y += 4. * Beamline.INCH
+        y_shift = 4. * Beamline.INCH
 
-        self.f_out.write('place shielding_block rename=shielding_block_1 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_1.x, self.shielding_block_1.y, self.shielding_block_1.z, self.shielding_block_1.theta))
-        self.f_out.write('place shielding_block rename=shielding_block_2 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_2.x, self.shielding_block_2.y, self.shielding_block_2.z, self.shielding_block_2.theta))
-        self.f_out.write('place shielding_block rename=shielding_block_3 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_3.x, self.shielding_block_3.y, self.shielding_block_3.z, self.shielding_block_3.theta))
+        self.f_out.write('place shielding_block rename=shielding_block_1 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_1.x, self.shielding_block_1.y + y_shift, self.shielding_block_1.z, self.shielding_block_1.theta))
+        self.f_out.write('place shielding_block rename=shielding_block_2 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_2.x, self.shielding_block_2.y + y_shift, self.shielding_block_2.z, self.shielding_block_2.theta))
+        self.f_out.write('place shielding_block rename=shielding_block_3 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_3.x, self.shielding_block_3.y + y_shift, self.shielding_block_3.z, self.shielding_block_3.theta))
 
     def write_housing(self):
         thickness = 10.
@@ -1333,10 +1335,9 @@ class Beamline:
         h1 = TH1D('h1', 'h1', 200, -100, 100)
 
         for component in self.components:
-            if component.name not in ['nova detector', 'upstream collimator']:
-                h1.Fill(component.y)
-                if component.y > 20.:
-                    print('component.name = {}, component.y = {}'.format(component.name, component.y))
+            h1.Fill(component.y)
+            if component.y > 20.:
+                print('component.name = {}, component.y = {}'.format(component.name, component.y))
 
         c1 = TCanvas('c1', 'c1', 800, 600)
         set_margin()
@@ -1862,4 +1863,4 @@ beamline.write()
 # beamline.write_nova_plane()
 # beamline.calculate()
 # beamline.plot_position()
-# beamline.plot_vertical_positions()
+beamline.plot_vertical_positions()
