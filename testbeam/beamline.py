@@ -544,9 +544,12 @@ class Beamline:
     def write_nova_plane(self):
         self.nova.theta = self.us_theta + self.ds_theta
         self.nova.length = 10.
-
+        # alignment
         self.nova.z = 14617.377049180326
         self.nova.x = -1378.172131147541
+        self.nova.y = 78.19984374999967
+        self.nova.height = 2531.9463541666664
+        self.nova.width = self.nova.height
 
         self.f_out.write('virtualdetector nova height={} length={} width={} color=0.39,0.39,0.39\n'.format(self.nova.height, self.nova.length, self.nova.width))
         self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y{}\n'.format(self.nova.x, self.nova.y, self.nova.z, self.nova.theta))
@@ -1345,110 +1348,6 @@ class Beamline:
         c1.SaveAs('{}/plot_vertical_positions.pdf'.format(self.figure_dir))
         input('Press any key to continue.')
 
-    def read_alignment_data_nova_detector(self):
-        group_name_positions = {}
-        with open('data/alignment/Block 1 and Block 2 offset points Target frame.txt') as f_txt:
-            rows = csv.reader(f_txt, delimiter=',')
-            for i in range(5):
-                next(rows)
-            for row in rows:
-                group = row[0].strip()
-                name = row[1].strip()
-                x = float(row[-3])
-                y = float(row[-2])
-                z = float(row[-1])
-                position = -x, z, y
-                if group not in group_name_positions:
-                    group_name_positions[group] = {}
-                if name not in group_name_positions[group]:
-                    group_name_positions[group][name] = (-x, z, y)
-
-        module_widths = []
-
-        group = 'Block 1 BL top shifted - 3"'
-        block_1_horizontal_top_plane_positions = {}
-        for name in group_name_positions[group]:
-            plane = int(name.split(' ')[-1])
-            if plane not in block_1_horizontal_top_plane_positions:
-                block_1_horizontal_top_plane_positions[plane] = []
-            block_1_horizontal_top_plane_positions[plane].append(group_name_positions[group][name])
-
-        group = 'Block 1 Horizontal Panel Bottom Offset Points'
-        block_1_horizontal_bottom_plane_positions = {}
-        for name in group_name_positions[group]:
-            left_right = name.split(' ')[-4]
-            if 'BR' in left_right:
-                continue
-            plane = int(name.split(' ')[-1])
-            if plane not in block_1_horizontal_bottom_plane_positions:
-                block_1_horizontal_bottom_plane_positions[plane] = []
-            block_1_horizontal_bottom_plane_positions[plane].append(group_name_positions[group][name])
-
-        group = 'Block 1 Beam Left Vertical Panel Offset Points'
-        block_1_vertical_left_plane_positions = {}
-        for name in group_name_positions[group]:
-            plane = int(name.split(' ')[-4])
-            if plane not in block_1_vertical_left_plane_positions:
-                block_1_vertical_left_plane_positions[plane] = []
-            block_1_vertical_left_plane_positions[plane].append(group_name_positions[group][name])
-
-        group = 'Block 1 Beam Right Vertical Panel Offset Points'
-        block_1_vertical_right_plane_positions = {}
-        for name in group_name_positions[group]:
-            plane = int(name.split(' ')[-2])
-            if plane not in block_1_vertical_right_plane_positions:
-                block_1_vertical_right_plane_positions[plane] = []
-            block_1_vertical_right_plane_positions[plane].append(group_name_positions[group][name])
-
-        for plane in block_1_horizontal_top_plane_positions:
-            top_y = block_1_horizontal_top_plane_positions[plane][0][1]
-            bottom_y = block_1_horizontal_bottom_plane_positions[plane][0][1]
-            module_width = top_y - bottom_y
-            module_widths.append(top_y - bottom_y)
-
-        horizontal_planes = []
-        horizontal_bottom_ys = []
-        for plane in block_1_horizontal_bottom_plane_positions:
-            bottom_y = block_1_horizontal_bottom_plane_positions[plane][0][1]
-            horizontal_planes.append(float(plane))
-            horizontal_bottom_ys.append(bottom_y)
-
-        vertical_planes = []
-        vertical_left_xs = []
-        for plane in block_1_vertical_right_plane_positions:
-            left_xs = [position[0] for position in block_1_vertical_left_plane_positions[plane]]
-            right_xs = [position[0] for position in block_1_vertical_right_plane_positions[plane]]
-            avg_left_x = sum(left_xs) / len(left_xs)
-            avg_right_x = sum(right_xs) / len(right_xs)
-            module_width = avg_left_x - avg_right_x
-            vertical_planes.append(float(plane))
-            vertical_left_xs.append(avg_left_x)
-            module_widths.append(module_width)
-
-        module_width = sum(module_widths) / len(module_widths)
-        print('module_width = {}'.format(module_width))
-
-        h1 = TH1D('h1', 'h1', 100, 2500, 2600)
-        for module_width in module_widths:
-            h1.Fill(module_width)
-        gr_vertical = TGraph(len(vertical_planes), np.array(vertical_planes), np.array(vertical_left_xs))
-        gr_horiztonal = TGraph(len(horizontal_planes), np.array(horizontal_planes), np.array(horizontal_bottom_ys))
-
-        c1 = TCanvas('c1', 'c1', 800, 600)
-        set_margin()
-        # set_h1_style(h1)
-        # h1.Draw()
-
-        set_graph_style(gr_vertical)
-        gr_vertical.Draw('AP')
-
-        # set_graph_style(gr_horiztonal)
-        # gr_horiztonal.Draw('AP')
-
-        c1.Update()
-        c1.SaveAs('{}/read_alignment_data_nova_detector.pdf'.format(self.figure_dir))
-        input('Press any key to continue.')
-
     def plot_alignment_data_nova_detector(self):
         name_positions = {}
         with open('data/alignment/Block 1 and Block 2 offset points Target frame.txt') as f_txt:
@@ -1599,6 +1498,169 @@ class Beamline:
         c1.SaveAs('{}/plot_alignment_data_nova_detector.pdf'.format(self.figure_dir))
         input('Press any key to continue.')
 
+    def plot_alignment_data_nova_detector_edge(self):
+        group_name_positions = {}
+        with open('data/alignment/Block 1 and Block 2 offset points Target frame.txt') as f_txt:
+            rows = csv.reader(f_txt, delimiter=',')
+            for i in range(5):
+                next(rows)
+            for row in rows:
+                group = row[0].strip()
+                name = row[1].strip()
+                x = float(row[-3])
+                y = float(row[-2])
+                z = float(row[-1])
+                position = -x, z, y
+                if group not in group_name_positions:
+                    group_name_positions[group] = {}
+                if name not in group_name_positions[group]:
+                    group_name_positions[group][name] = (-x, z, y)
+
+        block_horizontal_top_plane_positions = {}
+        block_horizontal_bottom_plane_positions = {}
+        block_vertical_left_plane_positions = {}
+        block_vertical_right_plane_positions = {}
+        module_widths = []
+
+        block = 'block 1'
+        group = 'Block 1 BL top shifted - 3"'
+        block_horizontal_top_plane_positions[block] = {}
+        for name in group_name_positions[group]:
+            plane = int(name.split(' ')[-1])
+            if plane not in block_horizontal_top_plane_positions[block]:
+                block_horizontal_top_plane_positions[block][plane] = []
+            block_horizontal_top_plane_positions[block][plane].append(group_name_positions[group][name])
+
+        group = 'Block 1 Horizontal Panel Bottom Offset Points'
+        block_horizontal_bottom_plane_positions[block] = {}
+        for name in group_name_positions[group]:
+            plane = int(name.split(' ')[-1])
+            left_right = name.split(' ')[-4]
+            if 'BR' in left_right:
+                continue
+            if plane not in block_horizontal_bottom_plane_positions[block]:
+                block_horizontal_bottom_plane_positions[block][plane] = []
+            block_horizontal_bottom_plane_positions[block][plane].append(group_name_positions[group][name])
+
+        group = 'Block 1 Beam Left Vertical Panel Offset Points'
+        block_vertical_left_plane_positions[block] = {}
+        for name in group_name_positions[group]:
+            plane = int(name.split(' ')[-4])
+            if plane not in block_vertical_left_plane_positions[block]:
+                block_vertical_left_plane_positions[block][plane] = []
+            block_vertical_left_plane_positions[block][plane].append(group_name_positions[group][name])
+
+        group = 'Block 1 Beam Right Vertical Panel Offset Points'
+        block_vertical_right_plane_positions[block] = {}
+        for name in group_name_positions[group]:
+            plane = int(name.split(' ')[-2])
+            if plane not in block_vertical_right_plane_positions[block]:
+                block_vertical_right_plane_positions[block][plane] = []
+            block_vertical_right_plane_positions[block][plane].append(group_name_positions[group][name])
+
+        block = 'block 2'
+        group = 'Block 2 Horizontal Panel Bottom Offset Points'
+        block_horizontal_bottom_plane_positions[block] = {}
+        for name in group_name_positions[group]:
+            plane = int(name.split(' ')[-5])
+            left_right = name.split(' ')[-4]
+            if 'BR' in left_right:
+                continue
+            if plane not in block_horizontal_bottom_plane_positions[block]:
+                block_horizontal_bottom_plane_positions[block][plane] = []
+            block_horizontal_bottom_plane_positions[block][plane].append(group_name_positions[group][name])
+
+        group = 'Block 2 Beam Left Vertical Panel Offset Points'
+        block_vertical_left_plane_positions[block] = {}
+        for name in group_name_positions[group]:
+            plane = int(name.split(' ')[-4])
+            if plane not in block_vertical_left_plane_positions[block]:
+                block_vertical_left_plane_positions[block][plane] = []
+            block_vertical_left_plane_positions[block][plane].append(group_name_positions[group][name])
+
+        group = 'Block 2 Beam Right Vertical Panel Offset Points'
+        block_vertical_right_plane_positions[block] = {}
+        for name in group_name_positions[group]:
+            plane = int(name.split(' ')[-4])
+            if plane not in block_vertical_right_plane_positions[block]:
+                block_vertical_right_plane_positions[block][plane] = []
+            block_vertical_right_plane_positions[block][plane].append(group_name_positions[group][name])
+
+        horizontal_planes = []
+        horizontal_bottom_ys = []
+        horizontal_bottom_y_up_to_plane_60s = []
+        for block in block_horizontal_bottom_plane_positions:
+            for plane in block_horizontal_bottom_plane_positions[block]:
+                bottom_ys = [position[1] for position in block_horizontal_bottom_plane_positions[block][plane]]
+                avg_bottom_y = sum(bottom_ys) / len(bottom_ys)
+                horizontal_planes.append(float(plane))
+                horizontal_bottom_ys.append(avg_bottom_y)
+                if plane != 62:
+                    horizontal_bottom_y_up_to_plane_60s.append(avg_bottom_y)
+
+        vertical_planes = []
+        vertical_left_xs = []
+        for block in block_vertical_right_plane_positions:
+            for plane in block_vertical_right_plane_positions[block]:
+                left_xs = [position[0] for position in block_vertical_left_plane_positions[block][plane]]
+                right_xs = [position[0] for position in block_vertical_right_plane_positions[block][plane]]
+                avg_left_x = sum(left_xs) / len(left_xs)
+                avg_right_x = sum(right_xs) / len(right_xs)
+                module_width = avg_left_x - avg_right_x
+                vertical_planes.append(float(plane))
+                vertical_left_xs.append(avg_left_x)
+                module_widths.append(module_width)
+
+        avg_horizontal_bottom_y = sum(horizontal_bottom_y_up_to_plane_60s) / len(horizontal_bottom_y_up_to_plane_60s)
+        module_width = sum(module_widths) / len(module_widths)
+        print('module_width = {}'.format(module_width))
+        print('avg_horizontal_bottom_y = {}'.format(avg_horizontal_bottom_y))
+        print('vertical center = {}'.format(avg_horizontal_bottom_y + module_width / 2.))
+
+        gr_vertical = TGraph(len(vertical_planes), np.array(vertical_planes), np.array(vertical_left_xs))
+        gr_horiztonal = TGraph(len(horizontal_planes), np.array(horizontal_planes), np.array(horizontal_bottom_ys))
+        h1 = TH1D('h1', 'h1', 100, 2500, 2600)
+        for module_width in module_widths:
+            h1.Fill(module_width)
+
+        c1 = TCanvas('c1', 'c1', 800, 600)
+        set_margin()
+        gPad.SetGrid()
+        gStyle.SetOptStat('emr')
+        set_h1_style(h1)
+        h1.Draw()
+        h1.GetXaxis().SetTitle('Vertical Module Width (mm)')
+        h1.GetYaxis().SetTitle('Vertical Module Count')
+        c1.Update()
+        draw_statbox(h1)
+        c1.Update()
+        c1.SaveAs('{}/plot_alignment_data_nova_detector_edge.module_width.pdf'.format(self.figure_dir))
+
+        c2 = TCanvas('c2', 'c2', 800, 800)
+        set_margin()
+        gPad.SetGrid()
+        gStyle.SetOptStat(0)
+        set_graph_style(gr_vertical)
+        gr_vertical.Draw('AP')
+        gr_vertical.GetXaxis().SetTitle('Plane Number')
+        gr_vertical.GetYaxis().SetTitle('X (mm)')
+        gr_vertical.GetYaxis().SetTitleOffset(1.5)
+        c2.Update()
+        c2.SaveAs('{}/plot_alignment_data_nova_detector_edge.vertical_left.pdf'.format(self.figure_dir))
+
+        c3 = TCanvas('c3', 'c3', 800, 800)
+        set_margin()
+        gPad.SetGrid()
+        gStyle.SetOptStat(0)
+        set_graph_style(gr_horiztonal)
+        gr_horiztonal.Draw('AP')
+        gr_horiztonal.GetXaxis().SetTitle('Plane Number')
+        gr_horiztonal.GetYaxis().SetTitle('Y (mm)')
+        gr_horiztonal.GetYaxis().SetTitleOffset(1.5)
+        c3.Update()
+        c3.SaveAs('{}/plot_alignment_data_nova_detector_edge.horizontal_bottom.pdf'.format(self.figure_dir))
+        input('Press any key to continue.')
+
     def plot_alignment_data_nova_detector_vertical_center_block_1(self):
         name_positions = {}
         with open('data/alignment/Block 1 and Block 2 offset points Target frame.txt') as f_txt:
@@ -1629,7 +1691,7 @@ class Beamline:
             zs.append(position[2])
 
         gr_xy = TGraph(len(xs), np.array(xs), np.array(ys))
-        c1 = TCanvas('c1', 'c1', 800, 600)
+        c1 = TCanvas('c1', 'c1', 800, 800)
         set_margin()
         set_graph_style(gr_xy)
         gr_xy.Draw('AP')
@@ -1716,17 +1778,16 @@ class Beamline:
             zs.append(position[2])
 
         gr_xz = TGraph(len(xs), np.array(xs), np.array(zs))
-        c1 = TCanvas('c1', 'c1', 800, 600)
+        c1 = TCanvas('c1', 'c1', 800, 800)
         set_margin()
         set_graph_style(gr_xz)
         gr_xz.Draw('AP')
         gr_xz.GetXaxis().SetTitle('X (mm)')
         gr_xz.GetYaxis().SetTitle('Z (mm)')
-        gr_xz.GetYaxis().SetTitleOffset(1.6)
+        gr_xz.GetYaxis().SetTitleOffset(2.2)
 
         tf = TF1('tf1', 'pol1')
         gr_xz.Fit('tf1')
-
 
         latex = TLatex()
         latex.SetNDC()
@@ -1774,8 +1835,8 @@ beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/fi
 # beamline.read_alignment_data_beamline_collimator_us()
 # beamline.read_alignment_data_beamline_mwpc()
 # beamline.read_alignment_data_beamline_magnet()
-beamline.read_alignment_data_nova_detector()
 # beamline.plot_alignment_data_nova_detector()
+beamline.plot_alignment_data_nova_detector_edge()
 # beamline.plot_alignment_data_nova_detector_vertical_center_block_1()
 # beamline.plot_alignment_data_nova_detector_front_surface()
 # beamline = Beamline('tmp/beamline.py.geometry_check.in')
