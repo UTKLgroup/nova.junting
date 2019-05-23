@@ -586,29 +586,14 @@ class Beamline:
         self.shielding_block.length = concrete_top_dimensions[1]
         self.shielding_block.width = concrete_top_dimensions[2]
 
-        # shielding_block_separation = 20. * Beamline.INCH
-        # self.shielding_block_1.set_zx([self.magnet.z + 1200., self.magnet.x + self.shielding_block.width / 2. + shielding_block_separation / 2.])
-        # self.shielding_block_2.set_zx([self.magnet.z + 1200., self.magnet.x - self.shielding_block.width / 2. - shielding_block_separation / 2.])
-        # self.shielding_block_1.set_zx([self.collimator_ds.z, self.collimator_ds.x + self.shielding_block.width / 2. + self.collimator_ds.width / 2.])
-        # self.shielding_block_1.set_zx([self.wc_3.z - self.wire_chamber_support_length / 2. - self.shielding_block.length / 2., self.wc_3.x + 5.789 * Beamline.INCH + self.shielding_block.width / 2.])
-        # self.shielding_block_2.set_zx([self.collimator_ds.z, self.collimator_ds.x - self.shielding_block.width / 2. - self.collimator_ds.width / 2.])
-        # self.shielding_block_2.set_zx([self.wc_3.z, self.wc_3.x - 17.676 * Beamline.INCH - self.shielding_block.width / 2.])
-        # self.shielding_block_2.set_zx([self.wc_3.z - self.wire_chamber_support_length / 2. - self.shielding_block.length / 2., self.wc_3.x - 5.789 * Beamline.INCH - self.shielding_block.width / 2.])
-        # self.shielding_block_3.set_zx([self.shielding_block_1.z, self.shielding_block_1.x + self.shielding_block.width])
-        # self.shielding_block_3.set_zx([2700. - (self.collimator_us.length - (42.76 + 8.36) * Beamline.INCH) + self.shielding_block.length / 2., (7.47 * Beamline.INCH + 460.) - (420. + 12. * Beamline.INCH)])
-        # self.shielding_block_4.set_zx([self.collimator_ds.z - self.collimator_ds.length / 2. + 15.647 * Beamline.INCH + self.shielding_block.length / 2., self.collimator_ds.x - self.shielding_block.width / 2. - self.collimator_ds.width / 2.])
-
-        # the distance from ground to the top of the shielding block is 2.7m
-        y_shift = (2700. - 16. * Beamline.INCH) - self.distance_target_to_ground
-        self.shielding_block_1.y += y_shift
-        self.shielding_block_2.y += y_shift
-        self.shielding_block_3.y += y_shift
-        self.shielding_block_4.y += y_shift
+        # convert geometric center to model origin
+        self.shielding_block_1.y += 4. * Beamline.INCH
+        self.shielding_block_2.y += 4. * Beamline.INCH
+        self.shielding_block_3.y += 4. * Beamline.INCH
 
         self.f_out.write('place shielding_block rename=shielding_block_1 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_1.x, self.shielding_block_1.y, self.shielding_block_1.z, self.shielding_block_1.theta))
         self.f_out.write('place shielding_block rename=shielding_block_2 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_2.x, self.shielding_block_2.y, self.shielding_block_2.z, self.shielding_block_2.theta))
         self.f_out.write('place shielding_block rename=shielding_block_3 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_3.x, self.shielding_block_3.y, self.shielding_block_3.z, self.shielding_block_3.theta))
-        # self.f_out.write('place shielding_block rename=shielding_block_4 x={} y={} z={} rotation=y{}\n'.format(self.shielding_block_4.x, self.shielding_block_4.y, self.shielding_block_4.z, self.shielding_block_4.theta))
 
     def write_housing(self):
         thickness = 10.
@@ -796,34 +781,34 @@ class Beamline:
         # self.write_magnet()
 
         # shielding block
-        # self.shielding_block_1.x = 0.
-        # self.shielding_block_1.y = 0.
-        # self.shielding_block_1.z = 0.
-        # self.shielding_block_1.theta = 0.
-        # self.write_shielding_block()
+        self.shielding_block_1.x = 0.
+        self.shielding_block_1.y = 0.
+        self.shielding_block_1.z = 0.
+        self.shielding_block_1.theta = 0.
+        self.write_shielding_block()
 
         # wire chambers
         # self.write_wc()
 
         # nova detector
-        # self.nova.theta = self.us_theta + self.ds_theta
-        self.nova.length = 10.
-        # self.nova.z = 14617.377049180326
-        # self.nova.x = -1374.4731770833332
-        # self.nova.y = 76.1231770833333
-        self.nova.height = 2531.9463541666664 * 1.2
-        self.nova.width = self.nova.height
-        self.nova.z = 0.
-        self.nova.x = 0.
-        self.nova.y = 0.
-        # self.nova.height = 10.
-        # self.nova.width = 1000.
-        self.f_out.write('virtualdetector nova height={} length={} width={} color=0.39,0.39,0.39\n'.format(self.nova.height, self.nova.length, self.nova.width))
-        # self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y{}\n'.format(self.nova.x, self.nova.y, self.nova.z, self.nova.theta))
-        # self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y0,z0\n'.format(self.nova.x, self.nova.y, self.nova.z))
-        # self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y45,z0\n'.format(self.nova.x, self.nova.y, self.nova.z))
-        # self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y45,z-90\n'.format(self.nova.x, self.nova.y, self.nova.z))
-        self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y-0.35,z0.8\n'.format(self.nova.x, self.nova.y, self.nova.z))
+        # # self.nova.theta = self.us_theta + self.ds_theta
+        # self.nova.length = 10.
+        # # self.nova.z = 14617.377049180326
+        # # self.nova.x = -1374.4731770833332
+        # # self.nova.y = 76.1231770833333
+        # self.nova.height = 2531.9463541666664 * 1.2
+        # self.nova.width = self.nova.height
+        # self.nova.z = 0.
+        # self.nova.x = 0.
+        # self.nova.y = 0.
+        # # self.nova.height = 10.
+        # # self.nova.width = 1000.
+        # self.f_out.write('virtualdetector nova height={} length={} width={} color=0.39,0.39,0.39\n'.format(self.nova.height, self.nova.length, self.nova.width))
+        # # self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y{}\n'.format(self.nova.x, self.nova.y, self.nova.z, self.nova.theta))
+        # # self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y0,z0\n'.format(self.nova.x, self.nova.y, self.nova.z))
+        # # self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y45,z0\n'.format(self.nova.x, self.nova.y, self.nova.z))
+        # # self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y45,z-90\n'.format(self.nova.x, self.nova.y, self.nova.z))
+        # self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y-0.35,z0.8\n'.format(self.nova.x, self.nova.y, self.nova.z))
 
         print('finished write_geometry_check()')
         print('file written to {}'.format(self.g4bl_filename))
@@ -1876,7 +1861,7 @@ beamline.write()
 # beamline.read_alignment_data_beamline_mwpc()
 # beamline.read_alignment_data_beamline_magnet()
 # beamline.plot_alignment_data_nova_detector()
-beamline.plot_alignment_data_nova_detector_edge()
+# beamline.plot_alignment_data_nova_detector_edge()
 # beamline.plot_alignment_data_nova_detector_vertical_center_block_1()
 # beamline.plot_alignment_data_nova_detector_front_surface()
 # beamline = Beamline('tmp/beamline.py.geometry_check.in')
