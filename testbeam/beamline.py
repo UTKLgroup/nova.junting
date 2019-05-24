@@ -105,7 +105,7 @@ class Beamline:
             self.helium_pipe_4,
         ]
 
-        self.components = self.detectors + self.shielding_blocks
+        self.components = self.detectors + self.shielding_blocks + self.helium_pipes
 
         # self.read_position()
         # self.correct_position()
@@ -817,11 +817,11 @@ class Beamline:
         # self.write_magnet()
 
         # shielding block
-        self.shielding_block_1.x = 0.
-        self.shielding_block_1.y = 0.
-        self.shielding_block_1.z = 0.
-        self.shielding_block_1.theta = 0.
-        self.write_shielding_block()
+        # self.shielding_block_1.x = 0.
+        # self.shielding_block_1.y = 0.
+        # self.shielding_block_1.z = 0.
+        # self.shielding_block_1.theta = 0.
+        # self.write_shielding_block()
 
         # wire chambers
         # self.write_wc()
@@ -845,6 +845,33 @@ class Beamline:
         # # self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y45,z0\n'.format(self.nova.x, self.nova.y, self.nova.z))
         # # self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y45,z-90\n'.format(self.nova.x, self.nova.y, self.nova.z))
         # self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y-0.35,z0.8\n'.format(self.nova.x, self.nova.y, self.nova.z))
+
+
+        # helium pipes
+        outer_radius = 6. * Beamline.INCH / 2.
+        wall_thickness = 3. / 32. * Beamline.INCH
+        inner_radius = outer_radius - wall_thickness
+        mylar_window_thickness = 0.003 * Beamline.INCH
+
+        self.helium_pipe_1.theta = 0.
+        self.helium_pipe_1.x = 0.
+        self.helium_pipe_1.y = 0.
+        self.helium_pipe_1.z = 0.
+
+        self.f_out.write('tubs mylar_window radius={} length={} color=0,0,1 material=MYLAR kill=0\n'.format(outer_radius, mylar_window_thickness))
+        for i, helium_pipe in enumerate([self.helium_pipe_1]):
+            index = i + 1
+            self.f_out.write('group helium_pipe_{}\n'.format(index))
+            self.f_out.write('  tubs helium radius={} length={} color=1,1,1 material=He kill=0\n'.format(inner_radius, helium_pipe.length))
+            self.f_out.write('  tubs helium_pipe innerRadius={} outerRadius={} length={} color=0,0.8,0 material=STAINLESS-STEEL kill={}\n'.format(inner_radius, outer_radius, helium_pipe.length, self.kill))
+
+            z_shift = (helium_pipe.length + mylar_window_thickness * 2.) / 2. # shift in z by half of the full length in z to avoid geometry conflict in the group
+            self.f_out.write('  place helium_pipe rename=helium_pipe x={} y={} z={}\n'.format(0., 0., z_shift))
+            self.f_out.write('  place helium rename=helium x={} y={} z={}\n'.format(0., 0., z_shift))
+            self.f_out.write('  place mylar_window rename=mylar_window_up x={} y={} z={}\n'.format(0., 0., -helium_pipe.length / 2. - mylar_window_thickness / 2. + z_shift))
+            self.f_out.write('  place mylar_window rename=mylar_window_down x={} y={} z={}\n'.format(0., 0., helium_pipe.length / 2. + mylar_window_thickness / 2. + z_shift))
+            self.f_out.write('endgroup\n')
+            self.f_out.write('place helium_pipe_{} rename=helium_pipe_{} x={} y={} z={} rotation=y{}\n'.format(index, index, helium_pipe.x, helium_pipe.y, helium_pipe.z, helium_pipe.theta))
 
         print('finished write_geometry_check()')
         print('file written to {}'.format(self.g4bl_filename))
@@ -1925,7 +1952,7 @@ class Beamline:
 # 20190424_testbeam_alignment
 beamline = Beamline()
 beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
-# beamline.screen_shot = True
+beamline.screen_shot = True
 beamline.read_alignment_data_beamline()
 beamline.read_alignment_data_beamline_helium_pipe()
 beamline.write()
@@ -1937,6 +1964,8 @@ beamline.write()
 # beamline.plot_alignment_data_nova_detector_vertical_center_block_1()
 # beamline.plot_alignment_data_nova_detector_front_surface()
 # beamline = Beamline('tmp/beamline.py.geometry_check.in')
+# beamline.read_alignment_data_beamline()
+# beamline.read_alignment_data_beamline_helium_pipe()
 # beamline.write()
 # beamline.write_geometry_check()
 # beamline.write_nova_plane()
