@@ -430,16 +430,19 @@ class Beamline:
         self.f_out.write('place start_line x={} y={} z={}\n'.format(self.tof_us.x, self.tof_us.y, self.tof_us.z - z_shift))
 
     def write_tof(self):
-        tof_us_dimensions = [150., 20., 150.]
+        tof_us_dimensions = [5.91 * Beamline.INCH, 0.79 * Beamline.INCH, 5.91 * Beamline.INCH]
         self.tof_us.theta = self.us_theta
-        tof_ds_dimensions = [150., 20., 150.]
+        tof_ds_dimensions = [5.91 * Beamline.INCH, 0.24 * Beamline.INCH, 5.91 * Beamline.INCH]
         self.tof_ds.theta = self.us_theta + self.ds_theta
+        tof_ds_sipm_dimensions = [5.91 * Beamline.INCH, 0.52 * Beamline.INCH, 5.91 * Beamline.INCH]
+        self.tof_ds_sipm.theta = self.us_theta + self.ds_theta
 
         self.f_out.write('virtualdetector tof_us  height={} length={} width={} material=LUCITE color=0.05,0.05,0.93\n'.format(tof_us_dimensions[0], tof_us_dimensions[1], tof_us_dimensions[2]))
         self.f_out.write('place tof_us rename=tof_us x={} y={} z={} rotation=y{}\n'.format(self.tof_us.x, self.tof_us.y, self.tof_us.z, self.tof_us.theta))
         self.f_out.write('virtualdetector tof_ds height={} length={} width={} material=LUCITE color=0.05,0.05,0.93\n'.format(tof_ds_dimensions[0], tof_ds_dimensions[1], tof_ds_dimensions[2]))
         self.f_out.write('place tof_ds rename=tof_ds x={} y={} z={} rotation=y{}\n'.format(self.tof_ds.x, self.tof_ds.y, self.tof_ds.z, self.tof_ds.theta))
-        self.f_out.write('place tof_ds rename=tof_ds_sipm x={} y={} z={} rotation=y{}\n'.format(self.tof_ds_sipm.x, self.tof_ds_sipm.y, self.tof_ds_sipm.z, self.tof_ds.theta))
+        self.f_out.write('virtualdetector tof_ds_sipm height={} length={} width={} material=LUCITE color=0.05,0.05,0.93\n'.format(tof_ds_sipm_dimensions[0], tof_ds_sipm_dimensions[1], tof_ds_sipm_dimensions[2]))
+        self.f_out.write('place tof_ds_sipm rename=tof_ds_sipm x={} y={} z={} rotation=y{}\n'.format(self.tof_ds_sipm.x, self.tof_ds_sipm.y, self.tof_ds_sipm.z, self.tof_ds_sipm.theta))
 
     def write_wc(self):
         wire_chamber_detector_dimensions = [125., 25., 128.]
