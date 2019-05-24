@@ -513,6 +513,14 @@ class Beamline:
         self.f_out.write('place collimator_ds x={} y={} z={} rotation=y{}\n'.format(self.collimator_ds.x, self.collimator_ds.y, self.collimator_ds.z, self.collimator_ds.theta))
 
     def write_cherenkov(self):
+        # alignment
+        self.cherenkov.x = -53.292 # in
+        self.cherenkov.y = 0.044   # in
+        self.cherenkov.z = 546.554 # in, flange position
+        self.cherenkov.z += 15.75 - 134.86 / 2. # in, convert flange position to geometric center
+        for coordinate in [self.cherenkov.x, self.cherenkov.y, self.cherenkov.z]:
+            coordinate *= Beamline.INCH
+
         self.cherenkov.theta = self.us_theta + self.ds_theta
         self.cherenkov.length = 2925.
         cherenkov_inner_radius = 315. / 2.
@@ -917,11 +925,6 @@ class Beamline:
                 y = float(row[3])
                 z = float(row[4])
                 position = -x, z, y
-
-                if detector_name == 'NTB-CERENKOV_DN':
-                    self.cherenkov.set_xyz(position)
-                    self.cherenkov.z = 546.554
-                    self.cherenkov.z += 15.75 - 134.86 / 2.
 
                 if '_CT' in detector_name:
                     if 'TARGET' in detector_name:
