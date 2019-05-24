@@ -518,8 +518,9 @@ class Beamline:
         self.cherenkov.y = 0.044   # in
         self.cherenkov.z = 546.554 # in, flange position
         self.cherenkov.z += 15.75 - 134.86 / 2. # in, convert flange position to geometric center
-        for coordinate in [self.cherenkov.x, self.cherenkov.y, self.cherenkov.z]:
-            coordinate *= Beamline.INCH
+        self.cherenkov.x *= Beamline.INCH
+        self.cherenkov.y *= Beamline.INCH
+        self.cherenkov.z *= Beamline.INCH
 
         self.cherenkov.theta = self.us_theta + self.ds_theta
         self.cherenkov.length = 2925.
