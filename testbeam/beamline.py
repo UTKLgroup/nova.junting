@@ -1965,7 +1965,7 @@ class Beamline:
 # 20190424_testbeam_alignment
 beamline = Beamline()
 beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
-beamline.screen_shot = True
+# beamline.screen_shot = True
 beamline.read_alignment_data_beamline()
 beamline.read_alignment_data_beamline_helium_pipe()
 beamline.write()

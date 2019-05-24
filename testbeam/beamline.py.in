@@ -7,22 +7,23 @@ g4ui when=4 "/vis/viewer/set/style wireframe"
 beam gaussian particle=$particle firstEvent=$first lastEvent=$last sigmaX=2.0 sigmaY=2.0 beamZ=-500.0 meanMomentum=$momentum
 trackcuts kineticEnergyCut=20 keep=gamma,pi0,pi+,pi-,kaon+,kaon-,mu+,mu-,e+,e-,proton,anti_proton
 box slab height=31.75 length=209.55 width=6.35 material=Cu color=1,0.01,0.01
-place slab rename=target_slab_-2 x=-12.7 y=0.0 z=44.29
-place slab rename=target_slab_-1 x=-6.35 y=0.0 z=22.145
-place slab rename=target_slab_0 x=0.0 y=0.0 z=0.0
-place slab rename=target_slab_1 x=6.35 y=0.0 z=-22.145
-place slab rename=target_slab_2 x=12.7 y=0.0 z=-44.29
-box collimator_us_base height=131.826 length=1473.1999999999998 width=812.8 material=Fe color=0,1,1 kill=0
-box collimator_us_plate height=131.826 length=1086.1039999999998 width=812.8 material=Fe color=0,1,1 kill=0
-box collimator_us_aperture height=50.8 length=1086.1039999999998 width=294.64 material=Fe color=0,1,1 kill=0
-place collimator_us_base rename=collimator_us_base x=-216.60631742066045 y=-223.13899999999998 z=561.848
-place collimator_us_plate rename=collimator_us_bottom x=-216.60631742066045 y=-91.313 z=755.396
-place collimator_us_aperture rename=collimator_us_aperture_1 x=-1.3163174206604253 y=0.0 z=755.396 rotation=y-14.03
-place collimator_us_aperture rename=collimator_us_aperture_2 x=-431.89631742066047 y=0.0 z=755.396 rotation=y-17.97
-place collimator_us_plate rename=collimator_us_top_1 x=-216.60631742066045 y=91.313 z=755.396
-place collimator_us_plate rename=collimator_us_top_2 x=-216.60631742066045 y=223.13899999999998 z=755.396
+place slab rename=target_slab_-2 x=-13.0934206 y=-3.6025581999999994 z=44.287206
+place slab rename=target_slab_-1 x=-6.743420599999999 y=-3.6025581999999994 z=22.142205999999998
+place slab rename=target_slab_0 x=-0.39342059999999995 y=-3.6025581999999994 z=-0.002794
+place slab rename=target_slab_1 x=5.9565794 y=-3.6025581999999994 z=-22.147794
+place slab rename=target_slab_2 x=12.306579399999999 y=-3.6025581999999994 z=-44.292794
+extrusion aperture_plate_1 length=50.8 vertices=0,0;-229.10799999999998,0.0;-503.45339999999993,1085.723;0.0,1085.723 material=Fe color=0,1,1 kill=0
+place aperture_plate_1 rename=aperture_plate_1 x=209.80399999999997 y=-0.35559999999999997 z=195.42759999999998 rotation=x90
+extrusion aperture_plate_2 length=50.8 vertices=0,0;-509.77799999999996,0.0;-509.77799999999996,1085.723;-352.8314,1085.723 material=Fe color=0,1,1 kill=0
+place aperture_plate_2 rename=aperture_plate_2 x=-93.21799999999999 y=-0.35559999999999997 z=195.42759999999998 rotation=x90
+box collimator_base height=131.826 length=1473.1999999999998 width=812.8 material=Fe color=0,1,1 kill=0
+box collimator_plate height=131.826 length=1085.723 width=812.8 material=Fe color=0,1,1 kill=0
+place collimator_base rename=collimator_base x=-196.596 y=-223.49460000000002 z=544.5505999999999
+place collimator_plate rename=collimator_bottom x=-196.596 y=-91.6686 z=738.2891
+place collimator_plate rename=collimator_top_1 x=-196.596 y=90.9574 z=738.2891
+place collimator_plate rename=collimator_top_2 x=-196.596 y=222.7834 z=738.2891
 virtualdetector start_line radius=1750.0 length=1.0 material=Air color=0.9,0.9,0.7
-place start_line rotation=y-16.0 x=-399.6741659346488 y=0.0 z=1393.8294591105623
+place start_line x=-385.4883832 y=7.490510799999999 z=1325.6054022
 group wire_chamber
   virtualdetector wire_chamber_detector height=125.0 length=25.0 width=128.0 color=0,1,0
   box wire_chamber_frame_vertical height=254.0 length=25.0 width=63.0 color=1,0,1 kill=0 material=Al
@@ -33,12 +34,49 @@ group wire_chamber
   place wire_chamber_frame_horizontal rename=+_frame_bottom x=0.0 y=-95.5 z=12.5
   place wire_chamber_detector rename=+_detector x=0.0 y=0.0 z=12.5
 endgroup
-place wire_chamber rename=wire_chamber_1 x=-491.51939604891317 y=0.0 z=1714.13184120894 rotation=y-16.0
-place wire_chamber rename=wire_chamber_2 x=-910.5721743366385 y=0.0 z=3175.542552941215 rotation=y-16.0
-place wire_chamber rename=wire_chamber_3 x=-1354.35596 y=0.0 z=7421.3847000000005 rotation=y0.0
-place wire_chamber rename=wire_chamber_4 x=-1354.35596 y=0.0 z=10326.081044999999 rotation=y0.0
+place wire_chamber rename=wire_chamber_1 x=-455.74168439999994 y=0.5353557999999999 z=1591.0148774 rotation=y-16.0
+place wire_chamber rename=wire_chamber_2 x=-859.9917013999999 y=0.9007093999999999 z=2998.8696944 rotation=y-16.0
+place wire_chamber rename=wire_chamber_3 x=-1352.8517012 y=0.0741172 z=7369.4469578 rotation=y0.0
+place wire_chamber rename=wire_chamber_4 x=-1353.8649072 y=0.3144012 z=10143.3251286 rotation=y0.0
+tubs mylar_window radius=76.19999999999999 length=0.0762 color=0,0.8,0 material=MYLAR
+group helium_pipe_1
+  tubs helium radius=73.81875 length=750.0744365285254 color=1,1,1 material=He
+  tubs helium_pipe innerRadius=73.81875 outerRadius=76.19999999999999 length=750.0744365285254 color=0,0.8,0 material=STAINLESS-STEEL kill=0
+  place helium_pipe rename=helium_pipe x=0.0 y=0.0 z=375.1134182642627
+  place helium rename=helium x=0.0 y=0.0 z=375.1134182642627
+  place mylar_window rename=mylar_window_up x=0.0 y=0.0 z=0.03809999999998581
+  place mylar_window rename=mylar_window_down x=0.0 y=0.0 z=750.1887365285254
+endgroup
+place helium_pipe_1 rename=helium_pipe_1 x=-696.7411769999999 y=1.3859509999999997 z=2426.3319011999997 rotation=y-16.0
+group helium_pipe_2
+  tubs helium radius=73.81875 length=1187.9725689575212 color=1,1,1 material=He
+  tubs helium_pipe innerRadius=73.81875 outerRadius=76.19999999999999 length=1187.9725689575212 color=0,0.8,0 material=STAINLESS-STEEL kill=0
+  place helium_pipe rename=helium_pipe x=0.0 y=0.0 z=594.0624844787606
+  place helium rename=helium x=0.0 y=0.0 z=594.0624844787606
+  place mylar_window rename=mylar_window_up x=0.0 y=0.0 z=0.03809999999998581
+  place mylar_window rename=mylar_window_down x=0.0 y=0.0 z=1188.0868689575211
+endgroup
+place helium_pipe_2 rename=helium_pipe_2 x=-1352.2426854 y=-0.924179 z=6561.330451099999 rotation=y0.0
+group helium_pipe_3
+  tubs helium radius=73.81875 length=1095.5360995754197 color=1,1,1 material=He
+  tubs helium_pipe innerRadius=73.81875 outerRadius=76.19999999999999 length=1095.5360995754197 color=0,0.8,0 material=STAINLESS-STEEL kill=0
+  place helium_pipe rename=helium_pipe x=0.0 y=0.0 z=547.8442497877098
+  place helium rename=helium x=0.0 y=0.0 z=547.8442497877098
+  place mylar_window rename=mylar_window_up x=0.0 y=0.0 z=0.03809999999998581
+  place mylar_window rename=mylar_window_down x=0.0 y=0.0 z=1095.6503995754197
+endgroup
+place helium_pipe_3 rename=helium_pipe_3 x=-1353.7202034 y=0.24902159999999998 z=8168.459774299999 rotation=y0.0
+group helium_pipe_4
+  tubs helium radius=73.81875 length=644.01161083749 color=1,1,1 material=He
+  tubs helium_pipe innerRadius=73.81875 outerRadius=76.19999999999999 length=644.01161083749 color=0,0.8,0 material=STAINLESS-STEEL kill=0
+  place helium_pipe rename=helium_pipe x=0.0 y=0.0 z=322.082005418745
+  place helium rename=helium x=0.0 y=0.0 z=322.082005418745
+  place mylar_window rename=mylar_window_up x=0.0 y=0.0 z=0.03809999999998581
+  place mylar_window rename=mylar_window_down x=0.0 y=0.0 z=644.12591083749
+endgroup
+place helium_pipe_4 rename=helium_pipe_4 x=-1351.1858548999999 y=-1.0659237 z=10775.0757574 rotation=y0.0
 genericbend M1 fieldHeight=88.89999999999999 fieldLength=1066.8 fieldWidth=450.84999999999997 kill=0 ironColor=1,0,0 ironHeight=762.0 ironLength=1066.8 ironWidth=1270.0
-place M1 By=$b_field x=-1354.35596 y=0.0 z=4723.200537006021 rotation=Y-8.0
+place M1 By=$b_field x=-1279.1714319999999 y=-0.2624836 z=4730.6773052 rotation=Y-8.0
 group collimator_ds
   box collimator_ds_bottom height=200.02499999999998 length=914.4 width=711.1999999999999 material=Fe color=0,1,1 kill=0
   box collimator_ds_middle height=209.54999999999998 length=914.4 width=276.22499999999997 material=Fe color=0,1,1 kill=0
@@ -47,21 +85,29 @@ group collimator_ds
   place collimator_ds_bottom rename=+_bottom x=0.0 y=204.78749999999997 z=457.2
   place collimator_ds_bottom rename=+_top x=0.0 y=-204.78749999999997 z=457.2
 endgroup
-place collimator_ds x=-1354.35596 y=0.0 z=9415.66956 rotation=y0.0
-virtualdetector tof_us  height=150.0 length=20.0 width=150.0 material=LUCITE color=0.05,0.05,0.93
-place tof_us rename=tof_us x=-418.27532259729037 y=0.0 z=1458.699401528006 rotation=y-16.0
-virtualdetector tof_ds height=150.0 length=20.0 width=150.0 material=LUCITE color=0.05,0.05,0.93
-place tof_ds rename=tof_ds x=-1354.35596 y=0.0 z=14588.34498 rotation=y0.0
+place collimator_ds x=-1359.5900164 y=-3.4117534 z=9397.989332 rotation=y0.0
+virtualdetector tof_us  height=150.114 length=20.066 width=150.114 material=LUCITE color=0,0,1
+place tof_us rename=tof_us x=-385.4883832 y=7.490510799999999 z=1375.6054022 rotation=y-16.0
+virtualdetector tof_ds height=150.114 length=6.095999999999999 width=150.114 material=LUCITE color=0,0,1
+place tof_ds rename=tof_ds x=-1357.8250466 y=3.3355534 z=14415.290448 rotation=y0.0
+virtualdetector tof_ds_sipm height=150.114 length=13.208 width=150.114 material=LUCITE color=0,0,1
+place tof_ds_sipm rename=tof_ds_sipm x=-1353.4397366 y=-0.503682 z=14553.5490488 rotation=y0.0
 virtualdetector cherenkov radius=157.5 length=2925.0 color=1,1,1 material=CARBON_DIOXIDE
 tubs cherenkov_pipe innerRadius=157.5 outerRadius=162.0 length=2925.0 color=0.74,0.34,0.09 material=STAINLESS-STEEL
 tubs cherenkov_pipe_pmt innerRadius=132.0 outerRadius=136.5 length=684.0 color=0.74,0.34,0.09 material=STAINLESS-STEEL
 box cherenkov_support height=1371.6000000000001 length=1828.8000000000002 width=914.4000000000001 material=CONCRETE color=0,1,1 kill=0
-place cherenkov rename=cherenkov x=-1354.35596 y=0.0 z=13007.781045 rotation=y0.0
-place cherenkov_pipe rename=cherenkov_pipe x=-1354.35596 y=0.0 z=13007.781045 rotation=y0.0 kill=0
-place cherenkov_pipe_pmt rename=cherenkov_pipe_pmt x=-1354.35596 y=-504.0 z=14289.331044999999 rotation=y0.0,x90 kill=0
-place cherenkov_support x=-1354.35596 y=-1003.375 z=12551.756045 rotation=y0.0
-virtualdetector nova height=2606.1905036738476 length=10.0 width=2606.1905036738476 color=0.39,0.39,0.39
-place nova rename=nova x=-1354.35596 y=0.0 z=14648.66998 rotation=y0.0
+place cherenkov rename=cherenkov x=-1353.6168 y=1.1176 z=12569.799599999998 rotation=y0.0
+place cherenkov_pipe rename=cherenkov_pipe x=-1353.6168 y=1.1176 z=12569.799599999998 rotation=y0.0 kill=0
+place cherenkov_pipe_pmt rename=cherenkov_pipe_pmt x=-1353.6168 y=-502.88239999999996 z=13851.349599999998 rotation=y0.0,x90 kill=0
+place cherenkov_support x=-1353.6168 y=-1002.2574000000001 z=12113.774599999999 rotation=y0.0
+tubs tedlar_window radius=162.0 length=0.044449999999999996 color=0.74,0.34,0.09 material=POLYVINYL_CHLORIDE
+tubs vinyl_window radius=162.0 length=0.1524 color=0.74,0.34,0.09 material=POLYVINYL_CHLORIDE
+place tedlar_window rename=tedlar_window_up x=-1353.6168 y=1.1176 z=11107.277374999998
+place tedlar_window rename=tedlar_window_down x=-1353.6168 y=1.1176 z=14032.321824999999
+place vinyl_window rename=vinyl_window_up x=-1353.6168 y=1.1176 z=11107.17895
+place vinyl_window rename=vinyl_window_down x=-1353.6168 y=1.1176 z=14032.420249999997
+virtualdetector nova height=3038.3356249999997 length=1.0 width=3038.3356249999997 color=0.8,0.8,0.8
+place nova rename=nova x=-1374.4731770833332 y=76.1231770833333 z=14617.377049180326 rotation=y-0.3492962692141463,z0.8032983167050841
 group shielding_block
   box shielding_block_steel height=609.5999999999999 length=406.4 width=609.5999999999999 material=Fe color=0,1,1 kill=0
   box shielding_block_cement height=609.5999999999999 length=406.4 width=609.5999999999999 material=CONCRETE color=0,1,1 kill=0
@@ -72,6 +118,6 @@ group shielding_block
   place shielding_block_concrete_bottom x=0.0 y=-457.19999999999993 z=406.4
   place shielding_block_concrete_top x=0.0 y=355.59999999999997 z=406.4
 endgroup
-place shielding_block rename=shielding_block_1 x=-902.5153600000001 y=185.4000000000001 z=6861.810000000001 rotation=y0.0
-place shielding_block rename=shielding_block_2 x=-1806.19656 y=185.4000000000001 z=6861.810000000001 rotation=y0.0
-place shielding_block rename=shielding_block_3 x=-75.06200000000001 y=185.4000000000001 z=2931.648 rotation=y0.0
+place shielding_block rename=shielding_block_1 x=2.1762973999999997 y=126.42984619999999 z=3766.2666102 rotation=y0.0
+place shielding_block rename=shielding_block_2 x=-894.5494935999999 y=139.3662948 z=6667.4537973999995 rotation=y0.0
+place shielding_block rename=shielding_block_3 x=-1819.981247 y=131.68050879999998 z=6648.8942713999995 rotation=y0.0
