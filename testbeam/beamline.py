@@ -71,7 +71,10 @@ class Beamline:
         self.shielding_block_1 = Detector('shielding block 1')
         self.shielding_block_2 = Detector('shielding block 2')
         self.shielding_block_3 = Detector('shielding block 3')
-        self.shielding_block_4 = Detector('shielding block 4')
+        self.helium_pipe_1 = Detector('helium pipe 1')
+        self.helium_pipe_2 = Detector('helium pipe 2')
+        self.helium_pipe_3 = Detector('helium pipe 3')
+        self.helium_pipe_4 = Detector('helium pipe 4')
 
         self.detectors = [
             self.target,
@@ -222,7 +225,7 @@ class Beamline:
         self.magnet.z = ds_detector_average_x / tan(self.us_theta * Beamline.RADIAN_PER_DEGREE)
 
     def plot_position(self):
-        c1 = TCanvas('c1', 'c1', 1200, 600)
+        c1 = TCanvas('c1', 'c1', 1400, 800)
         set_margin()
         gPad.SetLeftMargin(0.1)
         gPad.SetRightMargin(0.1)
@@ -463,8 +466,25 @@ class Beamline:
         self.f_out.write('place wire_chamber rename=wire_chamber_3 x={} y={} z={} rotation=y{}\n'.format(self.wc_3.x, self.wc_3.y, self.wc_3.z, self.wc_3.theta))
         self.f_out.write('place wire_chamber rename=wire_chamber_4 x={} y={} z={} rotation=y{}\n'.format(self.wc_4.x, self.wc_4.y, self.wc_4.z, self.wc_4.theta))
 
-    def write_beam_pipe():
-        pass
+    def write_helium_pipe(self):
+        self.helium_pipe_1.theta = self.us_theta
+        self.helium_pipe_2.theta = self.us_theta + self.ds_theta
+        self.helium_pipe_3.theta = self.us_theta + self.ds_theta
+        self.helium_pipe_4.theta = self.us_theta + self.ds_theta
+
+        outer_radius = 6. * Beamline.INCH / 2.
+        wall_thickness = 3. / 32. * Beamline.INCH
+        inner_radius = outer_radius - wall_thickness
+        print('outer_radius = {}'.format(outer_radius))
+        print('wall_thickness = {}'.format(wall_thickness))
+        print('inner_radius = {}'.format(inner_radius))
+
+        self.helium_pipe_1.length = 1000.
+
+        self.f_out.write('tubs helium radius={} length={} color=1,1,1 material=He\n'.format(inner_radius, self.helium_pipe_1.length))
+        self.f_out.write('tubs helium_pipe innerRadius={} outerRadius={} length={} color=0.74,0.34,0.09 material=STAINLESS-STEEL\n'.format(inner_radius, outer_radius, self.helium_pipe_1.length))
+        self.f_out.write('place helium rename=helium_1 x={} y={} z={} rotation=y{}\n'.format(self.helium_pipe_1.x, self.helium_pipe_1.y, self.helium_pipe_1.z, self.helium_pipe_1.theta))
+        self.f_out.write('place helium_pipe rename=helium_pipe_1 x={} y={} z={} rotation=y{} kill={}\n'.format(self.helium_pipe_1.x, self.helium_pipe_1.y, self.helium_pipe_1.z, self.helium_pipe_1.theta, self.kill))
 
     def write_magnet(self):
         self.magnet.height = 30. * Beamline.INCH
@@ -625,11 +645,11 @@ class Beamline:
         self.f_out.write('trackcuts kineticEnergyCut=20 keep=gamma,pi0,pi+,pi-,kaon+,kaon-,mu+,mu-,e+,e-,proton,anti_proton\n')
 
         self.write_target()
-        # self.write_collimator_us()
         self.write_collimator_us_alignment()
         if not self.screen_shot:
             self.write_virtual_disk()
         self.write_wc()
+        self.write_helium_pipe()
         self.write_magnet()
         self.write_collimator_ds()
         self.write_tof()
@@ -1351,6 +1371,8 @@ class Beamline:
         h1.GetXaxis().SetTitle('Vertical Position (mm)')
         h1.GetYaxis().SetTitle('Detector Count')
         h1.GetXaxis().SetRangeUser(-20, 50)
+        c1.Update()
+        draw_statbox(h1, x1=0.72)
 
         c1.Update()
         c1.SaveAs('{}/plot_vertical_positions.pdf'.format(self.figure_dir))
@@ -1867,4 +1889,4 @@ beamline.write()
 # beamline.write_nova_plane()
 # beamline.calculate()
 # beamline.plot_position()
-beamline.plot_vertical_positions()
+# beamline.plot_vertical_positions()
