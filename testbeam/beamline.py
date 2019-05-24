@@ -89,13 +89,20 @@ class Beamline:
             self.cherenkov,
             self.tof_ds,
             self.tof_ds_sipm,
-            self.nova
+            self.nova,
         ]
 
         self.shielding_blocks = [
             self.shielding_block_1,
             self.shielding_block_2,
-            self.shielding_block_3
+            self.shielding_block_3,
+        ]
+
+        self.helium_pipes = [
+            self.helium_pipe_1,
+            self.helium_pipe_2,
+            self.helium_pipe_3,
+            self.helium_pipe_4,
         ]
 
         self.components = self.detectors + self.shielding_blocks
@@ -475,16 +482,22 @@ class Beamline:
         outer_radius = 6. * Beamline.INCH / 2.
         wall_thickness = 3. / 32. * Beamline.INCH
         inner_radius = outer_radius - wall_thickness
-        print('outer_radius = {}'.format(outer_radius))
-        print('wall_thickness = {}'.format(wall_thickness))
-        print('inner_radius = {}'.format(inner_radius))
+        mylar_window_thickness = 0.003 * Beamline.INCH
 
-        self.helium_pipe_1.length = 1000.
+        self.f_out.write('tubs mylar_window radius={} length={} color=0,0.8,0 material=MYLAR kill=0\n'.format(outer_radius, mylar_window_thickness))
+        for i, helium_pipe in enumerate(self.helium_pipes):
+            index = i + 1
+            self.f_out.write('group helium_pipe_{}\n'.format(index))
+            self.f_out.write('  tubs helium radius={} length={} color=1,1,1 material=He kill=0\n'.format(inner_radius, helium_pipe.length))
+            self.f_out.write('  tubs helium_pipe innerRadius={} outerRadius={} length={} color=0,0.8,0 material=STAINLESS-STEEL kill={}\n'.format(inner_radius, outer_radius, helium_pipe.length, self.kill))
 
-        self.f_out.write('tubs helium radius={} length={} color=1,1,1 material=He\n'.format(inner_radius, self.helium_pipe_1.length))
-        self.f_out.write('tubs helium_pipe innerRadius={} outerRadius={} length={} color=0.74,0.34,0.09 material=STAINLESS-STEEL\n'.format(inner_radius, outer_radius, self.helium_pipe_1.length))
-        self.f_out.write('place helium rename=helium_1 x={} y={} z={} rotation=y{}\n'.format(self.helium_pipe_1.x, self.helium_pipe_1.y, self.helium_pipe_1.z, self.helium_pipe_1.theta))
-        self.f_out.write('place helium_pipe rename=helium_pipe_1 x={} y={} z={} rotation=y{} kill={}\n'.format(self.helium_pipe_1.x, self.helium_pipe_1.y, self.helium_pipe_1.z, self.helium_pipe_1.theta, self.kill))
+            z_shift = (helium_pipe.length + mylar_window_thickness * 2.) / 2. # shift in z by half of the full length in z to avoid geometry conflict in the group
+            self.f_out.write('  place helium_pipe rename=helium_pipe x={} y={} z={}\n'.format(0., 0., z_shift))
+            self.f_out.write('  place helium rename=helium x={} y={} z={}\n'.format(0., 0., z_shift))
+            self.f_out.write('  place mylar_window rename=mylar_window_up x={} y={} z={}\n'.format(0., 0., -helium_pipe.length / 2. - mylar_window_thickness / 2. + z_shift))
+            self.f_out.write('  place mylar_window rename=mylar_window_down x={} y={} z={}\n'.format(0., 0., helium_pipe.length / 2. + mylar_window_thickness / 2. + z_shift))
+            self.f_out.write('endgroup\n')
+            self.f_out.write('place helium_pipe_{} rename=helium_pipe_{} x={} y={} z={} rotation=y{}\n'.format(index, index, helium_pipe.x, helium_pipe.y, helium_pipe.z, helium_pipe.theta))
 
     def write_magnet(self):
         self.magnet.height = 30. * Beamline.INCH
@@ -935,9 +948,8 @@ class Beamline:
         input('Press any key to continue.')
 
     def read_alignment_data_beamline(self):
-        for component in self.components:
-            if component.name not in ['nova detector', 'upstream collimator']:
-                component.set_xyz((0., 0., 0.))
+        # for component in self.components:
+        #     component.set_xyz((0., 0., 0.))
 
         with open('data/alignment/NTB summary_up_ct_dn.txt') as f_txt:
             for row in csv.reader(f_txt, delimiter=','):
@@ -981,8 +993,47 @@ class Beamline:
                 component.y *= 25.4
                 component.z *= 25.4
 
-    def read_alignment_data_beamline_tof(self, **kwargs):
-        pass
+    def read_alignment_data_beamline_helium_pipe(self, **kwargs):
+        name_positions = {}
+
+        with open('data/alignment/NTB summary_up_ct_dn.txt') as f_txt:
+            for row in csv.reader(f_txt, delimiter=','):
+                detector_name = row[1].strip()
+                x = float(row[2])
+                y = float(row[3])
+                z = float(row[4])
+                position = -x, z, y
+
+                if 'BEAMPIPE' in detector_name:
+                    name = detector_name[:-3]
+                    if name not in name_positions:
+                        name_positions[name] = []
+                    name_positions[name].append(position)
+
+        name_lengths = {}
+        for name in name_positions:
+            length = 0.
+            for i in range(len(name_positions[name][0])):
+                length += (name_positions[name][0][i] - name_positions[name][1][i])**2
+            length = length**0.5 * Beamline.INCH
+            name_lengths[name] = length
+
+        name_centers = {}
+        for name in name_positions:
+            name_centers[name] = []
+            for i in range(len(name_positions[name][0])):
+                name_centers[name].append((name_positions[name][0][i] + name_positions[name][1][i]) / 2. * Beamline.INCH)
+
+        for name in name_centers:
+            xyz_length = (name_centers[name][0], name_centers[name][1], name_centers[name][2], name_lengths[name])
+            if name == 'NTB-MWPC-AK-BEAMPIPE':
+                self.helium_pipe_1.x, self.helium_pipe_1.y, self.helium_pipe_1.z, self.helium_pipe_1.length = xyz_length
+            elif name == 'NTB-M-1-0-BEAMPIPE':
+                self.helium_pipe_2.x, self.helium_pipe_2.y, self.helium_pipe_2.z, self.helium_pipe_2.length = xyz_length
+            elif name == 'NTB-MWPC-AF-BEAMPIPE':
+                self.helium_pipe_3.x, self.helium_pipe_3.y, self.helium_pipe_3.z, self.helium_pipe_3.length = xyz_length
+            elif name == 'NTB-MWPC-AI-BEAMPIPE':
+                self.helium_pipe_4.x, self.helium_pipe_4.y, self.helium_pipe_4.z, self.helium_pipe_4.length = xyz_length
 
     def read_alignment_data_beamline_collimator_us(self, **kwargs):
         plot = kwargs.get('plot', True)
@@ -1874,7 +1925,9 @@ class Beamline:
 # 20190424_testbeam_alignment
 beamline = Beamline()
 beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
+# beamline.screen_shot = True
 beamline.read_alignment_data_beamline()
+beamline.read_alignment_data_beamline_helium_pipe()
 beamline.write()
 # beamline.read_alignment_data_beamline_collimator_us()
 # beamline.read_alignment_data_beamline_mwpc()
