@@ -437,11 +437,11 @@ class Beamline:
         tof_ds_sipm_dimensions = [5.91 * Beamline.INCH, 0.52 * Beamline.INCH, 5.91 * Beamline.INCH]
         self.tof_ds_sipm.theta = self.us_theta + self.ds_theta
 
-        self.f_out.write('virtualdetector tof_us  height={} length={} width={} material=LUCITE color=0.05,0.05,0.93\n'.format(tof_us_dimensions[0], tof_us_dimensions[1], tof_us_dimensions[2]))
+        self.f_out.write('virtualdetector tof_us  height={} length={} width={} material=LUCITE color=0,0,1\n'.format(tof_us_dimensions[0], tof_us_dimensions[1], tof_us_dimensions[2]))
         self.f_out.write('place tof_us rename=tof_us x={} y={} z={} rotation=y{}\n'.format(self.tof_us.x, self.tof_us.y, self.tof_us.z, self.tof_us.theta))
-        self.f_out.write('virtualdetector tof_ds height={} length={} width={} material=LUCITE color=0.05,0.05,0.93\n'.format(tof_ds_dimensions[0], tof_ds_dimensions[1], tof_ds_dimensions[2]))
+        self.f_out.write('virtualdetector tof_ds height={} length={} width={} material=LUCITE color=0,0,1\n'.format(tof_ds_dimensions[0], tof_ds_dimensions[1], tof_ds_dimensions[2]))
         self.f_out.write('place tof_ds rename=tof_ds x={} y={} z={} rotation=y{}\n'.format(self.tof_ds.x, self.tof_ds.y, self.tof_ds.z, self.tof_ds.theta))
-        self.f_out.write('virtualdetector tof_ds_sipm height={} length={} width={} material=LUCITE color=0.05,0.05,0.93\n'.format(tof_ds_sipm_dimensions[0], tof_ds_sipm_dimensions[1], tof_ds_sipm_dimensions[2]))
+        self.f_out.write('virtualdetector tof_ds_sipm height={} length={} width={} material=LUCITE color=0,0,1\n'.format(tof_ds_sipm_dimensions[0], tof_ds_sipm_dimensions[1], tof_ds_sipm_dimensions[2]))
         self.f_out.write('place tof_ds_sipm rename=tof_ds_sipm x={} y={} z={} rotation=y{}\n'.format(self.tof_ds_sipm.x, self.tof_ds_sipm.y, self.tof_ds_sipm.z, self.tof_ds_sipm.theta))
 
     def write_wc(self):
@@ -487,11 +487,11 @@ class Beamline:
         inner_radius = outer_radius - wall_thickness
         mylar_window_thickness = 0.003 * Beamline.INCH
 
-        self.f_out.write('tubs mylar_window radius={} length={} color=0,0.8,0 material=MYLAR kill=0\n'.format(outer_radius, mylar_window_thickness))
+        self.f_out.write('tubs mylar_window radius={} length={} color=0,0.8,0 material=MYLAR\n'.format(outer_radius, mylar_window_thickness))
         for i, helium_pipe in enumerate(self.helium_pipes):
             index = i + 1
             self.f_out.write('group helium_pipe_{}\n'.format(index))
-            self.f_out.write('  tubs helium radius={} length={} color=1,1,1 material=He kill=0\n'.format(inner_radius, helium_pipe.length))
+            self.f_out.write('  tubs helium radius={} length={} color=1,1,1 material=He\n'.format(inner_radius, helium_pipe.length))
             self.f_out.write('  tubs helium_pipe innerRadius={} outerRadius={} length={} color=0,0.8,0 material=STAINLESS-STEEL kill={}\n'.format(inner_radius, outer_radius, helium_pipe.length, self.kill))
 
             z_shift = (helium_pipe.length + mylar_window_thickness * 2.) / 2. # shift in z by half of the full length in z to avoid geometry conflict in the group
@@ -582,6 +582,16 @@ class Beamline:
         self.f_out.write('place cherenkov_pipe_pmt rename=cherenkov_pipe_pmt x={} y={} z={} rotation=y{},x90 kill={}\n'.format(self.cherenkov.x, self.cherenkov.y - cherenkov_outer_radius - cherenkov_pmt_pipe_length / 2., self.cherenkov.z + self.cherenkov.length / 2. - cherenkov_pmt_pipe_outer_radius - 1.75 * Beamline.INCH, self.cherenkov.theta, self.kill))
         self.f_out.write('place cherenkov_support x={} y={} z={} rotation=y{}\n'.format(self.cherenkov.x, self.cherenkov.y - cherenkov_outer_radius - cherenkov_to_support_distance - support_dimensions[0] / 2., self.cherenkov.z - self.cherenkov.length / 2. + cherenkov_end_to_support_edge_distance + support_dimensions[1] / 2., self.cherenkov.theta))
 
+        # NOvA DocDB 36405
+        vinyl_window_thickness = 0.006 * Beamline.INCH
+        tedlar_window_thickness = 0.00175 * Beamline.INCH
+        self.f_out.write('tubs tedlar_window radius={} length={} color=0.74,0.34,0.09 material=POLYVINYL_CHLORIDE\n'.format(cherenkov_outer_radius, tedlar_window_thickness))
+        self.f_out.write('tubs vinyl_window radius={} length={} color=0.74,0.34,0.09 material=POLYVINYL_CHLORIDE\n'.format(cherenkov_outer_radius, vinyl_window_thickness))
+        self.f_out.write('place tedlar_window rename=tedlar_window_up x={} y={} z={}\n'.format(self.cherenkov.x, self.cherenkov.y, self.cherenkov.z - self.cherenkov.length / 2. - tedlar_window_thickness / 2.))
+        self.f_out.write('place tedlar_window rename=tedlar_window_down x={} y={} z={}\n'.format(self.cherenkov.x, self.cherenkov.y, self.cherenkov.z + self.cherenkov.length / 2. + tedlar_window_thickness / 2.))
+        self.f_out.write('place vinyl_window rename=vinyl_window_up x={} y={} z={}\n'.format(self.cherenkov.x, self.cherenkov.y, self.cherenkov.z - self.cherenkov.length / 2. - tedlar_window_thickness - vinyl_window_thickness / 2.))
+        self.f_out.write('place vinyl_window rename=vinyl_window_down x={} y={} z={}\n'.format(self.cherenkov.x, self.cherenkov.y, self.cherenkov.z + self.cherenkov.length / 2. + tedlar_window_thickness + vinyl_window_thickness / 2.))
+
     def write_nova_plane(self):
         self.nova.theta = self.us_theta + self.ds_theta
         self.nova.length = 1.
@@ -594,7 +604,7 @@ class Beamline:
         rotation_y = -0.3492962692141463
         rotation_z = 0.8032983167050841
 
-        self.f_out.write('virtualdetector nova height={} length={} width={} color=0.39,0.39,0.39\n'.format(self.nova.height, self.nova.length, self.nova.width))
+        self.f_out.write('virtualdetector nova height={} length={} width={} color=0.8,0.8,0.8\n'.format(self.nova.height, self.nova.length, self.nova.width))
         # self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y{}\n'.format(self.nova.x, self.nova.y, self.nova.z, self.nova.theta))
         self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y{},z{}\n'.format(self.nova.x, self.nova.y, self.nova.z, rotation_y, rotation_z))
 
