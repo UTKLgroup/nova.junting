@@ -49,10 +49,10 @@ class Beamline:
         self.screen_shot = False
         # self.kill = 1
         self.kill = 0
-        self.magnet_by = -0.9    # B field in tesla
-        self.distance_target_to_ground = 83. * Beamline.INCH # estimated height of the beam pipe center with respect to the ground
-        self.wire_chamber_support_length = 12.061 * Beamline.INCH
-        self.grating_upstream_edge_z = 298.211 * Beamline.INCH
+        # self.magnet_by = -0.9    # B field in tesla
+        # self.distance_target_to_ground = 83. * Beamline.INCH # estimated height of the beam pipe center with respect to the ground
+        # self.wire_chamber_support_length = 12.061 * Beamline.INCH
+        # self.grating_upstream_edge_z = 298.211 * Beamline.INCH
 
         self.target = Detector('target')
         self.collimator_us = Detector('upstream collimator')
@@ -118,118 +118,118 @@ class Beamline:
     def __del__(self):
         self.f_out.close()
 
-    @staticmethod
-    def get_average(points):
-        dimension_count = len(points[0])
-        point_count = len(points)
-        average = []
-        for i in range(dimension_count):
-            average.append(sum([point[i] for point in points]) / point_count)
-        return average
+    # @staticmethod
+    # def get_average(points):
+    #     dimension_count = len(points[0])
+    #     point_count = len(points)
+    #     average = []
+    #     for i in range(dimension_count):
+    #         average.append(sum([point[i] for point in points]) / point_count)
+    #     return average
 
-    @staticmethod
-    def get_distance(point_1, point_2):
-        dimension_count = len(point_1)
-        distance = 0.
-        for i in range(dimension_count):
-            distance += (point_1[i] - point_2[i])**2
-        return distance**0.5
+    # @staticmethod
+    # def get_distance(point_1, point_2):
+    #     dimension_count = len(point_1)
+    #     distance = 0.
+    #     for i in range(dimension_count):
+    #         distance += (point_1[i] - point_2[i])**2
+    #     return distance**0.5
 
-    @staticmethod
-    def get_csv(filename):
-        rows = []
-        with open(filename) as f_csv:
-            csv_reader = csv.reader(f_csv, delimiter=',')
-            next(csv_reader, None)
-            for row in csv_reader:
-                rows.append(list(map(lambda x: float(x) * 10., row)))
-        return rows
+    # @staticmethod
+    # def get_csv(filename):
+    #     rows = []
+    #     with open(filename) as f_csv:
+    #         csv_reader = csv.reader(f_csv, delimiter=',')
+    #         next(csv_reader, None)
+    #         for row in csv_reader:
+    #             rows.append(list(map(lambda x: float(x) * 10., row)))
+    #     return rows
 
-    def read_position(self):
-        rows = Beamline.get_csv('digitize/ftbf_drawing_digitize.csv')
-        origin = rows[0]
-        rows = [[row[0] - origin[0], row[1] - origin[1]] for row in rows]
+    # def read_position(self):
+    #     rows = Beamline.get_csv('digitize/ftbf_drawing_digitize.csv')
+    #     origin = rows[0]
+    #     rows = [[row[0] - origin[0], row[1] - origin[1]] for row in rows]
 
-        self.target.set_zx(rows[0])
-        self.tof_us.set_zx(rows[1])
-        self.wc_1.set_zx(Beamline.get_average([rows[2], rows[3]]))
-        self.wc_2.set_zx(Beamline.get_average([rows[4], rows[5]]))
-        self.magnet.set_zx(Beamline.get_average([rows[6], rows[9]]))
-        self.wc_3.set_zx(Beamline.get_average([rows[10], rows[11]]))
-        self.collimator_ds.set_zx(Beamline.get_average([rows[12], rows[13]]))
-        self.wc_4.set_zx(Beamline.get_average([rows[14], rows[15]]))
-        self.cherenkov.set_zx(Beamline.get_average([rows[16], rows[17]]))
-        self.tof_ds.set_zx(rows[18])
-        self.nova.set_zx(rows[19])
+    #     self.target.set_zx(rows[0])
+    #     self.tof_us.set_zx(rows[1])
+    #     self.wc_1.set_zx(Beamline.get_average([rows[2], rows[3]]))
+    #     self.wc_2.set_zx(Beamline.get_average([rows[4], rows[5]]))
+    #     self.magnet.set_zx(Beamline.get_average([rows[6], rows[9]]))
+    #     self.wc_3.set_zx(Beamline.get_average([rows[10], rows[11]]))
+    #     self.collimator_ds.set_zx(Beamline.get_average([rows[12], rows[13]]))
+    #     self.wc_4.set_zx(Beamline.get_average([rows[14], rows[15]]))
+    #     self.cherenkov.set_zx(Beamline.get_average([rows[16], rows[17]]))
+    #     self.tof_ds.set_zx(rows[18])
+    #     self.nova.set_zx(rows[19])
 
-        collimator_us_points = Beamline.get_csv('digitize/collimator_us.csv')
-        collimator_us_position = Beamline.get_average([collimator_us_points[0], collimator_us_points[2], collimator_us_points[3], collimator_us_points[5]])
-        self.collimator_us.set_zx([collimator_us_position[0] - origin[0], collimator_us_position[1] - origin[1]])
+    #     collimator_us_points = Beamline.get_csv('digitize/collimator_us.csv')
+    #     collimator_us_position = Beamline.get_average([collimator_us_points[0], collimator_us_points[2], collimator_us_points[3], collimator_us_points[5]])
+    #     self.collimator_us.set_zx([collimator_us_position[0] - origin[0], collimator_us_position[1] - origin[1]])
 
-    def read_nova_dimension(self):
-        top_points = Beamline.get_csv('digitize/nova.csv')
-        self.nova.length = np.average([Beamline.get_distance(top_points[0], top_points[1]), Beamline.get_distance(top_points[2], top_points[3])])
-        self.nova.width = Beamline.get_distance(top_points[1], top_points[2])
-        self.nova.height = self.nova.width
+    # def read_nova_dimension(self):
+    #     top_points = Beamline.get_csv('digitize/nova.csv')
+    #     self.nova.length = np.average([Beamline.get_distance(top_points[0], top_points[1]), Beamline.get_distance(top_points[2], top_points[3])])
+    #     self.nova.width = Beamline.get_distance(top_points[1], top_points[2])
+    #     self.nova.height = self.nova.width
 
-    def read_magnet_dimension(self):
-        top_points = Beamline.get_csv('digitize/magnet.csv')
-        self.magnet.length = np.average([Beamline.get_distance(top_points[0], top_points[1]), Beamline.get_distance(top_points[2], top_points[3])])
-        self.magnet.width = Beamline.get_distance(top_points[1], top_points[2])
-        self.magnet.aperture_width = Beamline.get_distance(top_points[4], top_points[5])
+    # def read_magnet_dimension(self):
+    #     top_points = Beamline.get_csv('digitize/magnet.csv')
+    #     self.magnet.length = np.average([Beamline.get_distance(top_points[0], top_points[1]), Beamline.get_distance(top_points[2], top_points[3])])
+    #     self.magnet.width = Beamline.get_distance(top_points[1], top_points[2])
+    #     self.magnet.aperture_width = Beamline.get_distance(top_points[4], top_points[5])
 
-        side_points = Beamline.get_csv('digitize/magnet.side.csv')
-        self.magnet.height = Beamline.get_distance(side_points[1], side_points[2])
-        self.magnet.aperture_height = Beamline.get_distance(side_points[4], side_points[5])
+    #     side_points = Beamline.get_csv('digitize/magnet.side.csv')
+    #     self.magnet.height = Beamline.get_distance(side_points[1], side_points[2])
+    #     self.magnet.aperture_height = Beamline.get_distance(side_points[4], side_points[5])
 
-    def read_collimator_ds_dimension(self):
-        top_points = Beamline.get_csv('digitize/collimator_ds.csv')
-        self.collimator_ds.length = (Beamline.get_distance(top_points[0], top_points[1]) + Beamline.get_distance(top_points[2], top_points[3])) / 2.
-        self.collimator_ds.width = Beamline.get_distance(top_points[1], top_points[2])
-        self.collimator_ds.aperture_width = Beamline.get_distance(top_points[4], top_points[5])
+    # def read_collimator_ds_dimension(self):
+    #     top_points = Beamline.get_csv('digitize/collimator_ds.csv')
+    #     self.collimator_ds.length = (Beamline.get_distance(top_points[0], top_points[1]) + Beamline.get_distance(top_points[2], top_points[3])) / 2.
+    #     self.collimator_ds.width = Beamline.get_distance(top_points[1], top_points[2])
+    #     self.collimator_ds.aperture_width = Beamline.get_distance(top_points[4], top_points[5])
 
-        side_points = Beamline.get_csv('digitize/collimator_ds.side.csv')
-        self.collimator_ds.height = Beamline.get_distance(side_points[1], side_points[2])
-        self.collimator_ds.aperture_height = Beamline.get_distance(side_points[4], side_points[5])
+    #     side_points = Beamline.get_csv('digitize/collimator_ds.side.csv')
+    #     self.collimator_ds.height = Beamline.get_distance(side_points[1], side_points[2])
+    #     self.collimator_ds.aperture_height = Beamline.get_distance(side_points[4], side_points[5])
 
-    def read_collimator_us_dimension(self):
-        top_points = Beamline.get_csv('digitize/collimator_us.csv')
-        self.collimator_ds.length = np.average([Beamline.get_distance(top_points[0], top_points[2]), Beamline.get_distance(top_points[3], top_points[5])])
-        self.collimator_ds.width = np.average([Beamline.get_distance(top_points[2], top_points[3]), Beamline.get_distance(top_points[1], top_points[4])])
+    # def read_collimator_us_dimension(self):
+    #     top_points = Beamline.get_csv('digitize/collimator_us.csv')
+    #     self.collimator_ds.length = np.average([Beamline.get_distance(top_points[0], top_points[2]), Beamline.get_distance(top_points[3], top_points[5])])
+    #     self.collimator_ds.width = np.average([Beamline.get_distance(top_points[2], top_points[3]), Beamline.get_distance(top_points[1], top_points[4])])
 
-        side_points = Beamline.get_csv('digitize/collimator_us.side.csv')
-        self.collimator_ds.height = np.average([Beamline.get_distance(side_points[0], side_points[5]), Beamline.get_distance(side_points[1], side_points[4])])
-        self.collimator_ds.aperture_height = np.average([Beamline.get_distance(side_points[2], side_points[3]), Beamline.get_distance(side_points[6], side_points[7])])
+    #     side_points = Beamline.get_csv('digitize/collimator_us.side.csv')
+    #     self.collimator_ds.height = np.average([Beamline.get_distance(side_points[0], side_points[5]), Beamline.get_distance(side_points[1], side_points[4])])
+    #     self.collimator_ds.aperture_height = np.average([Beamline.get_distance(side_points[2], side_points[3]), Beamline.get_distance(side_points[6], side_points[7])])
 
-    def read_cherenkov_dimension(self):
-        top_points = Beamline.get_csv('digitize/ftbf_drawing_digitize.csv')
-        self.cherenkov.length = self.get_distance(top_points[16], top_points[17])
+    # def read_cherenkov_dimension(self):
+    #     top_points = Beamline.get_csv('digitize/ftbf_drawing_digitize.csv')
+    #     self.cherenkov.length = self.get_distance(top_points[16], top_points[17])
 
-    def correct_position(self):
-        us_detectors = [
-            self.tof_us,
-            self.wc_1,
-            self.wc_2
-        ]
-        for us_detector in us_detectors:
-            distance = us_detector.get_r()
-            us_detector.x = sin(self.us_theta * Beamline.RADIAN_PER_DEGREE) * distance
-            us_detector.z = cos(self.us_theta * Beamline.RADIAN_PER_DEGREE) * distance
+    # def correct_position(self):
+    #     us_detectors = [
+    #         self.tof_us,
+    #         self.wc_1,
+    #         self.wc_2
+    #     ]
+    #     for us_detector in us_detectors:
+    #         distance = us_detector.get_r()
+    #         us_detector.x = sin(self.us_theta * Beamline.RADIAN_PER_DEGREE) * distance
+    #         us_detector.z = cos(self.us_theta * Beamline.RADIAN_PER_DEGREE) * distance
 
-        ds_detectors = [
-            self.wc_3,
-            self.collimator_ds,
-            self.wc_4,
-            self.cherenkov,
-            self.tof_ds,
-            self.nova
-        ]
-        ds_detector_average_x = np.average([ds_detector.x for ds_detector in ds_detectors])
-        for ds_detector in ds_detectors:
-            ds_detector.x = ds_detector_average_x
+    #     ds_detectors = [
+    #         self.wc_3,
+    #         self.collimator_ds,
+    #         self.wc_4,
+    #         self.cherenkov,
+    #         self.tof_ds,
+    #         self.nova
+    #     ]
+    #     ds_detector_average_x = np.average([ds_detector.x for ds_detector in ds_detectors])
+    #     for ds_detector in ds_detectors:
+    #         ds_detector.x = ds_detector_average_x
 
-        self.magnet.x = ds_detector_average_x
-        self.magnet.z = ds_detector_average_x / tan(self.us_theta * Beamline.RADIAN_PER_DEGREE)
+    #     self.magnet.x = ds_detector_average_x
+    #     self.magnet.z = ds_detector_average_x / tan(self.us_theta * Beamline.RADIAN_PER_DEGREE)
 
     def plot_position(self):
         c1 = TCanvas('c1', 'c1', 1400, 800)
@@ -1937,11 +1937,6 @@ class Beamline:
         c1.SaveAs('{}/plot_alignment_data_nova_detector_front_surface.pdf'.format(self.figure_dir))
         input('Press any key to continue.')
 
-    def calculate(self):
-        # ll = 20.07 - 42.76 * tan((16 + 1.97) * pi / 180.)
-        # ll = 42.76 * tan((16 - 1.97) * pi / 180.)
-        ll = 32. - (9.02 + 10.69 + 6.2)
-        print('ll = {}'.format(ll))
 
 # if __name__ == '__main__':
 # gStyle.SetOptStat(0)
