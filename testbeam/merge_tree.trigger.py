@@ -169,7 +169,7 @@ for name, tuple in INtuples.items():
 
 # Lists of variable names and TTree names to use in loops.
 vars = ('x','y','z','t','Px','Py','Pz','PDGid','ParentID','EventID','TrackID')
-# start_line = ('start_line',)
+start_line = ('start_line',)
 WCs = ('wire_chamber_1_detector', 'wire_chamber_2_detector', 'wire_chamber_3_detector', 'wire_chamber_4_detector')
 Scints = ('tof_us', 'tof_ds', 'cherenkov', 'nova') # Horz removed
 
@@ -177,7 +177,7 @@ Scints = ('tof_us', 'tof_ds', 'cherenkov', 'nova') # Horz removed
 ## Unfortunately, ROOT won't process a single line defining a single struct for all these; too long.
 ## So here we integrate them by parts.
 detsysts = {}
-# detsysts['start_line'] = start_line
+detsysts['start_line'] = start_line
 detsysts['WCs'] = WCs
 detsysts['Scints'] = Scints
 
