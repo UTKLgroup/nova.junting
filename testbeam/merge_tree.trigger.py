@@ -6,7 +6,7 @@ import sys
 import argparse
 import os
 import random
-import pprint
+from pprint import pprint
 from array import array
 
 
@@ -28,8 +28,7 @@ class MergeTree:
                  spill_interval,
                  subspill_number,
                  subspill_count,
-                 gamma_cutoff,
-                 keep_it_local):
+                 gamma_cutoff):
         self.input_filename = input_filename
         self.output_filename = output_filename
         self.starter_tree = starter_tree
@@ -39,7 +38,6 @@ class MergeTree:
         self.subspill_number = subspill_number
         self.subspill_count = subspill_count
         self.gamma_cutoff = gamma_cutoff
-        self.keep_it_local = keep_it_local
         self.jobs_in_spill = self.subspill_number % subspill_count
 
         self.BucketsPerOrbit = MergeTree.BATCH_PER_ORBIT * MergeTree.BUCKET_PER_BATCH
@@ -51,8 +49,13 @@ class MergeTree:
         self.category_detectors = {
             'start_line': ['start_line'],
             'wire_chambers': ['wire_chamber_1_detector', 'wire_chamber_2_detector', 'wire_chamber_3_detector', 'wire_chamber_4_detector'],
-            'scintillator_detectors': ['tof_us', 'tof_ds', 'cherenkov', 'nova']
+            'scintillator_detectors': ['tof_us', 'tof_ds', 'tof_ds_sipm', 'cherenkov', 'nova']
         }
+
+        self.detector_categories = dict()
+        for category, detectors in self.category_detectors.items():
+            for detector in detectors:
+                self.detector_categories[detector] = category
 
         self.all_detectors = []
         for detectors in self.category_detectors.values():
@@ -88,17 +91,16 @@ class MergeTree:
         spill_trees[spill].Branch('EventID', pointers[spill, 'EventID'], 'EventID/I')
         spill_trees[spill].Branch('TrackID', pointers[spill, 'TrackID'], 'TrackID/I')
 
-        for detectors in self.category_detectors.values():
-            for detector in detectors:
-                name = 'TrackPresent' + detector
-                pointers[spill, name] = array('B', [0])
-                spill_trees[spill].Branch(name, pointers[spill, name], name + '/O')
-                for variable in self.variables:
-                    if variable == 'EventID' or variable == 'TrackID' or variable == 'SpillID':
-                        continue
-                    name = variable + detector
-                    pointers[spill, name] = array('d', [0])
-                    spill_trees[spill].Branch(name, pointers[spill, name], name + '/d')
+        for detector in self.all_detectors:
+            name = 'TrackPresent' + detector
+            pointers[spill, name] = array('B', [0])
+            spill_trees[spill].Branch(name, pointers[spill, name], name + '/O')
+            for variable in self.variables:
+                if variable == 'EventID' or variable == 'TrackID':
+                    continue
+                name = variable + detector
+                pointers[spill, name] = array('d', [0])
+                spill_trees[spill].Branch(name, pointers[spill, name], name + '/d')
 
     def run(self):
         if not os.path.isfile(self.input_filename):
@@ -109,7 +111,6 @@ class MergeTree:
         tfile_input.cd()
         gDirectory.cd('VirtualDetector')
         keys = [key.GetName() for key in gDirectory.GetListOfKeys()]
-        pprint.pprint(keys)
 
         detector_events = {}
         for key in gDirectory.GetListOfKeys():
@@ -129,72 +130,83 @@ class MergeTree:
                     line_to_process += data_type + ' ' + variable + detector + '; '
             line_to_process += '};'
             ROOT.gROOT.ProcessLine(line_to_process)
-            print('line_to_process = {}'.format(line_to_process))
 
         category_structs = {}
         for category in self.category_detectors.keys():
-            category_structs[category] = 'ROOT.' + category + '()'
+            category_structs[category] = eval('ROOT.' + category + '()')
         
         for category, detectors in self.category_detectors.items():
             for variable in self.variables:
                 for detector in detectors:
                     events = detector_events[detector]
                     events.SetBranchAddress(variable, ROOT.AddressOf(category_structs[category], variable + detector))
-        
+
         tfile_output = ROOT.TFile(self.output_filename, 'RECREATE')
-        output_trees = {}
+        spill_trees = {}
         pointers = {}
-        tfile_input.cd()
-        
         track_count = 0
         spill_count = 0
 
         for event in detector_events[self.starter_tree]:
             track_count += 1
             (event_id, track_id) = (int(event.EventID), int(event.TrackID))
-            spill = 1 + (event // self.spill_size)
-        
+            spill = 1 + (event_id // self.spill_size)
+
             if self.gamma_cutoff > 0. and event.PDGid == 22:
                 energy = (event.Px**2 + event.Py**2 + event.Pz**2)**0.5
                 if energy < self.gamma_cutoff:
                     continue
         
-            if spill not in output_trees.keys():
-                self.add_tree(output_trees, spill, pointers)
+            if spill not in spill_trees:
                 spill_count += 1
                 if spill_count > self.max_spill > 0:
                     break
-        
+                self.add_tree(spill_trees, spill, pointers)
+
             pointers[spill, 'SpillID'][0] = spill
             pointers[spill, 'EventID'][0] = event_id
             pointers[spill, 'TrackID'][0] = track_id
-        
+
+            print('event_id = {}'.format(event_id))
+            print('track_id = {}'.format(track_id))
+            print('track_count = {}'.format(track_count))
+            print('spill = {}'.format(spill))
+
             for detector, events in detector_events.items():
                 entry_number = events.GetEntryWithIndex(event_id, track_id)
                 track_present = not (entry_number == -1)
                 pointers[spill, 'TrackPresent' + detector][0] = track_present
 
+                print('detector = {}'.format(detector))
+                print('entry_number = {}'.format(entry_number))
+                print('track_present = {}'.format(track_present))
+
                 for variable in self.variables:
                     if variable == 'EventID' or variable == 'TrackID':
                         continue
-    
+
                     variable_detector = variable + detector
                     value = MergeTree.DEFAULT_VALUE
                     if track_present:
-                        value = getattr(category_structs[detector], variable_detector)
+                        value = getattr(category_structs[self.detector_categories[detector]], variable_detector)
                         if variable == 't':
                             random.seed(event)
                             value += value * 1.e-9 + self.spill_interval * float(spill) + self.random_offset_seconds()
                     pointers[spill, variable_detector][0] = value
 
-            output_trees[spill].Fill()
-        
+            spill_trees[spill].Fill()
+
         print('{} total tracks in {}'.format(track_count, self.starter_tree))
         print('{} total spills'.format(spill_count - 1))
+        print(spill_trees)
+
+        for tree in spill_trees.values():
+            for event in tree:
+                print(event.ynova)
 
         tfile_output.cd()
-        for new_tree in output_trees.values():
-            new_tree.Write()
+        for tree in spill_trees.values():
+            tree.Write()
         tfile_output.Close()
         tfile_input.Close()
         
@@ -219,8 +231,6 @@ if __name__ == '__main__':
                         help='If processing the spill in parallel tranches, how many subspills to assume.')
     parser.add_argument('--gamma_cutoff', type=float, default=0.5,
                         help='In the starterTree gammas less than this energy will be ignored. The default value is 0.5 (MeV)')
-    parser.add_argument('-l', '--keep_it_local', action='store_true', default=False,
-                        help='Keep the output file in the same directory as the input file.')
 
     args = parser.parse_args()
     merge_tree = MergeTree(args.input_filename,
@@ -231,6 +241,5 @@ if __name__ == '__main__':
                            args.spill_interval,
                            args.subspill_number,
                            args.subspill_count,
-                           args.gamma_cutoff,
-                           args.keep_it_local)
+                           args.gamma_cutoff)
     merge_tree.run()
