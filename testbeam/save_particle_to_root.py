@@ -215,7 +215,7 @@ def save_particle_to_root(filename):
 
 if (__name__ == '__main__'):
     parser = argparse.ArgumentParser()
-    parser.add_argument("filename")
+    parser.add_argument('filename')
     args = parser.parse_args()
     print('processing {}'.format(args.filename))
     save_particle_to_root(args.filename)
