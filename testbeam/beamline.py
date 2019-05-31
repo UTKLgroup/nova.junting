@@ -283,6 +283,38 @@ class Beamline:
         c1.SaveAs('{}/plot_position.pdf'.format(self.figure_dir))
         input('Press any key to continue.')
 
+    def print_flight_distance(self):
+        detectors = [
+            self.tof_us,
+            self.wc_1,
+            self.wc_2,
+            self.magnet,
+            self.wc_3,
+            self.collimator_ds,
+            self.wc_4,
+            self.cherenkov,
+            self.tof_ds,
+            self.tof_ds_sipm,
+        ]
+
+        flight_distance = 0.
+        last_detector = detectors[0]
+        for i, detector in enumerate(detectors[1:]):
+            length = ((detector.x - last_detector.x)**2 + (detector.z - last_detector.z)**2)**0.5
+            flight_distance += length
+            last_detector = detector
+            print('detector.name = {:25s} flight_distance = {}'.format(detector.name, flight_distance))
+        print('from tof_us to tof_ds_sipm: {} mm'.format(flight_distance))
+
+        flight_distance = 0.
+        last_detector = detectors[0]
+        for i, detector in enumerate(detectors[1:-1]):
+            length = ((detector.x - last_detector.x)**2 + (detector.z - last_detector.z)**2)**0.5
+            flight_distance += length
+            last_detector = detector
+            print('detector.name = {:25s} flight_distance = {}'.format(detector.name, flight_distance))
+        print('from tof_us to tof_ds: {} mm'.format(flight_distance))
+
     def write_target(self):
         target_slab_dimensions = [31.75, 209.55, 6.35]  # [height, length, width]
         target_slab_count = 5.
@@ -1963,6 +1995,7 @@ beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/fi
 beamline.read_alignment_data_beamline()
 beamline.read_alignment_data_beamline_helium_pipe()
 beamline.write()
+# beamline.print_flight_distance()
 # beamline.read_alignment_data_beamline_collimator_us()
 # beamline.read_alignment_data_beamline_mwpc()
 # beamline.read_alignment_data_beamline_magnet()
