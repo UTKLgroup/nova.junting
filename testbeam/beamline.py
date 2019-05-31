@@ -362,7 +362,6 @@ class Beamline:
         channel_up_width = collimator_width - aperture_plate_up_edge_small - aperture_plate_up_edge_large
         aperture_plate_length = channel_down_z - channel_up_z
         aperture_plate_y = (channel_up_y + channel_down_y) / 2.
-        self.collimator_us.y = aperture_plate_y
 
         aperture_plate_1_vertex_1_x = channel_up_x + channel_up_width / 2. + aperture_plate_up_edge_small
         aperture_plate_1_vertex_1_z = channel_up_z
@@ -413,7 +412,7 @@ class Beamline:
             quantity[1] *= Beamline.INCH
             quantity[2] *= Beamline.INCH
 
-        self.collimator_us.set_zx([collimator_top_1_positions[2], collimator_top_1_positions[0]])
+        self.collimator_us.set_xyz([aperture_plate_x * Beamline.INCH, aperture_plate_y * Beamline.INCH, aperture_plate_z * Beamline.INCH])
 
         self.f_out.write('box collimator_base height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_base_dimensions[0], collimator_base_dimensions[1], collimator_base_dimensions[2], self.kill))
         self.f_out.write('box collimator_plate height={} length={} width={} material=Fe color=0,1,1 kill={}\n'.format(collimator_plate_dimensions[0], collimator_plate_dimensions[1], collimator_plate_dimensions[2], self.kill))
