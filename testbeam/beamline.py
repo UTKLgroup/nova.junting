@@ -476,7 +476,7 @@ class Beamline:
         self.f_out.write('place tof_ds_sipm rename=tof_ds_sipm x={} y={} z={} rotation=y{}\n'.format(self.tof_ds_sipm.x, self.tof_ds_sipm.y, self.tof_ds_sipm.z, self.tof_ds_sipm.theta))
 
     def write_wc(self):
-        wire_chamber_detector_dimensions = [125., 25., 128.]
+        wire_chamber_detector_dimensions = [128., 25., 128.]
         wire_chamber_frame_vertical_dimensions = [254., 25., 63.]
         wire_chamber_frame_horizontal_dimensions = [63., 25., 128.]
         wire_chamber_detector_positions = [0., 0., 12.5]
@@ -868,7 +868,8 @@ class Beamline:
         # self.write_shielding_block()
 
         # wire chambers
-        # self.write_wc()
+        self.wc_1.set_xyz([0., 0., 0.])
+        self.write_wc()
 
         # nova detector
         # # self.nova.theta = self.us_theta + self.ds_theta
@@ -892,30 +893,30 @@ class Beamline:
 
 
         # helium pipes
-        outer_radius = 6. * Beamline.INCH / 2.
-        wall_thickness = 3. / 32. * Beamline.INCH
-        inner_radius = outer_radius - wall_thickness
-        mylar_window_thickness = 0.003 * Beamline.INCH
+        # outer_radius = 6. * Beamline.INCH / 2.
+        # wall_thickness = 3. / 32. * Beamline.INCH
+        # inner_radius = outer_radius - wall_thickness
+        # mylar_window_thickness = 0.003 * Beamline.INCH
 
-        self.helium_pipe_1.theta = 0.
-        self.helium_pipe_1.x = 0.
-        self.helium_pipe_1.y = 0.
-        self.helium_pipe_1.z = 0.
+        # self.helium_pipe_1.theta = 0.
+        # self.helium_pipe_1.x = 0.
+        # self.helium_pipe_1.y = 0.
+        # self.helium_pipe_1.z = 0.
 
-        self.f_out.write('tubs mylar_window radius={} length={} color=0,0,1 material=MYLAR kill=0\n'.format(outer_radius, mylar_window_thickness))
-        for i, helium_pipe in enumerate([self.helium_pipe_1]):
-            index = i + 1
-            self.f_out.write('group helium_pipe_{}\n'.format(index))
-            self.f_out.write('  tubs helium radius={} length={} color=1,1,1 material=He kill=0\n'.format(inner_radius, helium_pipe.length))
-            self.f_out.write('  tubs helium_pipe innerRadius={} outerRadius={} length={} color=0,0.8,0 material=STAINLESS-STEEL kill={}\n'.format(inner_radius, outer_radius, helium_pipe.length, self.kill))
+        # self.f_out.write('tubs mylar_window radius={} length={} color=0,0,1 material=MYLAR kill=0\n'.format(outer_radius, mylar_window_thickness))
+        # for i, helium_pipe in enumerate([self.helium_pipe_1]):
+        #     index = i + 1
+        #     self.f_out.write('group helium_pipe_{}\n'.format(index))
+        #     self.f_out.write('  tubs helium radius={} length={} color=1,1,1 material=He kill=0\n'.format(inner_radius, helium_pipe.length))
+        #     self.f_out.write('  tubs helium_pipe innerRadius={} outerRadius={} length={} color=0,0.8,0 material=STAINLESS-STEEL kill={}\n'.format(inner_radius, outer_radius, helium_pipe.length, self.kill))
 
-            z_shift = (helium_pipe.length + mylar_window_thickness * 2.) / 2. # shift in z by half of the full length in z to avoid geometry conflict in the group
-            self.f_out.write('  place helium_pipe rename=helium_pipe x={} y={} z={}\n'.format(0., 0., z_shift))
-            self.f_out.write('  place helium rename=helium x={} y={} z={}\n'.format(0., 0., z_shift))
-            self.f_out.write('  place mylar_window rename=mylar_window_up x={} y={} z={}\n'.format(0., 0., -helium_pipe.length / 2. - mylar_window_thickness / 2. + z_shift))
-            self.f_out.write('  place mylar_window rename=mylar_window_down x={} y={} z={}\n'.format(0., 0., helium_pipe.length / 2. + mylar_window_thickness / 2. + z_shift))
-            self.f_out.write('endgroup\n')
-            self.f_out.write('place helium_pipe_{} rename=helium_pipe_{} x={} y={} z={} rotation=y{}\n'.format(index, index, helium_pipe.x, helium_pipe.y, helium_pipe.z, helium_pipe.theta))
+        #     z_shift = (helium_pipe.length + mylar_window_thickness * 2.) / 2. # shift in z by half of the full length in z to avoid geometry conflict in the group
+        #     self.f_out.write('  place helium_pipe rename=helium_pipe x={} y={} z={}\n'.format(0., 0., z_shift))
+        #     self.f_out.write('  place helium rename=helium x={} y={} z={}\n'.format(0., 0., z_shift))
+        #     self.f_out.write('  place mylar_window rename=mylar_window_up x={} y={} z={}\n'.format(0., 0., -helium_pipe.length / 2. - mylar_window_thickness / 2. + z_shift))
+        #     self.f_out.write('  place mylar_window rename=mylar_window_down x={} y={} z={}\n'.format(0., 0., helium_pipe.length / 2. + mylar_window_thickness / 2. + z_shift))
+        #     self.f_out.write('endgroup\n')
+        #     self.f_out.write('place helium_pipe_{} rename=helium_pipe_{} x={} y={} z={} rotation=y{}\n'.format(index, index, helium_pipe.x, helium_pipe.y, helium_pipe.z, helium_pipe.theta))
 
         print('finished write_geometry_check()')
         print('file written to {}'.format(self.g4bl_filename))
