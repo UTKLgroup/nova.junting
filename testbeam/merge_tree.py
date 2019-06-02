@@ -167,19 +167,10 @@ class MergeTree:
             pointers[spill, 'EventID'][0] = event_id
             pointers[spill, 'TrackID'][0] = track_id
 
-            print('event_id = {}'.format(event_id))
-            print('track_id = {}'.format(track_id))
-            print('track_count = {}'.format(track_count))
-            print('spill = {}'.format(spill))
-
             for detector, events in detector_events.items():
                 entry_number = events.GetEntryWithIndex(event_id, track_id)
                 track_present = not (entry_number == -1)
                 pointers[spill, 'TrackPresent' + detector][0] = track_present
-
-                print('detector = {}'.format(detector))
-                print('entry_number = {}'.format(entry_number))
-                print('track_present = {}'.format(track_present))
 
                 for variable in self.variables:
                     if variable == 'EventID' or variable == 'TrackID':
@@ -198,11 +189,6 @@ class MergeTree:
 
         print('{} total tracks in {}'.format(track_count, self.starter_tree))
         print('{} total spills'.format(spill_count - 1))
-        print(spill_trees)
-
-        for tree in spill_trees.values():
-            for event in tree:
-                print(event.ynova)
 
         tfile_output.cd()
         for tree in spill_trees.values():
