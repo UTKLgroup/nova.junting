@@ -40,7 +40,6 @@ class MergeTree:
         self.gamma_cutoff = gamma_cutoff
         self.jobs_in_spill = self.subspill_number % subspill_count
 
-        self.BucketsPerOrbit = MergeTree.BATCH_PER_ORBIT * MergeTree.BUCKET_PER_BATCH
         self.batch_length = MergeTree.BUCKET_CENTER_SPACING * MergeTree.BUCKET_PER_BATCH
         self.orbit_length = self.batch_length * MergeTree.BATCH_PER_ORBIT
         self.orbit_in_spill = MergeTree.SPILL_DURATION / self.orbit_length

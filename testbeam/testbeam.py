@@ -16,9 +16,7 @@ INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
 COLORS = [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1, kYellow + 2, kPink, kViolet, kAzure + 4, kCyan + 1, kTeal - 7, kBlue - 5]
-# FIGURE_DIR = '/Users/juntinghuang/Desktop/nova/testbeam/doc/testbeam_beamline_simulation/figures'
-# FIGURE_DIR = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
-FIGURE_DIR = '/Users/juntinghuang/beamer/20190502_testbeam_scintillator_paddle_beam/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20190531_testbeam_good_particle_position/figures'
 DATA_DIR = './data'
 
 
@@ -5016,6 +5014,56 @@ def plot_alignment_data():
                 print('x = {}, y = {}, z = {}'.format(x, y, z))
 
 
+def read_wire_chamber_position_rotation():
+    detector_positions = {}
+
+    with open('data/alignment/NTB summary_up_ct_dn.txt') as f_txt:
+        for row in csv.reader(f_txt, delimiter=','):
+            detector_name = row[1].strip()
+            x = float(row[2])
+            y = float(row[3])
+            z = float(row[4])
+
+            if '_CT' in detector_name:
+                if 'NTB-TGT-COLL-002-TOF-1' in detector_name:
+                    detector = 'tof_us'
+                elif 'NTB-CERENKOV-TOF-1' in detector_name:
+                    detector = 'tof_ds_pmt'
+                elif 'NTB-CERENKOV-TOF-2' in detector_name:
+                    detector = 'tof_ds_sipm'
+                elif 'NTB-MWPC-AK' in detector_name:
+                    detector = 'wc_1'
+                elif 'NTB-MWPC-AL' in detector_name:
+                    detector = 'wc_2'
+                elif 'NTB-MWPC-AF' in detector_name:
+                    detector = 'wc_3'
+                elif 'NTB-MWPC-AI' in detector_name:
+                    detector = 'wc_4'
+
+                detector_positions[detector] = {
+                    'x': -x,
+                    'y': z,
+                    'z': y
+                }
+    return detector_positions
+
+
+def plot_good_particle_position_mwpc():
+    tf = TFile('merge_tree.root')
+    tf.cd()
+    key_names = [key.GetName() for key in gDirectory.GetListOfKeys()]
+
+    tree = tf.Get(key_names[0])
+    tree.Print()
+    for event in tf.Get(key_names[0]):
+        print('event.SpillID = {}'.format(event.SpillID))
+        print('event.EventID = {}'.format(event.EventID))
+        # event.xwire_chamber_4_detector
+
+
+# 20190531_testbeam_good_particle_position
+plot_good_particle_position_mwpc()
+
 # 20190502_testbeam_scintillator_paddle_beam
 # gStyle.SetOptStat(0)
 # plot_trigger_count_per_fragment('V1742Analysis.run_2724.root', x_axis_title='Spill Number', y_axis_title='Event Count', grid=True)
@@ -5081,7 +5129,7 @@ def plot_alignment_data():
 #     # break
 
 # 20190424_testbeam_alignment
-plot_alignment_data()
+# plot_alignment_data()
 
 # 20190419_testbeam_scintillator_paddle_by_mwpc
 # print('len(COLORS = {}'.format(len(COLORS)))
