@@ -103,6 +103,7 @@ def get_csv(filename):
 
 
 def rotate_y(x, z, degree):
+    # degree is positive if the coordinate system rotates counterclockwise
     theta = degree * pi / 180.0
     x = cos(theta) * x - sin(theta) * z
     z = sin(theta) * x + cos(theta) * z
@@ -5167,7 +5168,7 @@ def plot_alignment_data():
                 print('x = {}, y = {}, z = {}'.format(x, y, z))
 
 
-def read_wire_chamber_position_rotation():
+def get_detector_positions():
     detector_positions = {}
 
     with open('data/alignment/NTB summary_up_ct_dn.txt') as f_txt:
@@ -5178,6 +5179,7 @@ def read_wire_chamber_position_rotation():
             z = float(row[4])
 
             if '_CT' in detector_name:
+                detector = None
                 if 'NTB-TGT-COLL-002-TOF-1' in detector_name:
                     detector = 'tof_us'
                 elif 'NTB-CERENKOV-TOF-1' in detector_name:
@@ -5193,29 +5195,117 @@ def read_wire_chamber_position_rotation():
                 elif 'NTB-MWPC-AI' in detector_name:
                     detector = 'wc_4'
 
-                detector_positions[detector] = {
-                    'x': -x,
-                    'y': z,
-                    'z': y
-                }
+                if detector is not None:
+                    detector_positions[detector] = [-x * 25.4, z * 25.4, y * 25.4]
+
     return detector_positions
 
 
-def plot_good_particle_position_mwpc():
-    tf = TFile('merge_tree.root')
-    tf.cd()
-    key_names = [key.GetName() for key in gDirectory.GetListOfKeys()]
+def transform_coordinate(xyz, xyz0, rotation_y_degree):
+    # rotation_y_degree is positive if the coordinate system rotates counterclockwise
+    x = xyz[0] - xyz0[0]
+    y = xyz[1] - xyz0[1]
+    z = xyz[2] - xyz0[2]
+    x, z = rotate_y(x, z, rotation_y_degree)
+    return x, y, z
 
-    tree = tf.Get(key_names[0])
-    tree.Print()
-    for event in tf.Get(key_names[0]):
-        print('event.SpillID = {}'.format(event.SpillID))
-        print('event.EventID = {}'.format(event.EventID))
-        # event.xwire_chamber_4_detector
+
+def plot_particle_position_detector(h1, detector_name, detector_width):
+    c1 = TCanvas('c1', 'c1', 650, 600)
+    set_margin()
+    set_h2_style(h1)
+    set_h2_color_style()
+
+    h1.Draw('colz')
+    h1.GetXaxis().SetTitle('X (mm)')
+    h1.GetYaxis().SetTitle('Y (mm)')
+
+    x0 = 0.
+    y0 = 0.
+    z0 = 0.
+    half_width = detector_width / 2.
+    tl_left = TLine(x0 - half_width, y0 - half_width, x0 - half_width, y0 + half_width)
+    tl_right = TLine(x0 + half_width, y0 - half_width, x0 + half_width, y0 + half_width)
+    tl_top = TLine(x0 - half_width, y0 + half_width, x0 + half_width, y0 + half_width)
+    tl_bottom = TLine(x0 - half_width, y0 - half_width, x0 + half_width, y0 - half_width)
+    for tl in [tl_left, tl_right, tl_top, tl_bottom]:
+        tl.SetLineColor(kRed)
+        tl.SetLineWidth(3)
+        tl.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_good_particle_positions.{}.pdf'.format(FIGURE_DIR, detector_name))
+    # input('Press any key to continue.')
+
+
+def plot_good_particle_positions(filename, **kwargs):
+    save_to_file = kwargs.get('save_to_file', True)
+
+    detector_positions = get_detector_positions()
+    detectors = ['wc_1', 'wc_2', 'wc_3', 'wc_4', 'tof_us', 'tof_ds_pmt', 'tof_ds_sipm']
+
+    detector_hists = {}
+    detector_rotation_y_degrees = {}
+    detector_widths = {}
+    for detector in detectors:
+        detector_hists[detector] = TH2D('h_{}'.format(detector), 'h_{}'.format(detector), 100, -100, 100, 100, -100, 100)
+
+        detector_rotation_y_degrees[detector] = 0.
+        if detector in ['wc_1', 'wc_2', 'tof_us']:
+            detector_rotation_y_degrees[detector] = -16.
+
+        detector_widths[detector] = 128.
+        if detector in ['tof_us', 'tof_ds_pmt', 'tof_ds_sipm']:
+            detector_widths[detector] = 5.91 * 25.4
+
+    detector_hit_positions = {}
+    tf_in = TFile('{}/{}'.format(DATA_DIR, filename))
+    keys = [key.GetName() for key in gDirectory.GetListOfKeys()]
+    track_count = 0
+    for key in keys:
+        print('key = {}'.format(key))
+        for track in tf_in.Get(key):
+            track_count += 1
+            pass_all = track.TrackPresenttof_us and \
+                       track.TrackPresentwire_chamber_1_detector and \
+                       track.TrackPresentwire_chamber_2_detector and \
+                       track.TrackPresentwire_chamber_3_detector and \
+                       track.TrackPresentwire_chamber_4_detector and \
+                       track.TrackPresenttof_ds and \
+                       track.TrackPresentcherenkov and \
+                       track.TrackPresentnova
+            if not pass_all:
+                continue
+
+            detector_hit_positions['wc_1'] = [track.xwire_chamber_1_detector, track.ywire_chamber_1_detector, track.zwire_chamber_1_detector]
+            detector_hit_positions['wc_2'] = [track.xwire_chamber_2_detector, track.ywire_chamber_2_detector, track.zwire_chamber_2_detector]
+            detector_hit_positions['wc_3'] = [track.xwire_chamber_3_detector, track.ywire_chamber_3_detector, track.zwire_chamber_3_detector]
+            detector_hit_positions['wc_4'] = [track.xwire_chamber_4_detector, track.ywire_chamber_4_detector, track.zwire_chamber_4_detector]
+            detector_hit_positions['tof_us'] = [track.xtof_us, track.ytof_us, track.ztof_us]
+            detector_hit_positions['tof_ds_pmt'] = [track.xtof_ds, track.ytof_ds, track.ztof_ds]
+            detector_hit_positions['tof_ds_sipm'] = [track.xtof_ds_sipm, track.ytof_ds_sipm, track.ztof_ds_sipm]
+
+            for detector in detectors:
+                xyz = transform_coordinate(detector_hit_positions[detector], detector_positions[detector], detector_rotation_y_degrees[detector])
+                detector_hists[detector].Fill(xyz[0], xyz[1])
+
+    print('track_count = {}'.format(track_count))
+
+    if save_to_file:
+        tf = TFile('{}/{}.plot_good_particle_positions.root'.format(DATA_DIR, filename), 'RECREATE')
+        for detector in detectors:
+            detector_hists[detector].Write()
+        tf.Close()
+
+    for detector in detectors:
+        print('detector = {}'.format(detector))
+        print('detector_widths[detector] = {}'.format(detector_widths[detector]))
+        plot_particle_position_detector(detector_hists[detector], detector, detector_widths[detector])
 
 
 # 20190531_testbeam_good_particle_position
-# plot_good_particle_position_mwpc()
+gStyle.SetOptStat(0)
+plot_good_particle_positions('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root', save_to_file=True)
 
 # 20190502_testbeam_scintillator_paddle_beam
 # gStyle.SetOptStat(0)
@@ -5566,39 +5656,39 @@ def plot_good_particle_position_mwpc():
 # plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root.noise_particle_True.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=10, x_min=0, x_max=20000, y_min=1.e-2, noise_particle=True)
 # plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root.noise_particle_False.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, x_min=500, x_max=2000, y_max=3., noise_particle=False)
 # plot_det_sim_particle_count_per_event('text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root.root', x_max=10)
-filenames = [
-    'g4bl.b_-0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_-0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_-0.675T.proton.64000.root.job_1_20000.799.72m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root',
-    'g4bl.b_-1.125T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_-1.575T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-    'g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root'
-]
-b_fields = [
-    -0.225,
-    -0.45,
-    -0.675,
-    -0.9,
-    -1.125,
-    -1.35,
-    -1.575,
-    -1.8
-]
-pids = [-11, -13, 211, 321, 2212]
-plot_particle_count_vs_b_field(filenames=filenames,
-                               b_fields=b_fields,
-                               pids=pids,
-                               suffix='.b_negative',
-                               canvas_height=600)
-plot_particle_count_vs_b_field(filenames=filenames,
-                               b_fields=b_fields,
-                               pids=pids,
-                               suffix='.b_negative',
-                               canvas_height=600,
-                               y_axis_title='Good Particles per Month (1M per Spill)',
-                               scaling_factor=60 * 24 * 30)
+# filenames = [
+#     'g4bl.b_-0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_-0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_-0.675T.proton.64000.root.job_1_20000.799.72m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root',
+#     'g4bl.b_-1.125T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_-1.575T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+#     'g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root'
+# ]
+# b_fields = [
+#     -0.225,
+#     -0.45,
+#     -0.675,
+#     -0.9,
+#     -1.125,
+#     -1.35,
+#     -1.575,
+#     -1.8
+# ]
+# pids = [-11, -13, 211, 321, 2212]
+# plot_particle_count_vs_b_field(filenames=filenames,
+#                                b_fields=b_fields,
+#                                pids=pids,
+#                                suffix='.b_negative',
+#                                canvas_height=600)
+# plot_particle_count_vs_b_field(filenames=filenames,
+#                                b_fields=b_fields,
+#                                pids=pids,
+#                                suffix='.b_negative',
+#                                canvas_height=600,
+#                                y_axis_title='Good Particles per Month (1M per Spill)',
+#                                scaling_factor=60 * 24 * 30)
 
 # 20190215_testbeam_helium_momentum_resolution
 # print_radiation_length()
