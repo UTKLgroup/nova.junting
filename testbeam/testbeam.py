@@ -5210,7 +5210,7 @@ def transform_coordinate(xyz, xyz0, rotation_y_degree):
     return x, y, z
 
 
-def plot_particle_position_detector(h1, detector_name, detector_width):
+def plot_particle_position_detector(h1, detector_name, detector_width, detector_latex_name):
     c1 = TCanvas('c1', 'c1', 650, 600)
     set_margin()
     set_h2_style(h1)
@@ -5233,6 +5233,14 @@ def plot_particle_position_detector(h1, detector_name, detector_width):
         tl.SetLineWidth(3)
         tl.Draw()
 
+    h1.SetTitle(detector_latex_name)
+
+    # tex = TLatex(-90, 90, detector_latex_name)
+    # tex.SetTextFont(43)
+    # tex.SetTextSize(25)
+    # tex.SetTextAlign(12)
+    # tex.Draw()
+
     c1.Update()
     c1.SaveAs('{}/plot_good_particle_positions.{}.pdf'.format(FIGURE_DIR, detector_name))
     # input('Press any key to continue.')
@@ -5243,6 +5251,15 @@ def plot_good_particle_positions(filename, **kwargs):
 
     detector_positions = get_detector_positions()
     detectors = ['wc_1', 'wc_2', 'wc_3', 'wc_4', 'tof_us', 'tof_ds_pmt', 'tof_ds_sipm']
+    detector_latex_names = {
+        'wc_1': 'Wire Chamber 1',
+        'wc_2': 'Wire Chamber 2',
+        'wc_3': 'Wire Chamber 3',
+        'wc_4': 'Wire Chamber 4',
+        'tof_us': 'Upstream TOF',
+        'tof_ds_pmt': 'Downstream TOF (PMT)',
+        'tof_ds_sipm': 'Downstream TOF (SiPM)'
+    }
 
     detector_hists = {}
     detector_rotation_y_degrees = {}
@@ -5298,9 +5315,7 @@ def plot_good_particle_positions(filename, **kwargs):
         tf.Close()
 
     for detector in detectors:
-        print('detector = {}'.format(detector))
-        print('detector_widths[detector] = {}'.format(detector_widths[detector]))
-        plot_particle_position_detector(detector_hists[detector], detector, detector_widths[detector])
+        plot_particle_position_detector(detector_hists[detector], detector, detector_widths[detector], detector_latex_names[detector])
 
 
 # 20190531_testbeam_good_particle_position
