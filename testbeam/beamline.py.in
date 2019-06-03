@@ -92,20 +92,20 @@ virtualdetector tof_ds height=150.114 length=6.095999999999999 width=150.114 mat
 place tof_ds rename=tof_ds x=-1357.8250466 y=3.3355534 z=14415.290448 rotation=y0.0
 virtualdetector tof_ds_sipm height=150.114 length=13.208 width=150.114 material=LUCITE color=0,0,1
 place tof_ds_sipm rename=tof_ds_sipm x=-1353.4397366 y=-0.503682 z=14553.5490488 rotation=y0.0
-virtualdetector cherenkov radius=157.5 length=2925.0 color=1,1,1 material=CARBON_DIOXIDE
-tubs cherenkov_pipe innerRadius=157.5 outerRadius=162.0 length=2925.0 color=0.74,0.34,0.09 material=STAINLESS-STEEL
+virtualdetector cherenkov radius=157.5 length=2925.572 color=1,1,1 material=CARBON_DIOXIDE
+tubs cherenkov_pipe innerRadius=157.5 outerRadius=162.0 length=2925.572 color=0.74,0.34,0.09 material=STAINLESS-STEEL
 tubs cherenkov_pipe_pmt innerRadius=132.0 outerRadius=136.5 length=684.0 color=0.74,0.34,0.09 material=STAINLESS-STEEL
 box cherenkov_support height=1371.6000000000001 length=1828.8000000000002 width=914.4000000000001 material=CONCRETE color=0,1,1 kill=0
-place cherenkov rename=cherenkov x=-1353.6168 y=1.1176 z=12569.799599999998 rotation=y0.0
-place cherenkov_pipe rename=cherenkov_pipe x=-1353.6168 y=1.1176 z=12569.799599999998 rotation=y0.0 kill=0
-place cherenkov_pipe_pmt rename=cherenkov_pipe_pmt x=-1353.6168 y=-502.88239999999996 z=13851.349599999998 rotation=y0.0,x90 kill=0
-place cherenkov_support x=-1353.6168 y=-1002.2574000000001 z=12113.774599999999 rotation=y0.0
+place cherenkov rename=cherenkov x=-1353.6168 y=1.1176 z=12819.735599999998 rotation=y0.0
+place cherenkov_pipe rename=cherenkov_pipe x=-1353.6168 y=1.1176 z=12819.735599999998 rotation=y0.0 kill=0
+place cherenkov_pipe_pmt rename=cherenkov_pipe_pmt x=-1353.6168 y=-502.88239999999996 z=14101.571599999997 rotation=y0.0,x90 kill=0
+place cherenkov_support x=-1353.6168 y=-1002.2574000000001 z=12363.424599999998 rotation=y0.0
 tubs tedlar_window radius=162.0 length=0.044449999999999996 color=0.74,0.34,0.09 material=POLYVINYL_CHLORIDE
 tubs vinyl_window radius=162.0 length=0.1524 color=0.74,0.34,0.09 material=POLYVINYL_CHLORIDE
-place tedlar_window rename=tedlar_window_up x=-1353.6168 y=1.1176 z=11107.277374999998
-place tedlar_window rename=tedlar_window_down x=-1353.6168 y=1.1176 z=14032.321824999999
-place vinyl_window rename=vinyl_window_up x=-1353.6168 y=1.1176 z=11107.17895
-place vinyl_window rename=vinyl_window_down x=-1353.6168 y=1.1176 z=14032.420249999997
+place tedlar_window rename=tedlar_window_up x=-1353.6168 y=1.1176 z=11356.927374999997
+place tedlar_window rename=tedlar_window_down x=-1353.6168 y=1.1176 z=14282.543824999999
+place vinyl_window rename=vinyl_window_up x=-1353.6168 y=1.1176 z=11356.82895
+place vinyl_window rename=vinyl_window_down x=-1353.6168 y=1.1176 z=14282.642249999997
 virtualdetector nova height=3038.3356249999997 length=1.0 width=3038.3356249999997 color=0.8,0.8,0.8
 place nova rename=nova x=-1374.4731770833332 y=76.1231770833333 z=14617.377049180326 rotation=y-0.3492962692141463,z0.8032983167050841
 group shielding_block
