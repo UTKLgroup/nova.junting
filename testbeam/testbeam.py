@@ -16,8 +16,8 @@ INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
 COLORS = [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1, kYellow + 2, kPink, kViolet, kAzure + 4, kCyan + 1, kTeal - 7, kBlue - 5]
-FIGURE_DIR = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
-# FIGURE_DIR = '/Users/juntinghuang/beamer/20190531_testbeam_good_particle_position/figures'
+# FIGURE_DIR = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20190531_testbeam_good_particle_position/figures'
 DATA_DIR = './data'
 
 
@@ -5288,7 +5288,7 @@ def plot_good_particle_position_mwpc():
 # plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=2, x_min=500., x_max=2000., y_min=1.e-3, y_max=15, noise_particle=False)
 # gStyle.SetOptStat(0)
 # plot_noise_particle_position('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root', show_boundary=True, save_to_file=True, z_limits={'pi+': [0, 320]})
-plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root', show_boundary=True, z_limits={'pi+': [0, 320]})
+# plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root', show_boundary=True, z_limits={'pi+': [0, 320]})
 # plot_alignment_data()
 
 # 20190419_testbeam_scintillator_paddle_by_mwpc
@@ -5566,32 +5566,39 @@ plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigg
 # plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root.noise_particle_True.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=10, x_min=0, x_max=20000, y_min=1.e-2, noise_particle=True)
 # plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root.noise_particle_False.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, x_min=500, x_max=2000, y_max=3., noise_particle=False)
 # plot_det_sim_particle_count_per_event('text_gen.g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root.root', x_max=10)
-# filenames = [
-#     'g4bl.b_-0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-#     'g4bl.b_-0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-#     'g4bl.b_-0.675T.proton.64000.root.job_1_20000.799.72m.kineticEnergyCut_20.root.hist.root',
-#     'g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root',
-#     'g4bl.b_-1.125T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-#     'g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-#     'g4bl.b_-1.575T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
-#     'g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root'
-# ]
-# b_fields = [
-#     -0.225,
-#     -0.45,
-#     -0.675,
-#     -0.9,
-#     -1.125,
-#     -1.35,
-#     -1.575,
-#     -1.8
-# ]
-# pids = [-11, -13, 211, 321, 2212]
-# plot_particle_count_vs_b_field(filenames=filenames,
-#                                b_fields=b_fields,
-#                                pids=pids,
-#                                suffix='.b_negative',
-#                                canvas_height=800)
+filenames = [
+    'g4bl.b_-0.225T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+    'g4bl.b_-0.45T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+    'g4bl.b_-0.675T.proton.64000.root.job_1_20000.799.72m.kineticEnergyCut_20.root.hist.root',
+    'g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root',
+    'g4bl.b_-1.125T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+    'g4bl.b_-1.35T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+    'g4bl.b_-1.575T.proton.64000.root.job_1_20000.800m.kineticEnergyCut_20.root.hist.root',
+    'g4bl.b_-1.8T.proton.64000.root.job_1_22500.600m.kineticEnergyCut_20.root.hist.root'
+]
+b_fields = [
+    -0.225,
+    -0.45,
+    -0.675,
+    -0.9,
+    -1.125,
+    -1.35,
+    -1.575,
+    -1.8
+]
+pids = [-11, -13, 211, 321, 2212]
+plot_particle_count_vs_b_field(filenames=filenames,
+                               b_fields=b_fields,
+                               pids=pids,
+                               suffix='.b_negative',
+                               canvas_height=600)
+plot_particle_count_vs_b_field(filenames=filenames,
+                               b_fields=b_fields,
+                               pids=pids,
+                               suffix='.b_negative',
+                               canvas_height=600,
+                               y_axis_title='Good Particles per Month (1M per Spill)',
+                               scaling_factor=60 * 24 * 30)
 
 # 20190215_testbeam_helium_momentum_resolution
 # print_radiation_length()
