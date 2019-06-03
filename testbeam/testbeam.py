@@ -3616,12 +3616,14 @@ def print_figure_tex():
 def plot_noise_particle_root(filename, **kwargs):
     log_y = kwargs.get('log_y', False)
     show_boundary = kwargs.get('show_boundary', False)
+    z_limits = kwargs.get('z_limits', None)
 
     width = 2606.2 / 10.       # cm
     half_width = width / 2.    # cm
     x0 = -1354.4 / 10.         # cm
     y0 = 0.
-    margin = 20.
+    # margin = 20.
+    margin = 12.
     pid_y_x_hists = {}
     pid_momentum_x_hists = {}
 
@@ -3676,8 +3678,12 @@ def plot_noise_particle_root(filename, **kwargs):
         h1.GetYaxis().SetTitle('Y (cm)')
         h1.GetXaxis().SetTitleOffset(1.8)
         h1.GetYaxis().SetTitleOffset(2.)
+        particle_name = PDG.GetParticle(pid).GetName()
+        if z_limits is not None and particle_name in z_limits:
+            h1.GetZaxis().SetRangeUser(z_limits[particle_name][0], z_limits[particle_name][1])
+
         c1.Update()
-        c1.SaveAs('{}/plot_noise_particle_root.y_x.{}.pid_{}.pdf'.format(FIGURE_DIR, filename, PDG.GetParticle(pid).GetName()))
+        c1.SaveAs('{}/plot_noise_particle_root.y_x.{}.pid_{}.pdf'.format(FIGURE_DIR, filename, particle_name))
 
     # for pid, h1 in pid_momentum_x_hists.items():
     #     set_h2_style(h1)
@@ -3689,6 +3695,102 @@ def plot_noise_particle_root(filename, **kwargs):
     #     c1.Update()
     #     c1.SaveAs('{}/plot_noise_particle_root.momentum_x.{}.pid_{}.pdf'.format(FIGURE_DIR, filename, PDG.GetParticle(pid).GetName()))
     # input('Press any key to continue.')
+
+
+def plot_noise_particle_position(filename, **kwargs):
+    log_y = kwargs.get('log_y', False)
+    show_boundary = kwargs.get('show_boundary', False)
+    save_to_file = kwargs.get('save_to_file', False)
+    z_limits = kwargs.get('z_limits', None)
+
+    width = 2606.2 / 10.       # cm
+    half_width = width / 2.    # cm
+    x0 = -1354.4 / 10.         # cm
+    y0 = 0.
+    margin = 12.
+    pid_y_x_hists = {}
+    pid_momentum_x_hists = {}
+
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    particle_count = 0
+
+    keys = [key.GetName() for key in gDirectory.GetListOfKeys()]
+    for key in keys:
+        print('key = {}'.format(key))
+        for track in tf.Get(key):
+            pass_all = track.TrackPresenttof_us and \
+                       track.TrackPresentwire_chamber_1_detector and \
+                       track.TrackPresentwire_chamber_2_detector and \
+                       track.TrackPresentwire_chamber_3_detector and \
+                       track.TrackPresentwire_chamber_4_detector and \
+                       track.TrackPresenttof_ds and \
+                       track.TrackPresentcherenkov and \
+                       track.TrackPresentnova
+
+            if pass_all:
+                continue
+            particle_count += 1
+
+            pid = int(track.PDGidnova)
+            px = track.Pxnova
+            py = track.Pynova
+            pz = track.Pznova
+            momentum = (px**2 + py**2 + pz**2)**0.5
+            x = track.xnova
+            y = track.ynova
+            z = track.znova
+            if pid not in pid_y_x_hists:
+                pid_y_x_hists[pid] = TH2D('h_y_x_{}'.format(pid), 'h_y_x_{}'.format(pid), 100, x0 - half_width - margin, x0 + half_width + margin, 100, y0 - half_width - margin, y0 + half_width + margin)
+            if pid not in pid_momentum_x_hists:
+                pid_momentum_x_hists[pid] = TH2D('h_momentum_x_{}'.format(pid), 'h_momentum_x_{}'.format(pid), 100, x0 - half_width - margin, x0 + half_width + margin, 100, 0, 3000)
+            pid_y_x_hists[pid].Fill(x / 10., y / 10.)
+            pid_momentum_x_hists[pid].Fill(x / 10., momentum)
+
+        # if particle_count > 1000:
+        #     break
+
+    print('particle_count = {}'.format(particle_count))
+
+    if save_to_file:
+        tf_out = TFile('{}/{}'.format(DATA_DIR, '{}.plot_noise_particle_position.root'.format(filename)), 'RECREATE')
+        tf_out.cd()
+        for pid, h1 in pid_y_x_hists.items():
+            print('pid = {}'.format(pid))
+            h1.Write('h_y_x_{}'.format(PDG.GetParticle(pid).GetName()))
+        for pid, h1 in pid_momentum_x_hists.items():
+            h1.Write('h_momentum_x_{}'.format(PDG.GetParticle(pid).GetName()))
+        tf_out.Close()
+
+    c1 = TCanvas('c1', 'c1', 800, 800)
+    set_margin()
+    set_h2_color_style()
+    gPad.SetRightMargin(0.15)
+
+    for pid, h1 in pid_y_x_hists.items():
+        set_h2_style(h1)
+        h1.Draw('colz')
+
+        if show_boundary:
+            tl_left = TLine(x0 - half_width, y0 - half_width, x0 - half_width, y0 + half_width)
+            tl_right = TLine(x0 + half_width, y0 - half_width, x0 + half_width, y0 + half_width)
+            tl_top = TLine(x0 - half_width, y0 + half_width, x0 + half_width, y0 + half_width)
+            tl_bottom = TLine(x0 - half_width, y0 - half_width, x0 + half_width, y0 - half_width)
+            tls = [tl_left, tl_right, tl_top, tl_bottom]
+            for tl in tls:
+                tl.SetLineColor(kRed)
+                tl.SetLineWidth(3)
+                tl.Draw()
+
+        h1.GetXaxis().SetTitle('X (cm)')
+        h1.GetYaxis().SetTitle('Y (cm)')
+        h1.GetXaxis().SetTitleOffset(1.8)
+        h1.GetYaxis().SetTitleOffset(2.)
+        particle_name = PDG.GetParticle(pid).GetName()
+        if z_limits is not None and particle_name in z_limits:
+            h1.GetZaxis().SetRangeUser(z_limits[particle_name][0], z_limits[particle_name][1])
+
+        c1.Update()
+        c1.SaveAs('{}/plot_noise_particle_root.y_x.{}.pid_{}.pdf'.format(FIGURE_DIR, filename, particle_name))
 
 
 def plot_det_sim_particle_count_per_event(filename, **kwargs):
@@ -5114,12 +5216,6 @@ def plot_good_particle_position_mwpc():
 
 # 20190531_testbeam_good_particle_position
 # plot_good_particle_position_mwpc()
-# save_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=False)
-# save_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=True)
-# plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root.noise_particle_False.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=2, x_min=500., x_max=2000., y_min=1.e-3, y_max=15, noise_particle=False)
-# plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=2, x_min=500., x_max=2000., y_min=1.e-3, y_max=15, noise_particle=False)
-plot_noise_particle_position('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root.noise_particle_True.hist.root', show_boundary=True)
-# plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root', show_boundary=True)
 
 # 20190502_testbeam_scintillator_paddle_beam
 # gStyle.SetOptStat(0)
@@ -5186,6 +5282,13 @@ plot_noise_particle_position('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10
 #     # break
 
 # 20190424_testbeam_alignment
+# save_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=False)
+# save_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=True)
+# plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root.noise_particle_False.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=2, x_min=500., x_max=2000., y_min=1.e-3, y_max=15, noise_particle=False)
+# plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=2, x_min=500., x_max=2000., y_min=1.e-3, y_max=15, noise_particle=False)
+# gStyle.SetOptStat(0)
+# plot_noise_particle_position('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root', show_boundary=True, save_to_file=True, z_limits={'pi+': [0, 320]})
+plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root', show_boundary=True, z_limits={'pi+': [0, 320]})
 # plot_alignment_data()
 
 # 20190419_testbeam_scintillator_paddle_by_mwpc
