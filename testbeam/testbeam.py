@@ -16,7 +16,8 @@ INCH_TO_METER = 2.54 / 100.
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
 COLORS = [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1, kYellow + 2, kPink, kViolet, kAzure + 4, kCyan + 1, kTeal - 7, kBlue - 5]
-FIGURE_DIR = '/Users/juntinghuang/beamer/20190531_testbeam_good_particle_position/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
+# FIGURE_DIR = '/Users/juntinghuang/beamer/20190531_testbeam_good_particle_position/figures'
 DATA_DIR = './data'
 
 
@@ -1071,6 +1072,56 @@ def save_particle_momentum_root(filename, x_min, x_max, **kwargs):
             pid_hists[pid].Fill(momentum)
         else:
             pid_hists[pid].Fill(momentum)
+
+    tf_out = TFile('{}/{}.noise_particle_{}.hist.root'.format(DATA_DIR, filename, noise_particle), 'RECREATE')
+    for pid, hist in pid_hists.items():
+        hist.Scale(1. / normalization_factor)
+        hist.Write('h_{}'.format(pid))
+    h_all.Scale(1. / normalization_factor)
+    h_all.Write('h_all')
+    tf_out.Close()
+
+
+def save_particle_momentum(filename, x_min, x_max, **kwargs):
+    bin_count = kwargs.get('bin_count', 50)
+    normalization_factor = kwargs.get('normalization_factor', 1.)
+    noise_particle = kwargs.get('noise_particle', False)
+
+    h_all = TH1D('h_all', 'h_all', bin_count, x_min, x_max)
+    pid_hists = {}
+
+    tf_in = TFile('{}/{}'.format(DATA_DIR, filename))
+    keys = [key.GetName() for key in gDirectory.GetListOfKeys()]
+    for key in keys:
+        print('key = {}'.format(key))
+        track_count = 0
+        for track in tf_in.Get(key):
+            track_count += 1
+            pass_all = track.TrackPresenttof_us and \
+                       track.TrackPresentwire_chamber_1_detector and \
+                       track.TrackPresentwire_chamber_2_detector and \
+                       track.TrackPresentwire_chamber_3_detector and \
+                       track.TrackPresentwire_chamber_4_detector and \
+                       track.TrackPresenttof_ds and \
+                       track.TrackPresentcherenkov and \
+                       track.TrackPresentnova
+
+            if not noise_particle and not pass_all:
+                continue
+            if noise_particle and pass_all:
+                continue
+
+            pid = int(track.PDGidnova)
+            px = track.Pxnova
+            py = track.Pynova
+            pz = track.Pznova
+            momentum = (px**2 + py**2 + pz**2)**0.5
+            h_all.Fill(momentum)
+            if pid not in pid_hists:
+                pid_hists[pid] = TH1D('h_{}'.format(pid), 'h_{}'.format(pid), bin_count, x_min, x_max)
+                pid_hists[pid].Fill(momentum)
+            else:
+                pid_hists[pid].Fill(momentum)
 
     tf_out = TFile('{}/{}.noise_particle_{}.hist.root'.format(DATA_DIR, filename, noise_particle), 'RECREATE')
     for pid, hist in pid_hists.items():
@@ -5062,7 +5113,13 @@ def plot_good_particle_position_mwpc():
 
 
 # 20190531_testbeam_good_particle_position
-plot_good_particle_position_mwpc()
+# plot_good_particle_position_mwpc()
+# save_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=False)
+# save_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=True)
+# plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root.noise_particle_False.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=2, x_min=500., x_max=2000., y_min=1.e-3, y_max=15, noise_particle=False)
+# plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=2, x_min=500., x_max=2000., y_min=1.e-3, y_max=15, noise_particle=False)
+plot_noise_particle_position('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root.noise_particle_True.hist.root', show_boundary=True)
+# plot_noise_particle_root('g4bl.b_-0.9T.proton.64000.MergedAtstart_linebeam.trigger.root.job_1_10000.200m.shielding_10.root', show_boundary=True)
 
 # 20190502_testbeam_scintillator_paddle_beam
 # gStyle.SetOptStat(0)
