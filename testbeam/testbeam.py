@@ -13,6 +13,7 @@ PDG = TDatabasePDG()
 SPEED_OF_LIGHT = 3.e8              # m/s
 ELEMENTARY_CHARGE = 1.60217662e-19 # coulomb
 INCH_TO_METER = 2.54 / 100.
+INCH_TO_MM = 25.4
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
 COLORS = [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1, kYellow + 2, kPink, kViolet, kAzure + 4, kCyan + 1, kTeal - 7, kBlue - 5]
@@ -5171,6 +5172,12 @@ def plot_alignment_data():
 def get_detector_positions():
     detector_positions = {}
 
+    detector_positions['cherenkov'] = [
+        -53.292 * INCH_TO_MM,
+        0.044 * INCH_TO_MM,
+        (546.554 + 1 + 14.75 - 115.18 / 2.) * INCH_TO_MM
+    ]
+
     with open('data/alignment/NTB summary_up_ct_dn.txt') as f_txt:
         for row in csv.reader(f_txt, delimiter=','):
             detector_name = row[1].strip()
@@ -5196,7 +5203,7 @@ def get_detector_positions():
                     detector = 'wc_4'
 
                 if detector is not None:
-                    detector_positions[detector] = [-x * 25.4, z * 25.4, y * 25.4]
+                    detector_positions[detector] = [-x * INCH_TO_MM, z * INCH_TO_MM, y * INCH_TO_MM]
 
     return detector_positions
 
@@ -5219,27 +5226,31 @@ def plot_particle_position_detector(h1, detector_name, detector_width, detector_
     h1.Draw('colz')
     h1.GetXaxis().SetTitle('X (mm)')
     h1.GetYaxis().SetTitle('Y (mm)')
-
-    x0 = 0.
-    y0 = 0.
-    z0 = 0.
-    half_width = detector_width / 2.
-    tl_left = TLine(x0 - half_width, y0 - half_width, x0 - half_width, y0 + half_width)
-    tl_right = TLine(x0 + half_width, y0 - half_width, x0 + half_width, y0 + half_width)
-    tl_top = TLine(x0 - half_width, y0 + half_width, x0 + half_width, y0 + half_width)
-    tl_bottom = TLine(x0 - half_width, y0 - half_width, x0 + half_width, y0 - half_width)
-    for tl in [tl_left, tl_right, tl_top, tl_bottom]:
-        tl.SetLineColor(kRed)
-        tl.SetLineWidth(3)
-        tl.Draw()
-
     h1.SetTitle(detector_latex_name)
-
     # tex = TLatex(-90, 90, detector_latex_name)
     # tex.SetTextFont(43)
     # tex.SetTextSize(25)
     # tex.SetTextAlign(12)
     # tex.Draw()
+
+    x0 = 0.
+    y0 = 0.
+    if detector_name == 'cherenkov':
+        ellipse = TEllipse(x0, y0, detector_width / 2.)
+        ellipse.SetLineColor(kRed)
+        ellipse.SetLineWidth(3)
+        ellipse.SetFillStyle(0)
+        ellipse.Draw('sames')
+    else:
+        half_width = detector_width / 2.
+        tl_left = TLine(x0 - half_width, y0 - half_width, x0 - half_width, y0 + half_width)
+        tl_right = TLine(x0 + half_width, y0 - half_width, x0 + half_width, y0 + half_width)
+        tl_top = TLine(x0 - half_width, y0 + half_width, x0 + half_width, y0 + half_width)
+        tl_bottom = TLine(x0 - half_width, y0 - half_width, x0 + half_width, y0 - half_width)
+        for tl in [tl_left, tl_right, tl_top, tl_bottom]:
+            tl.SetLineColor(kRed)
+            tl.SetLineWidth(3)
+            tl.Draw()
 
     c1.Update()
     c1.SaveAs('{}/plot_good_particle_positions.{}.pdf'.format(FIGURE_DIR, detector_name))
@@ -5250,7 +5261,7 @@ def plot_good_particle_positions(filename, **kwargs):
     save_to_file = kwargs.get('save_to_file', True)
 
     detector_positions = get_detector_positions()
-    detectors = ['wc_1', 'wc_2', 'wc_3', 'wc_4', 'tof_us', 'tof_ds_pmt', 'tof_ds_sipm']
+    detectors = ['wc_1', 'wc_2', 'wc_3', 'wc_4', 'tof_us', 'tof_ds_pmt', 'tof_ds_sipm', 'cherenkov']
     detector_latex_names = {
         'wc_1': 'Wire Chamber 1',
         'wc_2': 'Wire Chamber 2',
@@ -5258,7 +5269,8 @@ def plot_good_particle_positions(filename, **kwargs):
         'wc_4': 'Wire Chamber 4',
         'tof_us': 'Upstream TOF',
         'tof_ds_pmt': 'Downstream TOF (PMT)',
-        'tof_ds_sipm': 'Downstream TOF (SiPM)'
+        'tof_ds_sipm': 'Downstream TOF (SiPM)',
+        'cherenkov': 'Cherenkov Counter'
     }
 
     detector_hists = {}
@@ -5266,6 +5278,8 @@ def plot_good_particle_positions(filename, **kwargs):
     detector_widths = {}
     for detector in detectors:
         detector_hists[detector] = TH2D('h_{}'.format(detector), 'h_{}'.format(detector), 100, -100, 100, 100, -100, 100)
+        if detector == 'cherenkov':
+            detector_hists[detector] = TH2D('h_{}'.format(detector), 'h_{}'.format(detector), 200, -200, 200, 200, -200, 200)
 
         detector_rotation_y_degrees[detector] = 0.
         if detector in ['wc_1', 'wc_2', 'tof_us']:
@@ -5274,6 +5288,8 @@ def plot_good_particle_positions(filename, **kwargs):
         detector_widths[detector] = 128.
         if detector in ['tof_us', 'tof_ds_pmt', 'tof_ds_sipm']:
             detector_widths[detector] = 5.91 * 25.4
+        if detector == 'cherenkov':
+            detector_widths[detector] = 324. # outer diameter
 
     detector_hit_positions = {}
     tf_in = TFile('{}/{}'.format(DATA_DIR, filename))
@@ -5301,6 +5317,7 @@ def plot_good_particle_positions(filename, **kwargs):
             detector_hit_positions['tof_us'] = [track.xtof_us, track.ytof_us, track.ztof_us]
             detector_hit_positions['tof_ds_pmt'] = [track.xtof_ds, track.ytof_ds, track.ztof_ds]
             detector_hit_positions['tof_ds_sipm'] = [track.xtof_ds_sipm, track.ytof_ds_sipm, track.ztof_ds_sipm]
+            detector_hit_positions['cherenkov'] = [track.xcherenkov, track.ycherenkov, track.zcherenkov]
 
             for detector in detectors:
                 xyz = transform_coordinate(detector_hit_positions[detector], detector_positions[detector], detector_rotation_y_degrees[detector])
