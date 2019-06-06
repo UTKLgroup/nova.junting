@@ -11,7 +11,7 @@ import json
 import datetime
 
 
-FIGURE_DIR = '/Users/juntinghuang/beamer/20190220_nnbar_data_quality/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20190604_nnbar_data_quality/figures'
 DATA_DIR = './data'
 
 SECOND_IN_YEAR = 3.16           # 1.e7 s / year
@@ -1429,7 +1429,7 @@ def plot_ddt_exposure(filename, **kwargs):
         hist.Draw('hist')
         c1.Update()
         c1.SaveAs('{}/plot_ddt_exposure.{}.pdf'.format(FIGURE_DIR, hist.GetName()))
-        # input('Press any key to continue.')
+        input('Press any key to continue.')
         # break
 
 
@@ -1471,8 +1471,14 @@ def plot_sensitivity_vs_efficiency_background():
     input('Press any key to continue.')
 
 
+# 20190604_nnbar_data_quality
 gStyle.SetOptStat(0)
-plot_sensitivity_vs_efficiency_background()
+plot_ddt_exposure('get-metadata.all.json',
+                  datetime_start=datetime.datetime(2018, 7, 31),
+                  datetime_end=datetime.datetime(2019, 6, 4))
+
+# gStyle.SetOptStat(0)
+# plot_sensitivity_vs_efficiency_background()
 # get_cosmic_ray_trigger_exposure()
 
 # 20190220_nnbar_data_quality
