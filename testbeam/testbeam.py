@@ -5339,9 +5339,84 @@ def plot_test_beam_det_gdml(filename):
     ROOT.gGeoManager.GetTopVolume().Draw('ogl')
 
 
+def plot_generate_event(filename):
+    tf = TFile('{}/{}'.format(DATA_DIR, filename))
+    h_xy = tf.Get('h_xy')
+    h_z = tf.Get('h_z')
+
+    c2 = TCanvas('c2', 'c2', 800, 800)
+    set_margin()
+    set_h1_style(h_z)
+
+    h_z.Draw()
+    h_z.GetXaxis().SetTitle('Z (cm)')
+    h_z.GetYaxis().SetTitle('Good Particle Count')
+    h_z.GetYaxis().SetTitleOffset(2.)
+    c2.Update()
+    c2.SaveAs('{}/plot_generate_event.h_z.pdf'.format(FIGURE_DIR))
+
+    c1 = TCanvas('c1', 'c1', 800, 800)
+    set_margin()
+    gPad.SetRightMargin(0.15)
+    gPad.SetTopMargin(0.15)
+    gPad.SetBottomMargin(0.15)
+    gPad.SetLeftMargin(0.15)
+    gPad.SetGrid()
+    set_h2_style(h_xy)
+    set_h2_color_style()
+
+    h_xy.Draw('colz')
+    h_xy.GetXaxis().SetTitle('X (cm)')
+    h_xy.GetYaxis().SetTitle('Y (cm)')
+    h_xy.GetYaxis().SetTitleOffset(2.)
+    h_xy.GetXaxis().SetTitleOffset(1.)
+
+    x0 = 0.14333
+    y0 = 0.5125
+    plane_width = 253.9         # cm
+    plane_lengh = 262.14        # cm
+    half_width = plane_width / 2.
+    half_height = plane_lengh / 2.
+    tl_plane_1_left = TLine(x0 - half_width, y0 - half_height, x0 - half_width, y0 + half_height)
+    tl_plane_1_right = TLine(x0 + half_width, y0 - half_height, x0 + half_width, y0 + half_height)
+    tl_plane_1_top = TLine(x0 - half_width, y0 + half_height, x0 + half_width, y0 + half_height)
+    tl_plane_1_bottom = TLine(x0 - half_width, y0 - half_height, x0 + half_width, y0 - half_height)
+
+    x0 = 2.43944
+    y0 = 0.86
+    half_height = plane_width / 2.
+    half_width = plane_lengh / 2.
+    tl_plane_2_left = TLine(x0 - half_width, y0 - half_height, x0 - half_width, y0 + half_height)
+    tl_plane_2_right = TLine(x0 + half_width, y0 - half_height, x0 + half_width, y0 + half_height)
+    tl_plane_2_top = TLine(x0 - half_width, y0 + half_height, x0 + half_width, y0 + half_height)
+    tl_plane_2_bottom = TLine(x0 - half_width, y0 - half_height, x0 + half_width, y0 - half_height)
+
+    for tl in [tl_plane_2_left, tl_plane_2_right, tl_plane_2_top, tl_plane_2_bottom]:
+        tl.SetLineColor(kBlue)
+        tl.SetLineWidth(3)
+        tl.Draw()
+
+    for tl in [tl_plane_1_left, tl_plane_1_right, tl_plane_1_top, tl_plane_1_bottom]:
+        tl.SetLineColor(kRed)
+        tl.SetLineWidth(3)
+        tl.Draw()
+
+    lg1 = TLegend(0.22, 0.68, 0.41, 0.77)
+    set_legend_style(lg1)
+    lg1.AddEntry(tl_plane_1_left, 'plane 1 (vertical)', 'l')
+    lg1.AddEntry(tl_plane_2_left, 'plane 2 (horizontal)', 'l')
+    lg1.Draw()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_generate_event.h_xy.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
 # 20190606_testbeam_detsim_event_generation
 # plot_test_beam_det_gdml('data/gdml/testbeam-2x2-2block-xtru-vacuum-stagger.gdml')
-# read_test_beam_det_gdml('/Users/juntinghuang/Desktop/nova/testbeam/data/gdml/tmp/test.gdml')
+# plot_test_beam_det_gdml('/Users/juntinghuang/Desktop/nova/testbeam/data/gdml/tmp/test.gdml')
+gStyle.SetOptStat(0)
+plot_generate_event('text_gen.g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root.root')
 
 # 20190502_testbeam_scintillator_paddle_beam
 # gStyle.SetOptStat(0)
@@ -5409,7 +5484,7 @@ def plot_test_beam_det_gdml(filename):
 
 # 20190424_testbeam_alignment
 # gStyle.SetOptStat(0)
-plot_good_particle_positions('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root', save_to_file=True)
+# plot_good_particle_positions('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root', save_to_file=True)
 # save_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=False)
 # save_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=True)
 # plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root.noise_particle_False.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=2, x_min=500., x_max=2000., y_min=1.e-3, y_max=15, noise_particle=False)
