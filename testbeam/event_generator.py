@@ -7,9 +7,9 @@ import os
 class EventGenerator:
     EVENT_TIME_DURATION = 50.e3  # ns, 50 us per event
 
-    def __init__(self, filename, include_noise, save_plot):
+    def __init__(self, filename, exclude_noise, save_plot):
         self.filename = filename
-        self.include_noise = include_noise
+        self.exclude_noise = exclude_noise
         self.save_plot = save_plot
         self.data_dir = os.path.dirname(self.filename)
         self.file_basename = os.path.basename(self.filename)
@@ -28,7 +28,7 @@ class EventGenerator:
     def translate(self, x, y, z):
         return x + self.delta_x, y + self.delta_y, z + self.delta_z
 
-    def save_to_txt(self):
+    def run(self):
         particles = []
         particle_count = 0
 
@@ -48,7 +48,7 @@ class EventGenerator:
                     track.TrackPresentnova
 
                 is_noise = not pass_all
-                if not self.include_noise and is_noise is True:
+                if self.exclude_noise and is_noise is True:
                     continue
 
                 pdg_id = int(track.PDGidnova)
@@ -141,11 +141,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--filename', type=str, help='input filename', required=True)
     parser.add_argument('-s', '--save_plot', help='save particle count per event', action='store_true')
-    parser.add_argument('-n', '--include_noise', help='include noise', action='store_true')
+    parser.add_argument('-e', '--exclude_noise', help='exclude noise', action='store_true')
 
     args = parser.parse_args()
     print('args.filename = {}'.format(args.filename))
     print('args.save_plot = {}'.format(args.save_plot))
-    print('args.include_noise = {}'.format(args.include_noise))
+    print('args.exclude_noise = {}'.format(args.exclude_noise))
 
-    event_generate = EventGenerator(args.filename, args.include_noise, args.save_plot)
+    event_generator = EventGenerator(args.filename, args.exclude_noise, args.save_plot)
+    event_generator.run()
