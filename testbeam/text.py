@@ -1,115 +1,140 @@
-from ROOT import TDatabasePDG
-from rootalias import *
+from ROOT import TDatabasePDG, TFile, gDirectory, TH1D
 from math import pi, cos, sin
-from subprocess import call
 import argparse
 import os
 
 
-PDG = TDatabasePDG()
-EVENT_TIME_DURATION = 50.e3         # ns, 50 us per event
+class EventGenerator:
+    EVENT_TIME_DURATION = 50.e3  # ns, 50 us per event
 
+    def __init__(self, filename, include_noise, save_plot):
+        self.filename = filename
+        self.include_noise = include_noise
+        self.save_plot = save_plot
+        self.data_dir = os.path.dirname(self.filename)
+        self.file_basename = os.path.basename(self.filename)
 
-def convert_to_detsim_coordinates(beamsim_x, beamsim_y, beamsim_z):
-    return beamsim_x + 1354.35596, beamsim_y, beamsim_z - 14648.66998
+        self.pdg = TDatabasePDG()
+        self.delta_x = 1375.9  # mm
+        self.delta_y = -67.5  # mm
+        self.delta_z = -14617.4  # mm
+        self.angle_rotation_y_axis = 0.349 * pi / 180.  # rad
 
+    def rotate_y_axis(self, z, x):
+        z_prime = cos(self.angle_rotation_y_axis) * z - sin(self.angle_rotation_y_axis) * x
+        x_prime = sin(self.angle_rotation_y_axis) * z + cos(self.angle_rotation_y_axis) * x
+        return z_prime, x_prime
 
-def rotate_y(x, z, degree):
-    theta = degree * pi / 180.0
-    x = cos(theta) * x - sin(theta) * z
-    z = sin(theta) * x + cos(theta) * z
-    return x, z
+    def translate(self, x, y, z):
+        return x + self.delta_x, y + self.delta_y, z + self.delta_z
 
+    def save_to_txt(self):
+        particles = []
+        particle_count = 0
 
-def save_to_txt(filename, include_noise, save_plot):
-    f_beam = TFile(filename)
-    particles = []
-    tree = f_beam.Get('tree')
-    particle_count_total = tree.GetEntries()
-    particle_count = 0
+        f_beam = TFile(self.filename)
+        spills = [key.GetName() for key in gDirectory.GetListOfKeys()]
+        for spill in spills:
+            print('spill = {}'.format(spill))
+            for track in f_beam.Get(spill):
+                particle_count += 1
+                pass_all = track.TrackPresenttof_us and \
+                    track.TrackPresentwire_chamber_1_detector and \
+                    track.TrackPresentwire_chamber_2_detector and \
+                    track.TrackPresentwire_chamber_3_detector and \
+                    track.TrackPresentwire_chamber_4_detector and \
+                    track.TrackPresentcherenkov and \
+                    track.TrackPresenttof_ds and \
+                    track.TrackPresentnova
 
-    for event in f_beam.Get('tree'):
-        particle_count += 1
-        if particle_count % 1e6 == 0:
-            print('particle_count = {} / {} ({:.1f}%)'.format(particle_count, particle_count_total, particle_count / particle_count_total * 100.))
+                is_noise = not pass_all
+                if not self.include_noise and is_noise is True:
+                    continue
 
-        if not include_noise and event.is_noise == 1:
-            continue
+                pdg_id = int(track.PDGidnova)
+                x, y, z = self.translate(track.xnova, track.ynova, track.znova)  # mm
+                z, x = self.rotate_y_axis(z, x)
+                t = track.tnova  # s
 
-        is_noise = event.is_noise
-        pdg_id = int(event.pdg_id)
-        px = event.px / 1000.   # GeV
-        py = event.py / 1000.
-        pz = event.pz / 1000.
-        x, y, z = convert_to_detsim_coordinates(event.x, event.y, event.z)
-        x /= 10.                # cm
-        y /= 10.
-        z /= 10.
-        t = event.t * 1.e9      # ns
+                px = track.Pxnova  # MeV
+                py = track.Pynova  # MeV
+                pz = track.Pznova  # MeV
+                pz, px = self.rotate_y_axis(pz, px)
 
-        mass = PDG.GetParticle(pdg_id).Mass()
-        energy = (mass**2 + px**2 + py**2 + pz**2)**0.5
-        particle = [
-            is_noise,
-            1, pdg_id,
-            0, 0, 0, 0,
-            px, py, pz,
-            energy, mass,
-            x, y, z, t
-        ]
-        particles.append(particle)
-    f_beam.Close()
+                px /= 1000.  # GeV
+                py /= 1000.  # GeV
+                pz /= 1000.  # GeV
+                x /= 10.  # cm
+                y /= 10.  # cm
+                z /= 10.  # cm
+                t *= 1.e9  # ns
 
-    particles = sorted(particles, key=lambda x: x[-1])
-    events = []
-    event_end_time = 0.
-    event_start_time = 0.
-    event_particles = []
-    for particle in particles:
-        is_noise = particle[0]
-        time = particle[-1]     # time
-        if time > event_end_time:
-            if event_particles:
-                events.append(event_particles)
-                event_particles = []
-            if not is_noise:
-                particle[-1] = 0.
-                event_particles = [particle]
-                event_start_time = time
-                event_end_time = time + EVENT_TIME_DURATION # ns
-        else:
-            particle[-1] -= event_start_time
-            event_particles.append(particle)
+                mass = self.pdg.GetParticle(pdg_id).Mass()
+                energy = (mass**2 + px**2 + py**2 + pz**2)**0.5
+                particle = [
+                    is_noise,
+                    1, pdg_id,
+                    0, 0, 0, 0,
+                    px, py, pz,
+                    energy, mass,
+                    x, y, z, t
+                ]
 
-    data_dir = os.path.dirname(filename)
-    filename = os.path.basename(filename)
-    txt_filename = 'text_gen.{}.txt'.format(filename)
-    with open ('{}/{}'.format(data_dir, txt_filename), 'w') as f_txt:
-        for event in events:
-            f_txt.write('0 {}\n'.format(len(event)))
-            for particle in event:
-                particle.pop(0)
-                f_txt.write(' '.join(map(str, particle)) + '\n')
-    # call('scp {}/{} junting@novagpvm02.fnal.gov:/nova/app/users/junting/testbeam/det/'.format(data_dir, txt_filename), shell=True)
+                particles.append(particle)
+                particle_count += 1
+                if particle_count % 1e6 == 0:
+                    print('particle_count = {}'.format(particle_count))
 
-    if save_plot:
-        f_det = TFile('{}/text_gen.{}.root'.format(data_dir, filename), 'RECREATE')
-        multiple_particle_event_count = 0
-        h_count = TH1D('h_count', 'h_count', 100, -0.5, 99.5)
-        h_timing = TH1D('h_timing', 'h_timing', 5000, 0., 50.e3) # ns
-        for i, event in enumerate(events):
-            h_count.Fill(len(event))
-            if len(event) > 1:
-                multiple_particle_event_count += 1
-                # print('i = {}'.format(i))
-                # print('len(event) = {}'.format(len(event)))
-            for particle in event:
-                h_timing.Fill(particle[-1])
-        print('len(events) = {}'.format(len(events)))
-        print('multiple_particle_event_count = {}'.format(multiple_particle_event_count))
-        h_count.Write('h_particle_count_per_event')
-        h_timing.Write('h_timing')
-        f_det.Close()
+        f_beam.Close()
+
+        particles = sorted(particles, key=lambda p: p[-1])
+        events = []
+        event_end_time = 0.
+        event_start_time = 0.
+        event_particles = []
+        for particle in particles:
+            is_noise = particle[0]
+            time = particle[-1]     # time
+            if time > event_end_time:
+                if event_particles:
+                    events.append(event_particles)
+                    event_particles = []
+                if not is_noise:
+                    particle[-1] = 0.
+                    event_particles = [particle]
+                    event_start_time = time
+                    event_end_time = time + EventGenerator.EVENT_TIME_DURATION  # ns
+            else:
+                particle[-1] -= event_start_time
+                event_particles.append(particle)
+
+        txt_filename = 'text_gen.{}.txt'.format(self.file_basename)
+        with open('{}/{}'.format(self.data_dir, txt_filename), 'w') as f_txt:
+            for event in events:
+                f_txt.write('0 {}\n'.format(len(event)))
+                for particle in event:
+                    particle.pop(0)
+                    f_txt.write(' '.join(map(str, particle)) + '\n')
+
+        if self.save_plot:
+            self.make_plot(events)
+
+    def make_plot(self, events):
+            f_det = TFile('{}/text_gen.{}.root'.format(self.data_dir, self.file_basename), 'RECREATE')
+            multiple_particle_event_count = 0
+            h_count = TH1D('h_count', 'h_count', 100, -0.5, 99.5)
+            h_timing = TH1D('h_timing', 'h_timing', 5000, 0., 50.e3)  # ns
+            for i, event in enumerate(events):
+                h_count.Fill(len(event))
+                if len(event) > 1:
+                    multiple_particle_event_count += 1
+                for particle in event:
+                    h_timing.Fill(particle[-1])
+            print('len(events) = {}'.format(len(events)))
+            print('multiple_particle_event_count = {}'.format(multiple_particle_event_count))
+            h_count.Write('h_particle_count_per_event')
+            h_timing.Write('h_timing')
+            f_det.Close()
 
 
 if __name__ == '__main__':
@@ -122,4 +147,5 @@ if __name__ == '__main__':
     print('args.filename = {}'.format(args.filename))
     print('args.save_plot = {}'.format(args.save_plot))
     print('args.include_noise = {}'.format(args.include_noise))
-    save_to_txt(args.filename, args.include_noise, args.save_plot)
+
+    event_generate = EventGenerator(args.filename, args.include_noise, args.save_plot)
