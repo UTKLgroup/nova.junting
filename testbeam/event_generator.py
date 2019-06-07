@@ -1,4 +1,4 @@
-from ROOT import TDatabasePDG, TFile, gDirectory, TH1D
+from ROOT import TDatabasePDG, TFile, gDirectory, TH1D, TH2D
 from math import pi, cos, sin
 import argparse
 import os
@@ -125,8 +125,7 @@ class EventGenerator:
             for event in events:
                 f_txt.write('0 {}\n'.format(len(event)))
                 for particle in event:
-                    particle.pop(0)
-                    f_txt.write(' '.join(map(str, particle)) + '\n')
+                    f_txt.write(' '.join(map(str, particle[1:])) + '\n')
 
         if self.save_plot:
             self.make_plot(events)
@@ -136,16 +135,32 @@ class EventGenerator:
             multiple_particle_event_count = 0
             h_count = TH1D('h_count', 'h_count', 100, -0.5, 99.5)
             h_timing = TH1D('h_timing', 'h_timing', 5000, 0., 50.e3)  # ns
+            h_xy = TH2D('h_xy', 'h_xy', 600, -150, 150, 600, -150, 150)  # cm
+            h_z = TH1D('h_z', 'h_z', 500, -1, 1)  # cm
             for i, event in enumerate(events):
                 h_count.Fill(len(event))
                 if len(event) > 1:
                     multiple_particle_event_count += 1
+
                 for particle in event:
                     h_timing.Fill(particle[-1])
+                    is_noise = particle[0]
+                    print('is_noise = ', is_noise)
+                    if is_noise:
+                        continue
+                    x = particle[-4]
+                    y = particle[-3]
+                    z = particle[-2]
+                    h_xy.Fill(x, y)
+                    print('z =', z)
+                    h_z.Fill(z)
+
             print('len(events) = {}'.format(len(events)))
             print('multiple_particle_event_count = {}'.format(multiple_particle_event_count))
             h_count.Write('h_particle_count_per_event')
             h_timing.Write('h_timing')
+            h_xy.Write('h_xy')
+            h_z.Write('h_z')
             f_det.Close()
 
 
