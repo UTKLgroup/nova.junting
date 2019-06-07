@@ -18,11 +18,13 @@ class EventGenerator:
         self.delta_x = 1375.9  # mm
         self.delta_y = -67.5  # mm
         self.delta_z = -14617.4  # mm
-        self.angle_rotation_y_axis = 0.349 * pi / 180.  # rad
+        self.angle_rotation_y_axis = -0.349 * pi / 180.  # rad
 
     def rotate_y_axis(self, z, x):
-        z_prime = cos(self.angle_rotation_y_axis) * z - sin(self.angle_rotation_y_axis) * x
-        x_prime = sin(self.angle_rotation_y_axis) * z + cos(self.angle_rotation_y_axis) * x
+        # angle > 0 if the coordinate system rotates counterclockwise
+        # angle < 0 if the coordinate system rotates clockwise
+        z_prime = cos(self.angle_rotation_y_axis) * z + sin(self.angle_rotation_y_axis) * x
+        x_prime = -sin(self.angle_rotation_y_axis) * z + cos(self.angle_rotation_y_axis) * x
         return z_prime, x_prime
 
     def translate(self, x, y, z):
