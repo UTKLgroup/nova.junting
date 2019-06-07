@@ -105,9 +105,9 @@ def get_csv(filename):
 def rotate_y(x, z, degree):
     # degree is positive if the coordinate system rotates counterclockwise
     theta = degree * pi / 180.0
-    x = cos(theta) * x - sin(theta) * z
-    z = sin(theta) * x + cos(theta) * z
-    return x, z
+    x_prime = cos(theta) * x - sin(theta) * z
+    z_prime = sin(theta) * x + cos(theta) * z
+    return x_prime, z_prime
 
 
 def generate_text():
@@ -5340,7 +5340,7 @@ def plot_test_beam_det_gdml(filename):
 
 
 # 20190606_testbeam_detsim_event_generation
-plot_test_beam_det_gdml('data/gdml/testbeam-2x2-2block-xtru-vacuum-stagger.gdml')
+# plot_test_beam_det_gdml('data/gdml/testbeam-2x2-2block-xtru-vacuum-stagger.gdml')
 # read_test_beam_det_gdml('/Users/juntinghuang/Desktop/nova/testbeam/data/gdml/tmp/test.gdml')
 
 # 20190502_testbeam_scintillator_paddle_beam
@@ -5409,9 +5409,9 @@ plot_test_beam_det_gdml('data/gdml/testbeam-2x2-2block-xtru-vacuum-stagger.gdml'
 
 # 20190424_testbeam_alignment
 # gStyle.SetOptStat(0)
-# plot_good_particle_positions('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root', save_to_file=True)
+plot_good_particle_positions('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root', save_to_file=True)
 # save_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=False)
-save_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=True)
+# save_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=True)
 # plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root.noise_particle_False.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=2, x_min=500., x_max=2000., y_min=1.e-3, y_max=15, noise_particle=False)
 # plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=2, x_min=500., x_max=2000., y_min=1.e-3, y_max=15, noise_particle=False)
 # gStyle.SetOptStat(0)
