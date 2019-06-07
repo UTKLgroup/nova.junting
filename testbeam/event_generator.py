@@ -7,7 +7,7 @@ import os
 class EventGenerator:
     EVENT_TIME_DURATION = 50.e3  # ns, 50 us per event
 
-    def __init__(self, filename, exclude_noise, save_plot):
+    def __init__(self, filename, exclude_noise, save_plot, max_spill_count):
         self.filename = filename
         self.exclude_noise = exclude_noise
         self.save_plot = save_plot
@@ -15,6 +15,7 @@ class EventGenerator:
         if not self.data_dir:
             self.data_dir = '.'
         self.file_basename = os.path.basename(self.filename)
+        self.max_spill_count = max_spill_count
 
         self.pdg = TDatabasePDG()
         self.delta_x = 1375.9  # mm
@@ -35,11 +36,17 @@ class EventGenerator:
     def run(self):
         particles = []
         particle_count = 0
+        spill_count = 0
 
         f_beam = TFile(self.filename)
         spills = [key.GetName() for key in gDirectory.GetListOfKeys()]
         for spill in spills:
+            spill_count += 1
+            if self.max_spill_count and spill_count > self.max_spill_count:
+                spill_count -= 1
+                break
             print('spill = {}'.format(spill))
+
             for track in f_beam.Get(spill):
                 particle_count += 1
                 pass_all = track.TrackPresenttof_us and \
@@ -89,6 +96,7 @@ class EventGenerator:
                 if particle_count % 1e6 == 0:
                     print('particle_count = {}'.format(particle_count))
 
+        print('spill_count = {}'.format(spill_count))
         f_beam.Close()
 
         particles = sorted(particles, key=lambda p: p[-1])
@@ -146,11 +154,13 @@ if __name__ == '__main__':
     parser.add_argument('-f', '--filename', type=str, help='input filename', required=True)
     parser.add_argument('-s', '--save_plot', help='save particle count per event', action='store_true')
     parser.add_argument('-e', '--exclude_noise', help='exclude noise', action='store_true')
+    parser.add_argument('-m', '--max_spill_count', type=int, help='max spill count', default=None)
 
     args = parser.parse_args()
     print('args.filename = {}'.format(args.filename))
     print('args.save_plot = {}'.format(args.save_plot))
     print('args.exclude_noise = {}'.format(args.exclude_noise))
+    print('args.max_spill_count = {}'.format(args.max_spill_count))
 
-    event_generator = EventGenerator(args.filename, args.exclude_noise, args.save_plot)
+    event_generator = EventGenerator(args.filename, args.exclude_noise, args.save_plot, args.max_spill_count)
     event_generator.run()
