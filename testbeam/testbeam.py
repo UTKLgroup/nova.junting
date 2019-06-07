@@ -17,8 +17,7 @@ INCH_TO_MM = 25.4
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
 COLORS = [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1, kYellow + 2, kPink, kViolet, kAzure + 4, kCyan + 1, kTeal - 7, kBlue - 5]
-# FIGURE_DIR = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
-FIGURE_DIR = '/Users/juntinghuang/beamer/20190531_testbeam_good_particle_position/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20190606_testbeam_detsim_event_generation/figures'
 DATA_DIR = './data'
 
 
@@ -5335,9 +5334,14 @@ def plot_good_particle_positions(filename, **kwargs):
         plot_particle_position_detector(detector_hists[detector], detector, detector_widths[detector], detector_latex_names[detector])
 
 
-# 20190531_testbeam_good_particle_position
-gStyle.SetOptStat(0)
-plot_good_particle_positions('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root', save_to_file=True)
+def plot_test_beam_det_gdml(filename):
+    TGeoManager.Import(filename)
+    ROOT.gGeoManager.GetTopVolume().Draw('ogl')
+
+
+# 20190606_testbeam_detsim_event_generation
+plot_test_beam_det_gdml('data/gdml/testbeam-2x2-2block-xtru-vacuum-stagger.gdml')
+# read_test_beam_det_gdml('/Users/juntinghuang/Desktop/nova/testbeam/data/gdml/tmp/test.gdml')
 
 # 20190502_testbeam_scintillator_paddle_beam
 # gStyle.SetOptStat(0)
@@ -5404,8 +5408,10 @@ plot_good_particle_positions('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10
 #     # break
 
 # 20190424_testbeam_alignment
+# gStyle.SetOptStat(0)
+# plot_good_particle_positions('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root', save_to_file=True)
 # save_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=False)
-# save_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=True)
+save_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=True)
 # plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root.noise_particle_False.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=2, x_min=500., x_max=2000., y_min=1.e-3, y_max=15, noise_particle=False)
 # plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.root.job_1_30000.599.3m.kineticEnergyCut_20.csv.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=2, x_min=500., x_max=2000., y_min=1.e-3, y_max=15, noise_particle=False)
 # gStyle.SetOptStat(0)
