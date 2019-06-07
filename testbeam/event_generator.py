@@ -12,6 +12,8 @@ class EventGenerator:
         self.exclude_noise = exclude_noise
         self.save_plot = save_plot
         self.data_dir = os.path.dirname(self.filename)
+        if not self.data_dir:
+            self.data_dir = '.'
         self.file_basename = os.path.basename(self.filename)
 
         self.pdg = TDatabasePDG()
