@@ -5412,11 +5412,36 @@ def plot_generate_event(filename):
     input('Press any key to continue.')
 
 
+def print_good_particle_event_id(filename, **kwargs):
+    tf_in = TFile('{}/{}'.format(DATA_DIR, filename))
+    keys = [key.GetName() for key in gDirectory.GetListOfKeys()]
+    for key in keys:
+        print('key = {}'.format(key))
+        for track in tf_in.Get(key):
+            pass_all = track.TrackPresenttof_us and \
+                       track.TrackPresentwire_chamber_1_detector and \
+                       track.TrackPresentwire_chamber_2_detector and \
+                       track.TrackPresentwire_chamber_3_detector and \
+                       track.TrackPresentwire_chamber_4_detector and \
+                       track.TrackPresenttof_ds and \
+                       track.TrackPresentcherenkov and \
+                       track.TrackPresentnova
+            if not pass_all:
+                continue
+
+            print('track.PDGidnova = {}'.format(track.PDGidnova))
+            print('track.SpillID = {}'.format(track.SpillID))
+            print('track.EventID = {}'.format(track.EventID))
+
+
 # 20190606_testbeam_detsim_event_generation
 # plot_test_beam_det_gdml('data/gdml/testbeam-2x2-2block-xtru-vacuum-stagger.gdml')
 # plot_test_beam_det_gdml('/Users/juntinghuang/Desktop/nova/testbeam/data/gdml/tmp/test.gdml')
-gStyle.SetOptStat(0)
-plot_generate_event('text_gen.g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root.root')
+# gStyle.SetOptStat(0)
+# plot_generate_event('text_gen.g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root.root')
+# print_good_particle_event_id('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root', save_to_file=True)
+DATA_DIR = '.'
+print_good_particle_event_id('merge_tree.root')
 
 # 20190502_testbeam_scintillator_paddle_beam
 # gStyle.SetOptStat(0)
