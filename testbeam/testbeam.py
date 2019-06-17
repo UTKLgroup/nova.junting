@@ -3478,6 +3478,47 @@ def plot_beamline_sim_spill_timing():
     input('Press any key to continue.')
 
 
+def plot_beamline_sim_global_timing_simplify(filename):
+    tf_in = TFile('{}/{}'.format(DATA_DIR, filename))
+    keys = [key.GetName() for key in gDirectory.GetListOfKeys()]
+
+    spill_count = len(keys)
+    h1 = TH1D('h1', 'h1', spill_count * 60, 0, spill_count * 60)
+
+    for key in keys:
+        print('key = {}'.format(key))
+        for track in tf_in.Get(key):
+            pass_all = track.TrackPresenttof_us and \
+                       track.TrackPresentwire_chamber_1_detector and \
+                       track.TrackPresentwire_chamber_2_detector and \
+                       track.TrackPresentwire_chamber_3_detector and \
+                       track.TrackPresentwire_chamber_4_detector and \
+                       track.TrackPresenttof_ds and \
+                       track.TrackPresentcherenkov and \
+                       track.TrackPresentnova
+            if not pass_all:
+                continue
+
+            h1.Fill(track.tnova)
+
+    c1 = TCanvas('c1', 'c1', 800, 600)
+    set_margin()
+    set_h1_style(h1)
+
+    # h1.GetXaxis().SetRangeUser(0, 600)
+    h1.GetXaxis().SetTitle('Time (s)')
+    h1.GetYaxis().SetTitle('Good Particle Count per Second')
+    h1.Draw()
+
+    tf_out = TFile('{}/plot_beamline_sim_global_timing_simplify.root'.format(DATA_DIR), 'RECREATE')
+    h1.Write('h1')
+    tf_out.Close()
+
+    c1.Update()
+    c1.SaveAs('{}/plot_beamline_sim_global_timing_simplify.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
 def plot_detsim_momentum(filename):
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
     h_electron = tf.Get('testbeamana/fMcMomentumElectron')
@@ -5458,10 +5499,11 @@ def print_good_particle_event_id(filename, **kwargs):
 
 
 # 20190606_testbeam_detsim_event_generation
+plot_beamline_sim_global_timing_simplify('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root')
 # plot_test_beam_det_gdml('data/gdml/testbeam-2x2-2block-xtru-vacuum-stagger.gdml')
 # plot_test_beam_det_gdml('/Users/juntinghuang/Desktop/nova/testbeam/data/gdml/tmp/test.gdml')
-gStyle.SetOptStat(0)
-plot_generate_event('text_gen.g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root.root')
+# gStyle.SetOptStat(0)
+# plot_generate_event('text_gen.g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root.root')
 # print_good_particle_event_id('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root', save_to_file=True)
 # DATA_DIR = '.'
 # print_good_particle_event_id('merge_tree.root')
