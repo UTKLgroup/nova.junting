@@ -5375,12 +5375,18 @@ def plot_generate_event(filename):
     y0 = 0.5125
     plane_width = 253.9         # cm
     plane_lengh = 262.14        # cm
+    cell_width = plane_width / 64. # cm
     half_width = plane_width / 2.
     half_height = plane_lengh / 2.
     tl_plane_1_left = TLine(x0 - half_width, y0 - half_height, x0 - half_width, y0 + half_height)
     tl_plane_1_right = TLine(x0 + half_width, y0 - half_height, x0 + half_width, y0 + half_height)
     tl_plane_1_top = TLine(x0 - half_width, y0 + half_height, x0 + half_width, y0 + half_height)
     tl_plane_1_bottom = TLine(x0 - half_width, y0 - half_height, x0 + half_width, y0 - half_height)
+    tl_plane_1_cells = []
+    for i in range(1, 64):
+        x_cell = x0 - half_width + i * cell_width
+        tl_plane_1_cell = TLine(x_cell, y0 - half_height, x_cell, y0 + half_height)
+        tl_plane_1_cells.append(tl_plane_1_cell)
 
     x0 = 2.43944
     y0 = 0.86
@@ -5390,15 +5396,32 @@ def plot_generate_event(filename):
     tl_plane_2_right = TLine(x0 + half_width, y0 - half_height, x0 + half_width, y0 + half_height)
     tl_plane_2_top = TLine(x0 - half_width, y0 + half_height, x0 + half_width, y0 + half_height)
     tl_plane_2_bottom = TLine(x0 - half_width, y0 - half_height, x0 + half_width, y0 - half_height)
+    tl_plane_2_cells = []
+    for i in range(1, 64):
+        y_cell = y0 - half_height + i * cell_width
+        tl_plane_2_cell = TLine(x0 - half_width, y_cell, x0 + half_width, y_cell)
+        tl_plane_2_cells.append(tl_plane_2_cell)
 
     for tl in [tl_plane_2_left, tl_plane_2_right, tl_plane_2_top, tl_plane_2_bottom]:
         tl.SetLineColor(kBlue)
         tl.SetLineWidth(3)
         tl.Draw()
+    for i, tl in enumerate(tl_plane_2_cells):
+        tl.SetLineColorAlpha(kBlue, 0.3)
+        tl.SetLineWidth(1)
+        if i == 31:
+            tl.SetLineWidth(3)
+        tl.Draw()
 
     for tl in [tl_plane_1_left, tl_plane_1_right, tl_plane_1_top, tl_plane_1_bottom]:
         tl.SetLineColor(kRed)
         tl.SetLineWidth(3)
+        tl.Draw()
+    for i, tl in enumerate(tl_plane_1_cells):
+        tl.SetLineColorAlpha(kRed, 0.3)
+        tl.SetLineWidth(1)
+        if i == 31:
+            tl.SetLineWidth(3)
         tl.Draw()
 
     lg1 = TLegend(0.22, 0.68, 0.41, 0.77)
@@ -5437,11 +5460,11 @@ def print_good_particle_event_id(filename, **kwargs):
 # 20190606_testbeam_detsim_event_generation
 # plot_test_beam_det_gdml('data/gdml/testbeam-2x2-2block-xtru-vacuum-stagger.gdml')
 # plot_test_beam_det_gdml('/Users/juntinghuang/Desktop/nova/testbeam/data/gdml/tmp/test.gdml')
-# gStyle.SetOptStat(0)
-# plot_generate_event('text_gen.g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root.root')
+gStyle.SetOptStat(0)
+plot_generate_event('text_gen.g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root.root')
 # print_good_particle_event_id('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root', save_to_file=True)
-DATA_DIR = '.'
-print_good_particle_event_id('merge_tree.root')
+# DATA_DIR = '.'
+# print_good_particle_event_id('merge_tree.root')
 
 # 20190502_testbeam_scintillator_paddle_beam
 # gStyle.SetOptStat(0)
