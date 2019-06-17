@@ -49,6 +49,8 @@ class Beamline:
         self.screen_shot = False
         # self.kill = 1
         self.kill = 0
+        self.detector_type = 'virtualdetector'
+        # self.detector_type = 'detector'
         # self.magnet_by = -0.9    # B field in tesla
         # self.distance_target_to_ground = 83. * Beamline.INCH # estimated height of the beam pipe center with respect to the ground
         # self.wire_chamber_support_length = 12.061 * Beamline.INCH
@@ -457,7 +459,7 @@ class Beamline:
         start_line_radius = 1750.
         start_line_length = 1.
         z_shift = 50.           # distance upstream of the upstream tof
-        self.f_out.write('virtualdetector start_line radius={} length={} material=Air color=0.9,0.9,0.7\n'.format(start_line_radius, start_line_length))
+        self.f_out.write('{} start_line radius={} length={} material=Air color=0.9,0.9,0.7\n'.format(self.detector_type, start_line_radius, start_line_length))
         self.f_out.write('place start_line x={} y={} z={}\n'.format(self.tof_us.x, self.tof_us.y, self.tof_us.z - z_shift))
 
     def write_tof(self):
@@ -468,11 +470,11 @@ class Beamline:
         tof_ds_sipm_dimensions = [5.91 * Beamline.INCH, 0.52 * Beamline.INCH, 5.91 * Beamline.INCH]
         self.tof_ds_sipm.theta = self.us_theta + self.ds_theta
 
-        self.f_out.write('virtualdetector tof_us  height={} length={} width={} material=LUCITE color=0,0,1\n'.format(tof_us_dimensions[0], tof_us_dimensions[1], tof_us_dimensions[2]))
+        self.f_out.write('{} tof_us  height={} length={} width={} material=LUCITE color=0,0,1\n'.format(self.detector_type, tof_us_dimensions[0], tof_us_dimensions[1], tof_us_dimensions[2]))
         self.f_out.write('place tof_us rename=tof_us x={} y={} z={} rotation=y{}\n'.format(self.tof_us.x, self.tof_us.y, self.tof_us.z, self.tof_us.theta))
-        self.f_out.write('virtualdetector tof_ds height={} length={} width={} material=LUCITE color=0,0,1\n'.format(tof_ds_dimensions[0], tof_ds_dimensions[1], tof_ds_dimensions[2]))
+        self.f_out.write('{} tof_ds height={} length={} width={} material=LUCITE color=0,0,1\n'.format(self.detector_type, tof_ds_dimensions[0], tof_ds_dimensions[1], tof_ds_dimensions[2]))
         self.f_out.write('place tof_ds rename=tof_ds x={} y={} z={} rotation=y{}\n'.format(self.tof_ds.x, self.tof_ds.y, self.tof_ds.z, self.tof_ds.theta))
-        self.f_out.write('virtualdetector tof_ds_sipm height={} length={} width={} material=LUCITE color=0,0,1\n'.format(tof_ds_sipm_dimensions[0], tof_ds_sipm_dimensions[1], tof_ds_sipm_dimensions[2]))
+        self.f_out.write('{} tof_ds_sipm height={} length={} width={} material=LUCITE color=0,0,1\n'.format(self.detector_type, tof_ds_sipm_dimensions[0], tof_ds_sipm_dimensions[1], tof_ds_sipm_dimensions[2]))
         self.f_out.write('place tof_ds_sipm rename=tof_ds_sipm x={} y={} z={} rotation=y{}\n'.format(self.tof_ds_sipm.x, self.tof_ds_sipm.y, self.tof_ds_sipm.z, self.tof_ds_sipm.theta))
 
     def write_wc(self):
@@ -493,7 +495,7 @@ class Beamline:
         # self.wc_3.z = self.grating_upstream_edge_z - self.wire_chamber_support_length / 2.
 
         self.f_out.write('group wire_chamber\n')
-        self.f_out.write('  virtualdetector wire_chamber_detector height={} length={} width={} color=0,1,0\n'.format(wire_chamber_detector_dimensions[0], wire_chamber_detector_dimensions[1], wire_chamber_detector_dimensions[2]))
+        self.f_out.write('  {} wire_chamber_detector height={} length={} width={} material=Ar color=0,1,0\n'.format(self.detector_type, wire_chamber_detector_dimensions[0], wire_chamber_detector_dimensions[1], wire_chamber_detector_dimensions[2]))
         self.f_out.write('  box wire_chamber_frame_vertical height={} length={} width={} color=1,0,1 kill={} material=Al\n'.format(wire_chamber_frame_vertical_dimensions[0], wire_chamber_frame_vertical_dimensions[1], wire_chamber_frame_vertical_dimensions[2], self.kill))
         self.f_out.write('  box wire_chamber_frame_horizontal height={} length={} width={} color=1,0,1 kill={} material=Al\n'.format(wire_chamber_frame_horizontal_dimensions[0], wire_chamber_frame_horizontal_dimensions[1], wire_chamber_frame_horizontal_dimensions[2], self.kill))
         self.f_out.write('  place wire_chamber_frame_vertical rename=+_frame_left x={} y={} z={}\n'.format(wire_chamber_frame_vertical_left_positions[0], wire_chamber_frame_vertical_left_positions[1], wire_chamber_frame_vertical_left_positions[2]))
@@ -603,7 +605,7 @@ class Beamline:
         cherenkov_end_to_support_edge_distance = 3.625 * Beamline.INCH
         cherenkov_to_support_distance = 6.125 * Beamline.INCH
 
-        self.f_out.write('virtualdetector cherenkov radius={} length={} color=1,1,1 material=CARBON_DIOXIDE\n'.format(cherenkov_inner_radius, self.cherenkov.length))
+        self.f_out.write('{} cherenkov radius={} length={} color=1,1,1 material=CARBON_DIOXIDE\n'.format(self.detector_type, cherenkov_inner_radius, self.cherenkov.length))
         self.f_out.write('tubs cherenkov_pipe innerRadius={} outerRadius={} length={} color=0.74,0.34,0.09 material=STAINLESS-STEEL\n'.format(cherenkov_inner_radius, cherenkov_outer_radius, self.cherenkov.length))
         self.f_out.write('tubs cherenkov_pipe_pmt innerRadius={} outerRadius={} length={} color=0.74,0.34,0.09 material=STAINLESS-STEEL\n'.format(cherenkov_pmt_pipe_inner_radius, cherenkov_pmt_pipe_outer_radius, cherenkov_pmt_pipe_length))
         self.f_out.write('box cherenkov_support height={} length={} width={} material=CONCRETE color=0,1,1 kill={}\n'.format(support_dimensions[0], support_dimensions[1], support_dimensions[2], self.kill))
@@ -635,14 +637,14 @@ class Beamline:
         rotation_y = -0.3492962692141463
         rotation_z = 0.8032983167050841
 
-        self.f_out.write('virtualdetector nova height={} length={} width={} color=0.8,0.8,0.8\n'.format(self.nova.height, self.nova.length, self.nova.width))
+        self.f_out.write('{} nova height={} length={} width={} material=POLYVINYL_CHLORIDE color=0.8,0.8,0.8\n'.format(self.detector_type, self.nova.height, self.nova.length, self.nova.width))
         # self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y{}\n'.format(self.nova.x, self.nova.y, self.nova.z, self.nova.theta))
         self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y{},z{}\n'.format(self.nova.x, self.nova.y, self.nova.z, rotation_y, rotation_z))
 
     def write_nova(self):
         self.nova.theta = self.us_theta + self.ds_theta
         self.nova.length = 3900.
-        self.f_out.write('virtualdetector nova height={} length={} width={} material=POLYSTYRENE color=0.39,0.39,0.39\n'.format(self.nova.height, self.nova.length, self.nova.width))
+        self.f_out.write('{} nova height={} length={} width={} material=POLYVINYL_CHLORIDE color=0.39,0.39,0.39\n'.format(self.detector_type, self.nova.height, self.nova.length, self.nova.width))
         self.f_out.write('place nova rename=nova x={} y={} z={} rotation=y{}\n'.format(self.nova.x, self.nova.y, self.nova.z + self.nova.length / 2., self.nova.theta))
 
     def write_shielding_block(self):
