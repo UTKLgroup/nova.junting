@@ -180,8 +180,9 @@ class MergeTree:
                     if track_present:
                         value = getattr(category_structs[self.detector_categories[detector]], variable_detector)
                         if variable == 't':
-                            random.seed(event)
-                            value += value * 1.e-9 + self.spill_interval * float(spill) + self.random_offset_seconds()
+                            random.seed(event_id)
+                            value = value * 1.e-9 + self.spill_interval * float(spill) + self.random_offset_seconds()
+
                     pointers[spill, variable_detector][0] = value
 
             spill_trees[spill].Fill()
