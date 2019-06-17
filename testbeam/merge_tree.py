@@ -44,7 +44,7 @@ class MergeTree:
         self.orbit_length = self.batch_length * MergeTree.BATCH_PER_ORBIT
         self.orbit_in_spill = MergeTree.SPILL_DURATION / self.orbit_length
 
-        self.variables = ['x', 'y', 'z', 't', 'Px', 'Py', 'Pz', 'PDGid', 'ParentID', 'EventID', 'TrackID']
+        self.variables = ['x', 'y', 'z', 't', 'Px', 'Py', 'Pz', 'PDGid', 'Edep', 'ParentID', 'EventID', 'TrackID']
         self.category_detectors = {
             'start_line': ['start_line'],
             'wire_chambers': ['wire_chamber_1_detector', 'wire_chamber_2_detector', 'wire_chamber_3_detector', 'wire_chamber_4_detector'],
@@ -108,7 +108,8 @@ class MergeTree:
         tfile_input = ROOT.TFile(self.input_filename)
 
         tfile_input.cd()
-        gDirectory.cd('VirtualDetector')
+        # gDirectory.cd('VirtualDetector')
+        gDirectory.cd('Detector')
         keys = [key.GetName() for key in gDirectory.GetListOfKeys()]
 
         detector_events = {}

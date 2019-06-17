@@ -3489,15 +3489,16 @@ def plot_beamline_sim_global_timing_simplify(filename):
         print('key = {}'.format(key))
         for track in tf_in.Get(key):
             pass_all = track.TrackPresenttof_us and \
-                       track.TrackPresentwire_chamber_1_detector and \
-                       track.TrackPresentwire_chamber_2_detector and \
-                       track.TrackPresentwire_chamber_3_detector and \
-                       track.TrackPresentwire_chamber_4_detector and \
-                       track.TrackPresenttof_ds and \
-                       track.TrackPresentcherenkov and \
-                       track.TrackPresentnova
-            if not pass_all:
-                continue
+                track.TrackPresentwire_chamber_1_detector and \
+                track.TrackPresentwire_chamber_2_detector and \
+                track.TrackPresentwire_chamber_3_detector and \
+                track.TrackPresentwire_chamber_4_detector and \
+                track.TrackPresenttof_ds and \
+                track.TrackPresentcherenkov and \
+                track.TrackPresentnova
+
+            # if not pass_all:
+            #     continue
 
             h1.Fill(track.tnova)
 
@@ -5499,7 +5500,9 @@ def print_good_particle_event_id(filename, **kwargs):
 
 
 # 20190606_testbeam_detsim_event_generation
-plot_beamline_sim_global_timing_simplify('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root')
+DATA_DIR = '.'
+plot_beamline_sim_global_timing_simplify('merge_tree.root')
+# plot_beamline_sim_global_timing_simplify('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root')
 # plot_test_beam_det_gdml('data/gdml/testbeam-2x2-2block-xtru-vacuum-stagger.gdml')
 # plot_test_beam_det_gdml('/Users/juntinghuang/Desktop/nova/testbeam/data/gdml/tmp/test.gdml')
 # gStyle.SetOptStat(0)
