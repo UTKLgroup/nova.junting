@@ -49,8 +49,8 @@ class Beamline:
         self.screen_shot = False
         # self.kill = 1
         self.kill = 0
-        self.detector_type = 'virtualdetector'
-        # self.detector_type = 'detector'
+        # self.detector_type = 'virtualdetector'
+        self.detector_type = 'detector'
         # self.magnet_by = -0.9    # B field in tesla
         # self.distance_target_to_ground = 83. * Beamline.INCH # estimated height of the beam pipe center with respect to the ground
         # self.wire_chamber_support_length = 12.061 * Beamline.INCH

@@ -22,10 +22,10 @@ place collimator_base rename=collimator_base x=-196.596 y=-223.49460000000002 z=
 place collimator_plate rename=collimator_bottom x=-196.596 y=-91.6686 z=738.2891
 place collimator_plate rename=collimator_top_1 x=-196.596 y=90.9574 z=738.2891
 place collimator_plate rename=collimator_top_2 x=-196.596 y=222.7834 z=738.2891
-virtualdetector start_line radius=1750.0 length=1.0 material=Air color=0.9,0.9,0.7
+detector start_line radius=1750.0 length=1.0 material=Air color=0.9,0.9,0.7
 place start_line x=-385.4883832 y=7.490510799999999 z=1325.6054022
 group wire_chamber
-  virtualdetector wire_chamber_detector height=128.0 length=25.0 width=128.0 material=Ar color=0,1,0
+  detector wire_chamber_detector height=128.0 length=25.0 width=128.0 material=Ar color=0,1,0
   box wire_chamber_frame_vertical height=254.0 length=25.0 width=63.0 color=1,0,1 kill=0 material=Al
   box wire_chamber_frame_horizontal height=63.0 length=25.0 width=128.0 color=1,0,1 kill=0 material=Al
   place wire_chamber_frame_vertical rename=+_frame_left x=-95.5 y=0.0 z=12.5
@@ -86,13 +86,13 @@ group collimator_ds
   place collimator_ds_bottom rename=+_top x=0.0 y=-204.78749999999997 z=457.2
 endgroup
 place collimator_ds x=-1359.5900164 y=-3.4117534 z=9397.989332 rotation=y0.0
-virtualdetector tof_us  height=150.114 length=20.066 width=150.114 material=LUCITE color=0,0,1
+detector tof_us  height=150.114 length=20.066 width=150.114 material=LUCITE color=0,0,1
 place tof_us rename=tof_us x=-385.4883832 y=7.490510799999999 z=1375.6054022 rotation=y-16.0
-virtualdetector tof_ds height=150.114 length=6.095999999999999 width=150.114 material=LUCITE color=0,0,1
+detector tof_ds height=150.114 length=6.095999999999999 width=150.114 material=LUCITE color=0,0,1
 place tof_ds rename=tof_ds x=-1357.8250466 y=3.3355534 z=14415.290448 rotation=y0.0
-virtualdetector tof_ds_sipm height=150.114 length=13.208 width=150.114 material=LUCITE color=0,0,1
+detector tof_ds_sipm height=150.114 length=13.208 width=150.114 material=LUCITE color=0,0,1
 place tof_ds_sipm rename=tof_ds_sipm x=-1353.4397366 y=-0.503682 z=14553.5490488 rotation=y0.0
-virtualdetector cherenkov radius=157.5 length=2925.572 color=1,1,1 material=CARBON_DIOXIDE
+detector cherenkov radius=157.5 length=2925.572 color=1,1,1 material=CARBON_DIOXIDE
 tubs cherenkov_pipe innerRadius=157.5 outerRadius=162.0 length=2925.572 color=0.74,0.34,0.09 material=STAINLESS-STEEL
 tubs cherenkov_pipe_pmt innerRadius=132.0 outerRadius=136.5 length=684.0 color=0.74,0.34,0.09 material=STAINLESS-STEEL
 box cherenkov_support height=1371.6000000000001 length=1828.8000000000002 width=914.4000000000001 material=CONCRETE color=0,1,1 kill=0
@@ -106,7 +106,7 @@ place tedlar_window rename=tedlar_window_up x=-1353.6168 y=1.1176 z=11356.927374
 place tedlar_window rename=tedlar_window_down x=-1353.6168 y=1.1176 z=14282.543824999999
 place vinyl_window rename=vinyl_window_up x=-1353.6168 y=1.1176 z=11356.82895
 place vinyl_window rename=vinyl_window_down x=-1353.6168 y=1.1176 z=14282.642249999997
-virtualdetector nova height=3038.3356249999997 length=1.0 width=3038.3356249999997 material=POLYVINYL_CHLORIDE color=0.8,0.8,0.8
+detector nova height=3038.3356249999997 length=1.0 width=3038.3356249999997 material=POLYVINYL_CHLORIDE color=0.8,0.8,0.8
 place nova rename=nova x=-1374.4731770833332 y=76.1231770833333 z=14617.377049180326 rotation=y-0.3492962692141463,z0.8032983167050841
 group shielding_block
   box shielding_block_steel height=609.5999999999999 length=406.4 width=609.5999999999999 material=Fe color=0,1,1 kill=0
