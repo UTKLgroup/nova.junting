@@ -136,8 +136,8 @@ class MergeTree:
             category_structs[category] = eval('ROOT.' + category + '()')
         
         for category, detectors in self.category_detectors.items():
-            for variable in self.variables:
-                for detector in detectors:
+            for detector in detectors:
+                for variable in self.variables:
                     events = detector_events[detector]
                     events.SetBranchAddress(variable, ROOT.AddressOf(category_structs[category], variable + detector))
 
