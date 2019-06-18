@@ -1025,7 +1025,7 @@ class Beamline:
         # for component in self.components:
         #     component.set_xyz((0., 0., 0.))
 
-        with open('data/alignment/NTB summary_up_ct_dn.txt') as f_txt:
+        with open('alignment/NTB summary_up_ct_dn.txt') as f_txt:
             for row in csv.reader(f_txt, delimiter=','):
                 detector_name = row[1].strip()
                 x = float(row[2])
@@ -1070,7 +1070,7 @@ class Beamline:
     def read_alignment_data_beamline_helium_pipe(self, **kwargs):
         name_positions = {}
 
-        with open('data/alignment/NTB summary_up_ct_dn.txt') as f_txt:
+        with open('alignment/NTB summary_up_ct_dn.txt') as f_txt:
             for row in csv.reader(f_txt, delimiter=','):
                 detector_name = row[1].strip()
                 x = float(row[2])
@@ -1505,7 +1505,7 @@ class Beamline:
 
     def plot_alignment_data_nova_detector(self):
         name_positions = {}
-        with open('data/alignment/Block 1 and Block 2 offset points Target frame.txt') as f_txt:
+        with open('alignment/Block 1 and Block 2 offset points Target frame.txt') as f_txt:
             rows = csv.reader(f_txt, delimiter=',')
             row_count = 0
             for i in range(5):
@@ -1655,7 +1655,7 @@ class Beamline:
 
     def plot_alignment_data_nova_detector_edge(self):
         group_name_positions = {}
-        with open('data/alignment/Block 1 and Block 2 offset points Target frame.txt') as f_txt:
+        with open('alignment/Block 1 and Block 2 offset points Target frame.txt') as f_txt:
             rows = csv.reader(f_txt, delimiter=',')
             for i in range(5):
                 next(rows)
@@ -1828,7 +1828,7 @@ class Beamline:
 
     def plot_alignment_data_nova_detector_vertical_center_block_1(self):
         name_positions = {}
-        with open('data/alignment/Block 1 and Block 2 offset points Target frame.txt') as f_txt:
+        with open('alignment/Block 1 and Block 2 offset points Target frame.txt') as f_txt:
             rows = csv.reader(f_txt, delimiter=',')
             row_count = 0
             for i in range(5):
@@ -1917,7 +1917,7 @@ class Beamline:
 
     def plot_alignment_data_nova_detector_front_surface(self):
         name_positions = {}
-        with open('data/alignment/Block 1 and Block 2 offset points Target frame.txt') as f_txt:
+        with open('alignment/Block 1 and Block 2 offset points Target frame.txt') as f_txt:
             rows = csv.reader(f_txt, delimiter=',')
             row_count = 0
             for i in range(5):

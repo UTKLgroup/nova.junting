@@ -1,0 +1,947 @@
+// SpatialAnalyzer SA 2018.12.07_49785 ( x64 )  
+// Points Relative to Coordinate Frame 'Block frame calcs 16Apr19::Primary with Y=0 at Nova Target'
+// AXES = CARTESIAN: X,  Y,  Z (mm)
+// Group,  Point,  X,  Y,  Z
+
+Block 1 UPST Plane Offset Points,  14Mar19::Block 1 UPST Plane (1.5" SMR)::Block 1 UPST Plane BL Outer_1,  111.0,  14624.1,  -1176.9
+Block 1 UPST Plane Offset Points,  14Mar19::Block 1 UPST Plane (1.5" SMR)::Block 1 UPST Plane BL Outer_2,  133.6,  14625.7,  211.0
+Block 1 UPST Plane Offset Points,  14Mar19::Block 1 UPST Plane (1.5" SMR)::Block 1 UPST Plane BL Outer_3,  723.7,  14621.5,  226.5
+Block 1 UPST Plane Offset Points,  14Mar19::Block 1 UPST Plane (1.5" SMR)::Block 1 UPST Plane BL Outer_4,  698.6,  14620.9,  -1191.9
+Block 1 UPST Plane Offset Points,  14Mar19::Block 1 UPST Plane (1.5" SMR)::Block 1 UPST Plane BL Outer_5,  158.2,  14625.1,  1382.0
+Block 1 UPST Plane Offset Points,  14Mar19::Block 1 UPST Plane (1.5" SMR)::Block 1 UPST Plane BL Outer_6,  741.6,  14621.3,  1329.7
+Block 1 UPST Plane Offset Points,  14Mar19::Block 1 UPST Plane (1.5" SMR)::Block 1 UPST Plane BL Inner_1,  788.6,  14620.7,  1346.3
+Block 1 UPST Plane Offset Points,  14Mar19::Block 1 UPST Plane (1.5" SMR)::Block 1 UPST Plane BL Inner_2,  1372.7,  14617.5,  1361.2
+Block 1 UPST Plane Offset Points,  14Mar19::Block 1 UPST Plane (1.5" SMR)::Block 1 UPST Plane BL Inner_3,  774.2,  14621.0,  201.6
+Block 1 UPST Plane Offset Points,  14Mar19::Block 1 UPST Plane (1.5" SMR)::Block 1 UPST Plane BL Inner_4,  1350.5,  14617.6,  180.7
+Block 1 UPST Plane Offset Points,  14Mar19::Block 1 UPST Plane (1.5" SMR)::Block 1 UPST Plane BL Inner_5,  746.2,  14620.5,  -1180.3
+Block 1 UPST Plane Offset Points,  14Mar19::Block 1 UPST Plane (1.5" SMR)::Block 1 UPST Plane BL Inner_6,  1325.2,  14618.0,  -1195.0
+Block 1 UPST Plane Offset Points,  14Mar19::Block 1 UPST Plane (1.5" SMR)::Block 1 UPST Plane BR Inner_1,  1504.9,  14617.6,  -1216.1
+Block 1 UPST Plane Offset Points,  14Mar19::Block 1 UPST Plane (1.5" SMR)::Block 1 UPST Plane BR Inner_2,  1975.4,  14615.5,  -1224.3
+Block 1 UPST Plane Offset Points,  14Mar19::Block 1 UPST Plane (1.5" SMR)::Block 1 UPST Plane BR Inner_3,  1875.6,  14614.0,  -123.7
+Block 1 UPST Plane Offset Points,  14Mar19::Block 1 UPST Plane (1.5" SMR)::Block 1 UPST Plane BR Inner_4,  1404.9,  14617.5,  274.3
+Block 1 UPST Plane Offset Points,  14Mar19::Block 1 UPST Plane (1.5" SMR)::Block 1 UPST Plane BR Inner_5,  1457.4,  14616.8,  1299.3
+Block 1 UPST Plane Offset Points,  14Mar19::Block 1 UPST Plane (1.5" SMR)::Block 1 UPST Plane BR Inner_6,  2002.7,  14612.8,  1235.3
+Block 1 UPST Plane Offset Points,  14Mar19::Block 1 UPST Plane (1.5" SMR)::Block 1 UPST Plane BR Outer_1,  2048.2,  14612.2,  1270.1
+Block 1 UPST Plane Offset Points,  14Mar19::Block 1 UPST Plane (1.5" SMR)::Block 1 UPST Plane BR Outer_2,  2603.7,  14608.2,  1339.1
+Block 1 UPST Plane Offset Points,  14Mar19::Block 1 UPST Plane (1.5" SMR)::Block 1 UPST Plane BR Outer_3,  2038.2,  14612.4,  499.2
+Block 1 UPST Plane Offset Points,  14Mar19::Block 1 UPST Plane (1.5" SMR)::Block 1 UPST Plane BR Outer_4,  2611.6,  14612.3,  -1242.6
+Block 1 UPST Plane Offset Points,  14Mar19::Block 1 UPST Plane (1.5" SMR)::Block 1 UPST Plane BR Outer_5,  2024.4,  14615.0,  -1225.0
+Block 1 UPST Plane Offset Points,  14Mar19::Block 1 UPST Plane (1.5" SMR)::Block 1 UPST Plane BR Outer_6,  2631.2,  14608.1,  909.6
+Block 2 DNST Plane Offset Points,  18Mar19::Block 2 DNST Plane (1.5" SMR)::Block 2 DNST Plane BL Outer_1,  172.1,  18828.9,  -1197.8
+Block 2 DNST Plane Offset Points,  18Mar19::Block 2 DNST Plane (1.5" SMR)::Block 2 DNST Plane BL Outer_2,  757.7,  18823.9,  -1197.9
+Block 2 DNST Plane Offset Points,  18Mar19::Block 2 DNST Plane (1.5" SMR)::Block 2 DNST Plane BL Outer_3,  772.5,  18826.0,  141.4
+Block 2 DNST Plane Offset Points,  18Mar19::Block 2 DNST Plane (1.5" SMR)::Block 2 DNST Plane BL Outer_4,  186.1,  18830.8,  131.4
+Block 2 DNST Plane Offset Points,  18Mar19::Block 2 DNST Plane (1.5" SMR)::Block 2 DNST Plane BL Outer_6,  785.5,  18829.8,  1349.2
+Block 2 DNST Plane Offset Points,  18Mar19::Block 2 DNST Plane (1.5" SMR)::Block 2 DNST Plane BL Inner_1,  830.2,  18829.6,  1362.2
+Block 2 DNST Plane Offset Points,  18Mar19::Block 2 DNST Plane (1.5" SMR)::Block 2 DNST Plane BL Inner_2,  1414.7,  18824.3,  1251.0
+Block 2 DNST Plane Offset Points,  18Mar19::Block 2 DNST Plane (1.5" SMR)::Block 2 DNST Plane BL Inner_3,  809.7,  18825.5,  56.9
+Block 2 DNST Plane Offset Points,  18Mar19::Block 2 DNST Plane (1.5" SMR)::Block 2 DNST Plane BL Inner_4,  1404.6,  18820.8,  143.4
+Block 2 DNST Plane Offset Points,  18Mar19::Block 2 DNST Plane (1.5" SMR)::Block 2 DNST Plane BL Inner_5,  1386.7,  18819.2,  -1167.9
+Block 2 DNST Plane Offset Points,  18Mar19::Block 2 DNST Plane (1.5" SMR)::Block 2 DNST Plane BL Inner_6,  798.5,  18823.7,  -1162.8
+Block 2 DNST Plane Offset Points,  18Mar19::Block 2 DNST Plane (1.5" SMR)::Block 2 DNST Plane BR Inner_1,  1434.4,  18819.0,  -1205.4
+Block 2 DNST Plane Offset Points,  18Mar19::Block 2 DNST Plane (1.5" SMR)::Block 2 DNST Plane BR Inner_2,  2033.7,  18815.0,  -1004.3
+Block 2 DNST Plane Offset Points,  18Mar19::Block 2 DNST Plane (1.5" SMR)::Block 2 DNST Plane BR Inner_3,  2042.6,  18816.6,  137.9
+Block 2 DNST Plane Offset Points,  18Mar19::Block 2 DNST Plane (1.5" SMR)::Block 2 DNST Plane BR Inner_4,  1458.3,  18820.4,  162.0
+Block 2 DNST Plane Offset Points,  18Mar19::Block 2 DNST Plane (1.5" SMR)::Block 2 DNST Plane BR Inner_5,  1472.2,  18824.3,  1343.1
+Block 2 DNST Plane Offset Points,  18Mar19::Block 2 DNST Plane (1.5" SMR)::Block 2 DNST Plane BR Inner_6,  2058.2,  18820.4,  1307.2
+Block 2 DNST Plane Offset Points,  18Mar19::Block 2 DNST Plane (1.5" SMR)::Block 2 DNST Plane BR Outer_1,  2105.6,  18820.3,  1319.7
+Block 2 DNST Plane Offset Points,  18Mar19::Block 2 DNST Plane (1.5" SMR)::Block 2 DNST Plane BR Outer_2,  2689.9,  18817.1,  1294.7
+Block 2 DNST Plane Offset Points,  18Mar19::Block 2 DNST Plane (1.5" SMR)::Block 2 DNST Plane BR Outer_3,  2674.0,  18812.6,  -12.8
+Block 2 DNST Plane Offset Points,  18Mar19::Block 2 DNST Plane (1.5" SMR)::Block 2 DNST Plane BR Outer_4,  2089.5,  18816.2,  24.7
+Block 2 DNST Plane Offset Points,  18Mar19::Block 2 DNST Plane (1.5" SMR)::Block 2 DNST Plane BR Outer_5,  2075.9,  18814.9,  -1050.7
+Block 2 DNST Plane Offset Points,  18Mar19::Block 2 DNST Plane (1.5" SMR)::Block 2 DNST Plane BR Outer_6,  2657.7,  18811.4,  -1083.4
+Block 1 Center Split points projected,  Block 1 Center Split_1 on object,  1360.8,  14618.1,  -1208.1
+Block 1 Center Split points projected,  Block 1 Center Split_2 on object,  1360.9,  14618.1,  -1197.5
+Block 1 Center Split points projected,  Block 1 Center Split_3 on object,  1360.9,  14618.1,  -1187.0
+Block 1 Center Split points projected,  Block 1 Center Split_4 on object,  1360.9,  14618.1,  -1175.3
+Block 1 Center Split points projected,  Block 1 Center Split_5 on object,  1361.1,  14618.1,  -1164.8
+Block 1 Center Split points projected,  Block 1 Center Split_6 on object,  1361.4,  14618.1,  -1154.2
+Block 1 Center Split points projected,  Block 1 Center Split_7 on object,  1362.1,  14618.0,  -1143.5
+Block 1 Center Split points projected,  Block 1 Center Split_8 on object,  1361.5,  14618.0,  -1132.9
+Block 1 Center Split points projected,  Block 1 Center Split_9 on object,  1361.6,  14618.0,  -1121.4
+Block 1 Center Split points projected,  Block 1 Center Split_10 on object,  1361.3,  14618.0,  -1110.6
+Block 1 Center Split points projected,  Block 1 Center Split_11 on object,  1361.5,  14618.0,  -1099.9
+Block 1 Center Split points projected,  Block 1 Center Split_12 on object,  1361.7,  14618.0,  -1088.2
+Block 1 Center Split points projected,  Block 1 Center Split_13 on object,  1361.4,  14618.0,  -1077.9
+Block 1 Center Split points projected,  Block 1 Center Split_14 on object,  1360.0,  14618.0,  -1067.6
+Block 1 Center Split points projected,  Block 1 Center Split_15 on object,  1359.7,  14618.0,  -1056.7
+Block 1 Center Split points projected,  Block 1 Center Split_16 on object,  1360.0,  14618.0,  -1046.1
+Block 1 Center Split points projected,  Block 1 Center Split_17 on object,  1362.2,  14618.0,  -1034.7
+Block 1 Center Split points projected,  Block 1 Center Split_18 on object,  1362.7,  14618.0,  -1023.6
+Block 1 Center Split points projected,  Block 1 Center Split_19 on object,  1362.8,  14618.0,  -1012.3
+Block 1 Center Split points projected,  Block 1 Center Split_20 on object,  1362.9,  14618.0,  -999.9
+Block 1 Center Split points projected,  Block 1 Center Split_21 on object,  1363.1,  14618.0,  -989.9
+Block 1 Center Split points projected,  Block 1 Center Split_22 on object,  1363.2,  14618.0,  -979.0
+Block 1 Center Split points projected,  Block 1 Center Split_23 on object,  1363.4,  14618.0,  -968.6
+Block 1 Center Split points projected,  Block 1 Center Split_24 on object,  1363.5,  14618.0,  -956.4
+Block 1 Center Split points projected,  Block 1 Center Split_25 on object,  1363.7,  14617.9,  -944.4
+Block 1 Center Split points projected,  Block 1 Center Split_26 on object,  1363.8,  14617.9,  -933.1
+Block 1 Center Split points projected,  Block 1 Center Split_27 on object,  1364.0,  14617.9,  -922.6
+Block 1 Center Split points projected,  Block 1 Center Split_28 on object,  1364.1,  14617.9,  -911.6
+Block 1 Center Split points projected,  Block 1 Center Split_29 on object,  1364.3,  14617.9,  -901.2
+Block 1 Center Split points projected,  Block 1 Center Split_30 on object,  1364.4,  14617.9,  -890.1
+Block 1 Center Split points projected,  Block 1 Center Split_31 on object,  1364.6,  14617.9,  -879.8
+Block 1 Center Split points projected,  Block 1 Center Split_32 on object,  1364.7,  14617.9,  -869.1
+Block 1 Center Split points projected,  Block 1 Center Split_33 on object,  1364.8,  14617.9,  -858.7
+Block 1 Center Split points projected,  Block 1 Center Split_34 on object,  1365.0,  14617.9,  -848.4
+Block 1 Center Split points projected,  Block 1 Center Split_35 on object,  1365.1,  14617.9,  -837.8
+Block 1 Center Split points projected,  Block 1 Center Split_36 on object,  1364.8,  14617.9,  -827.5
+Block 1 Center Split points projected,  Block 1 Center Split_37 on object,  1365.3,  14617.9,  -816.7
+Block 1 Center Split points projected,  Block 1 Center Split_38 on object,  1365.5,  14617.9,  -805.0
+Block 1 Center Split points projected,  Block 1 Center Split_39 on object,  1365.7,  14617.9,  -794.0
+Block 1 Center Split points projected,  Block 1 Center Split_40 on object,  1365.8,  14617.9,  -783.7
+Block 1 Center Split points projected,  Block 1 Center Split_41 on object,  1366.0,  14617.9,  -773.0
+Block 1 Center Split points projected,  Block 1 Center Split_42 on object,  1366.1,  14617.8,  -760.7
+Block 1 Center Split points projected,  Block 1 Center Split_43 on object,  1366.3,  14617.8,  -747.8
+Block 1 Center Split points projected,  Block 1 Center Split_44 on object,  1366.5,  14617.8,  -737.0
+Block 1 Center Split points projected,  Block 1 Center Split_45 on object,  1366.6,  14617.8,  -725.5
+Block 1 Center Split points projected,  Block 1 Center Split_46 on object,  1366.7,  14617.8,  -714.8
+Block 1 Center Split points projected,  Block 1 Center Split_47 on object,  1366.9,  14617.8,  -703.9
+Block 1 Center Split points projected,  Block 1 Center Split_48 on object,  1367.1,  14617.8,  -692.0
+Block 1 Center Split points projected,  Block 1 Center Split_49 on object,  1367.2,  14617.8,  -681.2
+Block 1 Center Split points projected,  Block 1 Center Split_50 on object,  1367.4,  14617.8,  -670.0
+Block 1 Center Split points projected,  Block 1 Center Split_51 on object,  1367.6,  14617.8,  -658.6
+Block 1 Center Split points projected,  Block 1 Center Split_52 on object,  1367.7,  14617.8,  -648.4
+Block 1 Center Split points projected,  Block 1 Center Split_53 on object,  1367.8,  14617.8,  -638.1
+Block 1 Center Split points projected,  Block 1 Center Split_54 on object,  1368.0,  14617.8,  -627.4
+Block 1 Center Split points projected,  Block 1 Center Split_55 on object,  1368.1,  14617.8,  -617.2
+Block 1 Center Split points projected,  Block 1 Center Split_56 on object,  1368.3,  14617.8,  -606.6
+Block 1 Center Split points projected,  Block 1 Center Split_57 on object,  1368.4,  14617.8,  -596.6
+Block 1 Center Split points projected,  Block 1 Center Split_58 on object,  1368.6,  14617.7,  -586.0
+Block 1 Center Split points projected,  Block 1 Center Split_59 on object,  1368.8,  14617.7,  -575.0
+Block 1 Center Split points projected,  Block 1 Center Split_60 on object,  1368.9,  14617.7,  -564.8
+Block 1 Center Split points projected,  Block 1 Center Split_61 on object,  1369.0,  14617.7,  -554.1
+Block 1 Center Split points projected,  Block 1 Center Split_62 on object,  1369.1,  14617.7,  -543.4
+Block 1 Center Split points projected,  Block 1 Center Split_63 on object,  1369.3,  14617.7,  -532.5
+Block 1 Center Split points projected,  Block 1 Center Split_64 on object,  1369.5,  14617.7,  -522.5
+Block 1 Center Split points projected,  Block 1 Center Split_65 on object,  1369.6,  14617.7,  -510.7
+Block 1 Center Split points projected,  Block 1 Center Split_66 on object,  1369.8,  14617.7,  -499.3
+Block 1 Center Split points projected,  Block 1 Center Split_67 on object,  1370.0,  14617.7,  -489.1
+Block 1 Center Split points projected,  Block 1 Center Split_68 on object,  1370.2,  14617.7,  -478.3
+Block 1 Center Split points projected,  Block 1 Center Split_69 on object,  1370.4,  14617.7,  -467.0
+Block 1 Center Split points projected,  Block 1 Center Split_70 on object,  1370.5,  14617.7,  -456.2
+Block 1 Center Split points projected,  Block 1 Center Split_71 on object,  1370.7,  14617.7,  -445.1
+Block 1 Center Split points projected,  Block 1 Center Split_72 on object,  1370.8,  14617.7,  -434.3
+Block 1 Center Split points projected,  Block 1 Center Split_73 on object,  1371.0,  14617.7,  -423.8
+Block 1 Center Split points projected,  Block 1 Center Split_74 on object,  1371.1,  14617.7,  -412.6
+Block 1 Center Split points projected,  Block 1 Center Split_75 on object,  1371.3,  14617.6,  -401.6
+Block 1 Center Split points projected,  Block 1 Center Split_76 on object,  1371.4,  14617.6,  -391.0
+Block 1 Center Split points projected,  Block 1 Center Split_77 on object,  1371.5,  14617.6,  -379.5
+Block 1 Center Split points projected,  Block 1 Center Split_78 on object,  1371.7,  14617.6,  -368.6
+Block 1 Center Split points projected,  Block 1 Center Split_79 on object,  1371.5,  14617.6,  -358.3
+Block 1 Center Split points projected,  Block 1 Center Split_80 on object,  1371.8,  14617.6,  -346.6
+Block 1 Center Split points projected,  Block 1 Center Split_81 on object,  1371.8,  14617.6,  -335.7
+Block 1 Center Split points projected,  Block 1 Center Split_82 on object,  1372.2,  14617.6,  -324.6
+Block 1 Center Split points projected,  Block 1 Center Split_83 on object,  1379.8,  14617.3,  220.2
+Block 1 Center Split points projected,  Block 1 Center Split_84 on object,  1380.0,  14617.3,  232.4
+Block 1 Center Split points projected,  Block 1 Center Split_85 on object,  1380.2,  14617.3,  242.6
+Block 1 Center Split points projected,  Block 1 Center Split_86 on object,  1380.4,  14617.3,  253.4
+Block 1 Center Split points projected,  Block 1 Center Split_87 on object,  1380.6,  14617.3,  264.7
+Block 1 Center Split points projected,  Block 1 Center Split_88 on object,  1380.7,  14617.3,  275.5
+Block 1 Center Split points projected,  Block 1 Center Split_89 on object,  1380.9,  14617.3,  286.0
+Block 1 Center Split points projected,  Block 1 Center Split_90 on object,  1381.0,  14617.3,  297.8
+Block 1 Center Split points projected,  Block 1 Center Split_91 on object,  1381.2,  14617.3,  308.2
+Block 1 Center Split points projected,  Block 1 Center Split_92 on object,  1381.3,  14617.3,  318.8
+Block 1 Center Split points projected,  Block 1 Center Split_93 on object,  1381.5,  14617.2,  329.4
+Block 1 Center Split points projected,  Block 1 Center Split_94 on object,  1381.7,  14617.2,  339.6
+Block 1 Center Split points projected,  Block 1 Center Split_95 on object,  1381.8,  14617.2,  352.1
+Block 1 Center Split points projected,  Block 1 Center Split_96 on object,  1382.0,  14617.2,  362.3
+Block 1 Center Split points projected,  Block 1 Center Split_97 on object,  1382.1,  14617.2,  372.4
+Block 1 Center Split points projected,  Block 1 Center Split_98 on object,  1382.2,  14617.2,  382.6
+Block 1 Center Split points projected,  Block 1 Center Split_99 on object,  1382.4,  14617.2,  394.3
+Block 1 Center Split points projected,  Block 1 Center Split_100 on object,  1382.6,  14617.2,  405.2
+Block 1 Center Split points projected,  Block 1 Center Split_101 on object,  1382.8,  14617.2,  416.8
+Block 1 Center Split points projected,  Block 1 Center Split_102 on object,  1382.9,  14617.2,  426.8
+Block 1 Center Split points projected,  Block 1 Center Split_103 on object,  1383.1,  14617.2,  439.3
+Block 1 Center Split points projected,  Block 1 Center Split_104 on object,  1383.2,  14617.2,  451.5
+Block 1 Center Split points projected,  Block 1 Center Split_105 on object,  1383.4,  14617.2,  463.4
+Block 1 Center Split points projected,  Block 1 Center Split_106 on object,  1383.5,  14617.2,  474.2
+Block 1 Center Split points projected,  Block 1 Center Split_107 on object,  1383.7,  14617.2,  486.4
+Block 1 Center Split points projected,  Block 1 Center Split_108 on object,  1383.9,  14617.2,  496.7
+Block 1 Center Split points projected,  Block 1 Center Split_109 on object,  1384.0,  14617.2,  508.7
+Block 1 Center Split points projected,  Block 1 Center Split_110 on object,  1384.2,  14617.1,  520.6
+Block 1 Center Split points projected,  Block 1 Center Split_111 on object,  1384.4,  14617.1,  531.3
+Block 1 Center Split points projected,  Block 1 Center Split_112 on object,  1384.5,  14617.1,  542.3
+Block 1 Center Split points projected,  Block 1 Center Split_113 on object,  1384.7,  14617.1,  555.1
+Block 1 Center Split points projected,  Block 1 Center Split_114 on object,  1384.9,  14617.1,  567.2
+Block 1 Center Split points projected,  Block 1 Center Split_115 on object,  1385.0,  14617.1,  577.7
+Block 1 Center Split points projected,  Block 1 Center Split_116 on object,  1385.2,  14617.1,  590.8
+Block 1 Center Split points projected,  Block 1 Center Split_117 on object,  1385.3,  14617.1,  602.0
+Block 1 Center Split points projected,  Block 1 Center Split_118 on object,  1385.5,  14617.1,  612.8
+Block 1 Center Split points projected,  Block 1 Center Split_119 on object,  1385.7,  14617.1,  624.8
+Block 1 Center Split points projected,  Block 1 Center Split_120 on object,  1385.9,  14617.1,  637.8
+Block 1 Center Split points projected,  Block 1 Center Split_121 on object,  1386.1,  14617.1,  652.1
+Block 1 Center Split points projected,  Block 1 Center Split_122 on object,  1386.3,  14617.1,  664.1
+Block 1 Center Split points projected,  Block 1 Center Split_123 on object,  1386.4,  14617.1,  677.6
+Block 1 Center Split points projected,  Block 1 Center Split_124 on object,  1386.6,  14617.1,  687.6
+Block 1 Center Split points projected,  Block 1 Center Split_125 on object,  1386.8,  14617.0,  700.1
+Block 1 Center Split points projected,  Block 1 Center Split_126 on object,  1387.0,  14617.0,  712.3
+Block 1 Center Split points projected,  Block 1 Center Split_127 on object,  1387.1,  14617.0,  723.5
+Block 1 Center Split points projected,  Block 1 Center Split_128 on object,  1387.3,  14617.0,  735.7
+Block 1 Center Split points projected,  Block 1 Center Split_129 on object,  1387.5,  14617.0,  749.0
+Block 1 Center Split points projected,  Block 1 Center Split_130 on object,  1387.6,  14617.0,  761.1
+Block 1 Center Split points projected,  Block 1 Center Split_131 on object,  1387.8,  14617.0,  773.6
+Block 1 Center Split points projected,  Block 1 Center Split_132 on object,  1388.0,  14617.0,  786.4
+Block 1 Center Split points projected,  Block 1 Center Split_133 on object,  1388.1,  14617.0,  797.0
+Block 1 Center Split points projected,  Block 1 Center Split_134 on object,  1388.3,  14617.0,  810.1
+Block 1 Center Split points projected,  Block 1 Center Split_135 on object,  1388.5,  14617.0,  823.9
+Block 1 Center Split points projected,  Block 1 Center Split_136 on object,  1388.6,  14617.0,  834.2
+Block 1 Center Split points projected,  Block 1 Center Split_137 on object,  1388.8,  14617.0,  846.4
+Block 1 Center Split points projected,  Block 1 Center Split_138 on object,  1388.8,  14617.0,  856.9
+Block 1 Center Split points projected,  Block 1 Center Split_139 on object,  1389.1,  14617.0,  868.9
+Block 1 Center Split points projected,  Block 1 Center Split_140 on object,  1389.3,  14616.9,  879.1
+Block 1 Center Split points projected,  Block 1 Center Split_141 on object,  1389.5,  14616.9,  891.5
+Block 1 Center Split points projected,  Block 1 Center Split_142 on object,  1389.6,  14616.9,  903.6
+Block 1 Center Split points projected,  Block 1 Center Split_143 on object,  1389.8,  14616.9,  915.1
+Block 1 Center Split points projected,  Block 1 Center Split_144 on object,  1389.9,  14616.9,  926.6
+Block 1 Center Split points projected,  Block 1 Center Split_145 on object,  1390.1,  14616.9,  937.7
+Block 1 Center Split points projected,  Block 1 Center Split_146 on object,  1390.2,  14616.9,  947.8
+Block 1 Center Split points projected,  Block 1 Center Split_147 on object,  1390.4,  14616.9,  958.3
+Block 1 Center Split points projected,  Block 1 Center Split_148 on object,  1390.5,  14616.9,  969.4
+Block 1 Center Split points projected,  Block 1 Center Split_149 on object,  1390.7,  14616.9,  980.7
+Block 1 Center Split points projected,  Block 1 Center Split_150 on object,  1390.9,  14616.9,  992.9
+Block 1 Center Split points projected,  Block 1 Center Split_151 on object,  1391.0,  14616.9,  1004.6
+Block 1 Center Split points projected,  Block 1 Center Split_152 on object,  1391.2,  14616.9,  1017.3
+Block 1 Center Split points projected,  Block 1 Center Split_153 on object,  1391.3,  14616.9,  1030.3
+Block 1 Center Split points projected,  Block 1 Center Split_154 on object,  1391.5,  14616.9,  1040.7
+Block 1 Center Split points projected,  Block 1 Center Split_155 on object,  1391.7,  14616.9,  1053.9
+Block 1 Center Split points projected,  Block 1 Center Split_156 on object,  1391.9,  14616.8,  1067.2
+Block 1 Center Split points projected,  Block 1 Center Split_157 on object,  1392.0,  14616.8,  1078.0
+Block 1 Center Split points projected,  Block 1 Center Split_158 on object,  1392.1,  14616.8,  1088.8
+Block 1 Center Split points projected,  Block 1 Center Split_159 on object,  1392.3,  14616.8,  1099.9
+Block 1 Center Split points projected,  Block 1 Center Split_160 on object,  1392.5,  14616.8,  1110.3
+Block 1 Center Split points projected,  Block 1 Center Split_161 on object,  1392.6,  14616.8,  1120.4
+Block 1 Center Split points projected,  Block 1 Center Split_162 on object,  1392.8,  14616.8,  1131.4
+Block 1 Center Split points projected,  Block 1 Center Split_163 on object,  1393.0,  14616.8,  1143.6
+Block 1 Center Split points projected,  Block 1 Center Split_164 on object,  1393.1,  14616.8,  1155.3
+Block 1 Center Split points projected,  Block 1 Center Split_165 on object,  1393.0,  14616.8,  1167.8
+Block 1 Center Split points projected,  Block 1 Center Split_166 on object,  1393.4,  14616.8,  1179.6
+Block 1 Center Split points projected,  Block 1 Center Split_167 on object,  1393.6,  14616.8,  1191.9
+Block 1 Center Split points projected,  Block 1 Center Split_168 on object,  1393.8,  14616.8,  1202.5
+Block 1 Center Split points projected,  Block 1 Center Split_169 on object,  1392.9,  14616.8,  1213.9
+Block 1 Center Split points projected,  Block 1 Center Split_170 on object,  1393.2,  14616.8,  1224.8
+Block 1 Center Split points projected,  Block 1 Center Split_171 on object,  1393.7,  14616.8,  1236.8
+Block 1 Center Split points projected,  Block 1 Center Split_172 on object,  1393.1,  14616.8,  1247.6
+Block 1 Center Split points projected,  Block 1 Center Split_173 on object,  1394.4,  14616.7,  1257.5
+Block 1 Center Split points projected,  Block 1 Center Split_174 on object,  1394.4,  14616.7,  1267.9
+Block 1 Center Split points projected,  Block 1 Center Split_175 on object,  1394.7,  14616.7,  1278.4
+Block 1 Center Split points projected,  Block 1 Center Split_176 on object,  1394.5,  14616.7,  1288.8
+Block 1 Center Split points projected,  Block 1 Center Split_177 on object,  1395.0,  14616.7,  1300.4
+Block 1 Center Split points projected,  Block 1 Center Split_178 on object,  1395.1,  14616.7,  1310.6
+Block 1 Center Split points projected,  Block 1 Center Split_179 on object,  1395.2,  14616.7,  1321.9
+Block 1 Center Split points projected,  Block 1 Center Split_180 on object,  1395.5,  14616.7,  1331.9
+Block 1 Center Split points projected,  Block 1 Center Split_181 on object,  1395.9,  14616.7,  1342.0
+Block 1 Center Split points projected,  Block 1 Center Split_182 on object,  1395.8,  14616.7,  1353.2
+Block 1 Center Split points projected,  Block 1 Center Split_183 on object,  1396.1,  14616.7,  1363.7
+Block 2 Center Split points projected,  Block 2 Center Split_1 on object,  1420.2,  18819.1,  -1152.3
+Block 2 Center Split points projected,  Block 2 Center Split_2 on object,  1420.2,  18819.1,  -1141.1
+Block 2 Center Split points projected,  Block 2 Center Split_3 on object,  1420.4,  18819.1,  -1131.0
+Block 2 Center Split points projected,  Block 2 Center Split_4 on object,  1420.5,  18819.1,  -1120.1
+Block 2 Center Split points projected,  Block 2 Center Split_5 on object,  1420.6,  18819.2,  -1109.0
+Block 2 Center Split points projected,  Block 2 Center Split_6 on object,  1420.7,  18819.2,  -1098.8
+Block 2 Center Split points projected,  Block 2 Center Split_7 on object,  1420.8,  18819.2,  -1084.8
+Block 2 Center Split points projected,  Block 2 Center Split_8 on object,  1420.9,  18819.2,  -1073.8
+Block 2 Center Split points projected,  Block 2 Center Split_9 on object,  1421.0,  18819.3,  -1062.2
+Block 2 Center Split points projected,  Block 2 Center Split_10 on object,  1421.1,  18819.3,  -1051.6
+Block 2 Center Split points projected,  Block 2 Center Split_11 on object,  1421.2,  18819.3,  -1040.8
+Block 2 Center Split points projected,  Block 2 Center Split_12 on object,  1421.3,  18819.3,  -1029.0
+Block 2 Center Split points projected,  Block 2 Center Split_13 on object,  1421.4,  18819.4,  -1016.3
+Block 2 Center Split points projected,  Block 2 Center Split_14 on object,  1421.6,  18819.4,  -1004.5
+Block 2 Center Split points projected,  Block 2 Center Split_15 on object,  1421.7,  18819.4,  -989.0
+Block 2 Center Split points projected,  Block 2 Center Split_16 on object,  1421.8,  18819.5,  -977.9
+Block 2 Center Split points projected,  Block 2 Center Split_17 on object,  1421.9,  18819.5,  -967.5
+Block 2 Center Split points projected,  Block 2 Center Split_18 on object,  1422.0,  18819.5,  -955.5
+Block 2 Center Split points projected,  Block 2 Center Split_19 on object,  1422.1,  18819.5,  -944.2
+Block 2 Center Split points projected,  Block 2 Center Split_20 on object,  1422.2,  18819.6,  -932.1
+Block 2 Center Split points projected,  Block 2 Center Split_21 on object,  1422.3,  18819.6,  -921.6
+Block 2 Center Split points projected,  Block 2 Center Split_22 on object,  1422.6,  18819.6,  -907.8
+Block 2 Center Split points projected,  Block 2 Center Split_23 on object,  1422.7,  18819.6,  -891.8
+Block 2 Center Split points projected,  Block 2 Center Split_24 on object,  1422.8,  18819.7,  -881.1
+Block 2 Center Split points projected,  Block 2 Center Split_25 on object,  1422.9,  18819.7,  -870.9
+Block 2 Center Split points projected,  Block 2 Center Split_26 on object,  1423.0,  18819.7,  -860.9
+Block 2 Center Split points projected,  Block 2 Center Split_27 on object,  1423.1,  18819.7,  -850.5
+Block 2 Center Split points projected,  Block 2 Center Split_28 on object,  1423.3,  18819.8,  -836.7
+Block 2 Center Split points projected,  Block 2 Center Split_29 on object,  1423.4,  18819.8,  -823.8
+Block 2 Center Split points projected,  Block 2 Center Split_30 on object,  1423.5,  18819.8,  -810.8
+Block 2 Center Split points projected,  Block 2 Center Split_31 on object,  1423.6,  18819.9,  -797.0
+Block 2 Center Split points projected,  Block 2 Center Split_32 on object,  1423.7,  18819.9,  -786.9
+Block 2 Center Split points projected,  Block 2 Center Split_33 on object,  1423.9,  18819.9,  -775.7
+Block 2 Center Split points projected,  Block 2 Center Split_34 on object,  1424.0,  18819.9,  -764.8
+Block 2 Center Split points projected,  Block 2 Center Split_35 on object,  1424.1,  18820.0,  -753.5
+Block 2 Center Split points projected,  Block 2 Center Split_36 on object,  1424.2,  18820.0,  -737.6
+Block 2 Center Split points projected,  Block 2 Center Split_37 on object,  1424.4,  18820.0,  -723.6
+Block 2 Center Split points projected,  Block 2 Center Split_38 on object,  1424.5,  18820.0,  -710.8
+Block 2 Center Split points projected,  Block 2 Center Split_39 on object,  1424.7,  18820.1,  -696.6
+Block 2 Center Split points projected,  Block 2 Center Split_40 on object,  1424.7,  18820.1,  -685.4
+Block 2 Center Split points projected,  Block 2 Center Split_41 on object,  1424.9,  18820.1,  -674.1
+Block 2 Center Split points projected,  Block 2 Center Split_42 on object,  1425.0,  18820.2,  -660.0
+Block 2 Center Split points projected,  Block 2 Center Split_43 on object,  1425.2,  18820.2,  -646.5
+Block 2 Center Split points projected,  Block 2 Center Split_44 on object,  1425.3,  18820.2,  -635.5
+Block 2 Center Split points projected,  Block 2 Center Split_45 on object,  1425.4,  18820.2,  -622.6
+Block 2 Center Split points projected,  Block 2 Center Split_46 on object,  1425.5,  18820.3,  -611.5
+Block 2 Center Split points projected,  Block 2 Center Split_47 on object,  1425.6,  18820.3,  -600.4
+Block 2 Center Split points projected,  Block 2 Center Split_48 on object,  1425.7,  18820.3,  -590.1
+Block 2 Center Split points projected,  Block 2 Center Split_49 on object,  1425.8,  18820.3,  -579.1
+Block 2 Center Split points projected,  Block 2 Center Split_50 on object,  1425.9,  18820.4,  -569.0
+Block 2 Center Split points projected,  Block 2 Center Split_51 on object,  1426.0,  18820.4,  -557.7
+Block 2 Center Split points projected,  Block 2 Center Split_52 on object,  1426.2,  18820.4,  -544.2
+Block 2 Center Split points projected,  Block 2 Center Split_53 on object,  1426.3,  18820.4,  -531.1
+Block 2 Center Split points projected,  Block 2 Center Split_54 on object,  1426.4,  18820.5,  -520.7
+Block 2 Center Split points projected,  Block 2 Center Split_55 on object,  1426.5,  18820.5,  -506.3
+Block 2 Center Split points projected,  Block 2 Center Split_56 on object,  1426.7,  18820.5,  -494.2
+Block 2 Center Split points projected,  Block 2 Center Split_57 on object,  1426.8,  18820.5,  -483.1
+Block 2 Center Split points projected,  Block 2 Center Split_58 on object,  1426.9,  18820.6,  -471.6
+Block 2 Center Split points projected,  Block 2 Center Split_59 on object,  1427.1,  18820.6,  -457.4
+Block 2 Center Split points projected,  Block 2 Center Split_60 on object,  1427.2,  18820.6,  -443.2
+Block 2 Center Split points projected,  Block 2 Center Split_61 on object,  1427.3,  18820.7,  -430.8
+Block 2 Center Split points projected,  Block 2 Center Split_62 on object,  1427.4,  18820.7,  -418.3
+Block 2 Center Split points projected,  Block 2 Center Split_63 on object,  1427.6,  18820.7,  -405.7
+Block 2 Center Split points projected,  Block 2 Center Split_64 on object,  1427.7,  18820.7,  -395.6
+Block 2 Center Split points projected,  Block 2 Center Split_65 on object,  1427.8,  18820.8,  -377.4
+Block 2 Center Split points projected,  Block 2 Center Split_66 on object,  1428.2,  18820.8,  -351.6
+Block 2 Center Split points projected,  Block 2 Center Split_67 on object,  1428.6,  18820.9,  -341.6
+Block 2 Center Split points projected,  Block 2 Center Split_68 on object,  1428.5,  18820.9,  -327.0
+Block 2 Center Split points projected,  Block 2 Center Split_69 on object,  1428.5,  18820.9,  -315.1
+Block 2 Center Split points projected,  Block 2 Center Split_70 on object,  1428.6,  18820.9,  -303.5
+Block 2 Center Split points projected,  Block 2 Center Split_71 on object,  1428.8,  18821.0,  -292.0
+Block 2 Center Split points projected,  Block 2 Center Split_72 on object,  1428.8,  18821.0,  -280.7
+Block 2 Center Split points projected,  Block 2 Center Split_73 on object,  1429.0,  18821.0,  -267.4
+Block 2 Center Split points projected,  Block 2 Center Split_74 on object,  1429.2,  18821.1,  -254.2
+Block 2 Center Split points projected,  Block 2 Center Split_75 on object,  1429.4,  18821.1,  -234.8
+Block 2 Center Split points projected,  Block 2 Center Split_76 on object,  1429.5,  18821.1,  -222.4
+Block 2 Center Split points projected,  Block 2 Center Split_77 on object,  1429.6,  18821.1,  -212.2
+Block 2 Center Split points projected,  Block 2 Center Split_78 on object,  1429.8,  18821.2,  -200.1
+Block 2 Center Split points projected,  Block 2 Center Split_79 on object,  1430.0,  18821.2,  -180.5
+Block 2 Center Split points projected,  Block 2 Center Split_80 on object,  1430.2,  18821.3,  -162.9
+Block 2 Center Split points projected,  Block 2 Center Split_81 on object,  1430.3,  18821.3,  -151.5
+Block 2 Center Split points projected,  Block 2 Center Split_82 on object,  1430.4,  18821.3,  -140.4
+Block 2 Center Split points projected,  Block 2 Center Split_83 on object,  1430.6,  18821.3,  -122.5
+Block 2 Center Split points projected,  Block 2 Center Split_84 on object,  1430.7,  18821.4,  -104.8
+Block 2 Center Split points projected,  Block 2 Center Split_85 on object,  1430.8,  18821.4,  -87.8
+Block 2 Center Split points projected,  Block 2 Center Split_86 on object,  1431.1,  18821.5,  -69.3
+Block 2 Center Split points projected,  Block 2 Center Split_87 on object,  1431.3,  18821.5,  -51.3
+Block 2 Center Split points projected,  Block 2 Center Split_88 on object,  1431.5,  18821.5,  -37.3
+Block 2 Center Split points projected,  Block 2 Center Split_89 on object,  1431.6,  18821.6,  -27.3
+Block 2 Center Split points projected,  Block 2 Center Split_90 on object,  1431.6,  18821.6,  -15.4
+Block 2 Center Split points projected,  Block 2 Center Split_91 on object,  1431.8,  18821.6,  -3.0
+Block 2 Center Split points projected,  Block 2 Center Split_92 on object,  1431.9,  18821.6,  7.1
+Block 2 Center Split points projected,  Block 2 Center Split_93 on object,  1432.0,  18821.7,  17.4
+Block 2 Center Split points projected,  Block 2 Center Split_94 on object,  1432.1,  18821.7,  27.9
+Block 2 Center Split points projected,  Block 2 Center Split_95 on object,  1432.2,  18821.7,  39.3
+Block 2 Center Split points projected,  Block 2 Center Split_96 on object,  1432.3,  18821.7,  49.9
+Block 2 Center Split points projected,  Block 2 Center Split_97 on object,  1432.5,  18821.7,  60.7
+Block 2 Center Split points projected,  Block 2 Center Split_98 on object,  1432.6,  18821.8,  72.4
+Block 2 Center Split points projected,  Block 2 Center Split_99 on object,  1432.7,  18821.8,  82.8
+Block 2 Center Split points projected,  Block 2 Center Split_100 on object,  1432.7,  18821.8,  95.8
+Block 2 Center Split points projected,  Block 2 Center Split_101 on object,  1432.9,  18821.9,  107.9
+Block 2 Center Split points projected,  Block 2 Center Split_102 on object,  1433.0,  18821.9,  118.8
+Block 2 Center Split points projected,  Block 2 Center Split_103 on object,  1433.2,  18821.9,  130.8
+Block 2 Center Split points projected,  Block 2 Center Split_104 on object,  1433.4,  18821.9,  144.9
+Block 2 Center Split points projected,  Block 2 Center Split_105 on object,  1433.5,  18822.0,  157.0
+Block 2 Center Split points projected,  Block 2 Center Split_106 on object,  1433.6,  18822.0,  167.2
+Block 2 Center Split points projected,  Block 2 Center Split_107 on object,  1433.6,  18822.0,  177.9
+Block 2 Center Split points projected,  Block 2 Center Split_108 on object,  1433.7,  18822.0,  188.4
+Block 2 Center Split points projected,  Block 2 Center Split_109 on object,  1433.9,  18822.1,  199.2
+Block 2 Center Split points projected,  Block 2 Center Split_110 on object,  1434.0,  18822.1,  211.7
+Block 2 Center Split points projected,  Block 2 Center Split_111 on object,  1434.2,  18822.1,  226.3
+Block 2 Center Split points projected,  Block 2 Center Split_112 on object,  1434.3,  18822.1,  238.4
+Block 2 Center Split points projected,  Block 2 Center Split_113 on object,  1434.4,  18822.2,  249.9
+Block 2 Center Split points projected,  Block 2 Center Split_114 on object,  1434.5,  18822.2,  261.8
+Block 2 Center Split points projected,  Block 2 Center Split_115 on object,  1434.6,  18822.2,  276.1
+Block 2 Center Split points projected,  Block 2 Center Split_116 on object,  1434.6,  18822.3,  290.3
+Block 2 Center Split points projected,  Block 2 Center Split_117 on object,  1434.9,  18822.3,  302.2
+Block 2 Center Split points projected,  Block 2 Center Split_118 on object,  1435.0,  18822.3,  313.2
+Block 2 Center Split points projected,  Block 2 Center Split_119 on object,  1435.0,  18822.3,  323.7
+Block 2 Center Split points projected,  Block 2 Center Split_120 on object,  1435.2,  18822.4,  335.2
+Block 2 Center Split points projected,  Block 2 Center Split_121 on object,  1435.3,  18822.4,  345.6
+Block 2 Center Split points projected,  Block 2 Center Split_122 on object,  1435.4,  18822.4,  356.6
+Block 2 Center Split points projected,  Block 2 Center Split_123 on object,  1435.6,  18822.4,  368.8
+Block 2 Center Split points projected,  Block 2 Center Split_124 on object,  1435.8,  18822.5,  384.2
+Block 2 Center Split points projected,  Block 2 Center Split_125 on object,  1435.8,  18822.5,  396.9
+Block 2 Center Split points projected,  Block 2 Center Split_126 on object,  1435.9,  18822.5,  409.1
+Block 2 Center Split points projected,  Block 2 Center Split_127 on object,  1436.1,  18822.5,  422.6
+Block 2 Center Split points projected,  Block 2 Center Split_128 on object,  1436.2,  18822.6,  433.1
+Block 2 Center Split points projected,  Block 2 Center Split_129 on object,  1436.3,  18822.6,  446.5
+Block 2 Center Split points projected,  Block 2 Center Split_130 on object,  1436.5,  18822.6,  457.1
+Block 2 Center Split points projected,  Block 2 Center Split_131 on object,  1436.6,  18822.6,  467.7
+Block 2 Center Split points projected,  Block 2 Center Split_132 on object,  1436.7,  18822.7,  478.1
+Block 2 Center Split points projected,  Block 2 Center Split_133 on object,  1436.8,  18822.7,  489.5
+Block 2 Center Split points projected,  Block 2 Center Split_134 on object,  1436.9,  18822.7,  499.8
+Block 2 Center Split points projected,  Block 2 Center Split_135 on object,  1437.0,  18822.8,  515.5
+Block 2 Center Split points projected,  Block 2 Center Split_136 on object,  1437.1,  18822.8,  525.9
+Block 2 Center Split points projected,  Block 2 Center Split_137 on object,  1437.3,  18822.8,  539.0
+Block 2 Center Split points projected,  Block 2 Center Split_138 on object,  1437.4,  18822.8,  550.1
+Block 2 Center Split points projected,  Block 2 Center Split_139 on object,  1437.5,  18822.9,  560.9
+Block 2 Center Split points projected,  Block 2 Center Split_140 on object,  1437.6,  18822.9,  574.8
+Block 2 Center Split points projected,  Block 2 Center Split_141 on object,  1437.7,  18822.9,  585.5
+Block 2 Center Split points projected,  Block 2 Center Split_142 on object,  1437.8,  18822.9,  598.7
+Block 2 Center Split points projected,  Block 2 Center Split_143 on object,  1438.0,  18823.0,  612.1
+Block 2 Center Split points projected,  Block 2 Center Split_144 on object,  1438.1,  18823.0,  623.5
+Block 2 Center Split points projected,  Block 2 Center Split_145 on object,  1438.3,  18823.0,  638.9
+Block 2 Center Split points projected,  Block 2 Center Split_146 on object,  1438.4,  18823.1,  651.8
+Block 2 Center Split points projected,  Block 2 Center Split_147 on object,  1438.5,  18823.1,  663.4
+Block 2 Center Split points projected,  Block 2 Center Split_148 on object,  1438.7,  18823.1,  677.4
+Block 2 Center Split points projected,  Block 2 Center Split_149 on object,  1438.7,  18823.1,  690.1
+Block 2 Center Split points projected,  Block 2 Center Split_150 on object,  1438.9,  18823.2,  705.2
+Block 2 Center Split points projected,  Block 2 Center Split_151 on object,  1439.0,  18823.2,  716.9
+Block 2 Center Split points projected,  Block 2 Center Split_152 on object,  1439.2,  18823.2,  731.9
+Block 2 Center Split points projected,  Block 2 Center Split_153 on object,  1439.3,  18823.3,  746.0
+Block 2 Center Split points projected,  Block 2 Center Split_154 on object,  1439.4,  18823.3,  762.4
+Block 2 Center Split points projected,  Block 2 Center Split_155 on object,  1439.6,  18823.3,  777.9
+Block 2 Center Split points projected,  Block 2 Center Split_156 on object,  1439.7,  18823.4,  793.4
+Block 2 Center Split points projected,  Block 2 Center Split_157 on object,  1439.9,  18823.4,  812.1
+Block 2 Center Split points projected,  Block 2 Center Split_158 on object,  1440.1,  18823.4,  827.4
+Block 2 Center Split points projected,  Block 2 Center Split_159 on object,  1440.2,  18823.5,  842.3
+Block 2 Center Split points projected,  Block 2 Center Split_160 on object,  1440.3,  18823.5,  856.6
+Block 2 Center Split points projected,  Block 2 Center Split_161 on object,  1440.4,  18823.5,  870.6
+Block 2 Center Split points projected,  Block 2 Center Split_162 on object,  1440.6,  18823.6,  885.6
+Block 2 Center Split points projected,  Block 2 Center Split_163 on object,  1440.8,  18823.6,  899.7
+Block 2 Center Split points projected,  Block 2 Center Split_164 on object,  1441.1,  18823.6,  911.8
+Block 2 Center Split points projected,  Block 2 Center Split_165 on object,  1440.9,  18823.7,  923.5
+Block 2 Center Split points projected,  Block 2 Center Split_166 on object,  1441.1,  18823.7,  936.1
+Block 2 Center Split points projected,  Block 2 Center Split_167 on object,  1441.4,  18823.7,  948.5
+Block 2 Center Split points projected,  Block 2 Center Split_168 on object,  1441.3,  18823.7,  958.6
+Block 2 Center Split points projected,  Block 2 Center Split_169 on object,  1441.4,  18823.8,  972.0
+Block 2 Center Split points projected,  Block 2 Center Split_170 on object,  1442.3,  18823.8,  981.9
+Block 2 Center Split points projected,  Block 2 Center Split_171 on object,  1442.2,  18823.8,  993.5
+Block 2 Center Split points projected,  Block 2 Center Split_172 on object,  1441.8,  18823.8,  1005.6
+Block 2 Center Split points projected,  Block 2 Center Split_173 on object,  1441.9,  18823.9,  1023.3
+Block 2 Center Split points projected,  Block 2 Center Split_174 on object,  1442.0,  18823.9,  1034.7
+Block 2 Center Split points projected,  Block 2 Center Split_175 on object,  1442.2,  18823.9,  1046.0
+Block 2 Center Split points projected,  Block 2 Center Split_176 on object,  1442.3,  18824.0,  1058.9
+Block 2 Center Split points projected,  Block 2 Center Split_177 on object,  1442.7,  18824.0,  1070.8
+Block 2 Center Split points projected,  Block 2 Center Split_178 on object,  1442.5,  18824.0,  1081.0
+Block 2 Center Split points projected,  Block 2 Center Split_179 on object,  1442.6,  18824.0,  1093.4
+Block 2 Center Split points projected,  Block 2 Center Split_180 on object,  1442.8,  18824.1,  1104.5
+Block 2 Center Split points projected,  Block 2 Center Split_181 on object,  1442.8,  18824.1,  1116.0
+Block 2 Center Split points projected,  Block 2 Center Split_182 on object,  1443.0,  18824.1,  1126.1
+Block 2 Center Split points projected,  Block 2 Center Split_183 on object,  1443.1,  18824.1,  1137.5
+Block 2 Center Split points projected,  Block 2 Center Split_184 on object,  1443.2,  18824.2,  1150.0
+Block 2 Center Split points projected,  Block 2 Center Split_185 on object,  1443.3,  18824.2,  1163.0
+Block 2 Center Split points projected,  Block 2 Center Split_186 on object,  1443.5,  18824.2,  1174.5
+Block 2 Center Split points projected,  Block 2 Center Split_187 on object,  1443.6,  18824.2,  1184.6
+Block 2 Center Split points projected,  Block 2 Center Split_188 on object,  1443.7,  18824.3,  1197.0
+Block 2 Center Split points projected,  Block 2 Center Split_189 on object,  1443.8,  18824.3,  1208.7
+Block 2 Center Split points projected,  Block 2 Center Split_190 on object,  1444.5,  18824.3,  1220.2
+Block 2 Center Split points projected,  Block 2 Center Split_191 on object,  1444.1,  18824.3,  1230.6
+Block 2 Center Split points projected,  Block 2 Center Split_192 on object,  1444.2,  18824.4,  1242.0
+Block 2 Center Split points projected,  Block 2 Center Split_193 on object,  1444.3,  18824.4,  1253.0
+Block 2 Center Split points projected,  Block 2 Center Split_194 on object,  1444.4,  18824.4,  1263.0
+Block 2 Center Split points projected,  Block 2 Center Split_195 on object,  1444.5,  18824.4,  1274.4
+Block 2 Center Split points projected,  Block 2 Center Split_196 on object,  1444.7,  18824.5,  1287.4
+Block 2 Center Split points projected,  Block 2 Center Split_197 on object,  1444.9,  18824.5,  1300.6
+Block 2 Center Split points projected,  Block 2 Center Split_198 on object,  1445.0,  18824.5,  1312.9
+Block 2 Center Split points projected,  Block 2 Center Split_199 on object,  1445.1,  18824.5,  1324.0
+Block 2 Center Split points projected,  Block 2 Center Split_200 on object,  1445.5,  18824.6,  1336.2
+Block 2 Center Split points projected,  Block 2 Center Split_201 on object,  1445.5,  18824.6,  1347.0
+Block 2 Center Split points projected,  Block 2 Center Split_202 on object,  1445.5,  18824.6,  1363.6
+Block 2 Center Split points projected,  Block 2 Center Split_203 on object,  1445.5,  18824.6,  1374.3
+Block 2 Center Split points projected,  Block 2 Center Split_204 on object,  1445.7,  18824.7,  1384.8
+Block 2 Center Split points projected,  Block 2 Center Split_205 on object,  1445.7,  18824.7,  1395.1
+Block 2 Center Split points projected,  Block 2 Center Split_206 on object,  1445.9,  18824.7,  1405.3
+Block 2 Center Split points projected,  Block 2 Center Split_207 on object,  1446.0,  18824.7,  1415.3
+Top of Blue Steel Baseplate Offset Points,  19Mar19::Top Steel Platform (1.5 SMR Edge Nest)::Steel Platform BR Edge_1,  2702.1,  18694.8,  -1309.3
+Top of Blue Steel Baseplate Offset Points,  18Mar19::Top Steel Platform (0.875")::Steel Platform Top_1,  2696.1,  18823.8,  -1309.8
+Top of Blue Steel Baseplate Offset Points,  18Mar19::Top Steel Platform (0.875")::Steel Platform Top_2,  1955.9,  18832.1,  -1300.9
+Top of Blue Steel Baseplate Offset Points,  18Mar19::Top Steel Platform (0.875")::Steel Platform Top_3,  74.0,  18822.7,  -1280.7
+Top of Blue Steel Baseplate Offset Points,  14Mar19::Top Steel Platform (Edge Nest)::Steel Platform BR Face_1,  2678.4,  14612.3,  -1304.1
+Top of Blue Steel Baseplate Offset Points,  14Mar19::Top Steel Platform (Edge Nest)::Steel Platform US Face_2,  2657.2,  14584.0,  -1304.0
+Top of Blue Steel Baseplate Offset Points,  14Mar19::Top Steel Platform (Edge Nest)::Steel Platform US Face_3,  66.9,  14597.5,  -1275.2
+Top of Blue Steel Baseplate Offset Points,  14Mar19::Top Steel Platform (Edge Nest)::Steel Platform BL Face_4,  35.0,  14634.6,  -1275.0
+Top of Blue Steel Baseplate Offset Points,  14Mar19::Top Steel Platform (Edge Nest)::Steel Platform BL Face_5,  58.7,  18802.2,  -1280.5
+Top of Blue Steel Baseplate Offset Points,  14Mar19::Top Steel Platform (Edge Nest)::Steel Platform DS Face_6,  86.8,  18844.9,  -1280.8
+Block 1 Panel 30 Downstream Plane Offset Points,  19Mar19::Horiz Panel 30 DNST Face (Y=Plane)::Horiz Panel 30 Lower DNST Face_1,  2767.8,  16609.2,  -1228.7
+Block 1 Panel 30 Downstream Plane Offset Points,  18Mar19::Horiz Panel 30 DNST Face::Horiz Panel 30 Upper DNST Face_1,  118.9,  16623.5,  1265.4
+Block 1 Panel 30 Downstream Plane Offset Points,  18Mar19::Horiz Panel 30 DNST Face::Horiz Panel 30 Upper DNST Face_2,  111.0,  16623.6,  908.8
+Block 1 Panel 30 Downstream Plane Offset Points,  18Mar19::Horiz Panel 30 DNST Face::Horiz Panel 30 Upper DNST Face_3,  105.8,  16623.2,  537.8
+Block 1 Panel 30 Downstream Plane Offset Points,  18Mar19::Horiz Panel 30 DNST Face::Horiz Panel 30 Upper DNST Face_4,  97.8,  16623.5,  154.6
+Block 1 Panel 30 Downstream Plane Offset Points,  18Mar19::Horiz Panel 30 DNST Face::Horiz Panel 30 Lower DNST Face_1,  111.6,  16622.5,  64.4
+Block 1 Panel 30 Downstream Plane Offset Points,  18Mar19::Horiz Panel 30 DNST Face::Horiz Panel 30 Lower DNST Face_2,  104.8,  16622.7,  -291.1
+Block 1 Panel 30 Downstream Plane Offset Points,  18Mar19::Horiz Panel 30 DNST Face::Horiz Panel 30 Lower DNST Face_3,  95.8,  16623.3,  -695.6
+Block 1 Panel 30 Downstream Plane Offset Points,  18Mar19::Horiz Panel 30 DNST Face::Horiz Panel 30 Lower DNST Face_4,  105.6,  16624.1,  -960.2
+Block 2 Panel 32 Upstream Plane Offset Points,  18Mar19::Horiz Panel 32 UPST Face (UPSM Block 2)::Horiz Panel 32 Lower UPST Face_1,  85.2,  16695.4,  -897.4
+Block 2 Panel 32 Upstream Plane Offset Points,  18Mar19::Horiz Panel 32 UPST Face (UPSM Block 2)::Horiz Panel 32 UPST Face_2,  89.8,  16693.4,  -661.2
+Block 2 Panel 32 Upstream Plane Offset Points,  18Mar19::Horiz Panel 32 UPST Face (UPSM Block 2)::Horiz Panel 32 UPST Face_3,  96.5,  16692.1,  -379.2
+Block 2 Panel 32 Upstream Plane Offset Points,  18Mar19::Horiz Panel 32 UPST Face (UPSM Block 2)::Horiz Panel 32 UPST Face_4,  99.7,  16690.3,  18.9
+Block 2 Panel 32 Upstream Plane Offset Points,  18Mar19::Horiz Panel 32 UPST Face (UPSM Block 2)::Horiz Panel 32 Upper UPST Face_1,  98.9,  16695.7,  156.5
+Block 2 Panel 32 Upstream Plane Offset Points,  18Mar19::Horiz Panel 32 UPST Face (UPSM Block 2)::Horiz Panel 32 Upper UPST Face_2,  103.6,  16695.6,  493.7
+Block 2 Panel 32 Upstream Plane Offset Points,  18Mar19::Horiz Panel 32 UPST Face (UPSM Block 2)::Horiz Panel 32 Upper UPST Face_3,  113.8,  16697.7,  889.5
+Block 2 Panel 32 Upstream Plane Offset Points,  18Mar19::Horiz Panel 32 UPST Face (UPSM Block 2)::Horiz Panel 32 Upper UPST Face_4,  121.5,  16699.9,  1246.2
+Block 2 Panel 32 Upstream Plane Offset Points,  19Mar19::Horiz Panel 32 UPST Face (Y=Plane)::Horiz Panel 32 Lower UPST Face_1,  2762.5,  16678.7,  -1238.5
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 2 DN::HP2DN_1,  11.0,  14746.9,  62.7
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 2 DN::HP2DN_2,  11.1,  14704.6,  49.5
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 2 DN::HP2DN_3,  -2.4,  14735.9,  -1073.4
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 2 DN::HP2DN_4,  -2.0,  14700.2,  -1075.7
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 4 DN::HP4DN_1,  8.6,  14880.2,  45.4
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 4 DN::HP4DN_2,  7.5,  14844.9,  46.6
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 4 DN::HP4DN_3,  1.6,  14879.0,  -1082.8
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 4 DN::HP4DN_4,  0.3,  14844.3,  -1089.0
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 6 DN::HP6DN_1,  11.9,  15009.9,  65.6
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 6 DN::HP6DN_2,  12.0,  14968.7,  63.5
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 6 DN::HP6DN_3,  -0.5,  14974.1,  -1147.0
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 6 DN::HP6DN_4,  -0.4,  15013.6,  -1151.0
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 8 DN::HP8DN_1,  2.0,  15100.4,  -1160.5
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 8 DN::HP8DN_2,  1.5,  15143.2,  -1157.8
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 8 DN::HP8DN_3,  11.8,  15145.1,  46.6
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 8 DN::HP8DN_4,  12.2,  15096.1,  44.0
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 10 DN::HP10DN_1,  15.9,  15237.7,  72.5
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 10 DN::HP10DN_2,  15.5,  15276.9,  70.1
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 10 DN::HP10DN_3,  4.3,  15230.6,  -1153.3
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 10 DN::HP10DN_4,  3.7,  15275.2,  -1159.3
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 12 DN::HP12DN_1,  4.6,  15369.6,  -1152.0
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 12 DN::HP12DN_2,  4.7,  15419.7,  -1162.4
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 12 DN::HP12DN_3,  14.8,  15417.3,  52.7
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 12 DN::HP12DN_4,  14.7,  15372.0,  51.4
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 14 DN::HP14DN_1,  20.1,  15545.9,  59.5
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 14 DN::HP14DN_2,  19.8,  15500.6,  52.9
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 14 DN::HP14DN_3,  5.8,  15503.2,  -1161.0
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 14 DN::HP14DN_4,  6.3,  15545.9,  -1151.5
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 16 DN::HP16DN_,  7.3,  15635.3,  -1170.4
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 16 DN::HP16DN_1,  7.5,  15677.5,  -1165.9
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 16 DN::HP16DN_2,  20.4,  15683.6,  51.0
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 16 DN::HP16DN_3,  20.6,  15629.3,  47.1
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 18 DN::HP18DN_1,  20.4,  15769.6,  60.7
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 18 DN::HP18DN_2,  22.0,  15812.7,  66.1
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 18 DN::HP18DN_3,  11.8,  15819.0,  -1142.9
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 18 DN::HP18DN_4,  10.3,  15771.5,  -1155.3
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 20 DN::HP20DN_1,  14.5,  15897.2,  -1165.3
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 20 DN::HP20DN_2,  14.8,  15944.2,  -1161.8
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 20 DN::HP20DN_3,  22.2,  15948.0,  47.5
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 20 DN::HP20DN_4,  22.3,  15901.6,  49.3
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 22 DN::HP22DN_1,  26.3,  16076.6,  60.5
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 22 DN::HP22DN_2,  25.2,  16030.1,  57.8
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 22 DN::HP22DN_3,  13.8,  16035.8,  -1146.9
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 22 DN::HP22DN_4,  15.0,  16079.0,  -1146.4
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 24 DN::HP24DN_1,  18.8,  16169.9,  -1155.2
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 24 DN::HP24DN_2,  19.1,  16215.9,  -1151.6
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 24 DN::HP24DN_3,  27.2,  16216.2,  50.3
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 24 DN::HP24DN_4,  26.3,  16169.5,  48.3
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 26 DN::HP26DN_1,  28.9,  16345.8,  65.2
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 26 DN::HP26DN_2,  27.0,  16301.8,  62.4
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 26 DN::HP26DN_3,  19.0,  16300.8,  -1128.0
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 26 DN::HP26DN_4,  19.7,  16348.1,  -1136.4
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 28 DN::HP28DN_1,  22.8,  16431.6,  -1149.5
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 28 DN::HP28DN_2,  21.8,  16479.7,  -1160.5
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 28 DN::HP28DN_3,  31.1,  16483.2,  54.1
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 28 DN::HP28DN_4,  31.2,  16432.6,  49.9
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 30 DN::HP30DN_1,  31.1,  16608.1,  72.4
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 30 DN::HP30DN_2,  31.3,  16563.0,  69.0
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 30 DN::HP30DN_3,  23.2,  16567.2,  -1151.4
+Block 1 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 30 DN::HP30DN_4,  23.0,  16614.0,  -1149.8
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 2 Up::HP2UP_1,  25.1,  14746.3,  1300.3
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 2 Up::HP2UP_2,  24.8,  14699.9,  1296.0
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 2 Up::HP2UP_3,  14.1,  14701.7,  120.2
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 2 Up::HP2UP_4,  14.3,  14746.8,  122.5
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 4 UP::HP4UP_1,  29.5,  14879.3,  1297.6
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 4 UP::HP4UP_2,  27.8,  14844.2,  1293.5
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 4 UP::HP4UP_3,  19.3,  14888.3,  127.6
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 4 UP::HP4UP_4,  17.0,  14848.3,  121.4
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 6 UP::HP6UP_1,  28.5,  15005.7,  1300.2
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 6 UP::HP6UP_2,  28.3,  14978.6,  1297.2
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 6 UP::HP6UP_3,  18.6,  15014.9,  142.7
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 6 UP::HP6UP_4,  17.7,  14980.8,  119.4
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 8 UP::HP8UP_1,  20.8,  15097.8,  97.9
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 8 UP::HP8UP_2,  20.9,  15140.3,  100.6
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 8 UP::HP8UP_3,  31.1,  15104.6,  1287.3
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 8 UP::HP8UP_4,  31.2,  15141.4,  1287.6
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 10 UP::HP10UP_1,  31.1,  15240.6,  1301.5
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 10 UP::HP10UP_2,  31.8,  15272.1,  1298.2
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 10 UP::HP10UP_3,  19.3,  15272.4,  119.4
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 10 UP::HP10UP_4,  18.6,  15241.4,  116.3
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 12 UP::HP12UP_1,  23.0,  15364.8,  98.1
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 12 UP::HP12UP_2,  23.8,  15412.7,  103.9
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 12 UP::HP12UP_3,  37.8,  15386.0,  1258.4
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 12 UP::HP12UP_4,  38.4,  15418.0,  1259.5
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 14 UP::HP14UP_1,  34.5,  15538.5,  1260.1
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 14 UP::HP14UP_2,  34.4,  15516.0,  1256.3
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 14 UP::HP14UP_3,  23.4,  15497.0,  108.9
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 14 UP::HP14UP_4,  23.6,  15544.7,  109.0
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 16 UP::HP16UP_1,  28.4,  15630.6,  98.4
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 16 UP::HP16UP_2,  28.4,  15679.2,  101.7
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 16 UP::HP16UP_3,  39.5,  15677.7,  1252.5
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 16 UP::HP16UP_4,  39.2,  15652.9,  1254.2
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 18 UP::HP18P_1,  42.1,  15768.3,  1274.4
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 18 UP::HP18P_2,  42.0,  15808.4,  1265.8
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 18 UP::HP18P_3,  26.1,  15814.4,  112.2
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 18 UP::HP18P_4,  25.9,  15762.2,  109.5
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 20 UP::HP20UP_1,  30.6,  15897.1,  93.3
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 20 UP::HP20UP_2,  31.5,  15944.7,  92.0
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 20 UP::HP20UP_3,  43.9,  15948.0,  1223.7
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 20 UP::HP20UP_4,  43.3,  15921.3,  1242.0
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 22 UP::HP22UP_1,  42.4,  16028.9,  1253.7
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 22 UP::HP22UP_2,  44.0,  16078.4,  1238.3
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 22 UP::HP22UP_3,  31.7,  16029.4,  111.3
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 22 UP::HP22UP_4,  32.9,  16077.8,  108.3
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 24 UP::HP24UP_1,  36.8,  16164.9,  98.3
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 24 UP::HP24UP_2,  37.0,  16213.9,  94.0
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 24 UP::HP24UP_3,  49.4,  16216.1,  1195.8
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 24 UP::HP24UP_4,  49.3,  16180.7,  1197.4
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 26 UP::HP26UP_1,  47.0,  16308.2,  1214.7
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 26 UP::HP26UP_2,  48.6,  16355.1,  1212.6
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 26 UP::HP26UP_3,  36.0,  16297.9,  115.8
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 26 UP::HP26UP_4,  36.4,  16340.3,  115.5
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 28 UP::HP28UP_1,  41.8,  16432.9,  99.3
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 28 UP::HP28UP_2,  43.6,  16481.7,  102.0
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 28 UP::HP28UP_3,  51.2,  16483.0,  1216.6
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 28 UP::HP28UP_4,  49.6,  16449.8,  1211.5
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 30 UP::HP30UP_1,  53.4,  16566.7,  1212.1
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 30 UP::HP30UP_2,  53.8,  16607.0,  1174.0
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 30 UP::HP30UP_3,  43.1,  16564.0,  109.4
+Block 1 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 30 UP::HP30UP_4,  44.1,  16609.1,  114.9
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 32 DN::HP32DN_1,  11.7,  16704.9,  -1170.6
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 32 DN::HP32DN_2,  12.4,  16756.5,  -1166.4
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 32 DN::HP32DN_3,  24.9,  16747.0,  47.7
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 32 DN::HP32DN_4,  23.9,  16705.2,  47.0
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 34 DN::HP34DN_1,  23.9,  16842.0,  53.8
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 34 DN::HP34DN_2,  23.3,  16891.6,  58.4
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 34 DN::HP34DN_3,  12.9,  16887.0,  -1154.5
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 34 DN::HP34DN_4,  13.2,  16841.5,  -1157.9
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 36 DN::HP36DN_1,  14.1,  16975.3,  -1165.0
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 36 DN::HP36DN_2,  14.5,  17016.7,  -1165.1
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 36 DN::HP36DN_3,  25.6,  17022.7,  45.7
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 36 DN::HP36DN_4,  25.2,  16979.2,  46.2
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 38 DN::HP38DN_1,  24.6,  17107.7,  59.2
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 38 DN::HP38DN_2,  26.4,  17160.4,  62.4
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 38 DN::HP38DN_3,  15.6,  17151.6,  -1157.8
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 38 DN::HP38DN_4,  14.6,  17107.0,  -1160.8
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 40 DN::HP40DN_1,  16.4,  17245.1,  -1168.5
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 40 DN::HP40DN_2,  17.1,  17282.7,  -1165.2
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 40 DN::HP40DN_3,  30.4,  17290.0,  32.1
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 40 DN::HP40DN_4,  30.5,  17245.1,  32.2
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 42 DN::HP42DN_1,  29.4,  17376.2,  53.0
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 42 DN::HP42DN_2,  29.9,  17421.7,  50.9
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 42 DN::HP42DN_3,  18.9,  17419.5,  -1158.1
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 42 DN::HP42DN_4,  17.9,  17378.9,  -1161.3
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 44 DN::HP44DN_1,  21.7,  17511.7,  -1171.8
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 44 DN::HP44DN_2,  23.0,  17551.5,  -1171.6
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 44 DN::HP44DN_3,  32.3,  17560.9,  48.3
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 44 DN::HP44DN_4,  30.3,  17511.7,  48.2
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 46 DN::HP46DN_1,  34.7,  17635.7,  62.3
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 46 DN::HP46DN_2,  34.4,  17688.3,  60.4
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 46 DN::HP46DN_3,  22.4,  17686.5,  -1146.6
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 46 DN::HP46DN_4,  22.0,  17640.0,  -1156.8
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 48 DN::HP48DN_1,  25.8,  17770.6,  -1153.0
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 48 DN::HP48DN_2,  26.1,  17817.5,  -1154.4
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 48 DN::HP48DN_3,  36.8,  17823.0,  48.5
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 48 DN::HP48DN_4,  35.4,  17773.6,  49.5
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 50 DN::HP50DN_1,  39.2,  17904.7,  55.1
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 50 DN::HP50DN_2,  39.0,  17954.8,  53.1
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 50 DN::HP50DN_3,  28.8,  17953.3,  -1150.1
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 50 DN::HP50DN_4,  28.6,  17911.1,  -1157.1
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 52 DN::HP52N_1,  31.2,  18045.0,  -1166.5
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 52 DN::HP52N_2,  31.3,  18084.6,  -1165.2
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 52 DN::HP52N_3,  41.8,  18091.0,  46.1
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 52 DN::HP52N_4,  42.0,  18046.9,  46.0
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 54 DN::HP54N_1,  43.8,  18168.4,  59.7
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 54 DN::HP54N_2,  44.2,  18225.3,  62.3
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 54 DN::HP54N_3,  30.8,  18220.4,  -1144.6
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 54 DN::HP54N_4,  30.6,  18175.2,  -1153.0
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 56 DN::HP56DN_1,  35.4,  18309.2,  -1168.6
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 56 DN::HP56DN_2,  35.5,  18351.7,  -1166.3
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 56 DN::HP56DN_3,  46.1,  18354.7,  47.4
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 56 DN::HP56DN_4,  45.5,  18309.8,  45.1
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 58 DN::HP58DN_1,  46.3,  18445.0,  52.3
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 58 DN::HP58DN_2,  46.5,  18488.1,  58.3
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 58 DN::HP58DN_3,  34.4,  18482.7,  -1148.0
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 58 DN::HP58DN_4,  34.4,  18446.8,  -1155.6
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 60 DN::HP60DN_1,  38.0,  18572.5,  -1172.2
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 60 DN::HP60DN_2,  38.5,  18615.8,  -1166.7
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 60 DN::HP60DN_3,  51.1,  18623.6,  46.1
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 60 DN::HP60DN_4,  50.9,  18577.7,  45.8
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 62 DN::HP62DN_1,  50.3,  18705.9,  66.3
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 62 DN::HP62DN_2,  50.9,  18756.5,  66.5
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 62 DN::HP62DN_3,  40.2,  18756.0,  -1158.5
+Block 2 Lower Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 62 DN::HP62DN_4,  39.8,  18709.5,  -1151.6
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 32 UP::HP32UP_1,  29.9,  16715.6,  96.2
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 32 UP::HP32UP_2,  30.0,  16742.1,  96.9
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 32 UP::HP32UP_3,  43.5,  16751.3,  1222.9
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 32 UP::HP32UP_4,  43.2,  16731.7,  1221.2
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 34 UP::HP34UP_1,  39.5,  16856.8,  1234.8
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 34 UP::HP34UP_2,  39.5,  16885.8,  1230.0
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 34 UP::HP34UP_3,  26.7,  16852.7,  121.3
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 34 UP::HP34UP_4,  26.8,  16880.8,  119.0
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 36 UP::HP36UP_1,  30.3,  16989.9,  107.5
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 36 UP::HP36UP_2,  30.3,  17013.1,  107.2
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 36 UP::HP36UP_3,  40.5,  16985.9,  1215.5
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 36 UP::HP36UP_4,  40.1,  17016.4,  1214.0
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 38 UP::HP38UP_1,  42.6,  17121.3,  1243.4
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 38 UP::HP38UP_2,  43.0,  17153.8,  1243.4
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 38 UP::HP38UP_3,  29.2,  17116.9,  121.3
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 38 UP::HP38UP_4,  29.6,  17152.6,  117.3
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 40 UP::HP40UP_1,  32.9,  17242.2,  85.1
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 40 UP::HP40UP_2,  33.1,  17281.3,  86.2
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 40 UP::HP40UP_3,  45.1,  17252.8,  1224.9
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 40 UP::HP40UP_4,  44.8,  17280.3,  1228.4
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 42 UP::HP42UP_1,  45.6,  17385.4,  1226.1
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 42 UP::HP42UP_2,  45.9,  17420.2,  1225.7
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 42 UP::HP42UP_3,  34.8,  17388.3,  112.5
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 42 UP::HP42UP_4,  35.5,  17419.9,  110.1
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 44 UP::HP44UP_1,  36.1,  17517.6,  96.9
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 44 UP::HP44UP_2,  35.9,  17545.7,  94.9
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 44 UP::HP44UP_3,  48.7,  17520.7,  1230.9
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 44 UP::HP44UP_4,  48.6,  17551.2,  1232.1
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 46 UP::HP46UP_1,  48.8,  17659.3,  1243.4
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 46 UP::HP46UP_2,  50.0,  17689.1,  1242.3
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 46 UP::HP46UP_3,  38.0,  17656.5,  116.6
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 46 UP::HP46UP_4,  38.7,  17678.7,  107.6
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 48 UP::HP48UP_1,  39.5,  17781.3,  97.9
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 48 UP::HP48UP_2,  40.2,  17809.0,  101.4
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 48 UP::HP48UP_3,  50.2,  17819.4,  1231.3
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 48 UP::HP48UP_4,  48.9,  17787.7,  1216.2
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 50 UP::HP50UP_1,  52.2,  17922.5,  1219.4
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 50 UP::HP50UP_2,  52.6,  17950.3,  1222.3
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 50 UP::HP50UP_3,  40.3,  17940.1,  118.1
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 50 UP::HP50UP_4,  39.8,  17914.0,  106.4
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 52 UP::HP52UP_1,  43.8,  18046.0,  94.8
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 52 UP::HP52UP_2,  44.3,  18077.4,  99.1
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 52 UP::HP52UP_3,  54.5,  18047.9,  1213.4
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 52 UP::HP52UP_4,  54.9,  18083.8,  1216.3
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 54 UP::HP54UP_1,  55.8,  18187.0,  1237.8
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 54 UP::HP54UP_2,  55.6,  18220.0,  1237.6
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 54 UP::HP54UP_3,  45.0,  18182.1,  106.3
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 54 UP::HP54UP_4,  44.9,  18210.1,  105.3
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 56 UP::HP56UP_1,  46.3,  18312.1,  90.3
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 56 UP::HP56UP_2,  46.1,  18343.3,  93.9
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 56 UP::HP56UP_3,  59.9,  18328.9,  1206.5
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 56 UP::HP56UP_4,  59.9,  18355.8,  1203.8
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 58 UP::HP58UP_1,  59.0,  18460.0,  1238.8
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 58 UP::HP58UP_2,  60.1,  18486.4,  1227.7
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 58 UP::HP58UP_3,  46.7,  18449.1,  115.9
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 58 UP::HP58UP_4,  47.4,  18474.2,  112.7
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 60 UP::HP60UP_1,  51.2,  18574.0,  86.3
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 60 UP::HP60UP_2,  50.9,  18607.9,  91.6
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 60 UP::HP60UP_3,  62.5,  18584.1,  1230.3
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 60 UP::HP60UP_4,  62.3,  18615.0,  1238.4
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 62 UP::HP62UP_1,  62.2,  18713.3,  1215.5
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 62 UP::HP62UP_2,  62.4,  18746.5,  1210.3
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 62 UP::HP62UP_3,  50.4,  18713.4,  127.3
+Block 2 Upper Beam Left Horizontal End Caps Offset Points,  14Mar19::Horiz Panel 62 UP::HP62UP_4,  50.6,  18744.3,  120.2
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 13 BL::VP 13 BL_2,  103.3,  15410.2,  -1204.0
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 05 BL::VP 05 BL_2,  92.3,  14902.6,  -1203.6
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 31 BL::VP 31 BL_2,  128.0,  16628.9,  -1199.6
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 01 BL::VP 01 BL_1,  89.4,  14632.0,  -1188.9
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 19 BL::VP 19 BL_1,  118.5,  15838.1,  -1186.2
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 23 BL::VP 23 BL_1,  123.5,  16094.2,  -1179.3
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 29 BL::VP 29 BL_1,  115.1,  16490.2,  -1178.5
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 09 BL::VP 09 BL_6,  97.3,  15157.0,  -1177.4
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 15 BL::VP 15 BL_1,  116.0,  15563.7,  -1177.3
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 27 BL::VP 27 BL_2,  124.7,  16363.5,  -1172.4
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 17 BL::VP 17 BL_2,  104.1,  15696.9,  -1172.4
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 11 BL::VP 11 BL_1,  111.4,  15300.5,  -1171.4
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 03 BL::VP 03 BL_1,  105.2,  14769.8,  -1170.0
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 25 BL::VP 25 BL_1,  112.2,  16226.8,  -1168.9
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 21 BL::VP 21 BL_2,  108.4,  15958.7,  -1167.0
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 25 BL::VP 25 BL_2,  131.1,  16226.7,  66.8
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 17 BL::VP 17 BL_1,  122.2,  15689.5,  72.3
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 01 BL::VP 01 BL_2,  109.1,  14606.8,  73.2
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 23 BL::VP 23 BL_2,  140.5,  16075.2,  74.3
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 21 BL::VP 21 BL_1,  127.6,  15941.8,  77.7
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 31 BL::VP 31 BL_1,  149.4,  16620.2,  78.3
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 27 BL::VP 27 BL_1,  143.8,  16346.4,  81.0
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 11 BL::VP 11 BL_2,  128.1,  15284.8,  83.7
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 09 BL::VP 09 BL_5,  116.0,  15143.6,  85.1
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 13 BL::VP 13 BL_1,  119.7,  15417.9,  85.9
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 15 BL::VP 15 BL_2,  133.2,  15548.3,  87.3
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 19 BL::VP 19 BL_2,  136.3,  15823.7,  88.5
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 29 BL::VP 29 BL_2,  136.7,  16482.2,  93.9
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 07 BL::VP 07 BL_4,  126.5,  15000.1,  95.1
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 05 BL::VP 05 BL_1,  116.3,  14852.5,  117.6
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 03 BL::VP 03 BL_2,  122.6,  14747.8,  123.9
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 01 BL::VP 01 BL_3,  127.0,  14626.9,  1372.9
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 09 BL::VP 09 BL_3,  133.1,  15159.4,  1384.3
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 13 BL::VP 13 BL_3,  136.2,  15432.1,  1392.5
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 07 BL::VP 07 BL_3,  141.5,  15024.2,  1392.8
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 11 BL::VP 11 BL_3,  144.7,  15291.3,  1393.0
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 03 BL::VP 03 BL_3,  138.1,  14753.9,  1393.9
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 21 BL::VP 21 BL_3,  146.5,  15963.2,  1394.4
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 23 BL::VP 23 BL_3,  158.3,  16101.7,  1397.5
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 19 BL::VP 19 BL_3,  153.2,  15830.1,  1398.6
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 29 BL::VP 29 BL_3,  156.5,  16489.4,  1400.8
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 05 BL::VP 05 BL_3,  128.0,  14895.4,  1400.9
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 31 BL::VP 31 BL_3,  169.9,  16623.6,  1401.7
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 15 BL::VP 15 BL_3,  149.1,  15555.9,  1402.6
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 17 BL::VP 17 BL_3,  141.2,  15696.8,  1409.4
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 25 BL::VP 25 BL_3,  151.7,  16229.4,  1418.6
+Block 1 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 27 BL::VP 27 BL_3,  164.2,  16363.9,  1418.8
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 33 BL::VP 33 BL_1,  104.3,  16769.3,  -1179.7
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 33 BL::VP 33 BL_2,  121.4,  16780.8,  95.6
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 33 BL::VP 33 BL_3,  139.2,  16777.8,  1410.3
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 35 BL::VP 35 BL_1,  137.3,  16886.5,  94.0
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 35 BL::VP 35 BL_2,  121.4,  16903.3,  -1185.4
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 35 BL::VP 35 BL_3,  151.1,  16916.3,  1391.0
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 37 BL::VP 37 BL_1,  111.3,  17033.0,  -1174.2
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 37 BL::VP 37 BL_2,  126.1,  17034.5,  83.6
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 37 BL::VP 37 BL_3,  141.3,  17041.3,  1394.9
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 39 BL::VP 39 BL_1,  141.5,  17150.7,  88.3
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 39 BL::VP 39 BL_2,  125.8,  17170.6,  -1159.5
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 39 BL::VP 39 BL_3,  155.0,  17179.1,  1398.9
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 41 BL::VP 41 BL_1,  115.1,  17291.7,  -1161.2
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 41 BL::VP 41 BL_2,  129.7,  17294.9,  94.7
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 41 BL::VP 41 BL_3,  144.6,  17310.1,  1409.0
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 43 BL::VP 43 BL_1,  143.2,  17422.4,  80.2
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 43 BL::VP 43 BL_2,  124.8,  17441.3,  -1179.8
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 43 BL::VP 43 BL_3,  160.0,  17438.4,  1427.5
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 45 BL::VP 45 BL_1,  117.0,  17571.7,  -1184.2
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 45 BL::VP 45 BL_2,  134.0,  17551.3,  102.0
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 45 BL::VP 45 BL_3,  148.0,  17572.9,  1420.1
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 47 BL::VP 47 BL_1,  148.2,  17684.4,  94.8
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 47 BL::VP 47 BL_2,  131.5,  17705.0,  -1200.8
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 47 BL::VP 47 BL_3,  161.9,  17704.8,  1419.8
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 49 BL::VP 49 BL_1,  121.9,  17818.1,  -1180.7
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 49 BL::VP 49 BL_2,  135.5,  17843.8,  95.4
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 49 BL::VP 49 BL_3,  151.6,  17839.0,  1421.8
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 51 BL::VP 51 BL_1,  150.5,  17973.8,  103.6
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 51 BL::VP 51 BL_2,  136.3,  17972.2,  -1171.6
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 51 BL::VP 51 BL_3,  165.3,  17975.4,  1410.8
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 53 BL::VP 53 BL_1,  127.6,  18083.3,  -1172.9
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 53 BL::VP 53 BL_2,  141.4,  18096.1,  87.8
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 53 BL::VP 53 BL_3,  156.6,  18102.5,  1412.9
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 55 BL::VP 55 BL_1,  154.9,  18216.3,  85.5
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 55 BL::VP 55 BL_2,  138.9,  18251.2,  -1190.0
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 55 BL::VP 55 BL_3,  168.0,  18243.3,  1395.0
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 57 BL::VP 57 BL_1,  132.6,  18367.3,  -1172.4
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 57 BL::VP 57 BL_2,  145.2,  18362.9,  98.0
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 57 BL::VP 57 BL_3,  156.4,  18372.8,  1385.7
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 59 BL::VP 59 BL_1,  158.4,  18504.8,  92.1
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 59 BL::VP 59 BL_2,  146.3,  18495.6,  -1169.3
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 59 BL::VP 59 BL_3,  166.3,  18525.8,  1379.3
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 61 BL::VP 61 BL_1,  135.0,  18638.5,  -1157.7
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 61 BL::VP 61 BL_2,  147.9,  18633.8,  131.0
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 61 BL::VP 61 BL_3,  160.1,  18632.8,  1407.6
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 63 BL::VP 63 BL_1,  162.7,  18750.0,  131.1
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 63 BL::VP 63 BL_2,  148.0,  18773.1,  -1191.5
+Block 2 Beam Left Vertical Panel Offset Points,  14Mar19::Vert Panel 63 BL::VP 63 BL_3,  173.7,  18773.5,  1399.9
+Block 1 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 02 BR::HP BL Bot 02,  2684.4,  14710.5,  -1203.2
+Block 1 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 02 BL::HP BL Bot 02,  13.5,  14722.5,  -1176.5
+Block 1 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 04 BR::HP BL Bot 04,  2707.7,  14847.1,  -1217.6
+Block 1 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 04 BL::HP BL Bot 04,  20.6,  14864.8,  -1193.7
+Block 1 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 06 BR::HP BL Bot 06,  2722.3,  14971.7,  -1205.0
+Block 1 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 06 BL::HP BL Bot 06,  13.0,  15002.4,  -1177.9
+Block 1 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 08 BR::HP BL Bot 08,  2711.4,  15111.5,  -1218.5
+Block 1 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 08 BL::HP BL Bot 08,  13.8,  15130.3,  -1194.1
+Block 1 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 10 BR::HP BL Bot 10,  2709.0,  15237.8,  -1206.0
+Block 1 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 10 BL::HP BL Bot 10,  13.5,  15279.5,  -1179.7
+Block 1 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 12 BR::HP BL Bot 12,  2717.3,  15373.9,  -1219.3
+Block 1 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 12 BL::HP BL Bot 12,  12.2,  15414.5,  -1196.0
+Block 1 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 14 BR::HP BL Bot 14,  2721.4,  15518.8,  -1206.0
+Block 1 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 14 BL::HP BL Bot 14,  15.2,  15549.8,  -1179.1
+Block 1 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 16 BR::HP BL Bot 16,  2719.3,  15641.0,  -1219.3
+Block 1 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 16 BL::HP BL Bot 16,  15.9,  15678.6,  -1194.9
+Block 1 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 18 BR::HP BL Bot 18,  2708.7,  15769.1,  -1206.1
+Block 1 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 18 BL::HP BL Bot 18,  21.6,  15815.5,  -1178.7
+Block 1 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 20 BR::HP BL Bot 20,  2706.9,  15901.3,  -1218.9
+Block 1 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 20 BL::HP BL Bot 20,  23.7,  15942.5,  -1194.4
+Block 1 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 22 BR::HP BL Bot 22,  2715.5,  16043.0,  -1205.1
+Block 1 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 22 BL::HP BL Bot 22,  22.3,  16080.8,  -1178.7
+Block 1 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 24 BR::HP BL Bot 24,  2719.4,  16174.9,  -1216.9
+Block 1 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 24 BL::HP BL Bot 24,  28.7,  16214.7,  -1194.3
+Block 1 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 26 BR::HP BL Bot 26,  2726.5,  16302.8,  -1203.6
+Block 1 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 26 BL::HP BL Bot 26,  30.6,  16348.7,  -1177.7
+Block 1 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 28 BR::HP BL Bot 28,  2725.5,  16429.8,  -1216.0
+Block 1 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 28 BL::HP BL Bot 28,  32.9,  16477.9,  -1193.3
+Block 1 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 30 BR::HP BL Bot 30,  2737.9,  16575.1,  -1202.1
+Block 1 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 30 BL::HP BL Bot 30,  34.0,  16614.7,  -1177.0
+Block 2 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 62 BL::HP BL Bot 62,  46.8,  18750.6,  -1182.0
+Block 2 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 60 BL::HP BL Bot 60,  48.6,  18619.8,  -1199.5
+Block 2 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 58 BL::HP BL Bot 58,  43.2,  18483.0,  -1183.0
+Block 2 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 56 BL::HP BL Bot 56,  44.5,  18349.0,  -1199.1
+Block 2 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 54 BL::HP BL Bot 54,  40.2,  18212.8,  -1182.9
+Block 2 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 52 BL::HP BL Bot 52,  39.0,  18085.3,  -1198.4
+Block 2 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 50 BL::HP BL Bot 50,  37.2,  17948.4,  -1183.7
+Block 2 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 48 BL::HP BL Bot 48,  34.6,  17824.6,  -1197.7
+Block 2 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 46 BL::HP BL Bot 46,  32.3,  17686.9,  -1182.2
+Block 2 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 44 BL::HP BL Bot 44,  31.6,  17557.3,  -1197.7
+Block 2 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 42 BL::HP BL Bot 42,  28.5,  17426.2,  -1181.5
+Block 2 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 40 BL::HP BL Bot 40,  27.9,  17285.6,  -1195.9
+Block 2 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 38 BL::HP BL Bot 38,  26.9,  17159.8,  -1179.6
+Block 2 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 36 BL::HP BL Bot 36,  25.4,  17016.4,  -1194.9
+Block 2 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 34 BL::HP BL Bot 34,  23.0,  16886.5,  -1177.6
+Block 2 Horizontal Panel Bottom Offset Points,  14Mar19::Horiz Panel 32 BL::HP BL Bot 32,  23.0,  16749.2,  -1193.5
+Block 2 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 36 BR::HP BL Bot 36,  2712.4,  16976.4,  -1217.9
+Block 2 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 54 BR::HP BL Bot 54,  2732.0,  18177.9,  -1210.3
+Block 2 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 56 BR::HP BL Bot 56,  2738.7,  18302.6,  -1223.4
+Block 2 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 58 BR::HP BL Bot 58,  2743.4,  18439.0,  -1210.9
+Block 2 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 60 BR::HP BL Bot 60,  2749.7,  18576.1,  -1223.1
+Block 2 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 62 BR::HP BL Bot 62,  2747.4,  18707.3,  -1209.4
+Block 2 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 38 BR::HP BL Bot 38,  2718.4,  17112.8,  -1206.0
+Block 2 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 40 BR::HP BL Bot 40,  2718.2,  17252.5,  -1220.1
+Block 2 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 42 BR::HP BL Bot 42,  2739.8,  17373.9,  -1207.6
+Block 2 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 44 BR::HP BL Bot 44,  2728.1,  17516.2,  -1221.7
+Block 2 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 46 BR::HP BL Bot 46,  2727.2,  17642.2,  -1209.1
+Block 2 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 48 BR::HP BL Bot 48,  2725.9,  17782.4,  -1222.5
+Block 2 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 50 BR::HP BL Bot 50,  2747.6,  17915.3,  -1210.2
+Block 2 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 52 BR::HP BL Bot 52,  2746.8,  18047.7,  -1223.3
+Block 2 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 34 BR::HP BL Bot 34,  2713.6,  16845.6,  -1202.0
+Block 2 Horizontal Panel Bottom Offset Points,  19Mar19::Horiz Panel 32 BR::HP BL Bot 32,  2738.5,  16709.5,  -1220.3
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 01 BR::VP 01 BR_1,  2629.9,  14682.2,  -1239.8
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 01 BR::VP 01 BR_2,  2649.1,  14668.2,  104.0
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 03 BR::VP 03 BR_1,  2646.2,  14816.1,  -1244.6
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 03 BR::VP 03 BR_2,  2661.8,  14815.8,  132.4
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 05 BR::VP 05 BR_1,  2634.6,  14948.4,  -1249.0
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 05 BR::VP 05 BR_2,  2651.4,  14955.8,  118.9
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 07 BR::VP 07 BR_1,  2646.9,  15085.1,  -1244.6
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 07 BR::VP 07 BR_2,  2666.9,  15074.1,  123.4
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 09 BR::VP 09 BR_1,  2637.1,  15215.1,  -1258.4
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 09 BR::VP 09 BR_2,  2655.6,  15215.1,  92.5
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 11 BR::VP 11 BR_1,  2652.5,  15339.5,  -1268.5
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 11 BR::VP 11 BR_2,  2667.4,  15336.4,  35.9
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 13 BR::VP 13 BR_1,  2643.6,  15481.0,  -1256.6
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 13 BR::VP 13 BR_2,  2659.5,  15478.4,  -17.6
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 15 BR::VP 15 BR_1,  2659.8,  15608.1,  -1254.5
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 15 BR::VP 15 BR_2,  2674.5,  15602.5,  -7.4
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 17 BR::VP 17 BR_1,  2648.3,  15743.6,  -1242.5
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 17 BR::VP 17 BR_2,  2662.9,  15739.3,  12.1
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 19 BR::VP 19 BR_1,  2659.8,  15882.1,  -1239.6
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 19 BR::VP 19 BR_2,  2676.3,  15881.2,  4.9
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 21 BR::VP 21 BR_1,  2649.6,  16008.5,  -1245.7
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 21 BR::VP 21 BR_2,  2667.6,  16004.4,  37.9
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 23 BR::VP 23 BR_1,  2666.8,  16142.6,  -1247.4
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 23 BR::VP 23 BR_2,  2682.4,  16139.0,  43.2
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 25 BR::VP 25 BR_1,  2653.2,  16278.9,  -1248.7
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 25 BR::VP 25 BR_2,  2672.5,  16276.1,  47.0
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 27 BR::VP 27 BR_1,  2665.4,  16411.3,  -1250.4
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 27 BR::VP 27 BR_2,  2684.9,  16407.4,  34.2
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 29 BR::VP 29 BR_1,  2658.1,  16540.7,  -1247.3
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 29 BR::VP 29 BR_2,  2677.0,  16537.7,  31.5
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 31 BR::VP 31 BR_1,  2668.2,  16688.1,  -1248.3
+Block 1 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 31 BR::VP 31 BR_2,  2688.6,  16673.8,  34.6
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 33 BR::VP 33 BR_1,  2643.9,  16815.4,  -1248.4
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 33 BR::VP 33 BR_2,  2660.1,  16808.9,  -0.4
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 35 BR::VP 35 BR_1,  2664.4,  16944.6,  -1253.7
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 35 BR::VP 35 BR_2,  2677.4,  16944.5,  -26.0
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 37 BR::VP 37 BR_1,  2651.9,  17086.0,  -1260.3
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 37 BR::VP 37 BR_2,  2665.4,  17087.1,  -23.7
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 39 BR::VP 39 BR_1,  2668.0,  17210.5,  -1259.1
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 39 BR::VP 39 BR_2,  2680.3,  17220.1,  -14.1
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 41 BR::VP 41 BR_1,  2653.6,  17356.8,  -1266.8
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 41 BR::VP 41 BR_2,  2667.5,  17346.5,  -68.9
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 43 BR::VP 43 BR_1,  2668.9,  17486.7,  -1266.7
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 43 BR::VP 43 BR_2,  2682.5,  17478.4,  -109.6
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 45 BR::VP 45 BR_1,  2661.5,  17613.0,  -1256.8
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 45 BR::VP 45 BR_2,  2673.1,  17615.5,  -132.7
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 47 BR::VP 47 BR_1,  2673.4,  17747.3,  -1267.5
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 47 BR::VP 47 BR_2,  2685.4,  17743.1,  -128.4
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 49 BR::VP 49 BR_1,  2660.7,  17878.5,  -1268.7
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 49 BR::VP 49 BR_2,  2674.4,  17890.5,  -7.1
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 51 BR::VP 51 BR_1,  2675.8,  18014.9,  -1271.1
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 51 BR::VP 51 BR_2,  2688.4,  18012.7,  -36.5
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 53 BR::VP 53 BR_1,  2669.3,  18144.6,  -1272.0
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 53 BR::VP 53 BR_2,  2680.5,  18149.1,  -75.1
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 55 BR::VP 55 BR_1,  2678.8,  18280.6,  -1280.6
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 55 BR::VP 55 BR_2,  2693.2,  18275.0,  -50.6
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 57 BR::VP 57 BR_1,  2671.2,  18414.3,  -1265.4
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 57 BR::VP 57 BR_2,  2683.1,  18413.9,  -76.3
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 59 BR::VP 59 BR_1,  2686.1,  18543.3,  -1277.4
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 59 BR::VP 59 BR_2,  2696.0,  18547.6,  -56.3
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 61 BR::VP 61 BR_1,  2677.8,  18675.4,  -1273.0
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 61 BR::VP 61 BR_2,  2688.7,  18689.0,  -96.6
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 63 BR::VP 63 BR_1,  2688.3,  18812.1,  -1283.8
+Block 2 Beam Right Vertical Panel Offset Points,  19Mar19::Vert Panel 63 BR::VP 63 BR_2,  2700.9,  18810.0,  -69.1
+ Block 1 BL top shifted - 3",  Block 1 BL top-Horiz Panel 14 BL-HP BL Top 14,  45.6,  15506.4,  1359.9
+ Block 1 BL top shifted - 3",  Block 1 BL top-Horiz Panel 18 BL-HP BL Top 18,  56.5,  15755.8,  1360.7
+ Block 1 BL top shifted - 3",  Block 1 BL top-Horiz Panel 10 BL-HP BL Top 10,  43.2,  15241.2,  1361.2
+ Block 1 BL top shifted - 3",  Block 1 BL top-Horiz Panel 26 BL-HP BL Top 26,  63.2,  16302.4,  1361.5
+ Block 1 BL top shifted - 3",  Block 1 BL top-Horiz Panel 22 BL-HP BL Top 22,  53.5,  16034.0,  1361.6
+ Block 1 BL top shifted - 3",  Block 1 BL top-Horiz Panel 02 BL-HP BL Top 02,  34.6,  14709.1,  1363.0
+ Block 1 BL top shifted - 3",  Block 1 BL top-Horiz Panel 06 BL-HP BL Top 06,  35.1,  14974.7,  1364.1
+ Block 1 BL top shifted - 3",  Block 1 BL top-Horiz Panel 30 BL-HP BL Top 30,  57.1,  16575.1,  1364.4
