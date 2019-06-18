@@ -5499,9 +5499,37 @@ def print_good_particle_event_id(filename, **kwargs):
             print('track.EventID = {}'.format(track.EventID))
 
 
+def print_time_of_flight(filename):
+    tf_in = TFile('{}/{}'.format(DATA_DIR, filename))
+    keys = [key.GetName() for key in gDirectory.GetListOfKeys()]
+    for key in keys:
+        # print('key = {}'.format(key))
+        for track in tf_in.Get(key):
+            pass_all = track.TrackPresenttof_us and \
+                       track.TrackPresentwire_chamber_1_detector and \
+                       track.TrackPresentwire_chamber_2_detector and \
+                       track.TrackPresentwire_chamber_3_detector and \
+                       track.TrackPresentwire_chamber_4_detector and \
+                       track.TrackPresenttof_ds and \
+                       track.TrackPresentcherenkov and \
+                       track.TrackPresentnova
+            if not pass_all:
+                continue
+
+            delta_t = track.ttof_ds - track.ttof_us
+            print('pid = {:15} delta_t = {} ns'.format(PDG.GetParticle(int(track.PDGidnova)).GetName(), delta_t * 1.e9))
+
+
 # 20190606_testbeam_detsim_event_generation
-DATA_DIR = '.'
-plot_beamline_sim_global_timing_simplify('merge_tree.root')
+# save_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_1000.20m.edep.root', 0, 20000, bin_count=2000, normalization_factor=20, noise_particle=False)
+# plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_1000.20m.edep.root.noise_particle_False.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=2, x_min=500., x_max=2000., y_min=1.e-3, y_max=15, noise_particle=False)
+# print_time_of_flight('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_1000.20m.edep.root')
+# print_time_of_flight('merge_tree.root')
+# print_time_of_flight('g4bl.b_-0.9T.proton.64000.merge_tree.root.200k.root')
+# save_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.200k.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=False)
+# plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.200k.root.noise_particle_False.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=2, x_min=500., x_max=2000., y_min=1.e-3, y_max=15, noise_particle=False)
+# DATA_DIR = '.'
+# plot_beamline_sim_global_timing_simplify('merge_tree.root')
 # plot_beamline_sim_global_timing_simplify('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.alignment.root')
 # plot_test_beam_det_gdml('data/gdml/testbeam-2x2-2block-xtru-vacuum-stagger.gdml')
 # plot_test_beam_det_gdml('/Users/juntinghuang/Desktop/nova/testbeam/data/gdml/tmp/test.gdml')
