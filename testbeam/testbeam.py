@@ -5524,6 +5524,9 @@ def print_time_of_flight(filename):
 # save_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_1000.20m.edep.root', 0, 20000, bin_count=2000, normalization_factor=20, noise_particle=False)
 # plot_saved_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_1000.20m.edep.root.noise_particle_False.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=2, x_min=500., x_max=2000., y_min=1.e-3, y_max=15, noise_particle=False)
 # print_time_of_flight('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_1000.20m.edep.root')
+# DATA_DIR = '.'
+# save_particle_momentum('merge_tree.root', 0, 20000, bin_count=2000, normalization_factor=50.e3 / 1.e6, noise_particle=False)
+# plot_saved_particle_momentum('merge_tree.root.noise_particle_False.hist.root', b_field=-0.9, beam_momentum=64, log_y=True, rebin=2, x_min=500., x_max=2000., y_min=1.e-3, y_max=15, noise_particle=False)
 # print_time_of_flight('merge_tree.root')
 # print_time_of_flight('g4bl.b_-0.9T.proton.64000.merge_tree.root.200k.root')
 # save_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.200k.root', 0, 20000, bin_count=2000, normalization_factor=200, noise_particle=False)
