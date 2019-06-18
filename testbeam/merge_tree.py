@@ -46,7 +46,7 @@ class MergeTree:
 
         self.variables = ['x', 'y', 'z', 't', 'Px', 'Py', 'Pz', 'PDGid', 'Edep', 'ParentID', 'EventID', 'TrackID']
         self.category_detectors = {
-            'start_line': ['start_line'],
+            # 'start_line': ['start_line'],
             'wire_chambers': ['wire_chamber_1_detector', 'wire_chamber_2_detector', 'wire_chamber_3_detector', 'wire_chamber_4_detector'],
             'scintillator_detectors': ['tof_us', 'tof_ds', 'tof_ds_sipm', 'cherenkov', 'nova']
         }
@@ -204,7 +204,7 @@ if __name__ == '__main__':
                         help='Input filename.')
     parser.add_argument('-o', '--output_filename', default='merge_tree.root',
                         help='Output filename.')
-    parser.add_argument('-t', '--starter_tree', default='start_line',
+    parser.add_argument('-t', '--starter_tree', default='nova',
                         help='The one TTree whose tracks will be iterated over. Effectively requires tracks present here.')
     parser.add_argument('--max_spill', type=int, default=-1,
                         help='Abbreviate processing to this many spills.')
