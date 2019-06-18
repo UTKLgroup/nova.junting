@@ -690,6 +690,9 @@ class Beamline:
         self.f_out.write('place cap rename=cap_end x={} y={} z={}\n'.format(0, 0, length - shift + thickness / 2.))
 
     def write(self):
+        self.read_alignment_data_beamline()
+        self.read_alignment_data_beamline_helium_pipe()
+
         self.f_out.write('physics QGSP_BIC\n')
         self.f_out.write('param worldMaterial=Air\n')
         self.f_out.write('param histoFile=beam.root\n')
@@ -1974,10 +1977,11 @@ class Beamline:
 
 # if __name__ == '__main__':
 # gStyle.SetOptStat(0)
-# beamline = Beamline()
+beamline = Beamline()
+beamline.figure_dir = './figures'
 # beamline.screen_shot = True
+beamline.write()
 # beamline.plot_position()
-# beamline.write()
 
 # 20180912_testbeam_radiation_collimator
 # beamline = Beamline('tmp/beamline.py.radiation.collimator.in')
@@ -1992,12 +1996,12 @@ class Beamline:
 # beamline.write_geometry_check()
 
 # 20190424_testbeam_alignment
-beamline = Beamline()
-beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
+# beamline = Beamline()
+# beamline.figure_dir = '/Users/juntinghuang/beamer/20190424_testbeam_alignment/figures'
 # beamline.screen_shot = True
-beamline.read_alignment_data_beamline()
-beamline.read_alignment_data_beamline_helium_pipe()
-beamline.write()
+# beamline.read_alignment_data_beamline()
+# beamline.read_alignment_data_beamline_helium_pipe()
+# beamline.write()
 # beamline.print_flight_distance()
 # beamline.read_alignment_data_beamline_collimator_us()
 # beamline.read_alignment_data_beamline_mwpc()
