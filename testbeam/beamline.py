@@ -705,8 +705,8 @@ class Beamline:
 
         self.write_target()
         self.write_collimator_us_alignment()
-        if not self.screen_shot:
-            self.write_virtual_disk()
+        # if not self.screen_shot:
+        #     self.write_virtual_disk()
         self.write_wc()
         self.write_helium_pipe()
         self.write_magnet()
