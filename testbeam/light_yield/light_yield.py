@@ -5,8 +5,9 @@ from datetime import datetime
 
 
 PDG = TDatabasePDG()
-FIGURE_DIR = '/Users/juntinghuang/beamer/20181116_testbeam_cerenkov_light/figures'
-DATA_DIR = './data/mineral_oil'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20190621_testbeam_light_yield_drum/figures'
+DATA_DIR = './data/drum'
+# DATA_DIR = './data/mineral_oil'
 # DATA_DIR = './data/scintillator'
 # DATA_DIR = './data/calibration'
 
@@ -402,7 +403,10 @@ def plot_spectra_ratio(**kwargs):
     colors = kwargs.get('colors', [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1, kYellow + 2, kPink, kViolet, kAzure + 4, kCyan + 1, kTeal - 7])
     legend_x1ndc = kwargs.get('legend_x1ndc', 0.58)
     legend_x2ndc = kwargs.get('legend_x2ndc', 0.92)
+    legend_yndc_delta = kwargs.get('legend_yndc_delta', 0.06)
     y_axis_title_ratio = kwargs.get('y_axis_title_ratio', 'Ratio to NDOS')
+    x_min = kwargs.get('x_min', -1.e-11)
+    x_max = kwargs.get('x_max', 12.e-11)
 
     hists = []
     for i in range(len(filenames)):
@@ -438,7 +442,7 @@ def plot_spectra_ratio(**kwargs):
 
     gPad.SetGrid()
     # lg1 = TLegend(0.63, 0.34, 0.97, 0.79)
-    lg1 = TLegend(legend_x1ndc, 0.86 - 0.06 * len(hists), legend_x2ndc, 0.79)
+    lg1 = TLegend(legend_x1ndc, 0.86 - legend_yndc_delta * len(hists), legend_x2ndc, 0.79)
     set_legend_style(lg1)
 
     for i, hist in enumerate(hists):
@@ -450,10 +454,10 @@ def plot_spectra_ratio(**kwargs):
             hist.GetYaxis().SetTitleOffset(1.5)
             hist.GetXaxis().SetLabelSize(0)
             if calibration_constant is None:
-                hist.GetXaxis().SetRangeUser(-1.e-11, 12.e-11)
+                hist.GetXaxis().SetRangeUser(x_min, x_max)
                 hist.GetXaxis().SetTitle('Charge (C)')
             else:
-                hist.GetXaxis().SetRangeUser(-1.e-11 / calibration_constant, 12.e-11 / calibration_constant)
+                hist.GetXaxis().SetRangeUser(x_min / calibration_constant, x_max / calibration_constant)
                 hist.GetXaxis().SetTitle('NPE')
         else:
             hist.Draw('hist,sames')
@@ -477,10 +481,10 @@ def plot_spectra_ratio(**kwargs):
             h_ratio.GetXaxis().SetTitleOffset(4)
             h_ratio.Draw('hist')
             if calibration_constant is None:
-                h_ratio.GetXaxis().SetRangeUser(-1.e-11, 12.e-11)
+                h_ratio.GetXaxis().SetRangeUser(x_min, x_max)
                 h_ratio.GetXaxis().SetTitle('Charge (C)')
             else:
-                h_ratio.GetXaxis().SetRangeUser(-1.e-11 / calibration_constant, 12.e-11 / calibration_constant)
+                h_ratio.GetXaxis().SetRangeUser(x_min / calibration_constant, x_max / calibration_constant)
                 h_ratio.GetXaxis().SetTitle('NPE')
         h_ratio.Draw('hist,sames')
 
@@ -875,6 +879,34 @@ def print_photon_count():
     print('sin2theta = {}'.format(sin2theta))
 
 
+# 20190621_testbeam_light_yield_drum
+calibration_constant = 8.854658242290205e-13 # C / PE
+plot_spectra_ratio(rebin=10,
+                   suffix='.drum',
+                   calibration_constant=calibration_constant,
+                   filenames=[
+                       'F1ch300005.txt',
+                       'F1ch300006.txt',
+                       # 'OvernightRun.txt',
+                       'SingleHourRun.txt',
+                       # 'F1ch300002.txt',
+                       'F1ch300004.txt',
+                   ],
+                   legend_txts=[
+                       'Ash River Tote 4',
+                       'Ash River Tote 6',
+                       # 'Austin Drum Corner Overnight',
+                       'Austin Drum Corner',
+                       # 'Austin Drum Side Overnight',
+                       'Austin Drum Side',
+                   ],
+                   y_axis_title_ratio='Ratio to AR 4',
+                   x_min=-1.e-11,
+                   x_max=8.e-11,
+                   legend_x1ndc=0.56,
+                   legend_x2ndc=0.84,
+                   legend_yndc_delta=0.08)
+
 # 20181116_testbeam_cerenkov_light
 # gStyle.SetOptStat(0)
 # calibration_constant = 8.854658242290205e-13 # C / PE
@@ -952,7 +984,7 @@ def print_photon_count():
 #                    y_axis_title_ratio='Ratio')
 
 # 20181018_testbeam_mineral_oil
-print_cherenkov_threshold()
+# print_cherenkov_threshold()
 # print_photon_count()
 
 # 20181005_testbeam_light_yield_setup
