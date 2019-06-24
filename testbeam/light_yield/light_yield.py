@@ -692,6 +692,7 @@ def plot_peaks(**kwargs):
     filenames = kwargs.get('filenames', ['F1ch300005.txt', 'F1ch300015.txt', 'F1ch300017.txt', 'F1ch300019.txt', 'F1ch300021.txt', 'F1ch300023.txt'])
     calibration_constant = kwargs.get('calibration_constant', 8.854658242290205e-13)
     pseudocumene_fractions = kwargs.get('pseudocumene_fractions', None)
+    rebin = kwargs.get('rebin', 10)
 
     h_peak = TH1D('h_peak', 'h_peak', 2, 0, 2)
     h_peak.GetXaxis().CanExtend()
@@ -699,7 +700,7 @@ def plot_peaks(**kwargs):
     peak_xs = []
     peak_ys = []
     for i, filename in enumerate(filenames):
-        peak_x, peak_y = get_spectrum_peak(filename, rebin=10)
+        peak_x, peak_y = get_spectrum_peak(filename, rebin=rebin)
         peak_xs.append(peak_x)
         peak_ys.append(peak_y)
         h_peak.Fill(sample_names[i], peak_x / calibration_constant)
@@ -725,18 +726,22 @@ def plot_peaks(**kwargs):
         tmarkers.append(tmarker)
         lg1.AddEntry(tmarkers[i], sample_names[i], 'p')
 
-    # c1 = TCanvas('c1', 'c1', 1050, 600)
-    # set_margin()
-    # gPad.SetGrid()
+    c1 = TCanvas('c1', 'c1', 1050, 600)
+    set_margin()
+    gPad.SetBottomMargin(0.2)
+    gPad.SetRightMargin(0.15)
+    gPad.SetGrid()
 
-    # set_h1_style(h_peak)
-    # h_peak.LabelsDeflate('X')
-    # h_peak.Draw('hist')
-    # h_peak.GetYaxis().SetTitle('Peak (NPE)')
+    set_h1_style(h_peak)
+    h_peak.LabelsDeflate('X')
+    h_peak.GetXaxis().LabelsOption('D')
+    h_peak.GetXaxis().SetLabelOffset(0.01)
+    h_peak.Draw('hist')
+    h_peak.GetYaxis().SetTitle('Peak (NPE)')
 
-    # c1.Update()
-    # c1.SaveAs('{}/plot_peaks.pdf'.format(FIGURE_DIR))
-    # input('Press any key to continue.')
+    c1.Update()
+    c1.SaveAs('{}/plot_peaks.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
 
     c2 = TCanvas('c2', 'c2', 800, 600)
     set_margin()
@@ -880,32 +885,70 @@ def print_photon_count():
 
 
 # 20190621_testbeam_light_yield_drum
+gStyle.SetOptStat(0)
 calibration_constant = 8.854658242290205e-13 # C / PE
-plot_spectra_ratio(rebin=10,
-                   suffix='.drum',
-                   calibration_constant=calibration_constant,
-                   filenames=[
-                       'F1ch300005.txt',
-                       'F1ch300006.txt',
-                       # 'OvernightRun.txt',
-                       'SingleHourRun.txt',
-                       # 'F1ch300002.txt',
-                       'F1ch300004.txt',
-                   ],
-                   legend_txts=[
-                       'Ash River Tote 4',
-                       'Ash River Tote 6',
-                       # 'Austin Drum Corner Overnight',
-                       'Austin Drum Corner',
-                       # 'Austin Drum Side Overnight',
-                       'Austin Drum Side',
-                   ],
-                   y_axis_title_ratio='Ratio to AR 4',
-                   x_min=-1.e-11,
-                   x_max=8.e-11,
-                   legend_x1ndc=0.56,
-                   legend_x2ndc=0.84,
-                   legend_yndc_delta=0.08)
+# plot_spectra_ratio(rebin=10,
+#                    suffix='.drum',
+#                    calibration_constant=calibration_constant,
+#                    filenames=[
+#                        'F1ch300005.txt',
+#                        'F1ch300006.txt',
+#                        'F1ch300008.txt',
+#                        'F1ch300007.txt',
+#                        # 'OvernightRun.txt',
+#                        'SingleHourRun.txt',
+#                        # 'F1ch300002.txt',
+#                        'F1ch300004.txt',
+#                    ],
+#                    legend_txts=[
+#                        'Ash River Tote 4',
+#                        'Ash River Tote 6',
+#                        'Tanker',
+#                        'Tank 2',
+#                        # 'Austin Drum Corner Overnight',
+#                        'Austin Drum Corner',
+#                        # 'Austin Drum Side Overnight',
+#                        'Austin Drum Side',
+#                    ],
+#                    y_axis_title_ratio='Ratio to AR 4',
+#                    x_min=-1.e-11,
+#                    x_max=8.e-11,
+#                    legend_x1ndc=0.56,
+#                    legend_x2ndc=0.84,
+#                    legend_yndc_delta=0.08)
+plot_peaks(
+    sample_names=[
+        'Ash River Tote 4',
+        'Ash River Tote 6',
+        'Tanker',
+        'Tank 2',
+        # 'Austin Drum Corner Overnight',
+        'Austin Drum Corner',
+        # 'Austin Drum Side Overnight',
+        'Austin Drum Side',
+    ],
+    filenames=[
+        'F1ch300005.txt',
+        'F1ch300006.txt',
+        'F1ch300008.txt',
+        'F1ch300007.txt',
+        # 'OvernightRun.txt',
+        'SingleHourRun.txt',
+        # 'F1ch300002.txt',
+        'F1ch300004.txt',
+    ],
+    pseudocumene_fractions=[
+        1.,
+        1.,
+        1.,
+        1.,
+        # 1.,
+        1.,
+        # 1.,
+        1.,
+    ],
+    rebin=5
+)
 
 # 20181116_testbeam_cerenkov_light
 # gStyle.SetOptStat(0)
