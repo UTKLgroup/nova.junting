@@ -17,7 +17,7 @@ INCH_TO_MM = 25.4
 DEGREE_TO_RADIAN = 3.14 / 180.
 RADIAN_TO_DEGREE = 180. / 3.14
 COLORS = [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1, kYellow + 2, kPink, kViolet, kAzure + 4, kCyan + 1, kTeal - 7, kBlue - 5]
-FIGURE_DIR = '/Users/juntinghuang/beamer/20190606_testbeam_detsim_event_generation/figures'
+FIGURE_DIR = '/Users/juntinghuang/beamer/20190626_testbeam_beam_tilt/figures'
 DATA_DIR = './data'
 
 
@@ -3745,14 +3745,18 @@ def plot_noise_particle_position(filename, **kwargs):
     show_boundary = kwargs.get('show_boundary', False)
     save_to_file = kwargs.get('save_to_file', False)
     z_limits = kwargs.get('z_limits', None)
+    particle_type = kwargs.get('particle_type', 'noise') # noise, good, all
 
     width = 2606.2 / 10.       # cm
     half_width = width / 2.    # cm
-    x0 = -1354.4 / 10.         # cm
+    # x0 = -1354.4 / 10.         # cm
+    # y0 = 0.
+    x0 = 0.
     y0 = 0.
     margin = 12.
     pid_y_x_hists = {}
     pid_momentum_x_hists = {}
+    h_y_x_all = TH2D('h_y_x_all', 'h_y_x_all', 100, x0 - half_width - margin, x0 + half_width + margin, 100, y0 - half_width - margin, y0 + half_width + margin)
 
     tf = TFile('{}/{}'.format(DATA_DIR, filename))
     particle_count = 0
@@ -3770,8 +3774,11 @@ def plot_noise_particle_position(filename, **kwargs):
                        track.TrackPresentcherenkov and \
                        track.TrackPresentnova
 
-            if pass_all:
+            if particle_type == 'noise' and pass_all:
                 continue
+            if particle_type == 'good' and not pass_all:
+                continue
+
             particle_count += 1
 
             pid = int(track.PDGidnova)
@@ -3782,6 +3789,12 @@ def plot_noise_particle_position(filename, **kwargs):
             x = track.xnova
             y = track.ynova
             z = track.znova
+
+            # particle_name = PDG.GetParticle(pid).GetName()
+            # if particle_name in ['pi+', 'pi-']:
+            h_y_x_all.Fill(x / 10., y / 10.)
+
+            pid_y_x_all[pid].Fill(x / 10., y / 10.)
             if pid not in pid_y_x_hists:
                 pid_y_x_hists[pid] = TH2D('h_y_x_{}'.format(pid), 'h_y_x_{}'.format(pid), 100, x0 - half_width - margin, x0 + half_width + margin, 100, y0 - half_width - margin, y0 + half_width + margin)
             if pid not in pid_momentum_x_hists:
@@ -3789,7 +3802,7 @@ def plot_noise_particle_position(filename, **kwargs):
             pid_y_x_hists[pid].Fill(x / 10., y / 10.)
             pid_momentum_x_hists[pid].Fill(x / 10., momentum)
 
-        # if particle_count > 1000:
+        # if particle_count > 5000:
         #     break
 
     print('particle_count = {}'.format(particle_count))
@@ -3797,8 +3810,9 @@ def plot_noise_particle_position(filename, **kwargs):
     if save_to_file:
         tf_out = TFile('{}/{}'.format(DATA_DIR, '{}.plot_noise_particle_position.root'.format(filename)), 'RECREATE')
         tf_out.cd()
+        h_y_x_all.Write('h_y_x_all')
         for pid, h1 in pid_y_x_hists.items():
-            print('pid = {}'.format(pid))
+            # print('pid = {}'.format(pid))
             h1.Write('h_y_x_{}'.format(PDG.GetParticle(pid).GetName()))
         for pid, h1 in pid_momentum_x_hists.items():
             h1.Write('h_momentum_x_{}'.format(PDG.GetParticle(pid).GetName()))
@@ -5519,6 +5533,24 @@ def print_time_of_flight(filename):
             delta_t = track.ttof_ds - track.ttof_us
             print('pid = {:15} delta_t = {} ns'.format(PDG.GetParticle(int(track.PDGidnova)).GetName(), delta_t * 1.e9))
 
+
+# 20190626_testbeam_beam_tilt
+gStyle.SetOptStat(0)
+# plot_noise_particle_position(
+#     'g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.tilt_1.2.root',
+#     show_boundary=True,
+#     save_to_file=True,
+#     z_limits=None,
+#     particle_type='all',
+# )
+plot_noise_particle_position(
+    'g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.tilt.root',
+    show_boundary=True,
+    save_to_file=True,
+    # z_limits={'pi+': [0, 320]}
+    z_limits=None,
+    particle_type='all',
+)
 
 # 20190606_testbeam_detsim_event_generation
 # save_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_1000.20m.edep.root', 0, 20000, bin_count=2000, normalization_factor=20, noise_particle=False)
