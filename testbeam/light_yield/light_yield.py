@@ -2,6 +2,7 @@ from rootalias import *
 import scipy.constants
 import csv
 from datetime import datetime
+from pprint import pprint
 
 
 PDG = TDatabasePDG()
@@ -10,6 +11,7 @@ DATA_DIR = './data/drum'
 # DATA_DIR = './data/mineral_oil'
 # DATA_DIR = './data/scintillator'
 # DATA_DIR = './data/calibration'
+COLORS = [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1, kYellow + 2, kPink, kViolet, kAzure + 4, kCyan + 1, kTeal - 7]
 
 
 def plot_gain(filename):
@@ -400,10 +402,10 @@ def plot_spectra_ratio(**kwargs):
     filenames = kwargs.get('filenames', ['F1ch300006.txt', 'F1ch300016.txt', 'F1ch300018.txt', 'F1ch300020.txt', 'F1ch300022.txt', 'F1ch300024.txt'])
     filename_no_pedestals = kwargs.get('filename_no_pedestals', ['F1ch300005.txt', 'F1ch300015.txt', 'F1ch300017.txt', 'F1ch300019.txt', 'F1ch300021.txt', 'F1ch300023.txt'])
     legend_txts = kwargs.get('legend_txts', ['NDOS', 'Production', 'Tanker', 'Tank 2', 'Tank 3', 'Tank 4'])
-    colors = kwargs.get('colors', [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1, kYellow + 2, kPink, kViolet, kAzure + 4, kCyan + 1, kTeal - 7])
     legend_x1ndc = kwargs.get('legend_x1ndc', 0.58)
     legend_x2ndc = kwargs.get('legend_x2ndc', 0.92)
     legend_yndc_delta = kwargs.get('legend_yndc_delta', 0.06)
+    legend_text_size = kwargs.get('legend_text_size', None)
     y_axis_title_ratio = kwargs.get('y_axis_title_ratio', 'Ratio to NDOS')
     x_min = kwargs.get('x_min', -1.e-11)
     x_max = kwargs.get('x_max', 12.e-11)
@@ -425,7 +427,7 @@ def plot_spectra_ratio(**kwargs):
         h_ratio.Sumw2()
         h_ratio.Divide(hists[0])
         set_h1_style(h_ratio)
-        h_ratio.SetLineColor(colors[i])
+        h_ratio.SetLineColor(COLORS[i % len(COLORS)])
         h_ratios.append(h_ratio)
 
     gStyle.SetOptStat(0)
@@ -441,13 +443,14 @@ def plot_spectra_ratio(**kwargs):
     pad1.cd()
 
     gPad.SetGrid()
-    # lg1 = TLegend(0.63, 0.34, 0.97, 0.79)
     lg1 = TLegend(legend_x1ndc, 0.86 - legend_yndc_delta * len(hists), legend_x2ndc, 0.79)
     set_legend_style(lg1)
+    if legend_text_size:
+        lg1.SetTextSize(legend_text_size)
 
     for i, hist in enumerate(hists):
         set_h1_style(hist)
-        hist.SetLineColor(colors[i])
+        hist.SetLineColor(COLORS[i % len(COLORS)])
         if i == 0:
             hist.Draw('hist')
             hist.GetYaxis().SetTitle('Event Count')
@@ -717,11 +720,10 @@ def plot_peaks(**kwargs):
     lg1.SetMargin(0.3)
     lg1.SetTextSize(20)
 
-    colors = [kBlack, kBlue, kRed + 1, kMagenta + 2, kGreen + 1, kOrange + 1, kYellow + 2, kPink, kViolet, kAzure + 4, kCyan + 1, kTeal - 7]
     tmarkers = []
     for i in range(len(pseudocumene_fractions)):
         tmarker = TMarker(pseudocumene_fractions[i], calibrate_peak_xs[i], 20)
-        tmarker.SetMarkerColor(colors[i])
+        tmarker.SetMarkerColor(COLORS[i % len(COLORS)])
         tmarker.SetMarkerSize(1.2)
         tmarkers.append(tmarker)
         lg1.AddEntry(tmarkers[i], sample_names[i], 'p')
@@ -916,38 +918,107 @@ calibration_constant = 8.854658242290205e-13 # C / PE
 #                    legend_x1ndc=0.56,
 #                    legend_x2ndc=0.84,
 #                    legend_yndc_delta=0.08)
-plot_peaks(
-    sample_names=[
-        'Ash River Tote 4',
-        'Ash River Tote 6',
-        'Tanker',
-        'Tank 2',
-        # 'Austin Drum Corner Overnight',
-        'Austin Drum Corner',
-        # 'Austin Drum Side Overnight',
-        'Austin Drum Side',
-    ],
-    filenames=[
-        'F1ch300005.txt',
-        'F1ch300006.txt',
-        'F1ch300008.txt',
-        'F1ch300007.txt',
-        # 'OvernightRun.txt',
-        'SingleHourRun.txt',
-        # 'F1ch300002.txt',
-        'F1ch300004.txt',
-    ],
-    pseudocumene_fractions=[
-        1.,
-        1.,
-        1.,
-        1.,
-        # 1.,
-        1.,
-        # 1.,
-        1.,
-    ],
-    rebin=5
+# plot_peaks(
+#     sample_names=[
+#         'Ash River Tote 4',
+#         'Ash River Tote 6',
+#         'Tanker',
+#         'Tank 2',
+#         # 'Austin Drum Corner Overnight',
+#         'Austin Drum Corner',
+#         # 'Austin Drum Side Overnight',
+#         'Austin Drum Side',
+#     ],
+#     filenames=[
+#         'F1ch300005.txt',
+#         'F1ch300006.txt',
+#         'F1ch300008.txt',
+#         'F1ch300007.txt',
+#         # 'OvernightRun.txt',
+#         'SingleHourRun.txt',
+#         # 'F1ch300002.txt',
+#         'F1ch300004.txt',
+#     ],
+#     pseudocumene_fractions=[
+#         1.,
+#         1.,
+#         1.,
+#         1.,
+#         # 1.,
+#         1.,
+#         # 1.,
+#         1.,
+#     ],
+#     rebin=5
+# )
+sample_filenames = {
+    'Ash River Tote 4': 'F1ch300005.txt',
+    'Ash River Tote 6': 'F1ch300006.txt',
+    'Tanker': 'F1ch300008.txt',
+    'Tank 2': 'F1ch300007.txt',
+    # 'Barrel 3 (Austin Corner) Overnight': 'OvernightRun.txt',
+    'Barrel 3 (Austin Corner)': 'SingleHourRun.txt',
+    # 'Barrel 18 (Austin Side) Overnight': 'F1ch300002.txt',
+    'Barrel 18 (Austin Side)': 'F1ch300004.txt',
+    'Barrel 1': 'F1ch300009.txt',
+    'Barrel 2': 'F1ch300010.txt',
+    'Barrel 4': 'F1ch300011.txt',
+    'Barrel 5': 'F1ch300012.txt',
+    'Barrel 6': 'F1ch300013.txt',
+    'Barrel 7': 'F1ch300014.txt',
+    'Barrel 8': 'F1ch300015.txt',
+    'Barrel 10': 'F1ch300016.txt',
+    'Barrel 11': 'F1ch300017.txt',
+    'Barrel 13': 'F1ch300018.txt',
+    'Barrel 14': 'F1ch300019.txt',
+    'Barrel 15': 'F1ch300020.txt',
+    'Barrel 16': 'F1ch300022.txt',
+    'Barrel 17': 'F1ch300023.txt',
+    'Barrel 19': 'F1ch300024.txt',
+    'Barrel 20': 'F1ch300025.txt',
+}
+samples = [
+    'Ash River Tote 4',
+    'Ash River Tote 6',
+    'Tanker',
+    'Tank 2',
+    # 'Barrel 3 (Austin Corner) Overnight',
+    'Barrel 3 (Austin Corner)',
+    # 'Barrel 18 (Austin Side) Overnight',
+    'Barrel 18 (Austin Side)',
+    'Barrel 1',
+    'Barrel 2',
+    'Barrel 4',
+    'Barrel 5',
+    'Barrel 6',
+    'Barrel 7',
+    'Barrel 8',
+    'Barrel 10',
+    'Barrel 11',
+    'Barrel 13',
+    'Barrel 14',
+    'Barrel 15',
+    'Barrel 16',
+    'Barrel 17',
+    'Barrel 19',
+    'Barrel 20',
+]
+filenames = [sample_filenames[sample] for sample in samples]
+pseudocumene_fractions = [1. for i in range(len(samples))]
+# plot_peaks(sample_names=samples, filenames=filenames, pseudocumene_fractions=pseudocumene_fractions, rebin=5)
+plot_spectra_ratio(
+    rebin=10,
+    suffix='.barrel',
+    calibration_constant=calibration_constant,
+    filenames=filenames,
+    legend_txts=samples,
+    y_axis_title_ratio='Ratio to AR 4',
+    x_min=-1.e-11,
+    x_max=8.e-11,
+    legend_x1ndc=0.56,
+    legend_x2ndc=0.84,
+    legend_yndc_delta=0.033,
+    legend_text_size=21
 )
 
 # 20181116_testbeam_cerenkov_light
