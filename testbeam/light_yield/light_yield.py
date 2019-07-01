@@ -775,6 +775,53 @@ def plot_peaks(**kwargs):
     input('Press any key to continue.')
 
 
+def plot_event_count_at_npe(**kwargs):
+    sample_names = kwargs.get('sample_names', ['NDOS', 'production', 'tanker', 'tank 2', 'tank 3', 'tank 4'])
+    filenames = kwargs.get('filenames', ['F1ch300005.txt', 'F1ch300015.txt', 'F1ch300017.txt', 'F1ch300019.txt', 'F1ch300021.txt', 'F1ch300023.txt'])
+    calibration_constant = kwargs.get('calibration_constant', 8.854658242290205e-13)
+    pseudocumene_fractions = kwargs.get('pseudocumene_fractions', None)
+    rebin = kwargs.get('rebin', 10)
+    npe = kwargs.get('npe', None)
+
+    h_event_count = TH1D('h_event_count', 'h_event_count', 2, 0, 2)
+    h_event_count.GetXaxis().CanExtend()
+    event_counts = []
+
+    for i, filename in enumerate(filenames):
+        if calibration_constant is None:
+            hist = get_spectrum(filenames[i])
+        else:
+            hist = get_spectrum(filenames[i], scale=1. / calibration_constant)
+        if rebin:
+            hist.Rebin(rebin)
+        hist.Scale(1. / hist.GetMaximum())
+        event_count = hist.GetBinContent(hist.FindBin(npe))
+        event_counts.append(event_count)
+        h_event_count.Fill(sample_names[i], event_count)
+
+    for i, sample_name in enumerate(sample_names):
+        print('{} & {:.2F} \\\\'.format(sample_name, event_counts[i]))
+
+    c1 = TCanvas('c1', 'c1', 1050, 600)
+    set_margin()
+    gPad.SetBottomMargin(0.5)
+    gPad.SetRightMargin(0.1)
+    gPad.SetGrid()
+
+    set_h1_style(h_event_count)
+    h_event_count.LabelsDeflate('X')
+    # h_event_count.GetXaxis().LabelsOption('D')
+    h_event_count.GetXaxis().LabelsOption('V')
+    h_event_count.GetXaxis().SetLabelOffset(0.01)
+    # h_event_count.SetLabelSize(24)
+    h_event_count.Draw('hist')
+    h_event_count.GetYaxis().SetTitle('Event Count at 30 PE')
+
+    c1.Update()
+    c1.SaveAs('{}/plot_event_count_at_npe.pdf'.format(FIGURE_DIR))
+    input('Press any key to continue.')
+
+
 def get_spectrum_peak(filename, **kwargs):
     rebin = kwargs.get('rebin', None)
     h1 = get_spectrum(filename)
@@ -889,35 +936,37 @@ def print_photon_count():
 # 20190621_testbeam_light_yield_drum
 gStyle.SetOptStat(0)
 calibration_constant = 8.854658242290205e-13 # C / PE
-# plot_spectra_ratio(rebin=10,
-#                    suffix='.drum',
-#                    calibration_constant=calibration_constant,
-#                    filenames=[
-#                        'F1ch300005.txt',
-#                        'F1ch300006.txt',
-#                        'F1ch300008.txt',
-#                        'F1ch300007.txt',
-#                        # 'OvernightRun.txt',
-#                        'SingleHourRun.txt',
-#                        # 'F1ch300002.txt',
-#                        'F1ch300004.txt',
-#                    ],
-#                    legend_txts=[
-#                        'Ash River Tote 4',
-#                        'Ash River Tote 6',
-#                        'Tanker',
-#                        'Tank 2',
-#                        # 'Austin Drum Corner Overnight',
-#                        'Austin Drum Corner',
-#                        # 'Austin Drum Side Overnight',
-#                        'Austin Drum Side',
-#                    ],
-#                    y_axis_title_ratio='Ratio to AR 4',
-#                    x_min=-1.e-11,
-#                    x_max=8.e-11,
-#                    legend_x1ndc=0.56,
-#                    legend_x2ndc=0.84,
-#                    legend_yndc_delta=0.08)
+# plot_spectra_ratio(
+#     rebin=10,
+#     suffix='.drum',
+#     calibration_constant=calibration_constant,
+#     filenames=[
+#         'F1ch300005.txt',
+#         'F1ch300006.txt',
+#         'F1ch300008.txt',
+#         'F1ch300007.txt',
+#         # 'OvernightRun.txt',
+#         'SingleHourRun.txt',
+#         # 'F1ch300002.txt',
+#         'F1ch300004.txt',
+#     ],
+#     legend_txts=[
+#         'Ash River Tote 4',
+#         'Ash River Tote 6',
+#         'Tanker',
+#         'Tank 2',
+#         # 'Austin Drum Corner Overnight',
+#         'Austin Drum Corner',
+#         # 'Austin Drum Side Overnight',
+#         'Austin Drum Side',
+#     ],
+#     y_axis_title_ratio='Ratio to AR 4',
+#     x_min=-1.e-11,
+#     x_max=8.e-11,
+#     legend_x1ndc=0.56,
+#     legend_x2ndc=0.84,
+#     legend_yndc_delta=0.08
+# )
 # plot_peaks(
 #     sample_names=[
 #         'Ash River Tote 4',
@@ -1004,22 +1053,23 @@ samples = [
     'Barrel 20',
 ]
 filenames = [sample_filenames[sample] for sample in samples]
-pseudocumene_fractions = [1. for i in range(len(samples))]
+# pseudocumene_fractions = [1. for i in range(len(samples))]
 # plot_peaks(sample_names=samples, filenames=filenames, pseudocumene_fractions=pseudocumene_fractions, rebin=5)
-plot_spectra_ratio(
-    rebin=10,
-    suffix='.barrel',
-    calibration_constant=calibration_constant,
-    filenames=filenames,
-    legend_txts=samples,
-    y_axis_title_ratio='Ratio to AR 4',
-    x_min=-1.e-11,
-    x_max=8.e-11,
-    legend_x1ndc=0.56,
-    legend_x2ndc=0.84,
-    legend_yndc_delta=0.033,
-    legend_text_size=21
-)
+# plot_spectra_ratio(
+#     rebin=10,
+#     suffix='.barrel',
+#     calibration_constant=calibration_constant,
+#     filenames=filenames,
+#     legend_txts=samples,
+#     y_axis_title_ratio='Ratio to AR 4',
+#     x_min=-1.e-11,
+#     x_max=8.e-11,
+#     legend_x1ndc=0.56,
+#     legend_x2ndc=0.84,
+#     legend_yndc_delta=0.033,
+#     legend_text_size=21
+# )
+plot_event_count_at_npe(sample_names=samples, filenames=filenames, pseudocumene_fractions=pseudocumene_fractions, rebin=5, npe=30.)
 
 # 20181116_testbeam_cerenkov_light
 # gStyle.SetOptStat(0)
