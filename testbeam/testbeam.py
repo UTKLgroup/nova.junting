@@ -3794,7 +3794,6 @@ def plot_noise_particle_position(filename, **kwargs):
             # if particle_name in ['pi+', 'pi-']:
             h_y_x_all.Fill(x / 10., y / 10.)
 
-            pid_y_x_all[pid].Fill(x / 10., y / 10.)
             if pid not in pid_y_x_hists:
                 pid_y_x_hists[pid] = TH2D('h_y_x_{}'.format(pid), 'h_y_x_{}'.format(pid), 100, x0 - half_width - margin, x0 + half_width + margin, 100, y0 - half_width - margin, y0 + half_width + margin)
             if pid not in pid_momentum_x_hists:
@@ -5536,6 +5535,13 @@ def print_time_of_flight(filename):
 
 # 20190626_testbeam_beam_tilt
 gStyle.SetOptStat(0)
+plot_noise_particle_position(
+    'g4bl.b_-0.9T.proton.8000.merge_tree.root.job_1_10000.200m.tilt_2.5.root',
+    show_boundary=True,
+    save_to_file=True,
+    z_limits=None,
+    particle_type='all',
+)
 # plot_noise_particle_position(
 #     'g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.tilt_1.2.root',
 #     show_boundary=True,
@@ -5543,14 +5549,14 @@ gStyle.SetOptStat(0)
 #     z_limits=None,
 #     particle_type='all',
 # )
-plot_noise_particle_position(
-    'g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.tilt.root',
-    show_boundary=True,
-    save_to_file=True,
-    # z_limits={'pi+': [0, 320]}
-    z_limits=None,
-    particle_type='all',
-)
+# plot_noise_particle_position(
+#     'g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.tilt.root',
+#     show_boundary=True,
+#     save_to_file=True,
+#     # z_limits={'pi+': [0, 320]}
+#     z_limits=None,
+#     particle_type='all',
+# )
 
 # 20190606_testbeam_detsim_event_generation
 # save_particle_momentum('g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_1000.20m.edep.root', 0, 20000, bin_count=2000, normalization_factor=20, noise_particle=False)
