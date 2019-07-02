@@ -136,7 +136,7 @@ class EventGenerator:
             self.make_plot(events)
 
     def make_plot(self, events):
-            f_det = TFile('{}/text_gen.{}.root'.format(self.data_dir, self.file_basename), 'RECREATE')
+            f_det = TFile('{}/text_gen.{}{}.root'.format(self.data_dir, self.file_basename, '.exclude_noise' if self.exclude_noise else ''), 'RECREATE')
             multiple_particle_event_count = 0
             h_count = TH1D('h_count', 'h_count', 100, -0.5, 99.5)
             h_timing = TH1D('h_timing', 'h_timing', 5000, 0., 50.e3)  # ns
