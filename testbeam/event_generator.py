@@ -122,6 +122,8 @@ class EventGenerator:
             else:
                 particle[-1] -= event_start_time
                 event_particles.append(particle)
+        if event_particles:
+            events.append(event_particles)
 
         txt_filename = 'text_gen.{}{}.txt'.format(self.file_basename, '.exclude_noise' if self.exclude_noise else '')
         with open('{}/{}'.format(self.data_dir, txt_filename), 'w') as f_txt:
