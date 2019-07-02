@@ -18,9 +18,12 @@ class EventGenerator:
         self.max_spill_count = max_spill_count
 
         self.pdg = TDatabasePDG()
-        self.delta_x = 1375.9  # mm
-        self.delta_y = -67.5  # mm
-        self.delta_z = -14617.4  # mm
+        self.delta_x = 1.4  # mm
+        self.delta_y = 8.6  # mm
+        self.delta_z = 0.  # mm
+        # self.delta_x = 1375.9  # mm
+        # self.delta_y = -67.5  # mm
+        # self.delta_z = -14617.4  # mm
         self.angle_rotation_y_axis = -0.349 * pi / 180.  # rad
 
     def rotate_y_axis(self, z, x):
@@ -64,13 +67,13 @@ class EventGenerator:
 
                 pdg_id = int(track.PDGidnova)
                 x, y, z = self.translate(track.xnova, track.ynova, track.znova)  # mm
-                z, x = self.rotate_y_axis(z, x)
+                # z, x = self.rotate_y_axis(z, x)
                 t = track.tnova  # s
 
                 px = track.Pxnova  # MeV
                 py = track.Pynova  # MeV
                 pz = track.Pznova  # MeV
-                pz, px = self.rotate_y_axis(pz, px)
+                # pz, px = self.rotate_y_axis(pz, px)
 
                 px /= 1000.  # GeV
                 py /= 1000.  # GeV
