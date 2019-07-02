@@ -148,14 +148,12 @@ class EventGenerator:
                 for particle in event:
                     h_timing.Fill(particle[-1])
                     is_noise = particle[0]
-                    print('is_noise = ', is_noise)
                     if is_noise:
                         continue
                     x = particle[-4]
                     y = particle[-3]
                     z = particle[-2]
                     h_xy.Fill(x, y)
-                    print('z =', z)
                     h_z.Fill(z)
 
             print('len(events) = {}'.format(len(events)))
