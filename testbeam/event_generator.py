@@ -123,7 +123,7 @@ class EventGenerator:
                 particle[-1] -= event_start_time
                 event_particles.append(particle)
 
-        txt_filename = 'text_gen.{}.txt'.format(self.file_basename)
+        txt_filename = 'text_gen.{}{}.txt'.format(self.file_basename, '.exclude_noise' if self.exclude_noise else '')
         with open('{}/{}'.format(self.data_dir, txt_filename), 'w') as f_txt:
             for event in events:
                 f_txt.write('0 {}\n'.format(len(event)))
