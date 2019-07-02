@@ -103,5 +103,5 @@ physics.producers.daqv5.tb.ForceGain: 100
 physics.producers.daqv4.tb.NumClockticksInSpill: 800
 physics.producers.daqv5.tb.NumClockticksInSpill: 800
 services.Geometry.ForceUseFCLOnly: true
-services.Geometry.GDML: "Geometry/gdml/testbeam-2x2-2block-xtru-vacuum-new.gdml"
+services.Geometry.GDML: "Geometry/gdml/testbeam-2x2-2block-xtru-vacuum-stagger.gdml"
 services.RunHistory.AbortIfNoMask: false
