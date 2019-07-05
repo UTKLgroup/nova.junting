@@ -4117,12 +4117,13 @@ def get_radiation_length_helium_pipe():
 
 
 def plot_cherenkov_index_of_refaction_air():
-    names = ['pi+', 'mu+', 'e+']
-    colors = [kBlue + 1, kGreen + 2, kRed + 1]
+    names = ['proton', 'pi+', 'mu+', 'e+']
+    # names = ['pi+', 'mu+', 'e+']
+    colors = [kBlack, kBlue + 1, kGreen + 2, kRed + 1]
     masses = list(map(lambda x: PDG.GetParticle(x).Mass(), names)) # GeV
     eta = 4.1e-4                  # atm-1, for CO2
 
-    momentums = np.arange(0.01, 20, 0.01)
+    momentums = np.arange(0.01, 200, 0.01)
     rrefraction_indexs = []
     for i, mass in enumerate(masses):
         refraction_indexs = []
@@ -4156,7 +4157,8 @@ def plot_cherenkov_index_of_refaction_air():
     gPad.SetLeftMargin(0.2)
     # gPad.SetLogx()
 
-    lg1 = TLegend(0.51, 0.56, 0.86, 0.86)
+    # lg1 = TLegend(0.51, 0.56, 0.86, 0.86)
+    lg1 = TLegend(0.51, 0.5, 0.86, 0.86)
     set_legend_style(lg1)
 
     for i in range(len(names)):
@@ -4165,8 +4167,10 @@ def plot_cherenkov_index_of_refaction_air():
 
         if i == 0:
             grs[0].Draw('AL')
-            grs[0].GetXaxis().SetRangeUser(0., 20)
-            grs[0].GetYaxis().SetRangeUser(1., 1.0010)
+            # grs[0].GetXaxis().SetRangeUser(0., 20)
+            # grs[0].GetYaxis().SetRangeUser(1., 1.0010)
+            grs[0].GetXaxis().SetRangeUser(0., 100)
+            grs[0].GetYaxis().SetRangeUser(1., 1.0015)
             grs[0].GetYaxis().SetDecimals()
             grs[0].GetYaxis().SetTitleOffset(2)
             grs[0].GetYaxis().SetTitle('Index of Refraction')
@@ -5534,14 +5538,14 @@ def print_time_of_flight(filename):
 
 
 # 20190626_testbeam_beam_tilt
-gStyle.SetOptStat(0)
-plot_noise_particle_position(
-    'g4bl.b_-0.9T.proton.8000.merge_tree.root.job_1_10000.200m.tilt_2.5.root',
-    show_boundary=True,
-    save_to_file=True,
-    z_limits=None,
-    particle_type='all',
-)
+# gStyle.SetOptStat(0)
+# plot_noise_particle_position(
+#     'g4bl.b_-0.9T.proton.8000.merge_tree.root.job_1_10000.200m.tilt_2.5.root',
+#     show_boundary=True,
+#     save_to_file=True,
+#     z_limits=None,
+#     particle_type='all',
+# )
 # plot_noise_particle_position(
 #     'g4bl.b_-0.9T.proton.64000.merge_tree.root.job_1_10000.200m.tilt_1.2.root',
 #     show_boundary=True,
@@ -5883,7 +5887,7 @@ plot_noise_particle_position(
 # compare_cerenkov_adc_spectra(['cerenkovana.cosmic_run_2379.root', 'cerenkovana.cosmic_run_2388.root'], x_min=-16.81, x_max=134.48, calibration_constant=3.362e-3)
 # plot_cerenkov_adc_spectrum_calibration('cerenkovana.calibration_run_1.root', x_min=10e3, x_max=70e3)
 # plot_cerenkov_calibration_constant_vs_light_level()
-# plot_cherenkov_index_of_refaction_air()
+plot_cherenkov_index_of_refaction_air()
 # plot_cerenkov_trigger_rate_vs_threshold()
 # plot_cerenkov_pulse('V1742Analysis.root')
 # plot_cerenkov_hit_count_per_event('cerenkovana.root')
