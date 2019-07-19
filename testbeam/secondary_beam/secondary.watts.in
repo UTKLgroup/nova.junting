@@ -26,13 +26,12 @@ param mc6di=452.5
 #param mc6di=$p*282.7*0.0008886256/40
 
 # Quadrupole currents
-param mc6q1i=22.59235801
-param mc6q2i=-658.6022431
-param mc6q3i=38.45286209
-param mc6q4i=-29.93398098
-param mc6q5i=424.4383369
-param mc6q6i=-40.99998979
-
+param mc6q1i=19.31827941
+param mc6q2i=-642.8273639
+param mc6q3i=37.33991241
+param mc6q4i=-29.57469877
+param mc6q5i=429.9581841
+param mc6q6i=-39.7818009
 
 # Transfer functions [(T/m)/A]
 param xfer_3Q120=0.18570791858
@@ -50,8 +49,8 @@ param mc6Q6g=$mc6q6i*$xfer_3Q120
 # Dipole fields
 param mc6db=$mc6di*$xfer_EPB
 
-beam gaussian particle=proton nEvents=1000000 z=-200 sigmaX=1.0 sigmaY=1.0 y=-8 rotation=x-1.31 meanMomentum=120000.0 #sigmaP=0.0
-#beam ascii file=target_beam_6E6.txt
+#beam gaussian particle=proton nEvents=1000000 z=-200 sigmaX=1.0 sigmaY=1.0 y=-8 rotation=x-1.31 meanMomentum=120000.0 #sigmaP=0.0
+beam ascii file=target_beam_6E6.txt
 
 trackcuts keep=proton,mu+,pi+,pi0,kaon+
 
@@ -59,30 +58,30 @@ virtualdetector Det radius=2500.0 length=100 color=0,0,0
 
 #------------Target&Cage,Absorber,Collimator----------------------
 box Target  width=5 height=5 length=200 material=Cu color=1,0,0
-#place Target rename=MC6T1 z=100 rotation=x-1.31
+place Target rename=MC6T1 z=100 rotation=x-1.31
 
 box CageV height=450 width=100  length=2133.6 color=0.6,0.6,0.6  material=STAINLESS-STEEL kill=$kill_aperture
-#place CageV z=1016.5 x=-150 y=24.1 rotation=x-1.31
-#place CageV z=1016.5 x=+150 y=24.1 rotation=x-1.31
+place CageV z=1016.5 x=-150 y=24.1 rotation=x-1.31
+place CageV z=1016.5 x=+150 y=24.1 rotation=x-1.31
 
 box CageH height=100  width=400 length=2133.6 color=0.6,0.6,0.6  material=STAINLESS-STEEL kill=$kill_aperture
-#place CageH z=1016.5 y=-251.9 rotation=x-1.31
-#place CageH z=1016.5 y=+299.18 rotation=x-1.31
+place CageH z=1016.5 y=-251.9 rotation=x-1.31
+place CageH z=1016.5 y=+299.17 rotation=x-1.31
 
 box AbsV height=450 width=87.3 length=5.188*$ft color=1,0,0  material=CONCRETE kill=$kill_aperture
-#place AbsV z=1293.9 x=56.35 y=29.6 rotation=x-1.31
-#place AbsV z=1293.9 x=-56.35 y=29.6 rotation=x-1.31
+place AbsV z=1293.9 x=56.35 y=29.6 rotation=x-1.31
+place AbsV z=1293.9 x=-56.35 y=29.6 rotation=x-1.31
 
 box AbsH height=212.3 width=$inch length=5.1888*$ft color=1,0,0  material=CONCRETE kill=$kill_aperture
-#place AbsH z=1293.9 y=148.45 rotation=x-1.31
-#place AbsH z=1293.9 y=-89.25 rotation=x-1.31
+place AbsH z=1293.9 y=148.45 rotation=x-1.31
+place AbsH z=1293.9 y=-89.25 rotation=x-1.31
 
 box Coll_All height=31.75 width=431.8 length=1828.8 color=0,1,0 material=Al kill=$kill_aperture
 box Coll_Concr height=914.4 width=914.4 length=1828.8 color=0,1,0 material=CONCRETE kill=$kill_aperture
-#place Coll_All z=3148 x=241.3 y=71.95 rotation=x-0.99
-#place Coll_All z=3148 x=-241.3 y=71.95 rotation=x-0.99
-#place Coll_Concr z=3148 y=545.096 rotation=x-0.99
-#place Coll_Concr z=3148 y=-401.196 rotation=x-0.99
+place Coll_All z=3148 x=241.3 y=71.95 rotation=x-0.99
+place Coll_All z=3148 x=-241.3 y=71.95 rotation=x-0.99
+place Coll_Concr z=3148 y=545.096 rotation=x-0.99
+place Coll_Concr z=3148 y=-401.196 rotation=x-0.99
 #--------------------------------------------------------------------
 
 genericbend EPB fieldHeight=35.6 fieldWidth=124.5 fieldLength=3048 fieldMaterial=Vacuum ironColor=$dipoleColor ironWidth=281.5 ironHeight=281.5 ironLength=3048 kill=$kill_aperture
@@ -91,7 +90,7 @@ genericquad 4Q120 fieldLength=3048 fieldMaterial=Vacuum ironLength=3048 fringe=0
 #genericquad Vac gradient=0 fringe=0 apertureRadius=120 ironRadius=121 fieldMaterial=Vacuum ironColor=$vacuumColor
 genericbend 4430 fieldHeight=101.6 fieldWidth=101.6 fieldLength=762 fieldMaterial=AIR ironLength=762 ironHeight=295 ironWidth=397 ironColor=$trimColor fringe=0 kill=$kill_aperture
 # old gap fieldHeight=20.35
-genericbend Mom_Coll fieldHeight=10.0 fieldWidth=127 fieldLength=1676.4 fieldMaterial=AIR ironLength=1676.4 ironHeight=295 ironWidth=397 ironColor=$collimatorColor By=0 fringe=0 kill=$kill_aperture
+genericbend Mom_Coll fieldHeight=5.0 fieldWidth=127 fieldLength=1676.4 fieldMaterial=AIR ironLength=1676.4 ironHeight=295 ironWidth=397 ironColor=$collimatorColor By=0 fringe=0 kill=$kill_aperture
 
 place 3Q120 rename=Q1_1 z=6432.19 y=147.5 rotation=x-1.31 gradient=$mc6Q1g
 place 3Q120 rename=Q1_2 z=9884.08 y=224.3 rotation=x-1.31 gradient=$mc6Q1g
@@ -105,15 +104,15 @@ place EPB rename=MC6D2 z=20064.4 y=414.8328 By=$mc6db rotation=z90,x-0.8194
 #place Vac fieldLength=305 ironLength=305 z=15035.807  y=335.47 rotation=x-1.1
 #place Vac fieldLength=305 ironLength=305 z=18388.15  y=393.051 rotation=x-0.95
 
-#---Scraper1----aperture 5*3in
+#---Scraper1----need to change aperture from 5*3in to 1.25"x2"
 group Scraper1
-  box Scrap_Steel height=50.8 width=457.2 length=997 color=$scraperColor material=STAINLESS-STEEL
-  box Scrap_ConcrUp height=914.4 width=914.4 length=997 color=$scraperColor material=CONCRETE
-  box Scrap_ConcrDown height=1828.8 width=914.4 length=997 color=$scraperColor material=CONCRETE
-  place Scrap_Steel rename=+_steel_left x=244.475 z=498.5
-  place Scrap_Steel rename=+_steel_right x=-244.475 z=498.5
-  place Scrap_ConcrUp rename=+_concrete_up y=482.6 z=498.5
-  place Scrap_ConcrDown rename=+_concrete_down y=-939.8 z=498.5
+  box Scrap_Steel height=127 width=457.2 length=997 color=$scraperColor material=Al kill=$kill_aperture
+  box Scrap_ConcrUp height=914.4 width=914.4 length=997 color=$scraperColor material=CONCRETE kill=$kill_aperture
+  box Scrap_ConcrDown height=1828.8 width=914.4 length=997 color=$scraperColor material=CONCRETE kill=$kill_aperture
+  place Scrap_Steel rename=+_steel_left x=266.7 z=498.5
+  place Scrap_Steel rename=+_steel_right x=-266.7 z=498.5
+  place Scrap_ConcrUp rename=+_concrete_up y=520.7 z=498.5
+  place Scrap_ConcrDown rename=+_concrete_down y=-977.9 z=498.5
 endgroup
 place Scraper1 rename=Scraper1 y=445.9224 z=22393.072 rotation=x-0.65
 #----------------
@@ -124,9 +123,9 @@ place 4430 rename=HT1 z=27998.04 y=515.417 rotation=x-0.917 By=0
 
 #---Scraper2----
 group Scraper2
-  box Scrap2_Steel height=101.6 width=457.2 length=1003.4 color=$scraperColor material=STAINLESS-STEEL
-  box Scrap2_ConcrUp height=914.4 width=914.4 length=1003.4 color=$scraperColor material=CONCRETE
-  box Scrap2_ConcrDown height=1828.8 width=914.4 length=1003.4 color=$scraperColor material=CONCRETE
+  box Scrap2_Steel height=101.6 width=457.2 length=1003.4 color=$scraperColor material=Al kill=$kill_aperture
+  box Scrap2_ConcrUp height=914.4 width=914.4 length=1003.4 color=$scraperColor material=CONCRETE kill=$kill_aperture
+  box Scrap2_ConcrDown height=1828.8 width=914.4 length=1003.4 color=$scraperColor material=CONCRETE kill=$kill_aperture
   place Scrap2_Steel rename=+_steel_left x=279.4 z=501.7
   place Scrap2_Steel rename=+_steel_right x=-279.4 z=501.7
   place Scrap2_ConcrUp rename=+_concrete_up y=508. z=501.7
@@ -139,9 +138,9 @@ place Mom_Coll z=33049.7944 y=568.15 rotation=x-0.656
 
 #---Scraper3----
 group Scraper3
-  box Scrap3_Steel height=50.8 width=457.2 length=1003.4 color=$scraperColor material=STAINLESS-STEEL
-  box Scrap3_ConcrUp height=914.4 width=914.4 length=1003.4 color=$scraperColor material=CONCRETE
-  box Scrap3_ConcrDown height=1828.8 width=914.4 length=1003.4 color=$scraperColor material=CONCRETE
+  box Scrap3_Steel height=50.8 width=457.2 length=1003.4 color=$scraperColor material=Al kill=$kill_aperture
+  box Scrap3_ConcrUp height=914.4 width=914.4 length=1003.4 color=$scraperColor material=CONCRETE kill=$kill_aperture
+  box Scrap3_ConcrDown height=1828.8 width=914.4 length=1003.4 color=$scraperColor material=CONCRETE kill=$kill_aperture
   place Scrap3_Steel rename=+_steel_left x=254 z=501.7
   place Scrap3_Steel rename=+_steel_right x=-254 z=501.7
   place Scrap3_ConcrUp rename=+_concrete_up y=482.6 z=501.7
