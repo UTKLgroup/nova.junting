@@ -1,0 +1,205 @@
+
+                                 R E A D M E
+
+
+Product Name:           CAMAC
+
+----------------------------------------------------------------------------
+
+                                   ORIGIN
+                                   ======
+Authors
+
+    Jon Streets
+
+    Dave Slimmer
+
+    Fermi National Accelerator Laboratory - Mail Station 369
+    P.O Box 500
+    Batavia, IL 60510
+    Internet: CAMAC-support@fnal.fnal.gov
+
+Fermilab Standard Government Sponsorship Notice
+
+    This work was performed at Fermi National Accelerator Laboratory,
+    which is operated by Universities Research Association, Inc., under
+    contract DE-AC02-76CHO3000 with the U.S. Department of Energy.
+
+
+
+
+
+----------------------------------------------------------------------------
+
+			     TERMS AND CONDITIONS
+			     ====================
+
+This software has been made freely available with a request for
+collaborative input subject to standard Fermitools Terms and Conditions
+given in full below.
+
+----------------------------------------------------------------------------
+
+                             PRODUCT DESCRIPTION
+                             ===================
+CAMAC is a Modular Instrumentation and Digital Interface System defined as a 
+standardized instrumentation system for Computer Automated Measurement and Control. 
+The system features a fully specified data highway together with modular functional 
+units that are completely compatible and that are available from diverse sources. 
+
+CAMAC hardware and software has been defined by the NIM Committee (National 
+Instrumentation Methods Committee) of the U.S. Department of Energy and the ESONE
+Committee (European Standards on Nuclear Electronics Committee) of European 
+Laboratories. The software packages that we present here follow the ANSI/IEEE Standard
+758-1979. These subroutines have been in use at Fermilab for several years, 
+traditionally with UNIBUS and QBUS computers. The CAMAC product has been implemented
+to enable re-use of existing hardware and software with the LINUX operating 
+systems. For each operating system, the CAMAC product contains the
+ESONE/IEEE CAMAC standard routines library and drivers where necessary. 
+
+CAMAC products support various combinations of platforms, operating systems and 
+CAMAC controllers. Please see the product specific README files for more information.
+
+
+Under LINUX the following CAMAC interfaces are supported: 
+
+     sjyLX - Jorway 411 SCSI to Serial and Parallel CAMAC interface and the 
+             Jorway Model 73A SCSI Bus CAMAC Crate Controller. 
+
+
+Documentation
+-------------
+Documentation is provided for each operating
+system/CAMAC controller platform package.
+
+
+Required Hardware and Software
+------------------------------
+Special hardware or operating system versions
+are specified in the documentation for each product.
+
+
+Product Installation
+--------------------
+Installation instructions are provided in the documentation for each
+product.
+
+
+
+
+
+----------------------------------------------------------------------------
+
+				   SUPPORT
+				   =======
+
+Help with the installation or use of CAMAC is available by sending mail to
+
+			CAMAC-support@fnal.gov
+
+which is auto-forwarded to the group in charge of CAMAC support at Fermilab.
+
+This software is furnished by Fermilab on an "as is" basis as a service 
+to the wider community with the goal of stimulating collaborative use and 
+further development.
+
+Provision of the software implies no commitment of support by Fermilab.
+
+The Fermilab Computing Division is open to discussing other levels of 
+support for use of the software with responsible and committed users and 
+collaborators.
+
+Use of the software in experiments at Fermilab will be assured of a level 
+of support as agreed to through the standard Memorandum Of Understanding 
+process.
+
+Users may send mail to the mail address given above, with the expectation 
+that it will be read and noted.
+
+Fermitools Special Products
+---------------------------
+Because of the special support needed for a few selected products Fermilab 
+is only able to support the software under special agreement. The support 
+offered will be discussed and negotiated on an individual basis and may be 
+different for different users. To initiate discussions send mail to the 
+mail address given above.
+
+
+----------------------------------------------------------------------------
+
+			 TERMS AND CONDITIONS IN FULL
+                         ============================
+
+------------------------------------------------------------------------
+Fermitools Software Legal Information (Modified BSD licence)- 12/01/2001
+------------------------------------------------------------------------
+
+
+COPYRIGHT STATUS:  
+ Dec 1st 2001, Fermi National Accelerator Laboratory (FNAL) documents and
+ software are sponsored by the U.S. Department of Energy under Contract No.
+ DE-AC02-76CH03000. Therefore, the U.S. Government retains a  world-wide 
+ non-exclusive, royalty-free license to publish or reproduce these documents 
+ and software for U.S. Government purposes.  All documents and software 
+ available from this server are protected under the U.S. and Foreign 
+ Copyright Laws, and FNAL reserves all rights. 
+
+
+   Distribution of the software available from this server is free of 
+   charge subject to the user following the terms of the Fermitools 
+   Software Legal Information.
+
+   Redistribution and/or modification of the software shall be accompanied 
+   by the Fermitools Software Legal Information  (including the copyright 
+   notice).
+
+   The user is asked to feed back problems, benefits, and/or suggestions 
+   about the software to the Fermilab Software Providers. 
+
+
+   Neither the name of Fermilab, the  URA, nor the names of the contributors
+   may be used to endorse or promote products derived from this software 
+   without specific prior written permission.
+
+
+
+ DISCLAIMER OF LIABILITY (BSD): 
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ "AS IS" AND ANY EXPRESS OR IMPLIED  WARRANTIES, INCLUDING, BUT NOT
+ LIMITED TO, THE IMPLIED  WARRANTIES OF MERCHANTABILITY AND FITNESS
+ FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL FERMILAB,
+ OR THE URA, OR THE U.S. DEPARTMENT of ENERGY, OR CONTRIBUTORS BE LIABLE
+ FOR  ANY  DIRECT, INDIRECT,  INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ CONSEQUENTIAL DAMAGES  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ OF SUBSTITUTE  GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR 
+ BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY  OF
+ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT  OF THE USE OF THIS
+ SOFTWARE, EVEN IF ADVISED OF THE  POSSIBILITY OF SUCH DAMAGE.
+   
+
+ Liabilities of the Government: 
+
+ This software is provided by URA, independent from its Prime Contract 
+ with the U.S. Department of Energy. URA is acting independently from 
+ the Government and in its own private capacity and is not acting on 
+ behalf of the U.S. Government, nor as its contractor nor its agent. 
+ Correspondingly, it is understood and agreed that the U.S. Government 
+ has no connection to this software and in no manner whatsoever shall 
+ be liable for nor assume any responsibility or obligation for any claim, 
+ cost, or damages arising out of or resulting from the use of the software 
+ available from this server.
+
+
+ Export Control:
+
+ All documents and software available from this server are subject to U.S. 
+ export control laws.  Anyone downloading information from this server is 
+ obligated to secure any necessary Government licenses before exporting 
+ documents or software obtained from this server. 
+
+
+ 
+
+

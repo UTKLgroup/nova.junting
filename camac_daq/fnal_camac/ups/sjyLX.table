@@ -1,0 +1,28 @@
+File=Table
+Product=sjyLX
+#*************************************************
+# Starting Group definition
+Group:
+Flavor=Linux+2.4
+Qualifiers=""
+
+Common:
+   Action=setup
+      doDefaults()
+      pathPrepend (PATH,${UPS_PROD_DIR}/example,:)
+End:
+# End Group definition
+#*************************************************
+#*************************************************
+# Starting Group definition
+Group:
+Flavor=NULL
+Qualifiers=""
+
+Common:
+   Action=setup
+      doDefaults()
+      pathPrepend (PATH,${UPS_PROD_DIR}/example,:)
+End:
+# End Group definition
+#*************************************************

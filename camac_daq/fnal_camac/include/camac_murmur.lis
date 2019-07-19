@@ -1,0 +1,56 @@
+# ******************************************************************
+# **
+# **         MURMUR Message Utility Listing
+# **
+# ** File: ../include/camac_murmur.lis
+# ** Created: Mon Oct 16 10:49:12 1995
+# ** Message Input File: ../include/camac_murmur.msg
+# ** By User: streets
+# **
+# ******************************************************************
+             1 # CAMAC Murmur message definitions	das 1aug95
+             2 #
+             3 # 29aug95 das	added VME_CLOSE_FAIL for cdchn( ,FALSE, )
+             4 # 11oct95 jms	made NO_Q informational
+             5 #		added SCSI_CLOSE_FAIL
+             6 
+             7 
+             8 -facility CAM 149 -prefix CAM_S
+             9 
+80254009    10 SUCCESS 	-severity S 	<Successful Execution>
+80254013    11 NO_Q		-severity I 	<no Q from CAMAC slot>
+8025401C    12 INVLD_CRATE	-severity E	<Serial must be between 1 and 62; Parallel between 1 and 7>
+80254024    13 INVLD_ARG	-severity E	<IEEE routine doesnt like this argument>
+8025402C    14 NO_DMD		-severity E	<no LAMs present>
+80254034    15 INVLD_DMD	-severity E	<not a TRUE demand message>
+8025403C    16 NO_RESPONSE	-severity E	<no response from crate controller>
+80254044    17 NO_X		-severity E	<no X from CAMAC slot>
+8025404C    18 VME_OPEN_FAIL	-severity E	<Couldnt open VME device file>
+80254054    19 MMAP_FAIL	-severity E	<Couldnt map to VME device fail>
+8025405C    20 DEV_OPEN_FAIL	-severity E	<Could not open JY411S file in /dev/sjycNsMl0>
+80254064    21 DEV_IO_ERROR	-severity E	<device error from read or write>
+8025406C    22 SEM_FAIL	-severity E	<Couldnt initialise Semaphore>
+80254074    23 GETSEM_FAIL	-severity E	<Couldnt Take Semaphore>
+8025407C    24 PUTSEM_FAIL	-severity E	<Couldnt Release Semaphore>
+80254084    25 INVLD_BRANCH	-severity E	<Branch number must be between 0 and 255 (VSD2992), 0 and 7 (CES8210), 0 and SJY_MAX_JY411 (JY411S)>
+8025408C    26 PARALLEL	-severity E	<Branch is Parallel>
+80254094    27 SER_OR_PAR_ONLY	-severity E	<JY411S must either be parallel or serial, open it again>
+8025409C    28 RPC_FAIL	-severity E	<Remote Procedure Call fail>
+802540A4    29 NO_ROUTE	-severity E	<Route must be initialised with cdroute()>
+802540AC    30 INVLD_SLOT	-severity E	<Slot must be between 1 and 30>
+802540B4    31 INVLD_SUBADD	-severity E	<Subaddress must be between 0 and 15>
+802540BC    32 VME_CLOSE_FAIL	-severity E	<Couldnt close VME device file>
+802540C4    33 SCSI_CLOSE_FAIL	-severity E	<Couldnt close SCSI device file>
+            34 
+            35 
+            36 -end
+
+***************
+
+Total Number of Messages : 24
+Total Error Count : 0
+
+Created Database:  ../lib/MessageDb, loaded 27  records
+Created Database:  ../lib/GUIEditDb, loaded 2  records
+Created Database:  ../lib/XclientDb, loaded 1  records
+Created Database:  ../lib/MessActDb, loaded 0  records

@@ -1,0 +1,20 @@
+sjylx
+
+The sjy (LINUX) product contains code to operate the Jorway Model 411S SCSI Bus 
+CAMAC Highway Driver and the Jorway Model 73A SCSI Bus CAMAC Crate Controller for
+IBM PC compatible machines running LINUX. We provide a library for the ANSI/IEEE 
+Std 758-1979 calls as well as example/test code.
+
+This release suppports multi-user and multi-branch configurations. 
+Currently, CAMAC LAMs can be polled, but do not interrupt the PC.
+ 
+Performance tests with a 100Mhz Pentium system and the Jorway 73A showed a DMA 
+startup rate of 0.2 milliseconds, and maximum data transfer rates  of 1.3 Mbyte/s 
+in 16 and 24 bit mode with 32200 byte buffers. Tests with the Jorway 411S showed 
+16 bit word maximum transfer rates of 330 Kbyte/s with a serial controller and 
+773 Kbyte/sec with a parallel controller.  Rates were almost twice that for 24 bit 
+word transfers.
+
+Please refer to documentation included in the sjy (LINUX) product for 
+installation and use.
+
