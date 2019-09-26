@@ -1,0 +1,164 @@
+#  MC6 - MC7 simulation
+#  code obtained from Adam Watts
+#  lengths are in mm, fields is Tesla !  Momentum in MeV
+#______________________________________________________________________
+
+param kill_aperture=0
+
+physics QGSP_BIC
+
+param worldMaterial=AIR
+param inch=25.4
+param ft=304.8
+param p=80 #selected momentum in momentum
+param quadrupoleColor=0.79,0.38,0.14
+param dipoleColor=0,0,1
+param trimColor=0.31,0.55,0.2
+param vacuumColor=0.5,0.5,0.5
+param collimatorColor=0.0,0.8,0.8
+param scraperColor=0.8,0,0
+g4ui when=4 "/vis/viewer/set/background 1 1 1"
+g4ui when=4 "vis/scene/add/axes 0 0 -1500 100000 mm"
+
+# Dipole currents
+param mc6di=452.5
+
+# Quadrupole currents
+param mc6q1i=19.31827941
+param mc6q2i=-642.8273639
+param mc6q3i=37.33991241
+param mc6q4i=-29.57469877
+param mc6q5i=429.9581841
+param mc6q6i=-39.7818009
+
+# Transfer functions [(T/m)/A]
+param xfer_3Q120=0.18570791858
+param xfer_4Q120=0.01842553191
+param xfer_EPB=0.000888625592
+
+# Quadrupole gradients [T/m]
+param mc6Q1g=$mc6q1i*$xfer_3Q120
+param mc6Q2g=$mc6q2i*$xfer_4Q120
+param mc6Q3g=$mc6q3i*$xfer_3Q120
+param mc6Q4g=$mc6q4i*$xfer_3Q120
+param mc6Q5g=$mc6q5i*$xfer_4Q120
+param mc6Q6g=$mc6q6i*$xfer_3Q120
+
+# Dipole fields
+param mc6db=$mc6di*$xfer_EPB
+
+beam gaussian particle=proton firstEvent=$first lastEvent=$last z=-200 sigmaX=1.0 sigmaY=1.0 y=-8 rotation=x-1.31 meanMomentum=120000.0
+
+trackcuts keep=proton,anti_proton,mu+,mu-,pi+,pi-,pi0,kaon+,kaon-,e-,e+
+
+virtualdetector Det radius=2500.0 length=100 color=0,0,0
+
+#------------Target&Cage,Absorber,Collimator----------------------
+box Target  width=5 height=5 length=200 material=Cu color=1,0,0
+place Target rename=MC6T1 z=100 rotation=x-1.31
+
+box CageV height=450 width=100  length=2133.6 color=0.6,0.6,0.6  material=STAINLESS-STEEL kill=$kill_aperture
+place CageV z=1016.5 x=-150 y=24.1 rotation=x-1.31
+place CageV z=1016.5 x=+150 y=24.1 rotation=x-1.31
+
+box CageH height=100  width=400 length=2133.6 color=0.6,0.6,0.6  material=STAINLESS-STEEL kill=$kill_aperture
+place CageH z=1016.5 y=-251.9 rotation=x-1.31
+place CageH z=1016.5 y=+299.17 rotation=x-1.31
+
+box AbsV height=450 width=87.3 length=5.188*$ft color=1,0,0  material=CONCRETE kill=$kill_aperture
+place AbsV z=1293.9 x=56.35 y=29.6 rotation=x-1.31
+place AbsV z=1293.9 x=-56.35 y=29.6 rotation=x-1.31
+
+box AbsH height=212.3 width=$inch length=5.1888*$ft color=1,0,0  material=CONCRETE kill=$kill_aperture
+place AbsH z=1293.9 y=148.45 rotation=x-1.31
+place AbsH z=1293.9 y=-89.25 rotation=x-1.31
+
+box Coll_All height=31.75 width=431.8 length=1828.8 color=0,1,0 material=Al kill=$kill_aperture
+box Coll_Concr height=914.4 width=914.4 length=1828.8 color=0,1,0 material=CONCRETE kill=$kill_aperture
+place Coll_All z=3148 x=241.3 y=71.95 rotation=x-0.99
+place Coll_All z=3148 x=-241.3 y=71.95 rotation=x-0.99
+place Coll_Concr z=3148 y=545.096 rotation=x-0.99
+place Coll_Concr z=3148 y=-401.196 rotation=x-0.99
+#--------------------------------------------------------------------
+
+genericbend EPB fieldHeight=35.6 fieldWidth=124.5 fieldLength=3048 fieldMaterial=Vacuum ironColor=$dipoleColor ironWidth=281.5 ironHeight=281.5 ironLength=3048 kill=$kill_aperture
+genericquad 3Q120 fieldLength=3048 fieldMaterial=Vacuum ironLength=3048 fringe=0 apertureRadius=38.1 ironRadius=305 ironColor=$quadrupoleColor kill=$kill_aperture
+genericquad 4Q120 fieldLength=3048 fieldMaterial=Vacuum ironLength=3048 fringe=0 apertureRadius=50.8 ironRadius=438  ironColor=$quadrupoleColor kill=$kill_aperture
+genericbend 4430 fieldHeight=101.6 fieldWidth=101.6 fieldLength=762 fieldMaterial=AIR ironLength=762 ironHeight=295 ironWidth=397 ironColor=$trimColor fringe=0 kill=$kill_aperture
+# old gap fieldHeight=20.35
+genericbend Mom_Coll fieldHeight=5.0 fieldWidth=127 fieldLength=1676.4 fieldMaterial=AIR ironLength=1676.4 ironHeight=295 ironWidth=397 ironColor=$collimatorColor By=0 fringe=0 kill=$kill_aperture
+
+place 3Q120 rename=Q1_1 z=6432.19 y=147.5 rotation=x-1.31 gradient=$mc6Q1g
+place 3Q120 rename=Q1_2 z=9884.08 y=224.3 rotation=x-1.31 gradient=$mc6Q1g
+place EPB rename=MC6D1 z=13359.7144 y=299.6 By=$mc6db rotation=z90,x-1.15
+place 4Q120 rename=Q2 z=16711.9 y=361.8 rotation=x-0.99 gradient=$mc6Q2g
+place EPB rename=MC6D2 z=20064.4 y=414.8328 By=$mc6db rotation=z90,x-0.8194
+
+#---Scraper1----need to change aperture from 5*3in to 1.25"x2"
+group Scraper1
+  box Scrap_Steel height=127 width=457.2 length=997 color=$scraperColor material=Al kill=$kill_aperture
+  box Scrap_ConcrUp height=914.4 width=914.4 length=997 color=$scraperColor material=CONCRETE kill=$kill_aperture
+  box Scrap_ConcrDown height=1828.8 width=914.4 length=997 color=$scraperColor material=CONCRETE kill=$kill_aperture
+  place Scrap_Steel rename=+_steel_left x=266.7 z=498.5
+  place Scrap_Steel rename=+_steel_right x=-266.7 z=498.5
+  place Scrap_ConcrUp rename=+_concrete_up y=520.7 z=498.5
+  place Scrap_ConcrDown rename=+_concrete_down y=-977.9 z=498.5
+endgroup
+place Scraper1 rename=Scraper1 y=445.9224 z=22393.072 rotation=x-0.65
+#----------------
+
+place 3Q120 rename=Q3 z=24721.744 y=472.745 rotation=x-0.653 gradient=$mc6Q3g
+place 4430 rename=VT1 z=26931.24 y=499.871 By=0 rotation=z90,x-0.917
+place 4430 rename=HT1 z=27998.04 y=515.417 rotation=x-0.917 By=0
+
+#---Scraper2----
+group Scraper2
+  box Scrap2_Steel height=101.6 width=457.2 length=1003.4 color=$scraperColor material=Al kill=$kill_aperture
+  box Scrap2_ConcrUp height=914.4 width=914.4 length=1003.4 color=$scraperColor material=CONCRETE kill=$kill_aperture
+  box Scrap2_ConcrDown height=1828.8 width=914.4 length=1003.4 color=$scraperColor material=CONCRETE kill=$kill_aperture
+  place Scrap2_Steel rename=+_steel_left x=279.4 z=501.7
+  place Scrap2_Steel rename=+_steel_right x=-279.4 z=501.7
+  place Scrap2_ConcrUp rename=+_concrete_up y=508. z=501.7
+  place Scrap2_ConcrDown rename=+_concrete_down y=-965.2 z=501.7
+endgroup
+place Scraper2 rename=Scraper2 y=529.6234 z=29236.4166 rotation=x-0.66
+#----------------
+
+place Mom_Coll z=33049.7944 y=568.15 rotation=x-0.656
+
+#---Scraper3----
+group Scraper3
+  box Scrap3_Steel height=50.8 width=457.2 length=1003.4 color=$scraperColor material=Al kill=$kill_aperture
+  box Scrap3_ConcrUp height=914.4 width=914.4 length=1003.4 color=$scraperColor material=CONCRETE kill=$kill_aperture
+  box Scrap3_ConcrDown height=1828.8 width=914.4 length=1003.4 color=$scraperColor material=CONCRETE kill=$kill_aperture
+  place Scrap3_Steel rename=+_steel_left x=254 z=501.7
+  place Scrap3_Steel rename=+_steel_right x=-254 z=501.7
+  place Scrap3_ConcrUp rename=+_concrete_up y=482.6 z=501.7
+  place Scrap3_ConcrDown rename=+_concrete_down y=-939.8 z=501.7
+endgroup
+place Scraper3 rename=Scraper3 y=583.692 z=34402.4968 rotation=x-0.66
+#----------------
+
+place 4430 rename=VT2 z=36831.7784 y=610.2096 By=0 rotation=z90,x-0.664 kill=$kill_aperture
+place 4430 rename=HT2 z=37798.5784 y=622.7064 rotation=x-0.665 By=0 kill=$kill_aperture
+place 3Q120 rename=Q4 z=40008.38 y=648.0048 rotation=x-0.659 gradient=$mc6Q4g
+place EPB rename=MC6D3 z=43360.88 y=681.8376 By=$mc6db rotation=z90,x-0.4927
+place 4Q120 rename=Q5 z=46713.67 y=705.612 rotation=x-0.327 gradient=$mc6Q5g
+place EPB rename=MC6D4 z=50066.48 y=720.5472 By=$mc6db rotation=z90,x-0.166
+place 3Q120 rename=Q6 z=53419.28 y=724.8144 gradient=$mc6Q6g
+
+box CollV height=4572 width=1800 length=1800 color=0,1,0  material=CONCRETE kill=$kill_aperture
+place CollV z=58000 x=1204.8 y=724.8
+place CollV z=58000 x=-1204.8 y=724.8
+
+box CollH height=1800 width=609.6 length=1800 color=0,1,0  material=CONCRETE kill=$kill_aperture
+place CollH z=58000 y=1929.6
+place CollH z=58000 y=-480
+
+#----------------------VIRTUAL DETS-----------------------------------------
+place Det rename=NovaTarget z=108254 y=724.8144 format=rootExtended file=end.txt #NOvA target
+place Det rename=Scraper1Det z=2150 y=724.8144 format=rootExtended #file=end.txt # Det 1
+place Det rename=Scraper2Det z=4500 y=724.8144 format=rootExtended #file=end.txt # Det 2
+place Det rename=Scraper3Det z=23000 y=724.8144 format=rootExtended #file=end.txt # Det 3
+place Det rename=Scraper4Det z=35500 y=724.8144 format=rootExtended #file=end.txt # Det 4
+place Det rename=Scraper5Det z=60000 y=724.8144 format=rootExtended #file=end.txt # Det 5
